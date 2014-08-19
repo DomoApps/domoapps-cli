@@ -1,0 +1,17 @@
+{
+  "name": "domoapps-cli",
+  "private": true,
+  "version": "0.1.0",
+  "bin": {
+    "domo": "./bin/domo"
+  },
+  "dependencies": {
+    "commander": "~2.2.0",
+    "superagent": "~0.18.1",
+    "q": "~1.0.1",
+    "gaze": "~0.6.4",
+    "glob": "~4.0.5",
+    "chalk": "~0.5.1",
+    "inquirer": "~0.6.0"
+  }
+}

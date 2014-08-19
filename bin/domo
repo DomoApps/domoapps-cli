@@ -1,0 +1,101 @@
+#!/usr/bin/env node
+var domo = require('../lib/domo');
+var program = require('commander');
+var gaze = require('gaze');
+var path = require('path');
+var inquirer = require("inquirer");
+var chalk = require('chalk');
+var logo =
+"┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃██████████      ██████████  ███            ██   ██████████  ┃\n"+
+"┃████████████  ███████████████████        ███████████████████┃\n"+
+"┃███      ████████        ██████████    ██████████        ███┃\n"+
+"┃███       ██████          ██████████████████████          ██┃\n"+
+"┃███      ███████          ██████ ███████  ██████          ██┃\n"+
+"┃███     █████████       ████████   ███    ███████       ████┃\n"+
+"┃████████████  ██████████████████          ██████████████████┃\n"+
+"┃██████████      ██████████  ████          ███   ██████████  ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
+
+program
+  .version('0.0.1')
+  .option('-w, --watch', 'publish domoapp design every time a file changes')
+
+program
+  .command('publish')
+  .description('publish a new or existing domoapp design')
+  .action(function(){
+    if (program.watch){ watch(); }
+    domo.publish();
+  });
+
+program
+  .command('login')
+  .description('login to domo')
+  .action(function(){
+    // prompt user
+    inquirer.prompt([
+      {
+        type: "input",
+        message: "domo instance",
+        name: "instance"
+      },
+      {
+        type: "input",
+        message: "user email",
+        name: "email"
+      },
+      {
+        type: "password",
+        message: "domo password",
+        name: "password"
+      }
+    ], function(answers) {
+      domo.login(answers.instance, answers.email, answers.password, function(){
+        console.log(chalk.cyan(logo));
+      });
+    });
+    // domo.login('dev.local', 'support@domo.com', 'd@m@', function(){
+    //   console.log(chalk.cyan(logo));
+    // });
+  });
+
+program.parse(process.argv);
+
+var home = getUserHome();
+// console.log("home", home);
+
+function watch(){
+  gaze('**/*', function(err, watcher) {
+    this.on('all', function(event, filepath) {
+      // TODO: handle deleting of assets
+
+      var relPath = path.relative(process.cwd(), filepath);
+      domo.publish(relPath);
+    });
+  });
+}
+
+function getUserHome(){
+  return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+}
