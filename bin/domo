@@ -5,6 +5,10 @@ var gaze = require('gaze');
 var path = require('path');
 var inquirer = require("inquirer");
 var chalk = require('chalk');
+var home = path.resolve(getUserHome() + '/.domo');
+var fs = require('fs-extra');
+var glob = require("glob");
+
 var logo =
 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"+
 "┃                                                            ┃\n"+
@@ -45,25 +49,45 @@ program
   .command('publish')
   .description('publish a new or existing domoapp design')
   .action(function(){
-    if (program.watch){ watch(); }
-    domo.publish();
+    var manifest = require(path.resolve('manifest.json'));
+    var login = getLogin(manifest.customer);
+    if (!login){
+      console.log(chalk.red('X'), 'Please login using "domo login"');
+      return;
+    }
+    if (program.watch){ watch(login); }
+    domo.publish(login.customer, login.sid, null);
   });
 
 program
   .command('login')
   .description('login to domo')
   .action(function(){
+    // get default values from previous logins
+    var logins = glob.sync(home + "/login/*.json");
+    var mostRecent = {};
+
+    if (logins.length > 0){
+      mostRecent = logins.reduce(function(prev, next){
+        return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
+      });
+      mostRecent = fs.readJsonSync(mostRecent);
+    }
+
+
     // prompt user
     inquirer.prompt([
       {
         type: "input",
-        message: "domo instance",
-        name: "instance"
+        message: "domo customer",
+        name: "customer",
+        default: mostRecent.customer
       },
       {
         type: "input",
         message: "user email",
-        name: "email"
+        name: "email",
+        default: mostRecent.user
       },
       {
         type: "password",
@@ -71,31 +95,37 @@ program
         name: "password"
       }
     ], function(answers) {
-      domo.login(answers.instance, answers.email, answers.password, function(){
+      domo.login(answers.customer, answers.email, answers.password, function(sid){
+        // store the session
+        var loginFile = path.resolve(home + '/login/' + answers.customer + '.json');
+        fs.ensureFileSync(loginFile);
+        fs.writeJsonSync(loginFile, { sid: sid, user: answers.email, customer: answers.customer });
         console.log(chalk.cyan(logo));
       });
     });
-    // domo.login('dev.local', 'support@domo.com', 'd@m@', function(){
-    //   console.log(chalk.cyan(logo));
-    // });
   });
 
 program.parse(process.argv);
 
-var home = getUserHome();
-// console.log("home", home);
+function watch(login){
 
-function watch(){
   gaze('**/*', function(err, watcher) {
     this.on('all', function(event, filepath) {
       // TODO: handle deleting of assets
 
-      var relPath = path.relative(process.cwd(), filepath);
-      domo.publish(relPath);
+      var relFilePath = path.relative(process.cwd(), filepath);
+      domo.publish(login.customer, login.sid, relFilePath);
     });
   });
 }
 
+/**
+ * get the user's home directory
+ */
 function getUserHome(){
   return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
+}
+
+function getLogin(customer){
+  return fs.readJsonSync(path.resolve(home + '/login/' + customer + '.json'), {throws: false});
 }
