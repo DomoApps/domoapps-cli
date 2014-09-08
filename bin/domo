@@ -72,6 +72,58 @@ program
     });
   });
 
+program
+  .command('migrate')
+  .action(function(){
+    var manifest = require(path.resolve('manifest.json'));
+    var type = this.args[0];
+    var id = this.args[1];
+
+    inquirer.prompt([
+      {
+        type: "input",
+        message: "domo customer name",
+        name: "customer"
+        // default: mostRecent.customer
+      },
+      {
+        type: "input",
+        message: "app id",
+        name: "id"
+      }
+    ], function(answers) {
+      var login = getLogin(answers.customer);
+      if (!login){
+        console.log(chalk.red('X'), 'Please login to ' + answers.customer + ' first using "domo login"');
+        return;
+      }
+      
+      domo.migrateApp(answers.customer, login.sid, manifest, answers.id);
+    });
+
+
+
+    // var manifest = require(path.resolve('manifest.json'));
+    // if (!manifest.customer){
+    //   console.log(chalk.red('X'), '');
+    // }
+
+    // var login = getLogin(manifest.customer);
+
+    // if (!login){
+    //   console.log(chalk.red('X'), 'Please login using "domo login"');
+    //   return;
+    // }
+
+    // if (type === 'app'){
+    //   console.log("migrate app");
+    //   domo.migrateApp(id, getLogin(login.customer))
+    // }
+    // else if (type === 'design'){
+    //   console.log("migrate design");
+    // }
+  });
+
 program.parse(process.argv);
 
 function watch(login){
