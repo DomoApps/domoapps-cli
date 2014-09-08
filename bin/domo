@@ -1,45 +1,18 @@
 #!/usr/bin/env node
+/**
+ * this executable will take care of capturing user input,
+ * passing data on to the domo lib
+ */
+
 var domo = require('../lib/domo');
 var program = require('commander');
 var gaze = require('gaze');
 var path = require('path');
 var inquirer = require("inquirer");
 var chalk = require('chalk');
-var home = path.resolve(getUserHome() + '/.domo');
 var fs = require('fs-extra');
 var glob = require("glob");
-
-var logo =
-"┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃██████████      ██████████  ███            ██   ██████████  ┃\n"+
-"┃████████████  ███████████████████        ███████████████████┃\n"+
-"┃███      ████████        ██████████    ██████████        ███┃\n"+
-"┃███       ██████          ██████████████████████          ██┃\n"+
-"┃███      ███████          ██████ ███████  ██████          ██┃\n"+
-"┃███     █████████       ████████   ███    ███████       ████┃\n"+
-"┃████████████  ██████████████████          ██████████████████┃\n"+
-"┃██████████      ██████████  ████          ███   ██████████  ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┃                                                            ┃\n"+
-"┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
+var home = domo.getUserHome();
 
 program
   .version('0.0.1')
@@ -95,13 +68,7 @@ program
         name: "password"
       }
     ], function(answers) {
-      domo.login(answers.customer, answers.email, answers.password, function(sid){
-        // store the session
-        var loginFile = path.resolve(home + '/login/' + answers.customer + '.json');
-        fs.ensureFileSync(loginFile);
-        fs.writeJsonSync(loginFile, { sid: sid, user: answers.email, customer: answers.customer });
-        console.log(chalk.cyan(logo));
-      });
+      domo.login(answers.customer, answers.email, answers.password);
     });
   });
 
@@ -117,13 +84,6 @@ function watch(login){
       domo.publish(login.customer, login.sid, relFilePath);
     });
   });
-}
-
-/**
- * get the user's home directory
- */
-function getUserHome(){
-  return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 }
 
 function getLogin(customer){
