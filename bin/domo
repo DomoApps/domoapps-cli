@@ -12,7 +12,7 @@ var inquirer = require("inquirer");
 var chalk = require('chalk');
 var fs = require('fs-extra');
 var glob = require("glob");
-var home = domo.getUserHome();
+var home = domo.getDomoHome();
 
 program
   .version('0.0.1')
@@ -38,6 +38,7 @@ program
   .action(function(){
     // get default values from previous logins
     var logins = glob.sync(home + "/login/*.json");
+    console.log("logins", logins);
     var mostRecent = {};
 
     if (logins.length > 0){

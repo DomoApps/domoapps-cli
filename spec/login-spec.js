@@ -1,6 +1,6 @@
 describe("domo login", function(){
   var domo = require('../lib/domo');
-  var home = domo.getUserHome() + '/.domo';
+  var home = domo.getDomoHome();
   var customer = 'dev.local';
   var email = 'support@domo.com'
   var fs = require('fs-extra');
