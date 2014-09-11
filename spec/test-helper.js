@@ -13,5 +13,6 @@ module.exports = {
   fs: fs,
   Promise: Promise,
   request: Promise.promisify(require("request")),
+  Domo: Domo,
   domo: new Domo(customer, null, fs.readJsonSync('spec/fixtures/manifest.json'))
 }
