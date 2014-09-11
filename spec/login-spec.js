@@ -1,21 +1,15 @@
-describe("domo login", function(){
-  var domo = require('../lib/domo');
-  var home = domo.getDomoHome();
-  var customer = 'dev.local';
-  var email = 'support@domo.com'
-  var fs = require('fs-extra');
+describe("login", function(){
+  var home = Domo.getHomeDir();
 
   it("stores a login session", function(done){
-    domo.login(customer, email, 'd@m@');
-
-    setTimeout(function(){
-      var login = fs.readJsonSync(home + '/login/' + customer + '.json');
-      expect(login.user).toBe(email);
-      expect(login.customer).toBe(customer);
-      expect(login.sid).not.toBeNull();
-      expect(login.sid).not.toBe("");
-      done();
-    }, 2000);
+    domo
+      .login(process.env.email, process.env.password)
+      .then(function(login){
+        expect(login.user).toBeDefined();
+        expect(login.sid).toBeDefined();
+      })
+      .catch(checkResponse)
+      .finally(done)
   });
 
 });

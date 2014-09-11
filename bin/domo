@@ -4,7 +4,7 @@
  * passing data on to the domo lib
  */
 
-var domo = require('../lib/domo');
+var Domo = require('../lib/domo');
 var program = require('commander');
 var gaze = require('gaze');
 var path = require('path');
@@ -12,7 +12,39 @@ var inquirer = require("inquirer");
 var chalk = require('chalk');
 var fs = require('fs-extra');
 var glob = require("glob");
-var home = domo.getDomoHome();
+var home = Domo.getHomeDir();
+
+var logo =
+"┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃██████████      ██████████  ███            ██   ██████████  ┃\n"+
+"┃████████████  ███████████████████        ███████████████████┃\n"+
+"┃███      ████████        ██████████    ██████████        ███┃\n"+
+"┃███       ██████          ██████████████████████          ██┃\n"+
+"┃███      ███████          ██████ ███████  ██████          ██┃\n"+
+"┃███     █████████       ████████   ███    ███████       ████┃\n"+
+"┃████████████  ██████████████████          ██████████████████┃\n"+
+"┃██████████      ██████████  ████          ███   ██████████  ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┃                                                            ┃\n"+
+"┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
 
 program
   .version('0.0.1')
@@ -28,8 +60,13 @@ program
       console.log(chalk.red('X'), 'Please login using "domo login"');
       return;
     }
-    if (program.watch){ watch(login); }
-    domo.publish(login.customer, login.sid, null);
+    var domo = new Domo(manifest.customer, null, manifest);
+    console.log("domo", domo);
+    console.log("login", login);
+
+    // if (program.watch){ watch(login); }
+    // domo.publish(login.customer, login.sid);
+    // TODO: write this: domo.publishAllAssets();
   });
 
 program
@@ -38,7 +75,6 @@ program
   .action(function(){
     // get default values from previous logins
     var logins = glob.sync(home + "/login/*.json");
-    console.log("logins", logins);
     var mostRecent = {};
 
     if (logins.length > 0){
@@ -47,7 +83,6 @@ program
       });
       mostRecent = fs.readJsonSync(mostRecent);
     }
-
 
     // prompt user
     inquirer.prompt([
@@ -69,7 +104,16 @@ program
         name: "password"
       }
     ], function(answers) {
-      domo.login(answers.customer, answers.email, answers.password);
+      var domo = new Domo(answers.customer, null, require(path.resolve('manifest.json')));
+      domo
+        .login(answers.email, answers.password)
+        .then(function(login){
+          console.log(chalk.green('\u2713'), 'Login successful. Welcome, ' + login.user.USER_FULLNAME + '.');
+          console.log(chalk.cyan(logo));
+          return login;
+        })
+        .then(persistLogin(answers.customer, answers.email))
+        .catch(verifyAccess)
     });
   });
 
@@ -101,28 +145,6 @@ program
       
       domo.migrateApp(answers.customer, login.sid, manifest, answers.id);
     });
-
-
-
-    // var manifest = require(path.resolve('manifest.json'));
-    // if (!manifest.customer){
-    //   console.log(chalk.red('X'), '');
-    // }
-
-    // var login = getLogin(manifest.customer);
-
-    // if (!login){
-    //   console.log(chalk.red('X'), 'Please login using "domo login"');
-    //   return;
-    // }
-
-    // if (type === 'app'){
-    //   console.log("migrate app");
-    //   domo.migrateApp(id, getLogin(login.customer))
-    // }
-    // else if (type === 'design'){
-    //   console.log("migrate design");
-    // }
   });
 
 program.parse(process.argv);
@@ -139,6 +161,24 @@ function watch(login){
   });
 }
 
+/**
+ * persist login to user's domo home
+ */
+function persistLogin(customer, email){
+  return function(login){
+    var loginFile = path.resolve(home + '/login/' + customer + '.json');
+    fs.ensureFileSync(loginFile);
+    fs.writeJsonSync(loginFile, { sid: login.sid, user: email, customer: customer });
+    return login;
+  }
+}
+
 function getLogin(customer){
   return fs.readJsonSync(path.resolve(home + '/login/' + customer + '.json'), {throws: false});
+}
+
+function verifyAccess(res){
+  if (res.statusCode === 403){
+    console.log(chalk.red('X'), 'Authentication failed, please try logging in again.');
+  }
 }
