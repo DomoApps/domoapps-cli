@@ -1,8 +1,4 @@
 describe("createDesign", function(){
-  var domo;
-  beforeEach(function(){
-    domo = this.domo;
-  });
 
   it("should create a new Design", function(done){
     domo.createDesign()
