@@ -2,9 +2,9 @@ describe("createDesign", function(){
 
   it("should create a new Design", function(done){
     domo.createDesign()
-        .catch(checkResponse)
         .then(validateDesign)
         .then(cleanup)
+        .catch(checkResponse)
         .finally(done)
   });
 
