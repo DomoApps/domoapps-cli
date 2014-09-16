@@ -15,6 +15,7 @@ var chalk = require('chalk');
 var fs = require('fs-extra');
 var glob = require("glob");
 var home = Domo.getHomeDir();
+var Promise = require('bluebird');
 
 var logo =
 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"+
@@ -130,15 +131,14 @@ program
   .command('migrate')
   .action(function(){
     var manifest = require(path.resolve('manifest.json'));
-    var type = this.args[0];
-    var id = this.args[1];
+    var mostRecent = getMostRecentLogin() || {};
 
     inquirer.prompt([
       {
         type: "input",
-        message: "domo customer name",
-        name: "customer"
-        // default: mostRecent.customer
+        message: "domo customer",
+        name: "customer",
+        default: mostRecent.customer
       },
       {
         type: "input",
@@ -152,11 +152,57 @@ program
         return;
       }
       
-      domo.migrateApp(answers.customer, login.sid, manifest, answers.id);
+      var domo = new Domo(answers.customer, login.sid, manifest);
+
+      migrateApp(domo, answers.id)
+        .then(evoke(ok, 'Migration successful'))
+        .catch(evoke(fail, 'Migration unsuccessful'))
     });
   });
 
 program.parse(process.argv);
+
+/**
+ * migrate a mason app to a domoapp
+ * 1. get the kpi info
+ * 2. create a new domoapp design
+ * 3. publish design assets
+ * 4. create a new domoapp
+ * 5. update the kpi
+ */
+function migrateApp(domo, appId){
+  return Promise.all([
+    domo.getKpi(appId)
+        .then(verifyAccess),
+
+        // .catch(evoke(fail, 'No app found with id ' + appId)),
+    // publish new design (and persist id) if not already published
+    domo.createDesign()
+      .tap(evoke(ok, 'Design published'))
+      .then(persistDesignId.bind(domo))
+      .catch(function(){
+        return domo.manifest;
+      })
+  ])
+  .spread(function(kpi, design){
+    return domo
+        .createApp(design.id)
+        .tap(evoke(ok, 'New domoapp created'))
+        .catch(evoke(fail, 'Error creating new domoapp'))
+        .then(function(domoapp){
+          kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'domoapp';
+          kpi.domoapp.id = domoapp.id;
+
+          return domo.updateKpi(kpi)
+              .then(evoke(ok, 'Card type updated and linked'))
+              .catch(evoke(fail, 'Error updating card'))
+              .then(domo.uploadAllAssets.bind(domo))
+              .then(evoke(ok, 'Assets uploaded'))
+              .catch(evoke(fail, 'Error uploading assets'))
+        })
+  })
+
+};
 
 function watch(login){
 
@@ -199,14 +245,6 @@ function fail(msg){
   console.log(chalk.red('X'), msg);
 }
 
-/**
- * update the manifest (in memory and on disk)
- */
-function persistDesignId(design){
-  this.manifest.id = design.id;
-  fs.writeJsonSync('manifest.json', this.manifest);
-}
-
 function getMostRecentLogin(){
   var logins = glob.sync(home + "/login/*.json");
   if (logins.length == 0) return;
@@ -229,12 +267,21 @@ function persistLogin(customer, email){
   }
 }
 
+/**
+ * update the manifest (in memory and on disk)
+ */
+function persistDesignId(design){
+  this.manifest.id = design.id;
+  fs.writeJsonSync('manifest.json', this.manifest);
+  return design;
+}
+
 function getLogin(customer){
   return fs.readJsonSync(path.resolve(home + '/login/' + customer + '.json'), {throws: false});
 }
 
 function verifyAccess(res){
-  if (res.statusCode === 403){
+  if (res.statusCode === 403 || res.statusCode === 401){
     fail('Authentication failed, please try logging in again.');
   }
   return res;
