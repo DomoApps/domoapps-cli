@@ -1,4 +1,5 @@
 var fs = require('fs-extra');
+jasmine.getEnv().defaultTimeoutInterval = 15000;
 
 beforeEach(function(){
   // execute tests from test app directory
