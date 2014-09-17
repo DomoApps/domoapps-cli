@@ -1,7 +1,7 @@
 describe("createDesign", function(){
 
   it("should create a new Design", function(done){
-    domo.createDesign()
+    domo.createDesign(manifest)
         .then(validateDesign)
         .then(cleanup)
         .catch(checkResponse)
@@ -12,7 +12,7 @@ describe("createDesign", function(){
     return domo.getDesign(design.id)
       .then(function(res){
         expect(res.id).toBe(design.id);
-        expect(res.name).toEqual(domo.manifest.name);
+        expect(res.name).toEqual(manifest.name);
         return design;
       })
   }

@@ -3,7 +3,7 @@ describe("uploadAsset", function(){
   var designId;
 
   it("should upload a design asset to S3", function(done){
-    domo.createDesign()
+    domo.createDesign(manifest)
       .then(function(design){
         designId = design.id;
 

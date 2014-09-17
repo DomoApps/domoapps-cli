@@ -16,7 +16,8 @@ module.exports = {
   Promise: Promise,
   request: Promise.promisify(require("request")),
   Domo: Domo,
-  domo: new Domo(customer, getMostRecentLogin().sid, fs.readJsonSync('spec/fixtures/manifest.json')),
+  domo: new Domo(customer, getMostRecentLogin().sid),
+  manifest: fs.readJsonSync('spec/fixtures/manifest.json'),
   customer: customer
 }
 
