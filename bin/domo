@@ -84,9 +84,7 @@ program
         .catch(evoke(fail, 'Error uploading assets'))
     }
 
-    // if (program.watch){ watch(login); }
-    // domo.publish(login.customer, login.sid);
-    // TODO: write this: domo.publishAllAssets();
+    if (program.watch){ watch(domo, login, manifest); }
   });
 
 program
@@ -210,14 +208,16 @@ function migrateApp(domo, appId, manifest){
 
 };
 
-function watch(login){
+function watch(domo, login, manifest){
 
   gaze('**/*', function(err, watcher) {
     this.on('all', function(event, filepath) {
       // TODO: handle deleting of assets
 
       var relFilePath = path.relative(process.cwd(), filepath);
-      domo.publish(login.customer, login.sid, relFilePath);
+      domo.uploadAsset(manifest.id, manifest.version, relFilePath)
+          .then(evoke(ok, 'Uploaded: ' + relFilePath))
+          .catch(evoke(fail, 'Error uploading: ' + relFilePath))
     });
   });
 }
