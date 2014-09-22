@@ -9,6 +9,9 @@
 2. Create an index.html file and a manifest.json file.
 2. run `domo publish`.
 
+## Migrating existing (mason) apps
+Follow the [migration steps](./docs/migrating.md)
+
 ## Running the tests
 1. Make sure jasmine-node is installed: `npm install -g jasmine-node`
 2. Make sure domovm is running
