@@ -69,7 +69,7 @@ This is the main entry point of the domoapp. Here you include any other assets (
 7. Update your javascript code to include REST calls to get the required data.
 
     ```javascript
-    $.get( "domodata/v1/Sales", function( data ) {
+    $.get( "domodata/v1/sales", function( data ) {
       $( ".result" ).html($.parseJSON(data));
     }
     ```
