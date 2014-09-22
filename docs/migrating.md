@@ -74,5 +74,5 @@ This is the main entry point of the domoapp. Here you include any other assets (
       var totalAmount = 0;
       for(var i = 0; i < json.length; i++)
         totalAmount += json[i].amount;
-    }
+    });
     ```
