@@ -76,3 +76,5 @@ This is the main entry point of the domoapp. Here you include any other assets (
         totalAmount += json[i].amount;
     });
     ```
+
+8. Remove any calls to $badge in the previous code as they are no longer necessary.
