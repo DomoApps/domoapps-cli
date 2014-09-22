@@ -37,7 +37,7 @@ This is the main entry point of the domoapp. Here you include any other assets (
       "version": "0.0.1"
       "mapping": [
       {
-        "name": "sales",
+        "name": "employees",
         "id": "<datasource id here>",
         "fields": []
       },
@@ -67,3 +67,11 @@ This is the main entry point of the domoapp. Here you include any other assets (
     ```
 
 If the `fields` are not specified for a Datapoint, then the entire DataSource will be used. If field(s) are specified, then the `name` is how the field will be referred to in your code, and the `id` should match the field name in the actual DataSource.
+
+7. Update your javascript code to include REST calls to get the required data.
+
+    ```javascript
+    $.get( "domodata/v1/Sales", function( data ) {
+      $( ".result" ).html($.parseJSON(data));
+    }
+    ```
