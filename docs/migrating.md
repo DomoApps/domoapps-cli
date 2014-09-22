@@ -29,12 +29,12 @@ This is the main entry point of the domoapp. Here you include any other assets (
 
 5. Make sure you have the [domoapps CLI](../README.md) installed. Login using `domo login`, then make sure you're in the directory of your design and run `domo migrate`. It will prompt you for the customer and the card id you found in step 1. Running the migrate command publishes a new design and links the specified card to it, causing it to be rendered with the new domoapps platform.
 
-6. Create a Datapoint in your manifest.json file for each DataSource in your original app.
+6. Add a Datapoint in your manifest.json file for each DataSource you're using in your original app.
 
     ```json
     {
       "name": "mydesign",
-      "version": "0.0.1"
+      "version": "0.0.1",
       "mapping": [
       {
         "name": "employees",
