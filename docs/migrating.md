@@ -29,4 +29,41 @@ This is the main entry point of the domoapp. Here you include any other assets (
 
 5. Make sure you have the [domoapps CLI](../README.md) installed. Login using `domo login`, then make sure you're in the directory of your design and run `domo migrate`. It will prompt you for the customer and the card id you found in step 1. Running the migrate command publishes a new design and links the specified card to it, causing it to be rendered with the new domoapps platform.
 
-6. Update your JavaScript to get data.
+6. Create a Datapoint in your manifest.json file for each DataSource in your original app.
+
+    ```json
+    {
+      "name": "mydesign",
+      "version": "0.0.1"
+      "mapping": [
+      {
+        "name": "sales",
+        "id": "<datasource id here>",
+        "fields": []
+      },
+      {
+        "name": "sales",
+        "id": "<datasource id here>",
+        "fields": [
+        {
+          "name": "date",
+          "id": "<datasource field name here>",
+          "type": "Date"
+        },
+        {
+          "name": "amount",
+          "id": "<datasource field name here>",
+          "type": "Number"
+        },
+        {
+          "name": "description",
+          "id": "<datasource field name here>",
+          "type": "String"
+        }
+        ]
+      }
+      ]
+    }
+    ```
+
+If the `fields` are not specified for a Datapoint, then the entire DataSource will be used. If field(s) are specified, then the `name` is how the field will be referred to in your code, and the `id` should match the field name in the actual DataSource.
