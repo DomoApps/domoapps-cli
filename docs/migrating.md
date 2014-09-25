@@ -91,7 +91,7 @@ Time
 
 ### Template Mapping
 
-Use this object as a template for your mapping object. Replace all bracketed items with your data.
+Use this object as a template for your mapping object.
 
 ```json
 "mapping": [
@@ -109,6 +109,16 @@ Use this object as a template for your mapping object. Replace all bracketed ite
 ]
 ```
 
+Replace all bracketed items with your data, and then add it into your `manifest.json` file next to the `name` and `version`.
+
+```json
+{
+  "name": "mydesign",
+  "version": "0.0.1",
+  [Add mapping HERE]
+}
+```
+
 ## Request the Data
 
 Now that you have wired up your data to aliases, you can request it in your app. Requests are made to this relative URL.
@@ -116,6 +126,22 @@ Now that you have wired up your data to aliases, you can request it in your app.
 ```
 data/v1/[Data Source Alias]
 ```
+
+In the previous platform, data came back as an array-of-arrays. Something like this.
+
+```json
+[ ["first", "last", "age"],
+  ["Joe", "Jacobs", "39"],
+  ["Henry", "Woolington", "23"] ]
+```
+
+In the new platform, data comes in this much more easily digestible format of array-of-objects.
+```json
+[ {"first": "Joe", "last": "Jacobs", "age":39},
+  {"first": "Henry", "last": "Woolington", "age":23} ]
+```
+
+This allows you to access the specific field of an object directly, as appears in the XHR and jQuery examples below. In addition, data is type sensitive, so numeric data is unquoted in the array-of-objects and needs no conversion from String to Int or Float.
 
 ### XHR Example
 
