@@ -4,15 +4,14 @@
 1. Make sure you have the latest stable [Node](http://nodejs.org/) installed
 2. Install the domo CLI via npm: `npm install -g git+ssh://git@git.empdev.domo.com:Development/domoapps-cli.git`
 
-## Publishing a domoapp
-1. Login using `domo login`.
-2. Create an index.html file and a manifest.json file.
-2. run `domo publish`.
+## Publishing a domoapp design
+1. Open your terminal and login using `domo login`.
+2. Navigate to the directory on your computer where you want to keep your design files.
+3. Create an index.html file (see [example](./docs/examples/mydesign/index.html)) and a manifest.json file (see [example](./docs/examples/mydesign/manifest.json)).
+4. run `domo publish`.
+
+## Creating new domoapps
+This feature is not yet enabled.
 
 ## Migrating existing (mason) apps
 Follow the [migration steps](./docs/migrating.md)
-
-## Running the tests
-1. Make sure jasmine-node is installed: `npm install -g jasmine-node`
-2. Make sure domovm is running
-3. run `jasmine-node spec`
