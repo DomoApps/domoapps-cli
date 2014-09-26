@@ -62,7 +62,7 @@ This contains the mapping, wiring, or aliases that are used to connect data into
 
 ### id
 
-This is a unique identifier for your design.
+This is a unique identifier for your design. It is added to the manifest automatically by the command line tool.
 
 ## Data Source Mapping
 
