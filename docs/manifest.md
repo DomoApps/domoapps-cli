@@ -44,11 +44,11 @@ The manifest has the following base properties.
 * id
 * draft
 
-### Name
+### name
 
 This is the name of the design as it will appear in Domo. This is the name that users should look for when creating a card that is based off your design.
 
-### Version
+### version
 
 This is the current version of your design, and should follow [semantic versioning](http://semver.org/) guidelines.
 
@@ -58,7 +58,7 @@ This is the current version of your design, and should follow [semantic versioni
 >
 > PATCH version when you make backwards-compatible bug fixes.
 
-### Mapping
+### mapping
 
 This contains the mapping, wiring, or aliases that are used to connect data into your app. It is discussed in more detail [below](#Data-Source-Mapping)
 
