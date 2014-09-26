@@ -15,3 +15,7 @@ This feature is not yet enabled.
 
 ## Migrating existing (mason) apps
 Follow the [migration steps](./docs/migrating.md)
+
+## Documentation
+
+Complete documentation is available [here](./docs/documentation-index.md)

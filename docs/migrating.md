@@ -60,18 +60,15 @@ Here is an example of a mapping object.
     "fields": [
       {
         "alias": "amount",
-        "columnName": "Sales Amount",
-        "type": "Decimal"
+        "columnName": "Sales Amount"
       },
       {
         "alias": "name",
-        "columnName": "Client Name",
-        "type": "String"
+        "columnName": "Client Name"
       },
       {
         "alias": "startDate",
-        "columnName": "Contract Initiation Date",
-        "type": "Date"
+        "columnName": "Contract Initiation Date"
       }
     ]
   }
