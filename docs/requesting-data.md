@@ -128,7 +128,7 @@ For example, if the mapping object for my sales data source looks like this, tha
 
 If the design needs to retain access to multiple fields, but sometimes makes requests for a specific subset of those fields, then the query parameter `filter` can be used in the HTTP GET request.
 
-For example, given the mapping from the [Mapping Filters](#Mapping Filters) section above, we could request just the `amount` and `date` information by making a request to this URL.
+For example, given the mapping from the [Mapping Filters](#Mapping-Filters) section above, we could request just the `amount` and `date` information by making a request to this URL.
 
 ```javascript
 data/v1/sales?fields=amount,date
