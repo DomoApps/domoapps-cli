@@ -53,7 +53,9 @@ This is the name of the design as it will appear in Domo. This is the name that 
 This is the current version of your design, and should follow [semantic versioning](http://semver.org/) guidelines.
 
 > MAJOR version when you make incompatible API changes,
+>
 > MINOR version when you add functionality in a backwards-compatible manner, and
+>
 > PATCH version when you make backwards-compatible bug fixes.
 
 ### Mapping
