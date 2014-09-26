@@ -2,6 +2,8 @@
 
 This guide explains how to migrate an existing mason app to the new Domo Apps platform. Much of the process has been automated using the `domo migrate` command of domoapps-cli, but some manual steps are still necessary.
 
+For more detailed information, see the main [documentation](documentation-index.md).
+
 ## Prep New Design
 
 2. Open your terminal and navigate to a folder where you would like to store your domoapp design.
