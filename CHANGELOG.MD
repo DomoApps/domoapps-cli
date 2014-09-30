@@ -1,3 +1,9 @@
+# 1.1.0
+Better documentation
+Migration guide
+Additional Tests
+domo revert command
+
 # 1.0.0
 Rewrite with promises for simpler async orchestration
 Unit test suite
