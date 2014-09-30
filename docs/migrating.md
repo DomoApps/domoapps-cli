@@ -166,3 +166,7 @@ domo publish --watch
 Apps on the old platform will have some obsolete code that needs removing.
 
 Apps can now be developed using real data from live data sources as described above, so default data is no longer necessary. Remove any references to `$badge.data` or `$data`, as they will no longer function.
+
+## Reverting
+If for any reason you need to revert your app back to a mason app you can by running `domo revert` and providing the customer name and app id. 
+You may need this if you've migrated a card that relies on features the domoapps platform doesn't yet support.
