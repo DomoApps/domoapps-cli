@@ -129,6 +129,7 @@ program
 
 program
   .command('migrate')
+  .description('migrate a mason app to a domoapp')
   .action(function(){
     var manifest = require(path.resolve('manifest.json'));
     var mostRecent = getMostRecentLogin() || {};
@@ -159,6 +160,46 @@ program
         .catch(evoke(fail, 'Migration unsuccessful'))
     });
   });
+
+program
+  .command('revert')
+  .description('revert a migration, turning a domoapp back into a mason app')
+  .action(function(){
+    var mostRecent = getMostRecentLogin() || {};
+    
+    inquirer.prompt([
+      {
+        type: "input",
+        message: "domo customer",
+        name: "customer",
+        default: mostRecent.customer
+      },
+      {
+        type: "input",
+        message: "app id",
+        name: "id"
+      }
+    ], function(answers) {
+      var login = getLogin(answers.customer);
+      if (!login){
+        fail('Please login to ' + answers.customer + ' first using "domo login"');
+        return;
+      }
+      
+      var domo = new Domo(answers.customer, login.sid);
+      domo.getKpi(answers.id)
+          .then(function(kpi){
+            kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'mason';
+            return kpi;
+          })
+          .then(function(kpi){
+            return domo.updateKpi(kpi);
+          })
+          .then(evoke(ok, 'Card reverted back to a mason app'))
+          .catch(evoke(fail, 'Error attempting to revert card'))
+    });
+
+  })
 
 program.parse(process.argv);
 
