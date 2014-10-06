@@ -158,3 +158,7 @@ The available comparison operators are as follows. When multiple keywords can be
 ## Comparison Values
 
 The item on the right hand side of the operator is called a value. Values can be single quoted or not, and can contain any characters except `&`, `'`, and `,`.
+
+## Date Filtering
+
+The `<`, `<=`, `>`, `>=` and equivalent operators function as date filters when used on a column that is a Date. This way, queries can be constructed that return data based on date.
