@@ -1,3 +1,6 @@
+# 1.2.0
+Better error handling and messages
+
 # 1.1.0
 Better documentation
 Migration guide
