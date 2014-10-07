@@ -3,7 +3,6 @@
  * this executable will take care of capturing user input,
  * passing data on to the domo lib.
  *
- * TODO: make fail messages more helpful
  */
 
 var Domo = require('../lib/domo');
@@ -52,27 +51,33 @@ var logo =
 program
   .version('1.1.0')
   .option('-w, --watch', 'publish domoapp design every time a file changes')
+  .option('-v, --verbose', 'log more details including XHR responses, useful for troubleshooting')
 
 program
   .command('publish')
   .description('publish a new or existing domoapp design')
   .action(function(){
-    var manifest = require(path.resolve('manifest.json'));
+    try{
+      var manifest = require(path.resolve('manifest.json'));
+    }
+    catch (e){
+      fail('Cannot publish from this directory', {message: 'Please navigate to a directory containing a domoapp design manifest.json file'});
+      return;
+    }
     var login = getMostRecentLogin();
 
     if (!login){
-      fail('Please login using "domo login"');
+      fail('Not authenticated', {message: 'Please login using "domo login"'});
       return;
     }
     var domo = new Domo(login.customer, login.sid);
 
     if (!manifest.id){
       domo.createDesign(manifest)
-          .then(verifyAccess)
           .then(function(design){
             return persistDesignId(design, manifest)
           })
-          .then(evoke(ok, 'New design created'))
+          .tap(evoke(ok, 'New design created'))
           .catch(evoke(fail, 'Error creating new design'))
           .then(domo.uploadAllAssets.bind(domo))
           .then(logUploadSuccess)
@@ -123,7 +128,6 @@ program
           return login;
         })
         .then(persistLogin(answers.customer, answers.email))
-        .catch(verifyAccess)
     });
   });
 
@@ -156,7 +160,7 @@ program
       var domo = new Domo(answers.customer, login.sid);
 
       migrateApp(domo, answers.id, manifest)
-        .then(evoke(ok, 'Migration successful'))
+        .tap(evoke(ok, 'Migration successful'))
         .catch(evoke(fail, 'Migration unsuccessful'))
     });
   });
@@ -195,7 +199,7 @@ program
           .then(function(kpi){
             return domo.updateKpi(kpi);
           })
-          .then(evoke(ok, 'Card reverted back to a mason app'))
+          .tap(evoke(ok, 'Card reverted back to a mason app'))
           .catch(evoke(fail, 'Error attempting to revert card'))
     });
 
@@ -213,8 +217,7 @@ program.parse(process.argv);
  */
 function migrateApp(domo, appId, manifest){
   return Promise.all([
-    domo.getKpi(appId)
-        .then(verifyAccess),
+    domo.getKpi(appId),
 
         // .catch(evoke(fail, 'No app found with id ' + appId)),
     // publish new design (and persist id) if not already published
@@ -237,12 +240,12 @@ function migrateApp(domo, appId, manifest){
           kpi.domoapp.id = domoapp.id;
 
           return domo.updateKpi(kpi)
-              .then(evoke(ok, 'Card type updated and linked'))
+              .tap(evoke(ok, 'Card type updated and linked'))
               .catch(evoke(fail, 'Error updating card'))
               .then(function(){
                 return domo.uploadAllAssets(manifest);
               })
-              .then(evoke(ok, 'Assets uploaded'))
+              .tap(evoke(ok, 'Assets uploaded'))
               .catch(evoke(fail, 'Error uploading assets'))
         })
   })
@@ -257,7 +260,7 @@ function watch(domo, login, manifest){
 
       var relFilePath = path.relative(process.cwd(), filepath);
       domo.uploadAsset(manifest.id, manifest.version, relFilePath)
-          .then(evoke(ok, 'Uploaded: ' + relFilePath))
+          .tap(evoke(ok, 'Uploaded: ' + relFilePath))
           .catch(evoke(fail, 'Error uploading: ' + relFilePath))
     });
   });
@@ -273,8 +276,8 @@ function logUploadSuccess(files){
  * curry a function
  */
 function evoke(fn, arg){
-  return function(){
-    fn(arg);
+  return function(result){
+    fn(arg, result);
   }
 }
 
@@ -288,8 +291,21 @@ function ok(msg){
 /**
  * log an error
  */
-function fail(msg){
+function fail(msg, result){
   console.log(chalk.red('X'), msg);
+  if(result && result.message){
+    console.log(chalk.gray(result.message));
+  }
+
+  if (program.verbose){
+    console.log(chalk.red("statusCode:"), result.statusCode);
+    if(result.details){
+      console.log(chalk.red("details:"), result.details); 
+    }
+    console.log(chalk.red("method:"), result.method); 
+    console.log(chalk.red("path:"), result.path); 
+    console.log(chalk.red("response:"), result.res);
+  }
 }
 
 function getMostRecentLogin(){
@@ -325,11 +341,4 @@ function persistDesignId(design, manifest){
 
 function getLogin(customer){
   return fs.readJsonSync(path.resolve(home + '/login/' + customer + '.json'), {throws: false});
-}
-
-function verifyAccess(res){
-  if (res.statusCode === 403 || res.statusCode === 401){
-    fail('Authentication failed, please try logging in again.');
-  }
-  return res;
 }
