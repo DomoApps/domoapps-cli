@@ -152,6 +152,7 @@ The available comparison operators are as follows. When multiple keywords can be
 > | greaterthan - Greater than
 >= |  greaterthanorequals - Greater than or equals
 = | == | equals - Equals
+!= | !== | notequals - Equals
 ~ | contains - Contains
 ```
 
