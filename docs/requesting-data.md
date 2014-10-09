@@ -154,11 +154,21 @@ The available comparison operators are as follows. When multiple keywords can be
 = | == | equals - Equals
 != | !== | notequals - Equals
 ~ | contains - Contains
+in - In
+!in | notin - Not In
 ```
 
 ## Comparison Values
 
 The item on the right hand side of the operator is called a value. Values can be single quoted or not, and can contain any characters except `&`, `'`, and `,`.
+
+### Value Lists
+
+Comparison operators `in` and `!in` can operate on a list of values. Value lists can be expressed using JSON array notation like so:
+
+```
+category in [good,happy,sad]
+```
 
 ## Date Filtering
 
