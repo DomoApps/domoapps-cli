@@ -147,15 +147,16 @@ data/v1/sales?filter=amount > 1000, name contains 'Foobar'
 The available comparison operators are as follows. When multiple keywords can be used to specify an operator, they are separated by the pipe (`|`) character.
 
 ```
-< | lessthan - Less than
-<= | lessthanorequals - Less than or equals
-> | greaterthan - Greater than
->= |  greaterthanorequals - Greater than or equals
-= | == | equals - Equals
-!= | !== | notequals - Equals
+< - Less than
+<= - Less than or equals
+> - Greater than
+>= - Greater than or equals
+= | == - Equals
+!= | != - Equals
 ~ | contains - Contains
+!~ | !contains - Contains
 in - In
-!in | notin - Not In
+!in - Not In
 ```
 
 ## Comparison Values
