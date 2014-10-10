@@ -93,6 +93,24 @@ program
   });
 
 program
+  .command('init')
+  .description('initialize a new domoapp design')
+  .action(function(){
+    inquirer.prompt([
+      {
+        type: 'input',
+        message: 'design name',
+        name: 'name'
+      }
+      ], function(answers){
+        fs.writeJsonSync('manifest.json', { "name": answers.name, version: "0.0.1" });
+        fs.writeFileSync('index.html', "<html>\n  <body>\n    <h1>"+answers.name+"</h1>\n  </body>\n</html>");
+        ok('New design initialized. Run domo publish when you\'re ready.');
+      });
+  });
+
+
+program
   .command('login')
   .description('login to domo')
   .action(function(){
