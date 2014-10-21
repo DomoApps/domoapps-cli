@@ -1,0 +1,13 @@
+{
+  "name": "<%= name %>",
+  "version": "0.0.1",
+  "mapping": [
+    <% datasources.forEach(function(datasource, index){ %>{
+      "dataSourceId": "<%= datasource.id %>",
+      "alias": "<%= datasource.alias %>",
+      "fields": []
+    }<% if (index !== datasources.length -1) {%>,
+    <%}
+    });%>
+  ]
+}

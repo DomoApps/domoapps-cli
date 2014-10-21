@@ -15,6 +15,7 @@ var fs = require('fs-extra');
 var glob = require("glob");
 var home = Domo.getHomeDir();
 var Promise = require('bluebird');
+var _ = require('lodash');
 
 var logo =
 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"+
@@ -96,18 +97,64 @@ program
   .command('init')
   .description('initialize a new domoapp design')
   .action(function(){
-    inquirer.prompt([
-      {
+    inquirer.prompt([{
         type: 'input',
         message: 'design name',
         name: 'name'
-      }
-      ], function(answers){
-        fs.writeJsonSync('manifest.json', { "name": answers.name, version: "0.0.1" });
-        fs.writeFileSync('index.html', "<html>\n  <body>\n    <h1>"+answers.name+"</h1>\n  </body>\n</html>");
-        ok('New design initialized. Run domo publish when you\'re ready.');
+      }], function(answers){
+        answers.datasources = [];
+        askDatasource(answers, function(allAnswers){
+          // populate and write out the template files
+          var files = ['manifest.json', 'index.html', 'domo.js', 'app.js', 'app.css'];
+          files.forEach(function(file){
+            var contents = _.template(fs.readFileSync(path.resolve(__dirname + '/../templates/' + file )))(allAnswers);
+            fs.writeFileSync(process.cwd() + '/' + file, contents);
+          });
+          
+          ok('New design initialized. Run domo publish when you\'re ready.');
+        });
       });
   });
+  
+function addDatasource(currentAnswers, callback){
+    inquirer.prompt([
+      {
+        type: 'input',
+        message: 'datasource id',
+        name: 'id'
+      },
+      {
+        type: 'input',
+        message: 'datasource alias',
+        name: 'alias'
+      }
+    ], function(datasource){
+      currentAnswers.datasources.push(datasource);
+      callback(currentAnswers);
+    });
+}
+
+// recursively ask user to enter all their datasources
+function askDatasource(currentAnswers, callback){
+  inquirer.prompt([
+    {
+      type: 'confirm',
+      message: currentAnswers.datasources.length > 0 ? 'add another datasource?' : 'would you like to connect to any datasources?',
+      name: 'askDatasource'
+    }
+  ], function(answers){
+    if (answers.askDatasource){
+      addDatasource(_.merge(currentAnswers, answers), function(combinedAnswers){
+        // ask for more datasources
+        askDatasource(combinedAnswers, callback);
+      });
+    }
+    else {
+      // all done with datasources, continue on.
+      callback(_.merge(currentAnswers, answers));
+    }
+  })
+}
 
 
 program

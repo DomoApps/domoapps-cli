@@ -7,8 +7,8 @@
 ## Publishing a domoapp design
 1. Open your terminal and login using `domo login`.
 2. Navigate to the directory on your computer where you want to keep your design files.
-3. Create an index.html file (see [example](./docs/examples/mydesign/index.html)) and a manifest.json file (see [example](./docs/examples/mydesign/manifest.json)).
-4. run `domo publish`.
+3. Initialize a new design by running `domo init` and providing a name for your design. This generates a basic index.html file (see [example](./docs/examples/mydesign/index.html)) and a manifest.json file (see [example](./docs/examples/mydesign/manifest.json)).
+4. Edit your design and run `domo publish` when you're ready.
 
 ## Creating new domoapps
 This feature is not yet enabled.

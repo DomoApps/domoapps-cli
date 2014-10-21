@@ -16,6 +16,7 @@
     "fs-extra": "~0.11.1",
     "request": "~2.42.0",
     "bluebird": "~2.3.2",
-    "form-data": "~0.1.4"
+    "form-data": "~0.1.4",
+    "lodash": "~2.4.1"
   }
 }
