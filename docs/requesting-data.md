@@ -157,6 +157,7 @@ The available comparison operators are as follows. When multiple keywords can be
 !~ | !contains - Contains
 in - In
 !in - Not In
+todate - Period to date
 ```
 
 ## Comparison Values
@@ -173,4 +174,24 @@ category in [good,happy,sad]
 
 ## Date Filtering
 
+### Fixed Range
+
 The `<`, `<=`, `>`, `>=` and equivalent operators function as date filters when used on a column that is a Date. This way, queries can be constructed that return data based on date.
+
+### Period To Date
+
+Period-to-date filtering is done using the `todate` operator. For example, this is how you would get year to date data when the date column is named `salesdate`
+
+```
+salesdate todate year
+```
+
+The time periods that are supported in period-to-date requests are:
+
+```
+day
+week
+month
+quarter
+year
+```
