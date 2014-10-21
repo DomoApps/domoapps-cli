@@ -1,3 +1,7 @@
+# 1.3.0
+Docs improvements
+domo init command
+
 # 1.2.0
 Better error handling and messages
 
