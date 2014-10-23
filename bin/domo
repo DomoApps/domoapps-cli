@@ -288,7 +288,8 @@ function migrateApp(domo, appId, manifest){
     // publish new design (and persist id) if not already published
     domo.createDesign(manifest)
       .tap(evoke(ok, 'Design published'))
-      .then(function(design){
+      .then(function(designResult){
+        var design = designResult[0];
         return persistDesignId(design, manifest)
       })
       .catch(function(){
