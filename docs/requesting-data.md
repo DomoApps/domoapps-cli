@@ -195,3 +195,22 @@ month
 quarter
 year
 ```
+
+### Last Year, Month, Etc
+
+Data for last year, last month, etc can be requested using the `last` operator. For example, this is how you would get data from last year when the date column is named `salesdate`
+
+```
+salesdate last year
+```
+
+The time periods that are supported in 'last' requests are:
+
+```
+day
+week
+month
+quarter
+year
+```
+
