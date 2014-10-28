@@ -214,3 +214,23 @@ quarter
 year
 ```
 
+### Rolling Period
+
+A rolling period can be requested by providing a period count to the `last` operator. For example, this is how you would get all data from the last 6 months when your date column is named `salesdate`
+
+```
+salesdate last 6 months
+```
+
+Note that the data returned from the above request will not total 6 months worth of data. If this query was run on June 12th, then all data from January 1st through June 3rd, specifically 5 months and 12 days of data, would be returned.
+
+The time periods that are supported in 'last' requests are:
+
+```
+hours
+weeks
+months
+quarters
+years
+```
+
