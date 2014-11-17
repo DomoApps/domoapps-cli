@@ -50,7 +50,7 @@ var logo =
 "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
 
 program
-  .version('1.3.0')
+  .version('1.3.1')
   .option('-w, --watch', 'publish domoapp design every time a file changes')
   .option('-v, --verbose', 'log more details including XHR responses, useful for troubleshooting')
 
