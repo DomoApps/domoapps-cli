@@ -75,8 +75,11 @@ program
 
     if (!manifest.id){
       domo.createDesign(manifest)
-          .then(function(design){
-            return persistDesignId(design, manifest)
+          .then(function(designResult){
+            var design = designResult[0];
+            // add the version returned when design published
+            design.version = designResult[1].version;
+            return persistDesignId(design, manifest);
           })
           .tap(evoke(ok, 'New design created'))
           .catch(evoke(fail, 'Error creating new design'))
