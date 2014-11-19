@@ -2,7 +2,7 @@
 
 ## Installing
 1. Make sure you have the latest stable [Node](http://nodejs.org/) installed
-2. Install the domo CLI via npm: `npm install -g git+ssh://git@git.empdev.domo.com:Development/domoapps-cli.git`
+2. Install/update the domo CLI via npm: `npm install -g git+ssh://git@git.empdev.domo.com:Development/domoapps-cli.git`
 
 ## Publishing a domoapp design
 1. Open your terminal and login using `domo login`.
