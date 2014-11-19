@@ -322,11 +322,27 @@ function migrateApp(domo, appId, manifest){
 };
 
 function watch(domo, login, manifest){
+  var currentVersion = manifest.version;
+  var currentDesignId = manifest.id;
 
   gaze('**/*', function(err, watcher) {
     this.on('all', function(event, filepath) {
-      // TODO: handle deleting of assets
-
+      // if manifest version or id changed, upload all assets
+      if (filepath.indexOf('manifest.json') !== -1){
+        var newManifest = fs.readJsonSync(filepath);
+        if (newManifest.version !== currentVersion || newManifest.id !== currentDesignId){
+          domo.uploadAllAssets(manifest)
+              .then(function(a){
+                currentVersion = newManifest.version;
+                currentDesignId = newManifest.id;
+              })
+              .tap(evoke(ok, 'Published new version ' + newManifest.version))
+              .catch(evoke(fail, 'Error uploading assets'))
+          return;
+        }
+      }
+      
+      // upload just the individual asset
       var relFilePath = path.relative(process.cwd(), filepath);
       domo.uploadAsset(manifest.id, manifest.version, relFilePath)
           .tap(evoke(ok, 'Uploaded: ' + relFilePath))
