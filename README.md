@@ -18,4 +18,4 @@ Follow the [migration steps](./docs/migrating.md)
 
 ## Documentation
 
-Complete documentation is available [here](./docs/documentation-index.md)
+Complete documentation is available [here](https://git.empdev.domo.com/Development/domoapps-cli/wiki/Index)
