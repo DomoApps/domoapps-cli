@@ -14,7 +14,7 @@
 This feature is not yet enabled.
 
 ## Migrating existing (mason) apps
-Follow the [migration steps](./docs/migrating.md)
+Follow the [migration steps](https://git.empdev.domo.com/Development/domoapps-cli/wiki/Migration)
 
 ## Documentation
 
