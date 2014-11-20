@@ -9,7 +9,6 @@ Here is an example demonstrating a complete manifest file.
 ```json
 {
 "name": "My Design",
-"version": "0.0.1",
 "mapping": [
   {
     "alias": "sales",
@@ -30,6 +29,11 @@ Here is an example demonstrating a complete manifest file.
     ]
   }
 ],
+"version": "0.0.1",
+"size": {
+  "width": 4,
+  "height": 3
+},
 "id": "675ab7fb-3d6d-4e21-aaa6-a5269adeec46"
 }
 ```
@@ -39,14 +43,18 @@ Here is an example demonstrating a complete manifest file.
 The manifest has the following base properties.
 
 * name
-* version
 * mapping
+* version
+* size
 * id
-* draft
 
 ### name
 
 This is the name of the design as it will appear in Domo. This is the name that users should look for when creating a card that is based off your design.
+
+### mapping
+
+This contains the mapping, wiring, or aliases that are used to connect data into your app. It is discussed in more detail [below](#Data-Source-Mapping)
 
 ### version
 
@@ -58,9 +66,16 @@ This is the current version of your design, and should follow [semantic versioni
 >
 > PATCH version when you make backwards-compatible bug fixes.
 
-### mapping
+### size
 
-This contains the mapping, wiring, or aliases that are used to connect data into your app. It is discussed in more detail [below](#Data-Source-Mapping)
+The size of card that should be used in Domo to display the app. If unspecified, the card will default to 1x1.
+
+```json
+"size": {
+  "width": 4,
+  "height": 3
+}
+```
 
 ### id
 
