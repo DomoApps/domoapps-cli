@@ -58,21 +58,17 @@ program
   .command('publish')
   .description('publish a new or existing domoapp design')
   .action(function(){
-    try{
-      var manifest = require(path.resolve('manifest.json'));
-    }
-    catch (e){
-      fail('Cannot publish from this directory', {message: 'Please navigate to a directory containing a domoapp design manifest.json file'});
-      return;
-    }
+    var manifest = getManifest();
+    if (!manifest) return;
+    
     var login = getMostRecentLogin();
-
     if (!login){
       fail('Not authenticated', {message: 'Please login using "domo login"'});
       return;
     }
+    
     var domo = new Domo(login.customer, login.sid);
-
+    
     if (!manifest.id){
       domo.createDesign(manifest)
           .then(function(designResult){
@@ -203,7 +199,9 @@ program
   .command('migrate')
   .description('migrate a mason app to a domoapp')
   .action(function(){
-    var manifest = require(path.resolve('manifest.json'));
+    var manifest = getManifest();
+    if (!manifest) return;
+    
     var mostRecent = getMostRecentLogin() || {};
 
     inquirer.prompt([
@@ -329,7 +327,9 @@ function watch(domo, login, manifest){
     this.on('all', function(event, filepath) {
       // if manifest version or id changed, upload all assets
       if (filepath.indexOf('manifest.json') !== -1){
-        var newManifest = fs.readJsonSync(filepath);
+        var newManifest = getManifest();
+        if (!newManifest) return;
+        
         if (newManifest.version !== currentVersion || newManifest.id !== currentDesignId){
           domo.uploadAllAssets(manifest)
               .then(function(a){
@@ -426,4 +426,23 @@ function persistDesignId(design, manifest){
 
 function getLogin(customer){
   return fs.readJsonSync(path.resolve(home + '/login/' + customer + '.json'), {throws: false});
+}
+
+/**
+* Get the local manifest.json file, ensuring it's valid
+*/
+function getManifest(){
+  try{
+    var manifest = fs.readJsonSync(path.resolve('manifest.json'));
+  }
+  catch (e){
+    if (e.type === "unexpected_token") {
+      fail('Your manifest.json file is not valid JSON', {message: e.message});  
+    }
+    else {
+      fail('No manifest.json file in this directory', {message: 'Please publish from a directory containing a domoapp design manifest.json file'});
+    }
+    return;
+  }
+  return manifest;  
 }
