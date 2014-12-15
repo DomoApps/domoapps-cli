@@ -1,6 +1,10 @@
 {
   "name": "<%= name %>",
   "version": "0.0.1",
+  "size": {
+    "width": 1,
+    "height": 1
+  },
   "mapping": [
     <% datasources.forEach(function(datasource, index){ %>{
       "dataSourceId": "<%= datasource.id %>",
