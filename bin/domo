@@ -110,7 +110,7 @@ program
             fs.writeFileSync(process.cwd() + '/' + file, contents);
           });
           
-          ok('New design initialized. Run domo publish when you\'re ready.');
+          ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a DomoApp card to any page in Domo.");
         });
       });
   });
@@ -370,8 +370,11 @@ function evoke(fn, arg){
 /**
  * log a success
  */
-function ok(msg){
+function ok(msg, submsg){
   console.log(chalk.green('\u2713'), msg);
+  if(submsg){
+    console.log(chalk.gray(submsg));
+  }
 }
 
 /**
