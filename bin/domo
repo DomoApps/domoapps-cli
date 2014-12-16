@@ -192,6 +192,7 @@ program
           return login;
         })
         .then(persistLogin(answers.customer, answers.email))
+        .catch(evoke(fail, 'Login unsuccessful'))
     });
   });
 
