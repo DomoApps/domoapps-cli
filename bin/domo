@@ -16,6 +16,7 @@ var glob = require("glob");
 var home = Domo.getHomeDir();
 var Promise = require('bluebird');
 var _ = require('lodash');
+var semver = require('semver');
 
 var logo =
 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"+
@@ -438,7 +439,7 @@ function getLogin(customer){
 }
 
 /**
-* Get the local manifest.json file, ensuring it's valid
+* Get the local manifest.json file, ensuring it's valid.
 */
 function getManifest(){
   try{
@@ -453,5 +454,32 @@ function getManifest(){
     }
     return;
   }
-  return manifest;  
+
+  return validateManifest(manifest);
+}
+
+/**
+* Return manifest if valid otherwise null.
+*/
+function validateManifest(manifest){
+  var isValid = true;
+  // validate manifest file for required fields
+  ['name', 'version'].forEach(function(field){
+    if (!manifest[field]){
+      missingField(field);
+      isValid = false;
+    }
+  });
+  
+  // validate semver
+  if (!semver.valid(manifest.version)){
+    fail('Invalid version', 'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/');
+    isValid = false;
+  }
+  
+  function missingField(field){
+    fail('Missing required field: ' + field, 'Please add a `'+ field +'` property to your manifest.json file');
+  }
+  
+  return isValid ? manifest : null;
 }
