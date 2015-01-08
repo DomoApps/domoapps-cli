@@ -1,3 +1,9 @@
+# 1.5.0
+Separate domoapps-client into own repo
+
+# 1.4.0
+Improved error handling & messages
+
 # 1.3.0
 Docs improvements
 domo init command
