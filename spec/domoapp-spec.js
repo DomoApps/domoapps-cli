@@ -2,7 +2,8 @@ describe("createApp", function(){
 
   it("should create a new domoapp", function(done){
     domo.createDesign(manifest)
-        .then(function(design){
+        .then(function(designResult){
+          var design = designResult[0];
           return [design, domo.createApp(design.id)
                      .catch(checkResponse)]
         })

@@ -1,6 +1,6 @@
 var fs = require('fs-extra');
 var Promise = require("bluebird");
-var Domo = require('../lib/domo');
+var Domo = require('domoapps-client');
 var home = Domo.getHomeDir();
 var glob = require('glob');
 

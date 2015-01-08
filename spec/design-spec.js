@@ -8,7 +8,8 @@ describe("createDesign", function(){
         .finally(done)
   });
 
-  function validateDesign(design){
+  function validateDesign(designResult){
+    var design = designResult[0];
     return domo.getDesign(design.id)
       .then(function(res){
         expect(res.id).toBe(design.id);

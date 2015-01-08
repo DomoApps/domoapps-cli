@@ -4,7 +4,8 @@ describe("uploadAsset", function(){
 
   it("should upload a design asset to S3", function(done){
     domo.createDesign(manifest)
-      .then(function(design){
+      .then(function(designResult){
+        var design = designResult[0];
         designId = design.id;
 
         var index = fs.readFileSync('index.html').toString();
