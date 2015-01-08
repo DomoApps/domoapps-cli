@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * this executable will take care of capturing user input,
- * passing data on to the domo lib.
+ * This executable will take care of capturing user input,
+ * passing data on to the domo lib and informing user of results.
  *
  */
 
-var Domo = require('../lib/domo');
+var Domo = require('domoapps-client');
 var program = require('commander');
 var gaze = require('gaze');
 var path = require('path');
