@@ -9,8 +9,12 @@ npm install -g git+ssh://git@git.empdev.domo.com:Development/domoapps-cli.git
 
 ## Publishing a domoapp design
 1. Open your terminal and login using `domo login`.
-2. Navigate to the directory on your computer where you want to keep your design files.
-3. Initialize a new design by running `domo init` and providing a name for your design. This generates a basic index.html file (see [example](./examples/mydesign/index.html)), a manifest.json file (see [example](./examples/mydesign/manifest.json)), and basic CSS and JavaScript files to get you started.
+2. Navigate to the directory on your computer where you would like to keep your design files.
+3. Initialize a new design by running `domo init` and providing a name for your design. This generates the following files to help you get started.
+  * A basic index.html file (see [example](./examples/mydesign/index.html))
+  * A manifest.json file (see [example](./examples/mydesign/manifest.json))
+  * Basic CSS and JavaScript files
+  * The [domo.js library](./templates/domo.js)
 4. Edit your design and run `domo publish` when you're ready.
 
 ## Adding a DomoApp to a page
