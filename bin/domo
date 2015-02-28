@@ -63,15 +63,15 @@ program
   .action(function(){
     var manifest = getManifest();
     if (!manifest) return;
-    
+
     var login = getMostRecentLogin();
     if (!login){
       fail('Not authenticated', 'Please login using "domo login"');
       return;
     }
-    
+
     var domo = new Domo(login.customer, login.sid);
-    
+
     if (!manifest.id){
       domo.createDesign(manifest)
           .then(function(designResult){
@@ -112,12 +112,61 @@ program
             var contents = _.template(fs.readFileSync(path.resolve(__dirname + '/../templates/' + file )))(allAnswers);
             fs.writeFileSync(process.cwd() + '/' + file, contents);
           });
-          
+
           ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a DomoApp card to any page in Domo.");
         });
       });
   });
-  
+
+program
+  .command('owner <action> [users...]')
+  .description('Manage design owners')
+  .action(function(action, users) {
+
+    var manifest = readManifest();
+    if (!manifest || !manifest.id) return fail('No manifest found, need to supply design id')
+
+    var login = getMostRecentLogin();
+    if (!login){
+      fail('Not authenticated', 'Please login using "domo login"');
+      return;
+    }
+
+    var domo = new Domo(login.customer, login.sid);
+
+    switch(action) {
+      case 'add':
+        if (users) {
+          domo.addOwners(manifest.id, users)
+            .tap(evoke(ok, 'Owners added ' + users))
+            .catch(evoke(fail, 'Error adding owners'))
+        }
+        break;
+      case 'rm':
+        if (users) {
+          domo.removeOwners(manifest.id, users)
+            .tap(evoke(ok, 'Owners removed ' + users))
+            .catch(evoke(fail, 'Error removing owners'))
+        }
+        break;
+      case 'ls':
+        // TODO: MBL - I can't get this do print the list of users the way I'd like.
+        // Needs more work
+        domo.getOwners(manifest.id)
+          // .tap(evoke(ok, 'Owners for design foo: '))
+          .tap(function listUsers(res) {
+            evoke(ok, 'Owners for design foo: ' + res);
+          })
+          .tap(function listUsers(res) {
+            console.log("Owners for design " + manifest.id);
+            res.forEach(console.log);
+          })
+          .catch(evoke(fail, 'Error retrieving owners'))
+        break;
+    }
+  });
+
+
 function addDatasource(currentAnswers, callback){
     inquirer.prompt([
       {
@@ -205,7 +254,7 @@ program
   .action(function(){
     var manifest = getManifest();
     if (!manifest) return;
-    
+
     var mostRecent = getMostRecentLogin() || {};
 
     inquirer.prompt([
@@ -226,7 +275,7 @@ program
         fail('Please login to ' + answers.customer + ' first using "domo login"');
         return;
       }
-      
+
       var domo = new Domo(answers.customer, login.sid);
 
       migrateApp(domo, answers.id, manifest)
@@ -240,7 +289,7 @@ program
   .description('revert a migration, turning a domoapp back into a mason app')
   .action(function(){
     var mostRecent = getMostRecentLogin() || {};
-    
+
     inquirer.prompt([
       {
         type: "input",
@@ -259,7 +308,7 @@ program
         fail('Please login to ' + answers.customer + ' first using "domo login"');
         return;
       }
-      
+
       var domo = new Domo(answers.customer, login.sid);
       domo.getKpi(answers.id)
           .then(function(kpi){
@@ -333,7 +382,7 @@ function watch(domo, login, manifest){
       if (filepath.indexOf('manifest.json') !== -1){
         var newManifest = getManifest();
         if (!newManifest) return;
-        
+
         if (newManifest.version !== currentVersion || newManifest.id !== currentDesignId){
           domo.uploadAllAssets(manifest)
               .then(function(a){
@@ -345,7 +394,7 @@ function watch(domo, login, manifest){
           return;
         }
       }
-      
+
       // upload just the individual asset
       var relFilePath = path.relative(process.cwd(), filepath);
       domo.uploadAsset(manifest.id, manifest.version, relFilePath)
@@ -385,11 +434,11 @@ function ok(msg, submessage){
  */
 function fail(msg, submessage, result){
   console.log(chalk.red('X'), msg);
-  
+
   if(submessage){
     console.log(chalk.gray(submessage));
   }
-  
+
   if(result && result.message){
     console.log(chalk.gray(result.message));
   }
@@ -397,10 +446,10 @@ function fail(msg, submessage, result){
   if (program.verbose){
     console.log(chalk.red("statusCode:"), result.statusCode);
     if(result.details){
-      console.log(chalk.red("details:"), result.details); 
+      console.log(chalk.red("details:"), result.details);
     }
-    console.log(chalk.red("method:"), result.method); 
-    console.log(chalk.red("path:"), result.path); 
+    console.log(chalk.red("method:"), result.method);
+    console.log(chalk.red("path:"), result.path);
     console.log(chalk.red("response:"), result.res);
   }
 }
@@ -440,21 +489,26 @@ function getLogin(customer){
   return fs.readJsonSync(path.resolve(home + '/login/' + customer + '.json'), {throws: false});
 }
 
-/**
-* Get the local manifest.json file, ensuring it's valid.
-*/
-function getManifest(){
+function readManifest(){
   try{
     var manifest = fs.readJsonSync(path.resolve('manifest.json'));
   }
   catch (e){
     if (e.type === "unexpected_token") {
-      fail('Your manifest.json file is not valid JSON', e.message);  
-    }
-    else {
-      fail('No manifest.json file in this directory', 'Please publish from a directory containing a domoapp design manifest.json file');
-    }
-    return;
+      return fail('Your manifest.json file is not valid JSON', e.message);
+    } else throw e;
+  }
+  return manifest;
+}
+/**
+* Get the local manifest.json file, ensuring it's valid.
+*/
+function getManifest(){
+  try{
+    var manifest = readManifest();
+  }
+  catch (e){
+    return fail('No manifest.json file in this directory', 'Please publish from a directory containing a domoapp design manifest.json file');
   }
 
   return validateManifest(manifest);
@@ -472,16 +526,16 @@ function validateManifest(manifest){
       isValid = false;
     }
   });
-  
+
   // validate semver
   if (!semver.valid(manifest.version)){
     fail('Invalid version', 'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/');
     isValid = false;
   }
-  
+
   function missingField(field){
     fail('Missing required field: ' + field, 'Please add a `'+ field +'` property to your manifest.json file');
   }
-  
+
   return isValid ? manifest : null;
 }
