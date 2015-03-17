@@ -30,4 +30,4 @@ Follow the [migration steps](https://git.empdev.domo.com/Development/domoapps-cl
 
 ## Full Documentation
 
-Complete documentation is available [here](https://git.empdev.domo.com/Development/domoapps-cli/wiki)
+Complete documentation is available [here](https://github.com/DomoApps/docs/wiki)
