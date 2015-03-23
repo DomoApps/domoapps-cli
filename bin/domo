@@ -159,10 +159,7 @@ program
         }
         break;
       case 'ls':
-        // TODO: MBL - I can't get this do print the list of users the way I'd like.
-        // Needs more work
         domo.getOwners(designId)
-          // .tap(evoke(ok, 'Owners for design foo: '))
           .tap(function listUsers(res) {
             res.sort();
             ok("Owners for design " + designId);
