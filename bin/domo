@@ -17,6 +17,7 @@ var home = Domo.getHomeDir();
 var Promise = require('bluebird');
 var _ = require('lodash');
 var semver = require('semver');
+var validator = require('validator');
 
 var logo =
 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"+
@@ -121,10 +122,18 @@ program
 program
   .command('owner <action> [users...]')
   .description('Manage design owners')
-  .action(function(action, users) {
+  .option('-i, --design_id <id>', 'Specify design ID, otherwise it is retrieved from a manifest file')
+  .action(function(action, users, options) {
 
-    var manifest = readManifest();
-    if (!manifest || !manifest.id) return fail('No manifest found, need to supply design id')
+    var designId;
+    if (options.design_id) {
+      designId = options.design_id;
+      if (!designId || !validator.isUUID(designId)) return fail('The value specified -i is not a valid design ID', designId);
+    } else {
+      var manifest = readManifest();
+      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file')
+      designId = manifest.id;
+    }
 
     var login = getMostRecentLogin();
     if (!login){
@@ -137,14 +146,14 @@ program
     switch(action) {
       case 'add':
         if (users) {
-          domo.addOwners(manifest.id, users)
+          domo.addOwners(designId, users)
             .tap(evoke(ok, 'Owners added ' + users))
             .catch(evoke(fail, 'Error adding owners'))
         }
         break;
       case 'rm':
         if (users) {
-          domo.removeOwners(manifest.id, users)
+          domo.removeOwners(designId, users)
             .tap(evoke(ok, 'Owners removed ' + users))
             .catch(evoke(fail, 'Error removing owners'))
         }
@@ -152,14 +161,14 @@ program
       case 'ls':
         // TODO: MBL - I can't get this do print the list of users the way I'd like.
         // Needs more work
-        domo.getOwners(manifest.id)
+        domo.getOwners(designId)
           // .tap(evoke(ok, 'Owners for design foo: '))
           .tap(function listUsers(res) {
-            evoke(ok, 'Owners for design foo: ' + res);
-          })
-          .tap(function listUsers(res) {
-            console.log("Owners for design " + manifest.id);
-            res.forEach(console.log);
+            res.sort();
+            ok("Owners for design " + designId);
+            res.forEach(function(element, index, array) {
+              console.log("\t" + element);
+            });
           })
           .catch(evoke(fail, 'Error retrieving owners'))
         break;
