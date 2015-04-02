@@ -119,88 +119,6 @@ program
       });
   });
 
-program
-  .command('owner <action> [users...]')
-  .description('Manage design owners')
-<<<<<<< HEAD
-  .option('-i, --design_id <id>', 'Specify design ID, otherwise it is retrieved from a manifest file')
-  .action(function(action, users, options) {
-
-    var designId;
-    if (options.design_id) {
-      designId = options.design_id;
-      if (!designId || !validator.isUUID(designId)) return fail('The value specified -i is not a valid design ID', designId);
-    } else {
-      var manifest = readManifest();
-      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file')
-      designId = manifest.id;
-    }
-=======
-  .action(function(action, users) {
-
-    var manifest = readManifest();
-    if (!manifest || !manifest.id) return fail('No manifest found, need to supply design id')
->>>>>>> 993c8829f559fe81806fc589af3b4fab1a6b3b00
-
-    var login = getMostRecentLogin();
-    if (!login){
-      fail('Not authenticated', 'Please login using "domo login"');
-      return;
-    }
-
-    var domo = new Domo(login.customer, login.sid);
-
-    switch(action) {
-      case 'add':
-        if (users) {
-<<<<<<< HEAD
-          domo.addOwners(designId, users)
-=======
-          domo.addOwners(manifest.id, users)
->>>>>>> 993c8829f559fe81806fc589af3b4fab1a6b3b00
-            .tap(evoke(ok, 'Owners added ' + users))
-            .catch(evoke(fail, 'Error adding owners'))
-        }
-        break;
-      case 'rm':
-        if (users) {
-<<<<<<< HEAD
-          domo.removeOwners(designId, users)
-=======
-          domo.removeOwners(manifest.id, users)
->>>>>>> 993c8829f559fe81806fc589af3b4fab1a6b3b00
-            .tap(evoke(ok, 'Owners removed ' + users))
-            .catch(evoke(fail, 'Error removing owners'))
-        }
-        break;
-      case 'ls':
-<<<<<<< HEAD
-        domo.getOwners(designId)
-          .tap(function listUsers(res) {
-            res.sort();
-            ok("Owners for design " + designId);
-            res.forEach(function(element, index, array) {
-              console.log("\t" + element);
-            });
-=======
-        // TODO: MBL - I can't get this do print the list of users the way I'd like.
-        // Needs more work
-        domo.getOwners(manifest.id)
-          // .tap(evoke(ok, 'Owners for design foo: '))
-          .tap(function listUsers(res) {
-            evoke(ok, 'Owners for design foo: ' + res);
-          })
-          .tap(function listUsers(res) {
-            console.log("Owners for design " + manifest.id);
-            res.forEach(console.log);
->>>>>>> 993c8829f559fe81806fc589af3b4fab1a6b3b00
-          })
-          .catch(evoke(fail, 'Error retrieving owners'))
-        break;
-    }
-  });
-
-
 function addDatasource(currentAnswers, callback){
     inquirer.prompt([
       {
@@ -240,6 +158,92 @@ function askDatasource(currentAnswers, callback){
     }
   })
 }
+
+program
+  .command('owner <action> [users...]')
+  .description('Manage design owners')
+  .option('-i, --design_id <id>', 'Specify design ID, otherwise it is retrieved from a manifest file')
+  .action(function(action, users, options) {
+
+    var designId;
+    if (options.design_id) {
+      designId = options.design_id;
+      if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
+    } else {
+      var manifest = readManifest();
+      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file')
+      designId = manifest.id;
+    }
+
+    var login = getMostRecentLogin();
+    if (!login){
+      fail('Not authenticated', 'Please login using "domo login"');
+      return;
+    }
+
+    var domo = new Domo(login.customer, login.sid);
+
+    switch(action) {
+      case 'add':
+        if (users) {
+          domo.addOwners(designId, users)
+            .tap(evoke(ok, 'Owners added ' + users))
+            .catch(evoke(fail, 'Error adding owners'))
+        }
+        break;
+      case 'rm':
+        if (users) {
+          domo.removeOwners(designId, users)
+            .tap(evoke(ok, 'Owners removed ' + users))
+            .catch(evoke(fail, 'Error removing owners'))
+        }
+        break;
+      case 'ls':
+        domo.getOwners(designId)
+          .tap(function listUsers(res) {
+            res.sort();
+            ok("Owners for design " + designId);
+            res.forEach(function(element, index, array) {
+              console.log("\t" + element);
+            });
+          })
+          .catch(evoke(fail, 'Error retrieving owners'))
+        break;
+    }
+  });
+
+program
+  .command('delete')
+  .description('Deletes a published design')
+  .option('-i, --design_id <id>', 'Specify design ID, otherwise it is retrieved from a manifest file')
+  .option('-f, --force', 'Delete the design even if it is referenced by domo apps')
+  .action(function(options) {
+
+    var designId;
+    if (options.design_id) {
+      designId = options.design_id;
+      if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
+    } else {
+      var manifest = readManifest();
+      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file')
+      designId = manifest.id;
+    }
+
+    var force = false;
+    if (options.force) force = true;
+
+    var login = getMostRecentLogin();
+    if (!login){
+      fail('Not authenticated', 'Please login using "domo login"');
+      return;
+    }
+
+    var domo = new Domo(login.customer, login.sid);
+
+    domo.deleteDesign(designId, force)
+      .tap(evoke(ok, 'Deleted design ' + designId))
+      .catch(evoke(fail, 'Unable to delete design ' + designId));
+  });
 
 
 program
