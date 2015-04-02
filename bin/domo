@@ -119,6 +119,46 @@ program
       });
   });
 
+function addDatasource(currentAnswers, callback){
+    inquirer.prompt([
+      {
+        type: 'input',
+        message: 'datasource id',
+        name: 'id'
+      },
+      {
+        type: 'input',
+        message: 'datasource alias',
+        name: 'alias'
+      }
+    ], function(datasource){
+      currentAnswers.datasources.push(datasource);
+      callback(currentAnswers);
+    });
+}
+
+// recursively ask user to enter all their datasources
+function askDatasource(currentAnswers, callback){
+  inquirer.prompt([
+    {
+      type: 'confirm',
+      message: currentAnswers.datasources.length > 0 ? 'add another datasource?' : 'would you like to connect to any datasources?',
+      name: 'askDatasource'
+    }
+  ], function(answers){
+    if (answers.askDatasource){
+      addDatasource(_.merge(currentAnswers, answers), function(combinedAnswers){
+        // ask for more datasources
+        askDatasource(combinedAnswers, callback);
+      });
+    }
+    else {
+      // all done with datasources, continue on.
+      callback(_.merge(currentAnswers, answers));
+    }
+  })
+}
+
 program
   .command('owner <action> [users...]')
   .description('Manage design owners')
@@ -128,7 +168,7 @@ program
     var designId;
     if (options.design_id) {
       designId = options.design_id;
-      if (!designId || !validator.isUUID(designId)) return fail('The value specified -i is not a valid design ID', designId);
+      if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
     } else {
       var manifest = readManifest();
       if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file')
@@ -172,46 +212,38 @@ program
     }
   });
 
+program
+  .command('delete')
+  .description('Deletes a published design')
+  .option('-i, --design_id <id>', 'Specify design ID, otherwise it is retrieved from a manifest file')
+  .option('-f, --force', 'Delete the design even if it is referenced by domo apps')
+  .action(function(options) {
 
-function addDatasource(currentAnswers, callback){
-    inquirer.prompt([
-      {
-        type: 'input',
-        message: 'datasource id',
-        name: 'id'
-      },
-      {
-        type: 'input',
-        message: 'datasource alias',
-        name: 'alias'
-      }
-    ], function(datasource){
-      currentAnswers.datasources.push(datasource);
-      callback(currentAnswers);
-    });
-}
+    var designId;
+    if (options.design_id) {
+      designId = options.design_id;
+      if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
+    } else {
+      var manifest = readManifest();
+      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file')
+      designId = manifest.id;
+    }
 
-// recursively ask user to enter all their datasources
-function askDatasource(currentAnswers, callback){
-  inquirer.prompt([
-    {
-      type: 'confirm',
-      message: currentAnswers.datasources.length > 0 ? 'add another datasource?' : 'would you like to connect to any datasources?',
-      name: 'askDatasource'
+    var force = false;
+    if (options.force) force = true;
+
+    var login = getMostRecentLogin();
+    if (!login){
+      fail('Not authenticated', 'Please login using "domo login"');
+      return;
     }
-  ], function(answers){
-    if (answers.askDatasource){
-      addDatasource(_.merge(currentAnswers, answers), function(combinedAnswers){
-        // ask for more datasources
-        askDatasource(combinedAnswers, callback);
-      });
-    }
-    else {
-      // all done with datasources, continue on.
-      callback(_.merge(currentAnswers, answers));
-    }
-  })
-}
+
+    var domo = new Domo(login.customer, login.sid);
+
+    domo.deleteDesign(designId, force)
+      .tap(evoke(ok, 'Deleted design ' + designId))
+      .catch(evoke(fail, 'Unable to delete design ' + designId));
+  });
 
 
 program
