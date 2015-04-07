@@ -1,7 +1,8 @@
 # domoapps cli
 
 ## Installing
-1. Make sure you have the latest stable [Node](http://nodejs.org/) installed
+1. Make sure you have [Node](http://nodejs.org/) installed.
+  * domoapps-cli is not currently compatible with Node v0.12, so choose a version greater than or equal to 0.10 and less than 0.12
 2. Install/update the domo CLI via npm
 ```
 npm install -g git+ssh://git@git.empdev.domo.com:Development/domoapps-cli.git
