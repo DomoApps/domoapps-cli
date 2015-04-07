@@ -28,7 +28,7 @@ Once you've published your design, you can add a DomoApp to a page in Domo:
 
 ## Full Documentation
 
-Complete documentation is available [here](https://git.empdev.domo.com/Development/domoapps-cli/wiki)
+Complete documentation is available [here](https://github.com/DomoApps/docs/wiki)
 
 ## Legacy Apps
 
