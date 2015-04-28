@@ -7,7 +7,6 @@
 
 var Domo = require('domoapps-client');
 var program = require('commander');
-var gaze = require('gaze');
 var path = require('path');
 var inquirer = require("inquirer");
 var chalk = require('chalk');
@@ -18,6 +17,7 @@ var Promise = require('bluebird');
 var _ = require('lodash');
 var semver = require('semver');
 var validator = require('validator');
+var chokidar = require('chokidar');
 
 var logo =
 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"+
@@ -56,7 +56,7 @@ var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
 program
   .version(cliVersion)
   .option('-w, --watch', 'publish domoapp design every time a file changes')
-  .option('-v, --verbose', 'log more details including XHR responses, useful for troubleshooting')
+  .option('-v, --verbose', 'log more details including XHR responses, useful for troubleshooting');
 
 program
   .command('publish')
@@ -85,12 +85,12 @@ program
           .catch(evoke(fail, 'Error creating new design'))
           .then(domo.uploadAllAssets.bind(domo))
           .then(logUploadSuccess)
-          .catch(evoke(fail, 'Error uploading assets'))
+          .catch(evoke(fail, 'Error uploading assets'));
     }
     else{
       domo.uploadAllAssets(manifest)
         .then(logUploadSuccess)
-        .catch(evoke(fail, 'Error uploading assets'))
+        .catch(evoke(fail, 'Error uploading assets'));
     }
 
     if (program.watch){ watch(domo, login, manifest); }
@@ -156,7 +156,7 @@ function askDatasource(currentAnswers, callback){
       // all done with datasources, continue on.
       callback(_.merge(currentAnswers, answers));
     }
-  })
+  });
 }
 
 program
@@ -171,7 +171,7 @@ program
       if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
     } else {
       var manifest = readManifest();
-      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file')
+      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
       designId = manifest.id;
     }
 
@@ -188,14 +188,14 @@ program
         if (users) {
           domo.addOwners(designId, users)
             .tap(evoke(ok, 'Owners added ' + users))
-            .catch(evoke(fail, 'Error adding owners'))
+            .catch(evoke(fail, 'Error adding owners'));
         }
         break;
       case 'rm':
         if (users) {
           domo.removeOwners(designId, users)
             .tap(evoke(ok, 'Owners removed ' + users))
-            .catch(evoke(fail, 'Error removing owners'))
+            .catch(evoke(fail, 'Error removing owners'));
         }
         break;
       case 'ls':
@@ -207,7 +207,7 @@ program
               console.log("\t" + element);
             });
           })
-          .catch(evoke(fail, 'Error retrieving owners'))
+          .catch(evoke(fail, 'Error retrieving owners'));
         break;
     }
   });
@@ -225,7 +225,7 @@ program
       if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
     } else {
       var manifest = readManifest();
-      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file')
+      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
       designId = manifest.id;
     }
 
@@ -282,7 +282,7 @@ program
           return login;
         })
         .then(persistLogin(answers.customer, answers.email))
-        .catch(evoke(fail, 'Login unsuccessful'))
+        .catch(evoke(fail, 'Login unsuccessful'));
     });
   });
 
@@ -318,7 +318,7 @@ program
 
       migrateApp(domo, answers.id, manifest)
         .tap(evoke(ok, 'Migration successful'))
-        .catch(evoke(fail, 'Migration unsuccessful'))
+        .catch(evoke(fail, 'Migration unsuccessful'));
     });
   });
 
@@ -357,10 +357,10 @@ program
             return domo.updateKpi(kpi);
           })
           .tap(evoke(ok, 'Card reverted back to a mason app'))
-          .catch(evoke(fail, 'Error attempting to revert card'))
+          .catch(evoke(fail, 'Error attempting to revert card'));
     });
 
-  })
+  });
 
 program.parse(process.argv);
 
@@ -382,7 +382,7 @@ function migrateApp(domo, appId, manifest){
       .tap(evoke(ok, 'Design published'))
       .then(function(designResult){
         var design = designResult[0];
-        return persistDesignId(design, manifest)
+        return persistDesignId(design, manifest);
       })
       .catch(function(){
         return manifest;
@@ -404,11 +404,11 @@ function migrateApp(domo, appId, manifest){
                 return domo.uploadAllAssets(manifest);
               })
               .tap(evoke(ok, 'Assets uploaded'))
-              .catch(evoke(fail, 'Error uploading assets'))
-        })
-  })
+              .catch(evoke(fail, 'Error uploading assets'));
+        });
+  });
 
-};
+}
 
 function watch(domo, login, manifest){
   var currentVersion = manifest.version;
@@ -457,7 +457,7 @@ function logUploadSuccess(files){
 function evoke(fn, message, submessage){
   return function(result){
     fn(message, submessage, result);
-  }
+  };
 }
 
 /**
@@ -497,7 +497,7 @@ function fail(msg, submessage, result){
 
 function getMostRecentLogin(){
   var logins = glob.sync(home + "/login/*.json");
-  if (logins.length == 0) return;
+  if (logins.length === 0) return;
 
   var mostRecent = logins.reduce(function(prev, next){
     return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
@@ -514,7 +514,7 @@ function persistLogin(customer, email){
     fs.ensureFileSync(loginFile);
     fs.writeJsonSync(loginFile, { sid: login.sid, user: email, customer: customer });
     return login;
-  }
+  };
 }
 
 /**
@@ -531,8 +531,9 @@ function getLogin(customer){
 }
 
 function readManifest(){
+  var manifest;
   try{
-    var manifest = fs.readJsonSync(path.resolve('manifest.json'));
+    manifest = fs.readJsonSync(path.resolve('manifest.json'));
   }
   catch (e){
     if (e.type === "unexpected_token") {
@@ -545,8 +546,9 @@ function readManifest(){
 * Get the local manifest.json file, ensuring it's valid.
 */
 function getManifest(){
+  var manifest;
   try{
-    var manifest = readManifest();
+    manifest = readManifest();
   }
   catch (e){
     return fail('No manifest.json file in this directory', 'Please publish from a directory containing a domoapp design manifest.json file');
