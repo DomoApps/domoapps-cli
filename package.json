@@ -6,20 +6,20 @@
     "domo": "./bin/domo"
   },
   "dependencies": {
-    "domoapps-client": "git+ssh://git@git.empdev.domo.com:Development/domoapps-client.git#v1.4.0",
-    "commander": "~2.2.0",
-    "superagent": "~0.18.1",
-    "q": "~1.0.1",
-    "gaze": "~0.6.4",
-    "glob": "~4.0.5",
-    "chalk": "~0.5.1",
-    "inquirer": "~0.6.0",
-    "fs-extra": "~0.11.1",
-    "request": "~2.42.0",
     "bluebird": "~2.3.2",
+    "chalk": "~0.5.1",
+    "chokidar": "^1.0.1",
+    "commander": "~2.2.0",
+    "domoapps-client": "git+ssh://git@git.empdev.domo.com:Development/domoapps-client.git#v1.4.0",
     "form-data": "~0.1.4",
+    "fs-extra": "~0.11.1",
+    "glob": "~4.0.5",
+    "inquirer": "~0.6.0",
     "lodash": "~2.4.1",
+    "q": "~1.0.1",
+    "request": "~2.42.0",
     "semver": "~4.1.0",
+    "superagent": "~0.18.1",
     "validator": "~3.35.0"
   }
 }

@@ -413,32 +413,35 @@ function migrateApp(domo, appId, manifest){
 function watch(domo, login, manifest){
   var currentVersion = manifest.version;
   var currentDesignId = manifest.id;
+  
+  chokidar.watch('.', {ignored: /[\/\\]\./, ignoreInitial: true}).on('all', function(event, filepath) {
+    
+    // don't do anything for deleted files/folders
+    if (event == 'unlink' || event == 'unlinkDir') return;
+    
+    // if manifest version or id changed, upload all assets
+    if (filepath.indexOf('manifest.json') !== -1){
+      var newManifest = getManifest();
+      if (!newManifest) return;
 
-  gaze('**/*', function(err, watcher) {
-    this.on('all', function(event, filepath) {
-      // if manifest version or id changed, upload all assets
-      if (filepath.indexOf('manifest.json') !== -1){
-        var newManifest = getManifest();
-        if (!newManifest) return;
-
-        if (newManifest.version !== currentVersion || newManifest.id !== currentDesignId){
-          domo.uploadAllAssets(manifest)
-              .then(function(a){
-                currentVersion = newManifest.version;
-                currentDesignId = newManifest.id;
-              })
-              .tap(evoke(ok, 'Published new version ' + newManifest.version))
-              .catch(evoke(fail, 'Error uploading assets'))
-          return;
-        }
+      if (newManifest.version !== currentVersion || newManifest.id !== currentDesignId){
+        domo.uploadAllAssets(manifest)
+            .then(logUploadSuccess)
+            .then(function(a){
+              currentVersion = newManifest.version;
+              currentDesignId = newManifest.id;
+            })
+            .tap(evoke(ok, 'Published new version ' + newManifest.version))
+            .catch(evoke(fail, 'Error uploading assets'));
+        return;
       }
-
-      // upload just the individual asset
-      var relFilePath = path.relative(process.cwd(), filepath);
-      domo.uploadAsset(manifest.id, manifest.version, relFilePath)
-          .tap(evoke(ok, 'Uploaded: ' + relFilePath))
-          .catch(evoke(fail, 'Error uploading: ' + relFilePath))
-    });
+    }
+    
+    // upload just the individual asset
+    var relFilePath = path.relative(process.cwd(), filepath);
+    domo.uploadAsset(manifest.id, manifest.version, relFilePath)
+        .tap(evoke(ok, 'Uploaded: ' + relFilePath))
+        .catch(evoke(fail, 'Error uploading: ' + relFilePath));
   });
 }
 
