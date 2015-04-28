@@ -1,3 +1,12 @@
+# 1.7.1
+Improved watching
+
+# 1.7.0
+Ability to delete designs
+
+# 1.6.0
+Owner management
+
 # 1.5.0
 Separate domoapps-client into own repo
 
