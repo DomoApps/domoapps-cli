@@ -21,7 +21,9 @@
     "semver": "~4.1.0",
     "superagent": "~0.18.1",
     "validator": "~3.35.0"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-release": "^0.12.0"
   }
 }
-
-
