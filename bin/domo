@@ -362,6 +362,30 @@ program
 
   });
 
+program
+  .command('serve')
+  .description('spin up a local server and proxy data requests')
+  .option('-i, --design_id <id>', 'Specify design ID, otherwise it is retrieved from a manifest file')
+  .option('-p, --port <port>', 'Specify a port, otherwise it will default to 1337')
+  .action(function(options){
+    var mostRecent = getMostRecentLogin() || {};
+    
+    var designId;
+    if (options.design_id) {
+      designId = options.design_id;
+      if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
+    } else {
+      var manifest = readManifest();
+      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
+      designId = manifest.id;
+    }
+
+    var port = options.port || 1337;
+
+    var domo = new Domo(mostRecent.customer, mostRecent.sid);
+    domo.serve(designId, process.cwd(), port);
+  });
+
 program.parse(process.argv);
 
 /**
