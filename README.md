@@ -30,9 +30,3 @@ Once you've published your design, you can add a DomoApp to a page in Domo:
 ## Full Documentation
 
 Complete documentation is available [here](https://github.com/DomoApps/docs/wiki)
-
-## Legacy Apps
-
-###  Migrating existing (mason) apps
-
-If you have a legacy app from the old Mason platform, you can migrate it using the [migration steps](https://git.empdev.domo.com/Development/domoapps-cli/wiki/Migration).
