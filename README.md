@@ -2,11 +2,12 @@
 
 ## Installing
 1. Make sure you have the latest [NodeJS](http://nodejs.org/download) installed.
-   Verify that Node is properly installed on your path by opening your terminal and typing `node --version`. 
-2. Install/update the domo CLI via npm:
+   Verify that Node is properly installed on your path by opening your terminal and typing `node --version`.
+2. Upload your public SSH key to Github following [these instructions](https://help.github.com/articles/generating-ssh-keys/).
+2. Install/update the domo CLI tool via npm:
 
 ```
-npm install -g DomoApps/domoapps-cli
+npm install -g git+ssh://git@github.com/DomoApps/domoapps-cli
 ```
 
 ## Creating a Domo App Design
