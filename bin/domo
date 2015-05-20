@@ -108,17 +108,25 @@ program
         answers.datasources = [];
         askDatasource(answers, function(allAnswers){
           // populate and write out the template files
-          var files = ['manifest.json', 'index.html', 'domo.js', 'app.js', 'app.css'];
+          var files = ['manifest.json', 'index.html', 'app.js', 'app.css'];
           files.forEach(function(file){
-            var contents = _.template(fs.readFileSync(path.resolve(__dirname + '/../templates/' + file )))(allAnswers);
-            fs.writeFileSync(process.cwd() + '/' + file, contents);
+            writeTemplateFile(file);
           });
+          
+          writeTemplateFile('domo.js', __dirname + '/../node_modules/domo.js/');
 
           ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a DomoApp card to any page in Domo.");
+          
+          function writeTemplateFile(file, dir){
+            dir = dir || (__dirname + '/../templates/');
+            var contents = _.template(fs.readFileSync(path.resolve(dir + file )))(allAnswers);
+            fs.writeFileSync(process.cwd() + '/' + file, contents);
+          }
+
         });
       });
   });
-
+  
 function addDatasource(currentAnswers, callback){
     inquirer.prompt([
       {

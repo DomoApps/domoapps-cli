@@ -10,6 +10,7 @@
     "chalk": "~0.5.1",
     "chokidar": "^1.0.1",
     "commander": "~2.2.0",
+    "domo.js": "domoapps/domo.js",
     "domoapps-client": "git+ssh://git@github.com:DomoApps/domoapps-client.git#v1.4.0",
     "form-data": "~0.1.4",
     "fs-extra": "~0.11.1",
