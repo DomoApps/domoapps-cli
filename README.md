@@ -24,10 +24,10 @@ npm install -g git+ssh://git@github.com/DomoApps/domoapps-cli
 ## Adding a DomoApp to a page
 Once you've published your design, you can add a DomoApp to a page in Domo:
 
-1. Open Domo in your browser and enable the `domoapps` feature by adding `?_f=domoapps` to the end of the URL and then reloading the page.
-2. Click `Add Card`, select the `DomoApp` type. 
+1. Open Domo in your browser, go to the page you want to add the app to, such as the Overview page.
+2. Click `Add Card`, select the `Domo App` type. 
 3. Give your card a name, select the design you want, configure your data sources, then click save.
 
 ## Full Documentation
 
-Complete documentation is available [here](https://github.com/DomoApps/docs/wiki)
+Complete documentation is available [here](https://domoapps.herokuapp.com/)
