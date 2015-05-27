@@ -131,12 +131,12 @@ function addDatasource(currentAnswers, callback){
     inquirer.prompt([
       {
         type: 'input',
-        message: 'datasource id',
+        message: 'dataset id',
         name: 'id'
       },
       {
         type: 'input',
-        message: 'datasource alias',
+        message: 'dataset alias',
         name: 'alias'
       }
     ], function(datasource){
@@ -150,7 +150,7 @@ function askDatasource(currentAnswers, callback){
   inquirer.prompt([
     {
       type: 'confirm',
-      message: currentAnswers.datasources.length > 0 ? 'add another datasource?' : 'would you like to connect to any datasources?',
+      message: currentAnswers.datasources.length > 0 ? 'add another dataset?' : 'would you like to connect to any datasets?',
       name: 'askDatasource'
     }
   ], function(answers){
