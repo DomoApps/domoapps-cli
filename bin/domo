@@ -85,12 +85,16 @@ program
           .catch(evoke(fail, 'Error creating new design'))
           .then(domo.uploadAllAssets.bind(domo))
           .then(logUploadSuccess)
-          .catch(evoke(fail, 'Error uploading assets'));
+          .catch(function(e){
+            fail(e || 'Error uploading assets yo');
+          });
     }
     else{
       domo.uploadAllAssets(manifest)
         .then(logUploadSuccess)
-        .catch(evoke(fail, 'Error uploading assets'));
+        .catch(function(e){
+          fail(e || 'Error uploading assets yo');
+        });
     }
 
     if (program.watch){ watch(domo, login, manifest); }
