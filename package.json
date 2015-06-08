@@ -11,7 +11,7 @@
     "chokidar": "^1.0.1",
     "commander": "~2.2.0",
     "domo.js": "git+ssh://git@github.com:DomoApps/domo.js.git",
-    "domoapps-client": "git+ssh://git@github.com:DomoApps/domoapps-client.git#v1.5.0",
+    "domoapps-client": "git+ssh://git@github.com:DomoApps/domoapps-client.git#v2.0.0",
     "form-data": "~0.1.4",
     "fs-extra": "~0.11.1",
     "glob": "~4.0.5",

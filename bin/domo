@@ -18,6 +18,7 @@ var _ = require('lodash');
 var semver = require('semver');
 var validator = require('validator');
 var chokidar = require('chokidar');
+require('../polyfills/endswith');
 
 var logo =
 "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n"+
@@ -71,7 +72,7 @@ program
       return;
     }
 
-    var domo = new Domo(login.customer, login.sid);
+    var domo = new Domo(login.instance, login.sid);
 
     if (!manifest.id){
       domo.createDesign(manifest)
@@ -193,7 +194,7 @@ program
       return;
     }
 
-    var domo = new Domo(login.customer, login.sid);
+    var domo = new Domo(login.instance, login.sid);
 
     switch(action) {
       case 'add':
@@ -250,7 +251,7 @@ program
       return;
     }
 
-    var domo = new Domo(login.customer, login.sid);
+    var domo = new Domo(login.instance, login.sid);
 
     domo.deleteDesign(designId, force)
       .tap(evoke(ok, 'Deleted design ' + designId))
@@ -269,9 +270,9 @@ program
     inquirer.prompt([
       {
         type: "input",
-        message: "domo customer",
-        name: "customer",
-        default: mostRecent.customer
+        message: "Domo instance",
+        name: "instance",
+        default: mostRecent.instance
       },
       {
         type: "input",
@@ -285,7 +286,11 @@ program
         name: "password"
       }
     ], function(answers) {
-      var domo = new Domo(answers.customer, null);
+      if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io')){
+        fail('Please login using the full Domo instance.', 'Example: "ebay.domo.com"');
+      }
+      
+      var domo = new Domo(answers.instance, null);
       domo
         .login(answers.email, answers.password)
         .then(function(login){
@@ -293,7 +298,7 @@ program
           console.log(chalk.cyan(logo));
           return login;
         })
-        .then(persistLogin(answers.customer, answers.email))
+        .then(persistLogin(answers.instance, answers.email))
         .catch(evoke(fail, 'Login unsuccessful'));
     });
   });
@@ -310,9 +315,9 @@ program
     inquirer.prompt([
       {
         type: "input",
-        message: "domo customer",
-        name: "customer",
-        default: mostRecent.customer
+        message: "Domo instance",
+        name: "instance",
+        default: mostRecent.instance
       },
       {
         type: "input",
@@ -320,13 +325,13 @@ program
         name: "id"
       }
     ], function(answers) {
-      var login = getLogin(answers.customer);
+      var login = getLogin(answers.instance);
       if (!login){
-        fail('Please login to ' + answers.customer + ' first using "domo login"');
+        fail('Please login to ' + answers.instance + ' first using "domo login"');
         return;
       }
 
-      var domo = new Domo(answers.customer, login.sid);
+      var domo = new Domo(answers.instance, login.sid);
 
       migrateApp(domo, answers.id, manifest)
         .tap(evoke(ok, 'Migration successful'))
@@ -343,9 +348,9 @@ program
     inquirer.prompt([
       {
         type: "input",
-        message: "domo customer",
-        name: "customer",
-        default: mostRecent.customer
+        message: "Domo instance",
+        name: "instance",
+        default: mostRecent.instance
       },
       {
         type: "input",
@@ -353,13 +358,13 @@ program
         name: "id"
       }
     ], function(answers) {
-      var login = getLogin(answers.customer);
+      var login = getLogin(answers.instance);
       if (!login){
-        fail('Please login to ' + answers.customer + ' first using "domo login"');
+        fail('Please login to ' + answers.instance + ' first using "domo login"');
         return;
       }
 
-      var domo = new Domo(answers.customer, login.sid);
+      var domo = new Domo(answers.instance, login.sid);
       domo.getKpi(answers.id)
           .then(function(kpi){
             kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'mason';
@@ -522,11 +527,11 @@ function getMostRecentLogin(){
 /**
  * persist login to user's domo home
  */
-function persistLogin(customer, email){
+function persistLogin(instance, email){
   return function(login){
-    var loginFile = path.resolve(home + '/login/' + customer + '.json');
+    var loginFile = path.resolve(home + '/login/' + instance + '.json');
     fs.ensureFileSync(loginFile);
-    fs.writeJsonSync(loginFile, { sid: login.sid, user: email, customer: customer });
+    fs.writeJsonSync(loginFile, { sid: login.sid, user: email, instance: instance });
     return login;
   };
 }
@@ -540,8 +545,8 @@ function persistDesignId(design, manifest){
   return design;
 }
 
-function getLogin(customer){
-  return fs.readJsonSync(path.resolve(home + '/login/' + customer + '.json'), {throws: false});
+function getLogin(instance){
+  return fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
 }
 
 function readManifest(){
