@@ -505,6 +505,8 @@ function fail(msg, submessage, result){
     console.log(chalk.red("path:"), result.path);
     console.log(chalk.red("response:"), result.res);
   }
+  
+  process.exit();
 }
 
 function getMostRecentLogin(){
