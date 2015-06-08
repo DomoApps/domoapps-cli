@@ -82,19 +82,20 @@ program
             design.version = designResult[1].version;
             return persistDesignId(design, manifest);
           })
-          .tap(evoke(ok, 'New design created'))
+          .tap(evoke(ok, 'New design created on ' + login.instance))
           .catch(evoke(fail, 'Error creating new design'))
           .then(domo.uploadAllAssets.bind(domo))
           .then(logUploadSuccess)
           .catch(function(e){
-            fail(e || 'Error uploading assets yo');
+            fail(e || 'Error uploading assets');
           });
     }
     else{
       domo.uploadAllAssets(manifest)
+        .tap(evoke(ok, 'Publishing to ' + login.instance))
         .then(logUploadSuccess)
         .catch(function(e){
-          fail(e || 'Error uploading assets yo');
+          fail(e || 'Error uploading assets');
         });
     }
 
