@@ -56,12 +56,12 @@ var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
 
 program
   .version(cliVersion)
-  .option('-w, --watch', 'publish domoapp design every time a file changes')
+  .option('-w, --watch', 'publish DomoApp design every time a file changes')
   .option('-v, --verbose', 'log more details including XHR responses, useful for troubleshooting');
 
 program
   .command('publish')
-  .description('publish a new or existing domoapp design')
+  .description('publish a new or existing DomoApp design')
   .action(function(){
     var manifest = getManifest();
     if (!manifest) return;
@@ -103,7 +103,7 @@ program
 
 program
   .command('init')
-  .description('initialize a new domoapp design')
+  .description('initialize a new DomoApp design')
   .action(function(){
     inquirer.prompt([{
         type: 'input',
@@ -229,7 +229,7 @@ program
   .command('delete')
   .description('Deletes a published design')
   .option('-i, --design_id <id>', 'Specify design ID, otherwise it is retrieved from a manifest file')
-  .option('-f, --force', 'Delete the design even if it is referenced by domo apps')
+  .option('-f, --force', 'Delete the design even if it is referenced by DomoApps')
   .action(function(options) {
 
     var designId;
@@ -261,7 +261,7 @@ program
 
 program
   .command('login')
-  .description('login to domo')
+  .description('login to Domo')
   .action(function(){
     // get default values from previous logins
     var mostRecent = getMostRecentLogin() || {};
@@ -282,7 +282,7 @@ program
       },
       {
         type: "password",
-        message: "domo password",
+        message: "Domo password",
         name: "password"
       }
     ], function(answers) {
@@ -305,7 +305,7 @@ program
 
 program
   .command('migrate')
-  .description('migrate a mason app to a domoapp')
+  .description('migrate a mason app to a DomoApp')
   .action(function(){
     var manifest = getManifest();
     if (!manifest) return;
@@ -341,7 +341,7 @@ program
 
 program
   .command('revert')
-  .description('revert a migration, turning a domoapp back into a mason app')
+  .description('revert a migration, turning a DomoApp back into a mason app')
   .action(function(){
     var mostRecent = getMostRecentLogin() || {};
 
@@ -408,8 +408,8 @@ function migrateApp(domo, appId, manifest){
   .spread(function(kpi, design){
     return domo
         .createApp(design.id)
-        .tap(evoke(ok, 'New domoapp created'))
-        .catch(evoke(fail, 'Error creating new domoapp'))
+        .tap(evoke(ok, 'New DomoApp created'))
+        .catch(evoke(fail, 'Error creating new DomoApp'))
         .then(function(domoapp){
           kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'domoapp';
           kpi.domoapp.id = domoapp.id;
@@ -570,7 +570,7 @@ function getManifest(){
     manifest = readManifest();
   }
   catch (e){
-    return fail('No manifest.json file in this directory', 'Please publish from a directory containing a domoapp design manifest.json file');
+    return fail('No manifest.json file in this directory', 'Please publish from a directory containing a DomoApp design manifest.json file');
   }
 
   return validateManifest(manifest);
