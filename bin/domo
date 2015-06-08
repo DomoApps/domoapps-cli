@@ -294,7 +294,7 @@ program
       domo
         .login(answers.email, answers.password)
         .then(function(login){
-          ok('Login successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
+          ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
           console.log(chalk.cyan(logo));
           return login;
         })
