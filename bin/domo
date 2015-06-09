@@ -92,7 +92,7 @@ program
     }
     else{
       domo.uploadAllAssets(manifest)
-        .tap(evoke(ok, 'Publishing to ' + login.instance))
+        .tap(evoke(ok, 'Publishing ' + manifest.name + ' to ' + login.instance))
         .then(logUploadSuccess)
         .catch(function(e){
           fail(e || 'Error uploading assets');
