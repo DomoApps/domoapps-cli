@@ -1,3 +1,6 @@
+# 1.8.0
+Prevent confusion by requiring full instance on login, and informing user of publish destination.
+
 # 1.7.1
 Improved watching
 
