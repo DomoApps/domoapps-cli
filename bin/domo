@@ -1,21 +1,24 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --harmony
 /**
  * This executable will take care of capturing user input,
  * passing data on to the domo lib and informing user of results.
+ * First it will check for supported Node versions.
  *
  */
 
-var Domo = require('domoapps-client');
+var semver = require('semver');
+var chalk = require('chalk');
 var program = require('commander');
+verifyNodeVersion();
+
+var Domo = require('domoapps-client');
 var path = require('path');
 var inquirer = require("inquirer");
-var chalk = require('chalk');
 var fs = require('fs-extra');
 var glob = require("glob");
 var home = Domo.getHomeDir();
 var Promise = require('bluebird');
 var _ = require('lodash');
-var semver = require('semver');
 var validator = require('validator');
 var chokidar = require('chokidar');
 require('../polyfills/endswith');
@@ -447,6 +450,14 @@ function migrateApp(domo, appId, manifest){
         });
   });
 
+}
+
+function verifyNodeVersion(){
+  var version = semver(process.version);
+  var compatible = semver.gte(version, '0.12.0');
+  if(!compatible){
+    fail('Unsupported Node version', 'Please upgrade to Node v0.12.0 or higher. https://nodejs.org/');
+  }
 }
 
 function watch(domo, login, manifest){
