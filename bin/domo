@@ -73,10 +73,7 @@ program
     if (!manifest) return;
 
     var login = getMostRecentLogin();
-    if (!login){
-      fail('Not authenticated', 'Please login using "domo login"');
-      return;
-    }
+    verifyLogin(login);
 
     var domo = new Domo(login.instance, login.sid);
 
@@ -196,10 +193,7 @@ program
     }
 
     var login = getMostRecentLogin();
-    if (!login){
-      fail('Not authenticated', 'Please login using "domo login"');
-      return;
-    }
+    verifyLogin(login);
 
     var domo = new Domo(login.instance, login.sid);
 
@@ -253,10 +247,7 @@ program
     if (options.force) force = true;
 
     var login = getMostRecentLogin();
-    if (!login){
-      fail('Not authenticated', 'Please login using "domo login"');
-      return;
-    }
+    verifyLogin(login);
 
     var domo = new Domo(login.instance, login.sid);
 
@@ -352,10 +343,7 @@ program
       }
     ], function(answers) {
       var login = getLogin(answers.instance);
-      if (!login){
-        fail('Please login to ' + answers.instance + ' first using "domo login"');
-        return;
-      }
+      verifyLogin(login);
 
       var domo = new Domo(answers.instance, login.sid);
 
@@ -384,10 +372,7 @@ program
       }
     ], function(answers) {
       var login = getLogin(answers.instance);
-      if (!login){
-        fail('Please login to ' + answers.instance + ' first using "domo login"');
-        return;
-      }
+      verifyLogin(login);
 
       var domo = new Domo(answers.instance, login.sid);
       domo.getKpi(answers.id)
@@ -450,6 +435,13 @@ function migrateApp(domo, appId, manifest){
         });
   });
 
+}
+
+function verifyLogin(login){
+  if (!login.sid){
+    fail('Not authenticated', 'Please login using "domo login"');
+    return;
+  }
 }
 
 function verifyNodeVersion(){
