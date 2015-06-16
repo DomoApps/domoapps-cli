@@ -21,6 +21,7 @@ var Promise = require('bluebird');
 var _ = require('lodash');
 var validator = require('validator');
 var chokidar = require('chokidar');
+var server = require('../server/server');
 require('../polyfills/endswith');
 
 var logo =
@@ -387,6 +388,16 @@ program
           .catch(evoke(fail, 'Error attempting to revert card'));
     });
 
+  });
+  
+program
+  .command('dev')
+  .description('work locally on a DomoApp')
+  .action(function(){
+    var login = getMostRecentLogin();
+    verifyLogin(login);
+    var domo = new Domo(login.instance, login.sid);
+    server.start(domo);
   });
 
 program.parse(process.argv);
