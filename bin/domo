@@ -11,14 +11,18 @@ var chalk = require('chalk');
 var program = require('commander');
 verifyNodeVersion();
 
-var Domo = require('domoapps-client');
 var path = require('path');
-var inquirer = require("inquirer");
-var fs = require('fs-extra');
-var glob = require("glob");
-var home = Domo.getHomeDir();
-var Promise = require('bluebird');
 var _ = require('lodash');
+var glob = require("glob");
+var fs = require('fs-extra');
+var previousLogins = getPreviousLogins();
+var Domo = require('domoapps-client');
+var home = Domo.getHomeDir();
+// can remove this in a few releases after people have updated
+cleanupLogins();
+
+var inquirer = require("inquirer");
+var Promise = require('bluebird');
 var validator = require('validator');
 var chokidar = require('chokidar');
 var server = require('../server/server');
@@ -58,7 +62,7 @@ var logo =
 
 var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
 
-var previousLogins = getPreviousLogins();
+
 var mostRecent = getMostRecentLogin();
 
 program
@@ -446,6 +450,17 @@ function migrateApp(domo, appId, manifest){
         });
   });
 
+}
+
+function cleanupLogins(){
+  var prev = getPreviousLogins();
+  var badLogins = _.filter(prev, function(login){
+    return login.customer;
+  });
+  badLogins.forEach(function(login){
+    var p = path.resolve(Domo.getHomeDir() + '/login/' + login.customer + '.json');
+    fs.deleteSync(p);
+  });
 }
 
 function verifyLogin(login){
