@@ -7,9 +7,9 @@ var bs = require('browser-sync').create();
 var request = require('request');
 var Domo = require('domoapps-client');
 var inquirer = require("inquirer");
+var Promise = require('bluebird');
 var app = koa();
 var api = new Router();
-
 
 api.get('/', function *(){
   var template = _.template(fs.readFileSync(path.resolve(__dirname + '/wrapper.html')));
@@ -31,19 +31,14 @@ api.get('/', function *(){
   this.body = template({ manifest: manifest, width: width, height: height, url: url });
 });
 
+// Proxy requests to the correct domoapps service for the environment they're logged into.
 api.get('/data/v1/:query', function *(){
-  var uuid = Domo.createUUID();
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/manifest.json'));
+  var baseUrl = yield getDomoappsDomain();
   var j = request.jar();
-  // Proxy requests to the correct domoapps service for the environment they're logged into.
-  var regexp = /([-_\w]+)\.(.*)/;
-  var match = app.domo.instance.match(regexp); 
-  var customer = match[1];
-  var env = match[2];
-  var baseUrl = 'https://'+uuid+'.domoapps.' + env;
   var url = baseUrl + this.request.url;
-  var cookie = request.cookie('DA-SID-'+customer+'="'+app.domo.sid+'"');
-  
+  var auth = 'DA-SID-'+getCustomer()+'="'+app.domo.sid+'"';
+  var cookie = request.cookie(auth);
   j.setCookie(cookie, baseUrl);
   this.body = request({url: url, jar: j, headers: { referer: this.request.headers.referer}});
 });
@@ -67,6 +62,39 @@ module.exports = {
     });
   }
 };
+
+function getCustomer(){
+  var regexp = /([\w]+)[\.|-]/;
+  return app.domo.instance.match(regexp)[1];
+}
+
+function getEnv(){
+  var regexp = /([-_\w]+)\.(.*)/;
+  return app.domo.instance.match(regexp)[2];
+}
+
+/**
+ * Fetch domoapps domain from maestro.
+ * Fallback to inferring it by the instance URL.
+ */
+function getDomoappsDomain(){
+  var uuid = Domo.createUUID();
+  var j = request.jar();
+  var auth = 'SID="'+app.domo.sid+'"';
+  var cookie = request.cookie(auth);
+  j.setCookie(cookie, 'https://' + app.domo.instance);
+  
+  return new Promise(function(resolve, reject){
+    request({url: 'https://' + app.domo.instance + '/api/content/v1/mobile/environment', jar: j}, function(err, res){
+      if (res.statusCode === 200){
+        resolve('https://'+uuid+'.' + JSON.parse(res.body).domoappsDomain);
+      }
+      else {
+        resolve('https://'+uuid+'.domoapps.' + getEnv());
+      }
+    });
+  });
+}
 
 /**
  * Convert mapping to short syntax.
