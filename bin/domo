@@ -600,7 +600,7 @@ function persistLogin(instance, email){
  */
 function persistDesignId(design, manifest){
   manifest.id = design.id;
-  fs.writeJsonSync('manifest.json', manifest);
+  fs.writeJsonSync('manifest.json', manifest, {spaces: 2});
   return design;
 }
 
