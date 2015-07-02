@@ -26,6 +26,7 @@ var Promise = require('bluebird');
 var validator = require('validator');
 var chokidar = require('chokidar');
 var server = require('../server/server');
+var async = require('async');
 require('../polyfills/endswith');
 
 var logo =
@@ -122,24 +123,52 @@ program
         answers.datasources = [];
         askDatasource(answers, function(allAnswers){
           // populate and write out the template files
-          var files = ['manifest.json', 'index.html', 'app.js', 'app.css'];
-          files.forEach(function(file){
-            writeTemplateFile(file);
+          var files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
+          var dirs = [null, null, null, null, __dirname + '/../node_modules/domo.js/'];
+
+          writeFilesIfNonexistent(files, dirs, allAnswers, function(err, res) {
+            if(err) {
+              fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
+            }
+            else {
+              ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a DomoApp card to any page in Domo.");
+            }
           });
-          
-          writeTemplateFile('domo.js', __dirname + '/../node_modules/domo.js/');
-
-          ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a DomoApp card to any page in Domo.");
-          
-          function writeTemplateFile(file, dir){
-            dir = dir || (__dirname + '/../templates/');
-            var contents = _.template(fs.readFileSync(path.resolve(dir + file )))(allAnswers);
-            fs.writeFileSync(process.cwd() + '/' + file, contents);
-          }
-
         });
       });
   });
+
+function writeFilesIfNonexistent(files, dirs, allAnswers, callback) {
+  var filesThatExist = [];
+
+  async.reduce(files, false, function(memo, file, reduceCallback) {
+    fs.open(file,'r',function(err, fd) {
+      var fileExists = !err;
+      if(fileExists) {
+        filesThatExist.push(file);
+        fs.closeSync(fd);
+      }
+      reduceCallback(null, memo || fileExists);
+    });
+  }, function(err, atLeastOneExists) {
+    if(atLeastOneExists) {
+      callback(filesThatExist, null);
+    }
+    else {
+      _.zip(files,dirs).forEach(writeTemplateFile);
+      callback(null, files);
+    }
+  });
+
+  function writeTemplateFile(filedir){
+    var file = filedir[0];
+    var dir = filedir[1];
+    dir = dir || (__dirname + '/../templates/');
+    var contents = _.template(fs.readFileSync(path.resolve(dir + file )))(allAnswers);
+
+    fs.writeFileSync(process.cwd() + '/' + file, contents);
+  }
+}
   
 function addDatasource(currentAnswers, callback){
     inquirer.prompt([
