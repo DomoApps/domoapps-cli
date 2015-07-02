@@ -139,19 +139,17 @@ program
   });
 
 function writeFilesIfNonexistent(files, dirs, allAnswers, callback) {
-  var filesThatExist = [];
-
-  async.reduce(files, false, function(memo, file, reduceCallback) {
+  async.reduce(files, [], function(filesThatExist, file, reduceCallback) {
     fs.open(file,'r',function(err, fd) {
       var fileExists = !err;
       if(fileExists) {
-        filesThatExist.push(file);
         fs.closeSync(fd);
+        filesThatExist.push(file);
       }
-      reduceCallback(null, memo || fileExists);
+      reduceCallback(null, filesThatExist);
     });
-  }, function(err, atLeastOneExists) {
-    if(atLeastOneExists) {
+  }, function(err, filesThatExist) {
+    if(filesThatExist.length > 0) {
       callback(filesThatExist, null);
     }
     else {
