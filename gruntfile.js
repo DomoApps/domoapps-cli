@@ -3,7 +3,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     release: {
       options: {
-        npm: false,
+        npm: true,
         tagName: 'v<%= version %>',
         commitMessage: 'v<%= version %>',
         github: {
