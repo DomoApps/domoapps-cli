@@ -15,7 +15,7 @@ var path = require('path');
 var _ = require('lodash');
 var glob = require("glob");
 var fs = require('fs-extra');
-var Domo = require('domoapps-client');
+var Domo = require('ryuu-client');
 var home = Domo.getHomeDir();
 // can remove this in a few releases after people have updated
 cleanupLogins();
@@ -124,7 +124,7 @@ program
         askDatasource(answers, function(allAnswers){
           // populate and write out the template files
           var files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
-          var dirs = [null, null, null, null, __dirname + '/../node_modules/domo.js/'];
+          var dirs = [null, null, null, null, __dirname + '/../node_modules/ryuu.js/'];
 
           writeFilesIfNonexistent(files, dirs, allAnswers, function(err, res) {
             if(err) {

@@ -1,6 +1,5 @@
 {
-  "name": "domoapps-cli",
-  "private": true,
+  "name": "ryuu",
   "version": "2.2.0",
   "bin": {
     "domo": "./bin/domo"
@@ -11,8 +10,8 @@
     "chalk": "~0.5.1",
     "chokidar": "^1.0.1",
     "commander": "~2.2.0",
-    "domo.js": "git+ssh://git@github.com:DomoApps/domo.js.git",
-    "domoapps-client": "git+ssh://git@github.com:DomoApps/domoapps-client.git#v2.3.1",
+    "ryuu.js": "~2.0.3",
+    "ryuu-client": "~2.3.2",
     "form-data": "~0.1.4",
     "fs-extra": "~0.11.1",
     "glob": "~4.0.5",
