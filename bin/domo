@@ -101,7 +101,7 @@ program
     }
     else{
       domo.uploadAllAssets(manifest)
-        .tap(evoke(ok, 'Publishing ' + manifest.name + ' to ' + login.instance))
+        .tap(evoke(ok, 'Publishing ' + manifest.name + ' to ' + login.instance + ' on ' + new Date()))
         .then(logUploadSuccess)
         .catch(function(e){
           fail(e || 'Error uploading assets');
@@ -535,7 +535,7 @@ function watch(domo, login, manifest){
     // upload just the individual asset
     var relFilePath = path.relative(process.cwd(), filepath);
     domo.uploadAsset(manifest.id, manifest.version, relFilePath)
-        .tap(evoke(ok, 'Uploaded: ' + relFilePath))
+        .tap(evoke(ok, 'Uploaded: ' + relFilePath + ' ' + new Date().timeNow()))
         .catch(evoke(fail, 'Error uploading: ' + relFilePath));
   });
 }
@@ -686,4 +686,8 @@ function validateManifest(manifest){
   }
 
   return isValid ? manifest : null;
+}
+
+Date.prototype.timeNow = function () {
+     return "(" + ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds() + ")";
 }
