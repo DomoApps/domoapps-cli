@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "2.2.6",
+  "version": "2.2.4",
   "bin": {
     "domo": "./bin/domo"
   },
