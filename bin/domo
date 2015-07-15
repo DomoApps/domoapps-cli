@@ -566,6 +566,27 @@ function ok(msg, submessage){
 }
 
 /**
+ * log info
+ */
+function info(msg, submessage){
+  console.log(chalk.cyan(msg));
+  if(submessage){
+    console.log(chalk.gray(submessage));
+  }
+}
+
+/**
+ * log warning
+ */
+ function warn(msg, submessage){
+   console.log(chalk.yellow(msg));
+   if(submessage){
+     console.log(chalk.gray(submessage));
+   }
+ }
+
+
+/**
  * log an error
  */
 function fail(msg, submessage, result){
