@@ -27,6 +27,7 @@ var validator = require('validator');
 var chokidar = require('chokidar');
 var server = require('../server/server');
 var async = require('async');
+var request = Promise.promisify(require('request'));
 require('../polyfills/endswith');
 
 var logo =
@@ -293,7 +294,6 @@ program
   .command('login')
   .description('login to Domo')
   .action(function(){
-
     // prompt user
     inquirer.prompt([
       {
@@ -340,17 +340,24 @@ program
         fail('Please login using the full Domo instance.', 'Example: "ebay.domo.com"');
       }
       
+      var login;
+      
       var domo = new Domo(answers.instance, null);
       domo
         .login(answers.email, answers.password)
-        .then(function(login){
-          ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
-          console.log(chalk.cyan(logo));
-          return login;
+        .then(function(l){
+          return login = l;
+        })
+        .then(checkVersion.bind(null, answers.instance))
+        .tap(verifyVersion)
+        .then(function(){
+            ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
+            console.log(chalk.cyan(logo));
+            return login;
         })
         .then(persistLogin(answers.instance, answers.email))
         .catch(evoke(fail, 'Login unsuccessful'));
-    });
+    });    
   });
 
 program
@@ -432,6 +439,39 @@ program
   });
 
 program.parse(process.argv);
+
+
+/**
+ * E.T. phone home
+ */
+function checkVersion(instance){
+  var options = {
+    url: 'https://' + instance + '/domoapps/admin/checkversion?version=' + cliVersion,
+    method: 'GET',
+    json: true
+  };
+
+  return request(options);
+}
+
+/**
+ * log message based on the action
+ * if action is 'block' then 'fail' will get called and end the process early
+ */
+function verifyVersion(res){
+  var body = res[0].body;
+  if (body.action === 'block'){
+    fail(body.message);
+  }
+  
+  else if (body.action === 'warn'){
+    warn(body.message);
+  }
+  
+  else if (body.action === 'info'){
+    info(body.message);
+  }
+}
 
 /**
  * migrate a mason app to a domoapp
