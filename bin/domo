@@ -27,6 +27,7 @@ var validator = require('validator');
 var chokidar = require('chokidar');
 var server = require('../server/server');
 var async = require('async');
+var shell = require('shelljs');
 var request = Promise.promisify(require('request'));
 require('../polyfills/endswith');
 
@@ -349,7 +350,7 @@ program
           return login = l;
         })
         .then(checkVersion.bind(null, answers.instance))
-        .tap(verifyVersion)
+        .then(verifyVersion)
         .then(function(){
             ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
             console.log(chalk.cyan(logo));
@@ -459,18 +460,50 @@ function checkVersion(instance){
  * if action is 'block' then 'fail' will get called and end the process early
  */
 function verifyVersion(res){
+  
   var body = res[0].body;
   if (body.action === 'block'){
     fail(body.message);
   }
   
-  else if (body.action === 'warn'){
+  if (body.action === 'warn'){
     warn(body.message);
+    return promptUpgrade(body.latest);
   }
   
-  else if (body.action === 'info'){
+  if (body.action === 'info'){
     info(body.message);
+    return promptUpgrade(body.latest);
   }
+}
+
+function promptUpgrade(latest){
+  return new Promise(function(resolve, reject){
+    inquirer.prompt([
+      {
+        type: "confirm",
+        message: "Would you like to upgrade now?",
+        name: "upgrade",
+        default: true
+      }
+      
+    ], function(answers) {
+      if(answers.upgrade){
+        info('Upgrading to latest version', 'Hang tight, this may take a moment...');
+        var output = shell.exec('npm install ryuu -g', {async: false, silent: true});
+        if (output.code === 0){
+          ok('Upgrade to version '+latest+' successful');
+          resolve();
+        }
+        else {
+          warn('Upgrade unsuccessful', 'Please try upgrading manually with npm install -g ryuu');
+        }
+      }
+      else{
+        resolve();
+      }
+    });
+  });
 }
 
 /**
