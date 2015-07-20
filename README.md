@@ -1,4 +1,4 @@
-# Domo Apps CLI
+# Ryuu CLI
 
 A command line interface to the Ryuu SDK.
 
