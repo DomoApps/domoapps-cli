@@ -10,6 +10,8 @@ var inquirer = require("inquirer");
 var Promise = require('bluebird');
 var app = koa();
 var api = new Router();
+var portfinder = require('portfinder');
+portfinder.basePort = 3000;
 
 api.get('/', function *(){
   var template = _.template(fs.readFileSync(path.resolve(__dirname + '/wrapper.html')));
@@ -48,17 +50,23 @@ app.use(require('koa-static')('.'));
 
 module.exports = {
   start: function(domo){
-    app.domo = domo;
-    app.listen(3001);
-    
-    bs.init({
-      proxy: "localhost:3001",
-      port: 3000,
-      notify: false,
-      ui: false,
-      logLevel: 'info',
-      // TODO: add user's ignored files here too?
-      files: ['**/*', '!node_modules/**/*']
+    portfinder.getPorts(2, function (err, ports) {
+      var assetsPort = ports[0];
+      var dataPort = ports[1];
+      app.domo = domo;
+      
+      app.listen(dataPort)
+      
+      bs.init({
+        proxy: "localhost:" + dataPort,
+        port: assetsPort,
+        notify: false,
+        ui: false,
+        logLevel: 'info',
+        // TODO: add user's ignored files here too?
+        files: ['**/*', '!node_modules/**/*']
+      });
+      
     });
   }
 };
