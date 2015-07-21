@@ -106,7 +106,15 @@ program
         .tap(evoke(ok, 'Publishing ' + manifest.name + ' to ' + login.instance + ' on ' + new Date()))
         .then(logUploadSuccess)
         .catch(function(e){
-          fail(e || 'Error uploading assets');
+          if(e.statusCode === 401) {
+            fail('You are not logged in. Please login with \'domo login\' and then try logging in again.');
+          }
+          else if(e.statusCode === 403) {
+            fail('You do not have access to the design with id ' + manifest.id + ' on ' + login.instance + '.');
+          }
+          else {
+            fail(e || 'Error uploading assets');
+          }
         });
     }
 
