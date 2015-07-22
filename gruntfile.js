@@ -35,6 +35,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-release');
   grunt.loadNpmTasks('grunt-babel');
   grunt.registerTask('addall', function(){
-    shell.exec('git all .', {silent:false});
+    shell.exec('git add .', {silent:false});
   })
 };
