@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "2.6.2",
+  "version": "2.6.3",
   "bin": {
     "domo": "./dist/domo-dist"
   },
