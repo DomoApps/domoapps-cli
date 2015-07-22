@@ -1,3 +1,4 @@
+require('babel-core/polyfill');
 var fs = require('fs-extra');
 var path = require('path');
 var _ = require('lodash');
@@ -14,7 +15,7 @@ var portfinder = require('portfinder');
 portfinder.basePort = 3000;
 
 api.get('/', function *(){
-  var template = _.template(fs.readFileSync(path.resolve(__dirname + '/wrapper.html')));
+  var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/wrapper.html')));
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/manifest.json'));
   var sizeMultiplier = {
     width: 235,
