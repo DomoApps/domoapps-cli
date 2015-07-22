@@ -1,3 +1,5 @@
+var shell = require('shelljs');
+
 module.exports = function(grunt) {
 
   grunt.initConfig({
@@ -25,11 +27,14 @@ module.exports = function(grunt) {
           usernameVar: 'GITHUB_USERNAME', //ENVIRONMENT VARIABLE that contains Github username
           passwordVar: 'GITHUB_PASSWORD' //ENVIRONMENT VARIABLE that contains Github password
         },
-        beforeRelease: ['babel']
+        beforeRelease: ['babel', 'addall']
       }
     }
   });
 
   grunt.loadNpmTasks('grunt-release');
   grunt.loadNpmTasks('grunt-babel');
+  grunt.registerTask('addall', function(){
+    shell.exec('git all .', {silent:false});
+  })
 };
