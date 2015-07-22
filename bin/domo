@@ -115,6 +115,10 @@ program
           else if(e.statusCode === 403) {
             fail('You do not have access to the design with id ' + manifest.id + ' on ' + login.instance + '.');
           }
+          else if(e.message && e.message.startsWith('DA')) {
+            // Pass on error messages that are in the set of documented errors.
+            fail(e.message);
+          }
           else {
             fail(e || 'Error uploading assets');
           }
