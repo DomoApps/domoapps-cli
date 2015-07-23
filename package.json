@@ -24,7 +24,7 @@
     "portfinder": "^0.4.0",
     "q": "~1.0.1",
     "request": "^2.42.0",
-    "ryuu-client": "~2.3.5",
+    "ryuu-client": "~2.3.6",
     "ryuu.js": "~2.0.3",
     "semver": "~4.1.0",
     "shelljs": "^0.5.1",
