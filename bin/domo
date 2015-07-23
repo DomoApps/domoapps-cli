@@ -305,7 +305,6 @@ program
       .catch(evoke(fail, 'Unable to delete design ' + designId));
   });
 
-
 program
   .command('login')
   .description('login to Domo')
@@ -319,7 +318,7 @@ program
           options.push('new instance');
           return options;
         },
-        message: "Domo instance",
+        message: "Domo instance " + chalk.grey("e.g. ebay.domo.com "),
         name: 'instance',
         default: mostRecent.instance,
         // only show up if they have previous logins
@@ -329,7 +328,7 @@ program
       },
       {
         type: "input",
-        message: "Domo instance",
+        message: "Domo instance " + chalk.grey("e.g. ebay.domo.com "),
         name: "instance",
         when: function(answers){
           // only ask if the instance selector wasn't used or new one was selected
