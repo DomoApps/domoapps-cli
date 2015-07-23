@@ -37,7 +37,7 @@ var shell = require('shelljs');
 var request = Promise.promisify(require('request'));
 require('../polyfills/endswith');
 
-var logo = "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃██████████      ██████████  ███            ██   ██████████  ┃\n" + "┃████████████  ███████████████████        ███████████████████┃\n" + "┃███      ████████        ██████████    ██████████        ███┃\n" + "┃███       ██████          ██████████████████████          ██┃\n" + "┃███      ███████          ██████ ███████  ██████          ██┃\n" + "┃███     █████████       ████████   ███    ███████       ████┃\n" + "┃████████████  ██████████████████          ██████████████████┃\n" + "┃██████████      ██████████  ████          ███   ██████████  ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┃                                                            ┃\n" + "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n";
+var logo = '\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃██████████      ██████████  ███            ██   ██████████  ┃\n┃████████████  ███████████████████        ███████████████████┃\n┃███      ████████        ██████████    ██████████        ███┃\n┃███       ██████          ██████████████████████          ██┃\n┃███      ███████          ██████ ███████  ██████          ██┃\n┃███     █████████       ████████   ███    ███████       ████┃\n┃████████████  ██████████████████          ██████████████████┃\n┃██████████      ██████████  ████          ███   ██████████  ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┃                                                            ┃\n┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛';
 
 var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
 
@@ -241,7 +241,7 @@ program.command('login').description('login to Domo').action(function () {
       options.push('new instance');
       return options;
     },
-    message: "Domo instance",
+    message: "Domo instance " + chalk.grey("e.g. ebay.domo.com "),
     name: 'instance',
     'default': mostRecent.instance,
     // only show up if they have previous logins
@@ -250,7 +250,7 @@ program.command('login').description('login to Domo').action(function () {
     }
   }, {
     type: "input",
-    message: "Domo instance",
+    message: "Domo instance " + chalk.grey("e.g. ebay.domo.com "),
     name: "instance",
     when: function when(answers) {
       // only ask if the instance selector wasn't used or new one was selected
