@@ -176,7 +176,7 @@ program.command('owner <add|rm|ls> [user-emails...]').description('Manage design
     designId = options.design_id;
     if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
   } else {
-    var manifest = readManifest();
+    var manifest = getManifest();
     if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
     designId = manifest.id;
   }
@@ -216,7 +216,7 @@ program.command('delete').description('Deletes a published design').option('-i, 
     designId = options.design_id;
     if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
   } else {
-    var manifest = readManifest();
+    var manifest = getManifest();
     if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
     designId = manifest.id;
   }
@@ -602,55 +602,60 @@ function getLogin(instance) {
   return fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), { throws: false });
 }
 
-function readManifest() {
-  var manifest;
-  try {
-    manifest = fs.readJsonSync(path.resolve('manifest.json'));
-  } catch (e) {
-    if (e.type === "unexpected_token") {
-      return fail('Your manifest.json file is not valid JSON', e.message);
-    } else throw e;
-  }
-  return manifest;
-}
 /**
 * Get the local manifest.json file, ensuring it's valid.
 */
 function getManifest() {
   var manifest;
   try {
-    manifest = readManifest();
+    manifest = fs.readFileSync(path.resolve('manifest.json'));
   } catch (e) {
     return fail('No manifest.json file in this directory', 'Please publish from a directory containing a DomoApp design manifest.json file');
   }
 
-  return validateManifest(manifest);
+  try {
+    manifest = JSON.parse(manifest);
+  } catch (e) {
+    return fail('Your manifest.json file is not valid JSON', e.message);
+  }
+  validateManifest(manifest);
+  return manifest;
 }
 
 /**
-* Return manifest if valid otherwise null.
+* Validate the manifest file.
 */
 function validateManifest(manifest) {
-  var isValid = true;
+
   // validate manifest file for required fields
-  ['name', 'version'].forEach(function (field) {
-    if (!manifest[field]) {
-      missingField(field);
-      isValid = false;
-    }
+  requireProperty(manifest, 'name');
+  requireProperty(manifest, 'version');
+
+  // validate required mapping fields
+  manifest.mapping.forEach(function (dataPoint) {
+    requireProperty(dataPoint, 'dataSetId');
+    requireProperty(dataPoint, 'alias');
+    requireProperty(dataPoint, 'fields');
+
+    // validate dataPoint mapping fields
+    dataPoint.fields.forEach(function (field) {
+      requireProperty(field, 'alias');
+      requireProperty(field, 'columnName');
+    });
   });
 
   // validate semver
   if (!semver.valid(manifest.version)) {
     fail('Invalid version', 'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/');
-    isValid = false;
   }
 
-  function missingField(field) {
-    fail('Missing required field: ' + field, 'Please add a `' + field + '` property to your manifest.json file');
+  function requireProperty(obj, prop) {
+    if (!obj[prop]) {
+      fail('Missing required property: ' + prop, 'Please add the missing `' + prop + '` property to your manifest.json file.');
+    }
   }
 
-  return isValid ? manifest : null;
+  return manifest;
 }
 
 Date.prototype.timeNow = function () {
