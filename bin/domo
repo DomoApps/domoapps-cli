@@ -20,8 +20,9 @@ var glob = require("glob");
 var fs = require('fs-extra');
 var Domo = require('ryuu-client');
 var home = Domo.getHomeDir();
-// can remove this in a few releases after people have updated
+// can remove these in a few releases after deprecating older versions
 cleanupLogins();
+cleanupMappings();
 var previousLogins = getPreviousLogins();
 
 var inquirer = require("inquirer");
@@ -577,6 +578,25 @@ function cleanupLogins(){
   });
 }
 
+function cleanupMappings(){
+  var manifest = getManifest(false);
+  var changed = false;
+  
+  if (!manifest.mapping || (manifest.mapping.length == 0)){ return; }
+  
+  manifest.mapping.forEach(function(dataPoint){
+    if (dataPoint.dataSourceId && !dataPoint.dataSetId){
+      dataPoint.dataSetId = dataPoint.dataSourceId;
+      delete dataPoint.dataSourceId;
+      changed = true;
+    }
+  });
+  
+  if (changed){
+    updateManifest(manifest);
+  }
+}
+
 function verifyLogin(login){
   if (!login.sid){
     fail('Not authenticated', 'Please login using "domo login"');
@@ -735,7 +755,7 @@ function persistLogin(instance, email){
  */
 function persistDesignId(design, manifest){
   manifest.id = design.id;
-  fs.writeJsonSync('manifest.json', manifest, {spaces: 2});
+  updateManifest(manifest);
   return design;
 }
 
@@ -746,7 +766,7 @@ function getLogin(instance){
 /**
 * Get the local manifest.json file, ensuring it's valid.
 */
-function getManifest(){
+function getManifest(verify = true){
   var manifest;
   try {
     manifest = fs.readFileSync(path.resolve('manifest.json'));
@@ -761,8 +781,14 @@ function getManifest(){
   catch (e){
     return fail('Your manifest.json file is not valid JSON', e.message);
   }
-  validateManifest(manifest);
+  if (verify){
+    validateManifest(manifest);
+  }
   return manifest;
+}
+
+function updateManifest(manifest){
+  fs.writeJsonSync('manifest.json', manifest, {spaces: 2});
 }
 
 /**

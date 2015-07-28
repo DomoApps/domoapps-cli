@@ -7,7 +7,7 @@
   },
   "mapping": [
     <% datasources.forEach(function(datasource, index){ %>{
-      "dataSourceId": "<%= datasource.id %>",
+      "dataSetId": "<%= datasource.id %>",
       "alias": "<%= datasource.alias %>",
       "fields": []
     }<% if (index !== datasources.length -1) {%>,
