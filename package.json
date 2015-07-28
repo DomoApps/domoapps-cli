@@ -2,7 +2,7 @@
   "name": "ryuu",
   "version": "2.6.10",
   "bin": {
-    "domo": "./dist/domo-dist"
+    "domo": "./bin/runner"
   },
   "dependencies": {
     "async": "~1.3.0",

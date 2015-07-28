@@ -6,9 +6,6 @@
  *
  */
 
-// enable source maps
-require('source-map-support').install();
-
 var semver = require('semver');
 var chalk = require('chalk');
 var program = require('commander');
@@ -29,7 +26,7 @@ var inquirer = require("inquirer");
 var Promise = require('bluebird');
 var validator = require('validator');
 var chokidar = require('chokidar');
-var server = require('./server-dist');
+var server = require('../server/server');
 var async = require('async');
 var shell = require('shelljs');
 var request = Promise.promisify(require('request'));

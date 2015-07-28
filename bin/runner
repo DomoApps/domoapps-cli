@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+
+// enable awesomeness
+require("babel/register")({
+  stage: 0
+});
+
+// enable source maps
+require('source-map-support').install();
+
+require('./domo');
+
