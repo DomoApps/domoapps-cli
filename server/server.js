@@ -2,7 +2,6 @@
  * domo dev server
  */
 
-require('babel-core/polyfill');
 var fs = require('fs-extra');
 var path = require('path');
 var _ = require('lodash');
