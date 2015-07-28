@@ -1,8 +1,9 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --harmony
 
 // enable awesomeness
 require("babel/register")({
-  stage: 0
+  stage: 0,
+  sourceMap: 'inline'
 });
 
 // enable source maps
