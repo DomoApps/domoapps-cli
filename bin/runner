@@ -3,7 +3,8 @@
 // enable awesomeness
 require("babel/register")({
   stage: 0,
-  sourceMap: 'inline'
+  sourceMap: 'inline',
+  only: ['domo.js', 'server.js']
 });
 
 // enable source maps
