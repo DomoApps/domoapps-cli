@@ -577,6 +577,9 @@ function cleanupLogins(){
 
 function cleanupMappings(){
   var manifest = getManifest(false);
+  
+  if (!manifest) { return; }
+  
   var changed = false;
   
   if (!manifest.mapping || (manifest.mapping.length == 0)){ return; }
@@ -769,7 +772,12 @@ function getManifest(verify = true){
     manifest = fs.readFileSync(path.resolve('manifest.json'));
   }
   catch (e){
-    return fail('No manifest.json file in this directory', 'Please publish from a directory containing a DomoApp design manifest.json file');
+    if (verify){
+      return fail('No manifest.json file in this directory', 'Please publish from a directory containing a DomoApp design manifest.json file');
+    }
+    else{
+      return;
+    }
   }
   
   try {
