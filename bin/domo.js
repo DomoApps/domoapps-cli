@@ -111,7 +111,9 @@ program
             fail('You are not logged in. Please login with \'domo login\' and then try logging in again.');
           }
           else if(e.statusCode === 403) {
-            fail('You do not have access to the design with id ' + manifest.id + ' on ' + login.instance + '.');
+            fail('You do not have access to the design with id ' + manifest.id + ' on ' + login.instance
+              + '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.'
+              + '\nAlternatively, you may have inadvertently changed the design id.');
           }
           else if(e.message && e.message.startsWith('DA')) {
             // Pass on error messages that are in the set of documented errors.
