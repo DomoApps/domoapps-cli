@@ -25,7 +25,7 @@
     "q": "~1.0.1",
     "request": "^2.42.0",
     "ryuu-client": "~2.3.7",
-    "ryuu.js": "x.x.x",
+    "ryuu.js": "latest",
     "semver": "~4.1.0",
     "shelljs": "^0.5.1",
     "source-map-support": "^0.3.2",
