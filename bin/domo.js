@@ -70,9 +70,9 @@ var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
 var mostRecent = getMostRecentLogin();
 
 program
-  .version(cliVersion)
+  .version(cliVersion, '-v, --version')
   .option('-w, --watch', 'publish DomoApp design every time a file changes')
-  .option('-v, --verbose', 'log more details including XHR responses, useful for troubleshooting');
+  .option('-vb, --verbose', 'log more details including XHR responses, useful for troubleshooting');
 
 program
   .command('ls')
