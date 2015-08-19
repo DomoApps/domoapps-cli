@@ -75,6 +75,32 @@ program
   .option('-v, --verbose', 'log more details including XHR responses, useful for troubleshooting');
 
 program
+  .command('ls')
+  .description('get a list of all your DomoApp designs')
+  .action(function(){
+    var login = getMostRecentLogin();
+    verifyLogin(login);
+    var domo = new Domo(login.instance, login.sid);
+    
+    domo.getDesigns().then(function(designs){
+      
+      var Table = require('cli-table');
+
+      // instantiate
+      var table = new Table({
+        head: [chalk.cyan('Design Name'), chalk.cyan('Design Id'), chalk.cyan('Date Created'), chalk.cyan('Last Updated')]
+      });
+      
+      designs.forEach(function(design){
+        table.push([design.design.name, design.design.id, new Date(design.design.createdDate).toUTCString(), new Date(design.design.lastModifiedDate).toUTCString()]);
+      });
+
+      console.log(table.toString());
+    });
+    
+  });
+  
+program
   .command('publish')
   .description('publish a new or existing DomoApp design')
   .action(function(){
