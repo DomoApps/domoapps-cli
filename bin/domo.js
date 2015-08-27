@@ -30,6 +30,7 @@ var server = require('../server/server');
 var async = require('async');
 var shell = require('shelljs');
 var request = Promise.promisify(require('request'));
+var extract = require('extract-zip');
 require('../polyfills/endswith');
 
 var logo = `
@@ -98,6 +99,50 @@ program
       console.log(table.toString());
     });
     
+  });
+  
+program
+  .command('download')
+  .description('dowmload a Domo App design')
+  .action(function(){
+    var login = getMostRecentLogin();
+    verifyLogin(login);
+
+    var domo = new Domo(login.instance, login.sid);
+    
+    inquirer.prompt([{
+        type: 'input',
+        message: 'design id',
+        name: 'designId'
+      },
+      {
+        type: 'input',
+        message: 'version',
+        name: 'version',
+        default: 'latest'
+      }], function(answers){
+        var req = domo.download(answers.designId, answers.version);
+        
+        req.on('response', function(response){
+          var regexp = /filename="(.*)"/;
+          var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
+          
+          var writeStream = fs.createWriteStream('./'+name+'.zip');
+          req.pipe(writeStream);
+          
+          writeStream.on('finish', function(){
+            var source = path.resolve('./'+name+'.zip');
+            var target = path.resolve('./'+name);
+            
+            extract(source, {dir: target}, function(err, results) {
+              if (!err){
+                fs.remove(source);
+              }
+            });
+          });
+        });
+      });
+      
   });
   
 program
