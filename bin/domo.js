@@ -15,7 +15,8 @@ var path = require('path');
 var _ = require('lodash');
 var glob = require("glob");
 var fs = require('fs-extra');
-var Domo = require('ryuu-client');
+// var Domo = require('ryuu-client');
+var Domo = require('../../domoapps-client/lib/domoapps-client.js')
 var home = Domo.getHomeDir();
 // can remove these in a few releases after deprecating older versions
 cleanupLogins();
@@ -200,28 +201,37 @@ program
   });
 
 program
+  .command('manifest')
+  .description('initialize a new DomoApp manifest file')
+  .action(function(){
+    Domo.generateManifest()
+      .then(function(allAnswers){
+        // write generated manifest file.
+        fs.writeFileSync(process.cwd() + '/manifest.json', allAnswers.manifest);
+        ok("New manifest.json initialized");
+      });
+  });
+
+program
   .command('init')
   .description('initialize a new DomoApp design')
   .action(function(){
-    inquirer.prompt([{
-        type: 'input',
-        message: 'design name',
-        name: 'name'
-      }], function(answers){
-        answers.datasources = [];
-        askDatasource(answers, function(allAnswers){
-          // populate and write out the template files
-          var files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
-          var dirs = [null, null, null, null, __dirname + '/../node_modules/ryuu.js/'];
+    Domo.generateManifest()
+      .then(function(allAnswers){
+        // populate and write out the template files
+        var files = ['index.html', 'app.js', 'app.css', 'domo.js'];
+        var dirs = [null, null, null, __dirname + '/../node_modules/ryuu.js/'];
 
-          writeFilesIfNonexistent(files, dirs, allAnswers, function(err, res) {
-            if(err) {
-              fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
-            }
-            else {
-              ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a DomoApp card to any page in Domo.");
-            }
-          });
+        // write generated manifest file.
+        fs.writeFileSync(process.cwd() + '/manifest.json', allAnswers.manifest);
+        
+        writeFilesIfNonexistent(files, dirs, allAnswers, function(err, res) {
+          if(err) {
+            fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
+          }
+          else {
+            ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a DomoApp card to any page in Domo.");
+          }
         });
       });
   });
