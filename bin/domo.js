@@ -15,8 +15,7 @@ var path = require('path');
 var _ = require('lodash');
 var glob = require("glob");
 var fs = require('fs-extra');
-// var Domo = require('ryuu-client');
-var Domo = require('../../domoapps-client/lib/domoapps-client.js')
+var Domo = require('ryuu-client');
 var home = Domo.getHomeDir();
 // can remove these in a few releases after deprecating older versions
 cleanupLogins();
