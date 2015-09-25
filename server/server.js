@@ -107,20 +107,3 @@ function getDomoappsDomain(){
     });
   });
 }
-
-/**
- * Convert mapping to short syntax.
- * Datasourceid followed by any field aliases.
- * Will use this in the future.
- */
-// function shortenMapping(mapping){
-//   var res = [];
-//   mapping.forEach(function(datapoint){
-//     res.push(datapoint.dataSourceId);
-//     datapoint.fields.forEach(function(field){
-//       res.push(field.columnName);
-//     });
-//   });
-//   
-//   return JSON.stringify(res);
-// }
