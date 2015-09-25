@@ -308,7 +308,8 @@ program
       if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
     } else {
       var manifest = getManifest();
-      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
+      if (!manifest) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
+      if (!manifest.id) return fail('No manifest id. Please publish your design before attempting to add owners to it.');
       designId = manifest.id;
     }
 
