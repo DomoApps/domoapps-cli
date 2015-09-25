@@ -18,6 +18,8 @@ var portfinder = require('portfinder');
 portfinder.basePort = 3000;
 
 api.get('/', function *(){
+  // TODO: figure out why this is being called twice
+  // console.log("=========here why twice?");
   var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/wrapper.html')));
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/manifest.json'));
   var sizeMultiplier = {
@@ -29,11 +31,9 @@ api.get('/', function *(){
   var width = 235 * manifest.size.width - 10;
   var height = 290 * manifest.size.height - 40;
   
-  var url = "/index.html?userId=27&customer=dev&locale=en-US&platform=desktop";
-  // var mapping = shortenMapping(manifest.mapping);
-  var mapping = encodeURIComponent(JSON.stringify(manifest.mapping));
-  url += "&mappingOverride=" + mapping;
-  
+  var context = yield createContext(manifest.id, manifest.mapping);
+  // TODO: pass actual userId in
+  var url = "/index.html?userId=27&customer=dev&locale=en-US&platform=desktop&context=" + context.id;
   this.body = template({ manifest: manifest, width: width, height: height, url: url });
 });
 
@@ -99,11 +99,28 @@ function getDomoappsDomain(){
   return new Promise(function(resolve, reject){
     request({url: 'https://' + app.domo.instance + '/api/content/v1/mobile/environment', jar: j}, function(err, res){
       if (res.statusCode === 200){
-        resolve('https://'+uuid+'.' + JSON.parse(res.body).domoappsDomain);
+        var url = 'https://'+uuid+'.' + JSON.parse(res.body).domoappsDomain; 
+        resolve(url);
       }
       else {
         resolve('https://'+uuid+'.domoapps.' + getEnv());
       }
     });
+  });
+}
+
+function createContext(designId, mapping){
+  return new Promise(function(resolve, reject){
+    var options = {
+      url: 'https://' + app.domo.instance + '/domoapps/apps/v2/contexts',
+      method: 'POST',
+      json: {designId: designId, mapping: mapping},
+      headers: { 'X-Domo-Authentication': app.domo.sid }
+    };
+    
+    request(options, function(err, res){
+      resolve(res.body[0]);
+    });
+    
   });
 }
