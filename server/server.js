@@ -18,6 +18,9 @@ var portfinder = require('portfinder');
 portfinder.basePort = 3000;
 
 api.get('/', function *(){
+  
+  var isValidSession = yield checkSession();
+  
   // TODO: figure out why this is being called twice
   // console.log("=========here why twice?");
   var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/wrapper.html')));
@@ -34,7 +37,7 @@ api.get('/', function *(){
   var context = yield createContext(manifest.id, manifest.mapping);
   // TODO: pass actual userId in
   var url = "/index.html?userId=27&customer=dev&locale=en-US&platform=desktop&context=" + context.id;
-  this.body = template({ manifest: manifest, width: width, height: height, url: url });
+  this.body = template({ manifest: manifest, width: width, height: height, url: url, isValidSession: isValidSession });
 });
 
 // Proxy requests to the correct domoapps service for the environment they're logged into.
@@ -54,23 +57,33 @@ app.use(require('koa-static')('.'));
 
 module.exports = {
   start: function(domo){
-    portfinder.getPorts(2, function (err, ports) {
-      var assetsPort = ports[0];
-      var dataPort = ports[1];
-      app.domo = domo;
+    return new Promise(function(resolve, reject){
       
-      app.listen(dataPort)
-      
-      bs.init({
-        proxy: "localhost:" + dataPort,
-        port: assetsPort,
-        notify: false,
-        ui: false,
-        logLevel: 'info',
-        // TODO: add user's ignored files here too?
-        files: ['**/*', '!node_modules/**/*']
+      portfinder.getPorts(2, function (err, ports) {
+        var assetsPort = ports[0];
+        var dataPort = ports[1];
+        app.domo = domo;
+        
+        checkSession()
+          .then(function(){
+            app.listen(dataPort)
+            
+            bs.init({
+              proxy: "localhost:" + dataPort,
+              port: assetsPort,
+              notify: false,
+              ui: false,
+              logLevel: 'info',
+              // TODO: add user's ignored files here too?
+              files: ['**/*', '!node_modules/**/*']
+            });
+            
+          })
+          .catch(function(e){
+            reject('Session expired. Please login again using domo login.');
+          })
       });
-      
+            
     });
   }
 };
@@ -121,6 +134,35 @@ function createContext(designId, mapping){
     request(options, function(err, res){
       resolve(res.body[0]);
     });
+    
+  });
+}
+
+function checkSession(){
+  return new Promise(function(resolve, reject){
+    var options = {
+      url: 'https://' + app.domo.instance + '/auth/validate',
+      method: 'GET',
+      headers: { 'X-Domo-Authentication': app.domo.sid }
+    };
+    
+    request(options, function(err, res){
+      try{
+        var isValid = JSON.parse(res.body).isValid;
+        if(isValid){
+          resolve(true);
+        }
+        else {
+          reject(false);
+        }
+      }
+      catch(e){
+        // couldn't parse as JSON which means the service doesn't exist yet.
+        // TODO: remove this once the /domoweb/auth/validate service has shipped to prod
+        resolve(true);
+      }
+    })
+    
     
   });
 }

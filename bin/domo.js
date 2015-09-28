@@ -522,7 +522,7 @@ program
     var login = getMostRecentLogin();
     verifyLogin(login);
     var domo = new Domo(login.instance, login.sid);
-    server.start(domo);
+    server.start(domo).catch(fail);
   });
 
 program.parse(process.argv);
