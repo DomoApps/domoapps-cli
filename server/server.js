@@ -35,6 +35,12 @@ api.get('/', function *(){
   var height = 290 * manifest.size.height - 40;
   
   var context = yield createContext(manifest.id, manifest.mapping);
+  
+  if (!context){
+    isValidSession = false;
+    context = {id: 0};
+  }
+  
   // TODO: pass actual userId in
   var url = "/index.html?userId=27&customer=dev&locale=en-US&platform=desktop&context=" + context.id;
   this.body = template({ manifest: manifest, width: width, height: height, url: url, isValidSession: isValidSession });
