@@ -55,7 +55,7 @@ api.get('/data/v1/:query', function *(){
   var auth = 'DA-SID-'+getCustomer()+'="'+app.domo.sid+'"';
   var cookie = request.cookie(auth);
   j.setCookie(cookie, baseUrl);
-  this.body = request({url: url, jar: j, headers: { referer: this.request.headers.referer}});
+  this.body = request({url: url, jar: j, headers: { referer: this.request.headers.referer, accept: this.request.headers.accept}});
 });
 
 app.use(api.middleware());
