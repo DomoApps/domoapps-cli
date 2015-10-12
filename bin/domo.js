@@ -127,7 +127,7 @@ program
           var regexp = /filename="(.*)"/;
           var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
           
-          var writeStream = fs.createWriteStream('./'+name+'.zip');
+          var writeStream = fs.createWriteStream('./'+name+'.zip', {flags: 'w+', mode: 0o666});
           req.pipe(writeStream);
           
           writeStream.on('finish', function(){
