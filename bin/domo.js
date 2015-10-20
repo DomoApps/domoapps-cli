@@ -203,17 +203,31 @@ program
   .command('init')
   .description('initialize a new DomoApp design')
   .action(function(){
-    inquirer.prompt([{
+    inquirer.prompt([
+      {
         type: 'input',
         message: 'design name',
         name: 'name'
-      }], function(answers){
+      },
+      {
+        type: 'list',
+        message: 'select a starter',
+        name: 'starter',
+        choices: ['hello world', 'manifest only']
+      }
+      
+      ], function(answers){
         answers.datasources = [];
         askDatasource(answers, function(allAnswers){
           // populate and write out the template files
           var files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
           var dirs = [null, null, null, null, __dirname + '/../node_modules/ryuu.js/'];
-
+          
+          if(allAnswers.starter === 'manifest only'){
+            files = ['manifest.json'];
+            dirs = [null];
+          }
+          
           writeFilesIfNonexistent(files, dirs, allAnswers, function(err, res) {
             if(err) {
               fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
