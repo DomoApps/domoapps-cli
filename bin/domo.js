@@ -136,7 +136,7 @@ program
             
             extract(source, {dir: target}, function(err, results) {
               if (!err){
-                shell.chmod('-R', 770, target);
+                shell.chmod('-R', 'u+w', target);
                 fs.remove(source);
               }
             });
