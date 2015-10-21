@@ -15,6 +15,8 @@ var Promise = require('bluebird');
 var app = koa();
 var api = new Router();
 var portfinder = require('portfinder');
+var serve = require('koa-static');
+var mount = require('koa-mount');
 portfinder.basePort = 3000;
 
 api.get('/', function *(){
@@ -23,7 +25,7 @@ api.get('/', function *(){
   
   // TODO: figure out why this is being called twice
   // console.log("=========here why twice?");
-  var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/wrapper.html')));
+  var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/wrapper.html')));
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/manifest.json'));
   var sizeMultiplier = {
     width: 235,
@@ -42,7 +44,7 @@ api.get('/', function *(){
   }
   
   // TODO: pass actual userId in
-  var url = "/index.html?userId=27&customer=dev&locale=en-US&platform=desktop&context=" + context.id;
+  var url = "/app/index.html?userId=27&customer=dev&locale=en-US&platform=desktop&context=" + context.id;
   this.body = template({ manifest: manifest, width: width, height: height, url: url, isValidSession: isValidSession });
 });
 
@@ -59,7 +61,8 @@ api.get('/data/v1/:query', function *(){
 });
 
 app.use(api.middleware());
-app.use(require('koa-static')('.'));
+app.use(mount(serve(path.resolve(__dirname + '/../server/domodev'))));
+app.use(mount('/app', serve('.')));
 
 module.exports = {
   start: function(domo){
