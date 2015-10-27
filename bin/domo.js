@@ -220,15 +220,21 @@ program
       ], function(answers){
         answers.datasources = [];
         askDatasource(answers, function(allAnswers){
-          // populate and write out the template files
-          var files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
-          var dirs = [null, null, null, null, __dirname + '/../node_modules/ryuu.js/'];
+          var files;
+          var dirs;
           
           if(allAnswers.starter === 'manifest only'){
             files = ['manifest.json'];
             dirs = [null];
           }
+          else if (allAnswers.starter = 'hello world'){
+            files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
+            dirs = [null, null, null, null, 'node_modules/ryuu.js/'];
+            // fetch latest domo.js
+            var output = shell.exec('npm install ryuu.js@latest', {async: false, silent: true});  
+          }
           
+          // populate and write out the template files
           writeFilesIfNonexistent(files, dirs, allAnswers, function(err, res) {
             if(err) {
               fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
@@ -236,6 +242,11 @@ program
             else {
               ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a DomoApp card to any page in Domo.");
             }
+            
+            if (allAnswers.starter = 'hello world'){
+              fs.remove('node_modules');
+            }
+            
           });
         });
       });
