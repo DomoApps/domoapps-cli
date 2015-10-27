@@ -44,7 +44,7 @@ api.get('/', function *(){
   }
   
   // TODO: pass actual userId in
-  var url = "/app/index.html?userId=27&customer=dev&locale=en-US&platform=desktop&context=" + context.id;
+  var url = "index.html?userId=27&customer=dev&locale=en-US&platform=desktop&context=" + context.id;
   this.body = template({ manifest: manifest, width: width, height: height, url: url, isValidSession: isValidSession });
 });
 
@@ -61,8 +61,8 @@ api.get('/data/v1/:query', function *(){
 });
 
 app.use(api.middleware());
-app.use(mount(serve(path.resolve(__dirname + '/../server/domodev'))));
-app.use(mount('/app', serve('.')));
+app.use(mount('/domodev', serve(path.resolve(__dirname + '/../server/domodev'))));
+app.use(mount(serve('.')));
 
 module.exports = {
   start: function(domo){
