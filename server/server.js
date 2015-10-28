@@ -17,11 +17,12 @@ var api = new Router();
 var portfinder = require('portfinder');
 var serve = require('koa-static');
 var mount = require('koa-mount');
+var session = require('../util/session');
 portfinder.basePort = 3000;
 
 api.get('/', function *(){
   
-  var isValidSession = yield checkSession();
+  var isValidSession = yield session.check(app.domo);
   
   // TODO: figure out why this is being called twice
   // console.log("=========here why twice?");
@@ -73,7 +74,7 @@ module.exports = {
         var dataPort = ports[1];
         app.domo = domo;
         
-        checkSession()
+        session.check(app.domo)
           .then(function(){
             app.listen(dataPort)
             
@@ -143,35 +144,6 @@ function createContext(designId, mapping){
     request(options, function(err, res){
       resolve(res.body[0]);
     });
-    
-  });
-}
-
-function checkSession(){
-  return new Promise(function(resolve, reject){
-    var options = {
-      url: 'https://' + app.domo.instance + '/auth/validate',
-      method: 'GET',
-      headers: { 'X-Domo-Authentication': app.domo.sid }
-    };
-    
-    request(options, function(err, res){
-      try{
-        var isValid = JSON.parse(res.body).isValid;
-        if(isValid){
-          resolve(true);
-        }
-        else {
-          reject(false);
-        }
-      }
-      catch(e){
-        // couldn't parse as JSON which means the service doesn't exist yet.
-        // TODO: remove this once the /domoweb/auth/validate service has shipped to prod
-        resolve(true);
-      }
-    })
-    
     
   });
 }
