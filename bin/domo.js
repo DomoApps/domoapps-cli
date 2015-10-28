@@ -32,6 +32,7 @@ var shell = require('shelljs');
 var request = Promise.promisify(require('request'));
 var extract = require('extract-zip');
 require('../polyfills/endswith');
+var session = require('../util/session');
 
 var logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -83,22 +84,28 @@ program
     verifyLogin(login);
     var domo = new Domo(login.instance, login.sid);
     
-    domo.getDesigns().then(function(designs){
-      
-      var Table = require('cli-table');
-
-      // instantiate
-      var table = new Table({
-        head: [chalk.cyan('Design Name'), chalk.cyan('Design Id'), chalk.cyan('Date Created'), chalk.cyan('Last Updated')]
-      });
-      
-      designs.forEach(function(design){
-        table.push([design.design.name, design.design.id, new Date(design.design.createdDate).toUTCString(), new Date(design.design.lastModifiedDate).toUTCString()]);
-      });
-
-      console.log(table.toString());
-    });
-    
+    session.check(domo)
+      .then(function(){
+        
+        domo.getDesigns().then(function(designs){
+          var Table = require('cli-table');
+        
+          // instantiate
+          var table = new Table({
+            head: [chalk.cyan('Design Name'), chalk.cyan('Design Id'), chalk.cyan('Date Created'), chalk.cyan('Last Updated')]
+          });
+          
+          designs.forEach(function(design){
+            table.push([design.design.name, design.design.id, new Date(design.design.createdDate).toUTCString(), new Date(design.design.lastModifiedDate).toUTCString()]);
+          });
+        
+          console.log(table.toString());
+        });
+        
+      })
+      .catch(function(){
+        fail('Not authenticated', 'Please login using "domo login"');
+      })
   });
   
 program
