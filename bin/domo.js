@@ -236,7 +236,7 @@ program
           }
           else if (allAnswers.starter === 'hello world'){
             files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
-            dirs = [null, null, null, null, path.join(__dirname, '../node_modules/ryuu.js/')];
+            dirs = [null, null, null, null, 'node_modules/ryuu.js/'];
             // fetch latest domo.js
             var output = shell.exec('npm install ryuu.js@latest', {async: false, silent: true});  
           }
@@ -250,7 +250,7 @@ program
               ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a DomoApp card to any page in Domo.");
             }
             
-            if (allAnswers.starter = 'hello world'){
+            if (allAnswers.starter === 'hello world'){
               fs.remove('node_modules');
             }
             
