@@ -21,7 +21,7 @@ window.addEventListener('message', function(e) {
 
 
 function isHostSafe(name){
-  var whitelist = ['domo.com', 'github.com', 'salesforce.com', 'trello.com', 'jira.com'];
+  var whitelist = ['domo.com', 'github.com', 'salesforce.com', 'trello.com', 'jira.com', 'coupahost.com'];
   return _.contains(whitelist, name);
 }
 
