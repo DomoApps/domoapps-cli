@@ -83,31 +83,31 @@ program
     var login = getMostRecentLogin();
     verifyLogin(login);
     var domo = new Domo(login.instance, login.sid);
-    
+
     session.check(domo)
       .then(function(){
-        
+
         domo.getDesigns().then(function(designs){
           var Table = require('cli-table');
-        
+
           // instantiate
           var table = new Table({
             head: [chalk.cyan('Design Name'), chalk.cyan('Design Id'), chalk.cyan('Date Created'), chalk.cyan('Last Updated')]
           });
-          
+
           designs.forEach(function(design){
             table.push([design.design.name, design.design.id, new Date(design.design.createdDate).toUTCString(), new Date(design.design.lastModifiedDate).toUTCString()]);
           });
-        
+
           console.log(table.toString());
         });
-        
+
       })
       .catch(function(){
         fail('Not authenticated', 'Please login using "domo login"');
       })
   });
-  
+
 program
   .command('download')
   .description('dowmload a Domo App design')
@@ -116,7 +116,7 @@ program
     verifyLogin(login);
 
     var domo = new Domo(login.instance, login.sid);
-    
+
     inquirer.prompt([{
         type: 'input',
         message: 'design id',
@@ -129,18 +129,18 @@ program
         default: 'latest'
       }], function(answers){
         var req = domo.download(answers.designId, answers.version);
-        
+
         req.on('response', function(response){
           var regexp = /filename="(.*)"/;
           var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
-          
+
           var writeStream = fs.createWriteStream('./'+name+'.zip', {flags: 'w+', mode: 0o666});
           req.pipe(writeStream);
-          
+
           writeStream.on('finish', function(){
             var source = path.resolve('./'+name+'.zip');
             var target = path.resolve('./'+name);
-            
+
             extract(source, {dir: target}, function(err, results) {
               if (!err){
                 shell.chmod('-R', 'u+w', target);
@@ -150,9 +150,9 @@ program
           });
         });
       });
-      
+
   });
-  
+
 program
   .command('publish')
   .description('publish a new or existing DomoApp design')
@@ -223,24 +223,22 @@ program
         name: 'starter',
         choices: ['hello world', 'manifest only']
       }
-      
+
       ], function(answers){
         answers.datasources = [];
         askDatasource(answers, function(allAnswers){
           var files;
           var dirs;
-          
+
           if(allAnswers.starter === 'manifest only'){
             files = ['manifest.json'];
             dirs = [null];
           }
           else if (allAnswers.starter === 'hello world'){
             files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
-            dirs = [null, null, null, null, 'node_modules/ryuu.js/'];
-            // fetch latest domo.js
-            var output = shell.exec('npm install ryuu.js@latest', {async: false, silent: true});  
+            dirs = [null, null, null, null, null];
           }
-          
+
           // populate and write out the template files
           writeFilesIfNonexistent(files, dirs, allAnswers, function(err, res) {
             if(err) {
@@ -249,11 +247,11 @@ program
             else {
               ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a DomoApp card to any page in Domo.");
             }
-            
+
             if (allAnswers.starter === 'hello world'){
               fs.remove('node_modules');
             }
-            
+
           });
         });
       });
@@ -288,7 +286,7 @@ function writeFilesIfNonexistent(files, dirs, allAnswers, callback) {
     fs.writeFileSync(process.cwd() + '/' + file, contents);
   }
 }
-  
+
 function addDatasource(currentAnswers, callback){
     inquirer.prompt([
       {
@@ -459,9 +457,9 @@ program
       if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io')){
         fail('Please login using the full Domo instance.', 'Example: "ebay.domo.com"');
       }
-      
+
       var login;
-      
+
       var domo = new Domo(answers.instance, null);
       domo
         .login(answers.email, answers.password)
@@ -477,7 +475,7 @@ program
         })
         .then(persistLogin(answers.instance, answers.email))
         .catch(evoke(fail, 'Login unsuccessful'));
-    });    
+    });
   });
 
 program
@@ -547,7 +545,7 @@ program
     });
 
   });
-  
+
 program
   .command('dev')
   .description('work locally on a DomoApp')
@@ -579,17 +577,17 @@ function checkVersion(instance){
  * if action is 'block' then 'fail' will get called and end the process early
  */
 function verifyVersion(res){
-  
+
   var body = res[0].body;
   if (body.action === 'block'){
     fail(body.message);
   }
-  
+
   if (body.action === 'warn'){
     warn(body.message);
     return promptUpgrade(body.latest);
   }
-  
+
   if (body.action === 'info'){
     info(body.message);
     return promptUpgrade(body.latest);
@@ -605,7 +603,7 @@ function promptUpgrade(latest){
         name: "upgrade",
         default: true
       }
-      
+
     ], function(answers) {
       if(answers.upgrade){
         info('Upgrading to latest version', 'Hang tight, this may take a moment...');
@@ -684,13 +682,13 @@ function cleanupLogins(){
 
 function cleanupMappings(){
   var manifest = getManifest(false);
-  
+
   if (!manifest) { return; }
-  
+
   var changed = false;
-  
+
   if (!manifest.mapping || (manifest.mapping.length == 0)){ return; }
-  
+
   manifest.mapping.forEach(function(dataPoint){
     if (dataPoint.dataSourceId && !dataPoint.dataSetId){
       dataPoint.dataSetId = dataPoint.dataSourceId;
@@ -698,7 +696,7 @@ function cleanupMappings(){
       changed = true;
     }
   });
-  
+
   if (changed){
     updateManifest(manifest);
   }
@@ -722,12 +720,12 @@ function verifyNodeVersion(){
 function watch(domo, login, manifest){
   var currentVersion = manifest.version;
   var currentDesignId = manifest.id;
-  
+
   chokidar.watch('.', {ignored: /[\/\\]\./, ignoreInitial: true}).on('all', function(event, filepath) {
-    
+
     // don't do anything for deleted files/folders
     if (event == 'unlink' || event == 'unlinkDir') return;
-    
+
     // if manifest version or id changed, upload all assets
     if (filepath.indexOf('manifest.json') !== -1){
       var newManifest = getManifest();
@@ -745,7 +743,7 @@ function watch(domo, login, manifest){
         return;
       }
     }
-    
+
     // upload just the individual asset
     var relFilePath = path.relative(process.cwd(), filepath);
     domo.uploadAsset(manifest.id, manifest.version, relFilePath)
@@ -823,7 +821,7 @@ function fail(msg, submessage, result){
     console.log(chalk.red("path:"), result.path);
     console.log(chalk.red("response:"), result.res);
   }
-  
+
   process.exit();
 }
 
@@ -886,7 +884,7 @@ function getManifest(verify = true){
       return;
     }
   }
-  
+
   try {
     manifest = JSON.parse(manifest);
   }
@@ -907,17 +905,17 @@ function updateManifest(manifest){
 * Validate the manifest file.
 */
 function validateManifest(manifest){
-  
+
   // validate manifest file for required fields
   requireProperty(manifest, 'name');
   requireProperty(manifest, 'version');
-  
+
   // validate required mapping fields
   manifest.mapping.forEach(function(dataPoint){
     requireProperty(dataPoint, 'dataSetId');
     requireProperty(dataPoint, 'alias');
     requireProperty(dataPoint, 'fields');
-    
+
     // validate dataPoint mapping fields
     dataPoint.fields.forEach(function(field){
       requireProperty(field, 'alias');
@@ -929,13 +927,13 @@ function validateManifest(manifest){
   if (!semver.valid(manifest.version)){
     fail('Invalid version', 'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/');
   }
-  
+
   function requireProperty(obj, prop){
     if (!obj[prop]){
       fail('Missing required property: ' + prop, 'Please add the missing `'+ prop +'` property to your manifest.json file.');
     }
   }
-  
+
   return manifest;
 }
 
