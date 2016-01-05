@@ -21,36 +21,36 @@ var session = require('../util/session');
 portfinder.basePort = 3000;
 
 api.get('/', function *(){
-  
+
   var isValidSession = yield session.check(app.domo);
-  
+
   // TODO: figure out why this is being called twice
   // console.log("=========here why twice?");
   var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/wrapper.html')));
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/manifest.json'));
   var sizeMultiplier = {
     width: 235,
-    height: 290 
+    height: 290
   }
-  
+
   // sizes consistent with Domo Web
   var width = 235 * manifest.size.width - 10;
   var height = 290 * manifest.size.height - 40;
-  
+
   var context = yield createContext(manifest.id, manifest.mapping);
-  
+
   if (!context){
     isValidSession = false;
     context = {id: 0};
   }
-  
+
   // TODO: pass actual userId in
   var url = "index.html?userId=27&customer=dev&locale=en-US&platform=desktop&context=" + context.id;
   this.body = template({ manifest: manifest, width: width, height: height, url: url, isValidSession: isValidSession });
 });
 
 // Proxy requests to the correct domoapps service for the environment they're logged into.
-api.get('/data/v1/:query', function *(){
+api.all('/data/v1/:query', function *(){
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/manifest.json'));
   var baseUrl = yield getDomoappsDomain();
   var j = request.jar();
@@ -68,16 +68,16 @@ app.use(mount(serve('.')));
 module.exports = {
   start: function(domo){
     return new Promise(function(resolve, reject){
-      
+
       portfinder.getPorts(2, function (err, ports) {
         var assetsPort = ports[0];
         var dataPort = ports[1];
         app.domo = domo;
-        
+
         session.check(app.domo)
           .then(function(){
             app.listen(dataPort)
-            
+
             bs.init({
               proxy: "localhost:" + dataPort,
               port: assetsPort,
@@ -87,13 +87,13 @@ module.exports = {
               // TODO: add user's ignored files here too?
               files: ['**/*', '!node_modules/**/*']
             });
-            
+
           })
           .catch(function(e){
             reject('Session expired. Please login again using domo login.');
           })
       });
-            
+
     });
   }
 };
@@ -118,11 +118,11 @@ function getDomoappsDomain(){
   var auth = 'SID="'+app.domo.sid+'"';
   var cookie = request.cookie(auth);
   j.setCookie(cookie, 'https://' + app.domo.instance);
-  
+
   return new Promise(function(resolve, reject){
     request({url: 'https://' + app.domo.instance + '/api/content/v1/mobile/environment', jar: j}, function(err, res){
       if (res.statusCode === 200){
-        var url = 'https://'+uuid+'.' + JSON.parse(res.body).domoappsDomain; 
+        var url = 'https://'+uuid+'.' + JSON.parse(res.body).domoappsDomain;
         resolve(url);
       }
       else {
@@ -140,10 +140,10 @@ function createContext(designId, mapping){
       json: {designId: designId, mapping: mapping},
       headers: { 'X-Domo-Authentication': app.domo.sid }
     };
-    
+
     request(options, function(err, res){
       resolve(res.body[0]);
     });
-    
+
   });
 }
