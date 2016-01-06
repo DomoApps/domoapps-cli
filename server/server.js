@@ -50,7 +50,7 @@ api.get('/', function *(){
 });
 
 // Proxy requests to the correct domoapps service for the environment they're logged into.
-api.all('/data/v1/:query', function *(){
+api.all('/data/*', function *(){
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/manifest.json'));
   var baseUrl = yield getDomoappsDomain();
   var j = request.jar();
