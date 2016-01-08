@@ -1,5 +1,5 @@
 /**
-domo.js v2.4.1
+domo.js v2.5.0
 Optional utility library for DomoApps
 Includes es6-promises polyfill (https://github.com/jakearchibald/es6-promise) for older browsers
 */
@@ -106,10 +106,11 @@ function domo(){};
   /**
    * Request a navigation change
    */
-  domo.navigate = function(url){
+  domo.navigate = function(url, isNewWindow){
     var message = JSON.stringify({
       event: 'navigate',
-      url: url
+      url: url,
+      isNewWindow: isNewWindow
     });
     window.parent.postMessage(message, "*");
   }
