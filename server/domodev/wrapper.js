@@ -3,19 +3,25 @@ window.addEventListener('message', function(e) {
   var message = JSON.parse(e.data);
   if (message.event === 'navigate'){
     var host = getHost(message.url);
-    
+
     if (host.isLocal){
       console.info('this relative link WILL work in Domo, just not in domo dev');
       return;
     }
-    
+
     var isSafe = isHostSafe(host.name);
     if (!isSafe){
       console.warn('Domo App tried to navigate to a currently unsupported domain');
       return;
     }
-    
-    window.location.href = message.url;
+
+    if (message.isNewWindow){
+      window.open(message.url, '_blank');
+    }
+    else{
+      window.location.href = message.url;
+    }
+
   }
 });
 
