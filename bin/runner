@@ -1,5 +1,10 @@
 #!/usr/bin/env node --harmony
 
+var os = require('os'),
+    path = require('path');
+
+process.env.BABEL_CACHE_PATH = path.join(os.tmpdir(), '/ryuu.json');
+
 // enable awesomeness
 require("babel/register")({
   stage: 0,
