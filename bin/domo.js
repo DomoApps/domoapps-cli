@@ -937,6 +937,19 @@ function validateManifest(manifest){
   return manifest;
 }
 
+/**
+ * Ensure that there is a thumbnail.png file
+ * Used on domo release
+ */
+function ensureThumbnail(){
+  try {
+    var thumbnail = fs.readFileSync(path.resolve('thumbnail.png'));
+  }
+  catch (ex){
+    fail('Design thumbnail.png required.', 'Please add a 300x300 image named thumbnail.png to the root of your project to represent your design.');
+  }
+}
+
 Date.prototype.timeNow = function () {
      return "(" + ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds() + ")";
 }
