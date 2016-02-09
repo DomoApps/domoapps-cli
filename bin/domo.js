@@ -555,6 +555,44 @@ program
     var domo = new Domo(login.instance, login.sid);
     server.start(domo).catch(fail);
   });
+  
+program
+  .command('release')
+  .description('prepare a design for app store release')
+  .action(function(){
+    var login = getMostRecentLogin();
+    verifyLogin(login);
+    var domo = new Domo(login.instance, login.sid);
+    var manifest = getManifest();
+    
+    // make sure app has been published first
+    if (!manifest.id){
+      fail('Can\'t release until design is published.', 'Please publish your domo app design (with the `domo publish` command) first');
+    }
+    
+    // make sure there is a thumbnail.png when releasing
+    ensureThumbnail();
+    
+    // prompt the user for which design version they want to release, defaulting to latest
+    domo.getVersions(manifest.id)
+      .then(function(versions){
+        versions.reverse();
+        versions.unshift('latest');
+        
+        inquirer.prompt([
+          {
+            type: 'list',
+            message: 'select a version to release',
+            name: 'version',
+            choices: versions
+          }], function(answers){
+            // release the kraken
+            domo.release(manifest.id, answers.version)
+              .tap(evoke(ok, 'Design version ('+answers.version+') released'))
+              .catch(fail)
+          })
+      })
+  })
 
 program.parse(process.argv);
 
