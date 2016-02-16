@@ -188,11 +188,11 @@ program
                 inquirer.prompt([
                   {
                     type: 'confirm',
-                    message: 'would you like to create a new design',
-                    name: 'askRecrate'
+                    message: 'This design has been deleted. Would you like to publish a new design with these assets?',
+                    name: 'askRecreate'
                   }
                 ], function (answers) {
-                  if (answers.askRecrate){
+                  if (answers.askRecreate){
                     manifest.id = null;
                     createDesign(domo, manifest, login);
                   }
