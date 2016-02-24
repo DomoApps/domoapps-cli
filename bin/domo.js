@@ -166,20 +166,7 @@ program
     var domo = new Domo(login.instance, login.sid);
 
     if (!manifest.id){
-      domo.createDesign(manifest)
-          .then(function(designResult){
-            var design = designResult[0];
-            // add the version returned when design published
-            design.version = designResult[1].version;
-            return persistDesignId(design, manifest);
-          })
-          .tap(evoke(ok, 'New design created on ' + login.instance))
-          .catch(evoke(fail, 'Error creating new design'))
-          .then(domo.uploadAllAssets.bind(domo))
-          .then(logUploadSuccess)
-          .catch(function(e){
-            fail(e || 'Error uploading assets');
-          });
+      createDesign(domo, manifest, login);
     }
     else{
       domo.uploadAllAssets(manifest)
@@ -195,8 +182,29 @@ program
               + '\nAlternatively, you may have inadvertently changed the design id.');
           }
           else if(e.message && e.message.startsWith('DA')) {
-            // Pass on error messages that are in the set of documented errors.
-            fail(e.message);
+            switch (e.message.substr(0, 6)) {
+              case 'DA0086':
+                warn(e.message);
+                inquirer.prompt([
+                  {
+                    type: 'confirm',
+                    message: 'This design has been deleted. Would you like to publish a new design with these assets?',
+                    name: 'askRecreate'
+                  }
+                ], function (answers) {
+                  if (answers.askRecreate){
+                    manifest.id = null;
+                    createDesign(domo, manifest, login);
+                  }
+                });
+
+                break;
+
+              default:
+                // Pass on error messages that are in the set of documented errors.
+                fail(e.message);
+                break;
+            }
           }
           else {
             fail(e || 'Error uploading assets');
@@ -206,6 +214,29 @@ program
 
     if (program.watch){ watch(domo, login, manifest); }
   });
+
+/**
+ * @param {Object} domo
+ * @param {Object} manifest
+ * @param {Object} login
+ * @return {Promise}
+ */
+function createDesign(domo, manifest, login) {
+  return domo.createDesign(manifest)
+    .then(function(designResult){
+      var design = designResult[0];
+      // add the version returned when design published
+      design.version = designResult[1].version;
+      return persistDesignId(design, manifest);
+    })
+    .tap(evoke(ok, 'New design created on ' + login.instance))
+    .catch(evoke(fail, 'Error creating new design'))
+    .then(domo.uploadAllAssets.bind(domo))
+    .then(logUploadSuccess)
+    .catch(function(e){
+      fail(e || 'Error uploading assets');
+    });
+}
 
 program
   .command('init')
