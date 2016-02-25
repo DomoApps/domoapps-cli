@@ -1,4 +1,4 @@
-# Contributing to domoapps CLI
+# Contributing to Custom Apps CLI
 
 ## Running the tests
 1. Make sure jasmine-node is installed: `npm install -g jasmine-node`
