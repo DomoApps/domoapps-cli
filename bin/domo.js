@@ -73,12 +73,12 @@ var mostRecent = getMostRecentLogin();
 
 program
   .version(cliVersion, '-v, --version')
-  .option('-w, --watch', 'publish DomoApp design every time a file changes')
+  .option('-w, --watch', 'publish Custom App design every time a file changes')
   .option('-vb, --verbose', 'log more details including XHR responses, useful for troubleshooting');
 
 program
   .command('ls')
-  .description('get a list of all your DomoApp designs')
+  .description('get a list of all your Custom App designs')
   .action(function(){
     var login = getMostRecentLogin();
     verifyLogin(login);
@@ -110,7 +110,7 @@ program
 
 program
   .command('download')
-  .description('dowmload a Domo App design')
+  .description('dowmload a Custom App design')
   .action(function(){
     var login = getMostRecentLogin();
     verifyLogin(login);
@@ -155,7 +155,7 @@ program
 
 program
   .command('publish')
-  .description('publish a new or existing DomoApp design')
+  .description('publish a new or existing Custom App design')
   .action(function(){
     var manifest = getManifest();
     if (!manifest) return;
@@ -240,7 +240,7 @@ function createDesign(domo, manifest, login) {
 
 program
   .command('init')
-  .description('initialize a new DomoApp design')
+  .description('initialize a new Custom App design')
   .action(function(){
     inquirer.prompt([
       {
@@ -276,7 +276,7 @@ program
               fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
             }
             else {
-              ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a DomoApp card to any page in Domo.");
+              ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a Custom App card to any page in Domo.");
             }
 
             if (allAnswers.starter === 'hello world'){
@@ -511,7 +511,7 @@ program
 
 program
   .command('migrate')
-  .description('migrate a mason app to a DomoApp')
+  .description('migrate a mason app to a Custom App')
   .action(function(){
     var manifest = getManifest();
     if (!manifest) return;
@@ -543,7 +543,7 @@ program
 
 program
   .command('revert')
-  .description('revert a migration, turning a DomoApp back into a mason app')
+  .description('revert a migration, turning a Custom App back into a mason app')
   .action(function(){
 
     inquirer.prompt([
@@ -579,7 +579,7 @@ program
 
 program
   .command('dev')
-  .description('work locally on a DomoApp')
+  .description('work locally on a Custom App')
   .action(function(){
     var login = getMostRecentLogin();
     verifyLogin(login);
@@ -598,7 +598,7 @@ program
 
     // make sure app has been published first
     if (!manifest.id){
-      fail('Can\'t release until design is published.', 'Please publish your domo app design (with the `domo publish` command) first');
+      fail('Can\'t release until design is published.', 'Please publish your Custom App design (with the `domo publish` command) first');
     }
 
     // make sure there is a thumbnail.png when releasing
@@ -693,11 +693,11 @@ function promptUpgrade(latest){
 }
 
 /**
- * migrate a mason app to a domoapp
+ * migrate a mason app to a Custom App
  * 1. get the kpi info
- * 2. create a new domoapp design
+ * 2. create a new Custom App design
  * 3. publish design assets
- * 4. create a new domoapp
+ * 4. create a new Custom App
  * 5. update the kpi
  */
 function migrateApp(domo, appId, manifest){
@@ -719,8 +719,8 @@ function migrateApp(domo, appId, manifest){
   .spread(function(kpi, design){
     return domo
         .createApp(design.id)
-        .tap(evoke(ok, 'New DomoApp created'))
-        .catch(evoke(fail, 'Error creating new DomoApp'))
+        .tap(evoke(ok, 'New Custom App created'))
+        .catch(evoke(fail, 'Error creating new Custom App'))
         .then(function(domoapp){
           kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'domoapp';
           kpi.domoapp.id = domoapp.id;
@@ -947,7 +947,7 @@ function getManifest(verify = true){
   }
   catch (e){
     if (verify){
-      return fail('No manifest.json file in this directory', 'Please publish from a directory containing a DomoApp design manifest.json file');
+      return fail('No manifest.json file in this directory', 'Please publish from a directory containing a Custom App design manifest.json file');
     }
     else{
       return;

@@ -85,7 +85,7 @@ function domo(){};
   };
 
   /**
-   * Let the domoapp optionally handle its own data updates.
+   * Let the Custom App optionally handle its own data updates.
    */
   domo.onDataUpdate = function(cb){
     window.addEventListener('message', function(event) {
@@ -98,7 +98,7 @@ function domo(){};
       });
       event.source.postMessage(ack, event.origin);
 
-      // inform domo app which alias has been updated
+      // inform custom app which alias has been updated
       cb(message.alias);
     });
   };

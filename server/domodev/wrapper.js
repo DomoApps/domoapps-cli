@@ -11,7 +11,7 @@ window.addEventListener('message', function(e) {
 
     var isSafe = isHostSafe(host.name);
     if (!isSafe){
-      console.warn('Domo App tried to navigate to a currently unsupported domain');
+      console.warn('Custom App tried to navigate to a currently unsupported domain');
       return;
     }
 
