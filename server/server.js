@@ -61,7 +61,7 @@ api.all('/data/*', function *(){
   this.body = request({url: url, jar: j, headers: { referer: this.request.headers.referer, accept: this.request.headers.accept}});
 });
 
-api.all('/domo/*'. function *(){
+api.all('/domo/*', function *(){
   var baseUrl = yield getDomoappsDomain();
   var j = request.jar();
   var url = baseUrl + this.request.url;
