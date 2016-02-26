@@ -61,6 +61,16 @@ api.all('/data/*', function *(){
   this.body = request({url: url, jar: j, headers: { referer: this.request.headers.referer, accept: this.request.headers.accept}});
 });
 
+api.all('/domo/*'. function *(){
+  var baseUrl = yield getDomoappsDomain();
+  var j = request.jar();
+  var url = baseUrl + this.request.url;
+  var auth = 'DA-SID-'+getCustomer()+'="'+app.domo.sid+'"';
+  var cookie = request.cookie(auth);
+  j.setCookie(cookie, baseUrl);
+  this.body = request({url: url, jar: j, headers: { referer: this.request.headers.referer, accept: this.request.headers.accept}});
+});
+
 app.use(api.middleware());
 app.use(mount('/domodev', serve(path.resolve(__dirname + '/../server/domodev'))));
 app.use(mount(serve('.')));
