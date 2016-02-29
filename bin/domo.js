@@ -99,8 +99,13 @@ program
             table.push([design.design.name, design.design.id, new Date(design.design.createdDate).toUTCString(), new Date(design.design.lastModifiedDate).toUTCString()]);
           });
 
+          if (designs.length === 0){
+            fail('No Designs Published', "`domo ls` will list designs once they're published to Domo");
+          }
+
           console.log(table.toString());
-        });
+        })
+        .catch(fail('Unable to fetch designs', 'You may not have any designs published yet.'))
 
       })
       .catch(function(){
