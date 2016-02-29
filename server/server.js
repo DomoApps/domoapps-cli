@@ -23,6 +23,7 @@ portfinder.basePort = 3000;
 api.get('/', function *(){
 
   var isValidSession = yield session.check(app.domo);
+  var isValidContext = true;
 
   // TODO: figure out why this is being called twice
   // console.log("=========here why twice?");
@@ -40,13 +41,13 @@ api.get('/', function *(){
   var context = yield createContext(manifest.id, manifest.mapping);
 
   if (!context){
-    isValidSession = false;
+    isValidContext = false;
     context = {id: 0};
   }
 
   // TODO: pass actual userId in
   var url = "index.html?userId=27&customer=dev&locale=en-US&platform=desktop&context=" + context.id;
-  this.body = template({ manifest: manifest, width: width, height: height, url: url, isValidSession: isValidSession });
+  this.body = template({ manifest: manifest, width: width, height: height, url: url, isValidSession: isValidSession, isValidContext: isValidContext  });
 });
 
 // Proxy requests to the correct domoapps service for the environment they're logged into.
