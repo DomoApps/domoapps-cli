@@ -333,11 +333,15 @@ function addDatasource(currentAnswers, callback){
       {
         type: 'input',
         message: 'dataset alias',
-        name: 'alias'
+        name: 'alias',
+        validate: function(name){
+          if (!isValidJSName(name)) return 'Alias must be a valid JavaScript property';
+          return true;
+        }
       }
     ], function(datasource){
-      currentAnswers.datasources.push(datasource);
-      callback(currentAnswers);
+        currentAnswers.datasources.push(datasource);
+        callback(currentAnswers);
     });
 }
 
@@ -989,11 +993,13 @@ function validateManifest(manifest){
     requireProperty(dataPoint, 'dataSetId');
     requireProperty(dataPoint, 'alias');
     requireProperty(dataPoint, 'fields');
+    ensureValidAlias(dataPoint.alias);
 
     // validate dataPoint mapping fields
     dataPoint.fields.forEach(function(field){
       requireProperty(field, 'alias');
       requireProperty(field, 'columnName');
+      ensureValidAlias(field.alias);
     });
   });
 
@@ -1022,6 +1028,19 @@ function ensureThumbnail(){
   catch (ex){
     fail('Design thumbnail.png required.', 'Please add a 300x300 image named thumbnail.png to the root of your project to represent your design.');
   }
+}
+
+/**
+ * Alias must be a valid JS property
+ */
+function ensureValidAlias(name){
+  if (!isValidJSName(name)){
+    fail('Alias names must be valid JavaScript properties', 'Please rename the `' + name + '` alias and update any /data/v1/<alias> calls with the new alias name');
+  }
+}
+
+function isValidJSName(name){
+  return !name.match(/[^a-zA-Z\$\_]+/);
 }
 
 Date.prototype.timeNow = function () {
