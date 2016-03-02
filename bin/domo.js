@@ -587,13 +587,18 @@ program
   });
 
 program
+  .option('--userId [value]', 'Use a specific userId')
   .command('dev')
   .description('work locally on a Custom App')
   .action(function(){
+    var options = {
+      userId: program.userId
+    };
+
     var login = getMostRecentLogin();
     verifyLogin(login);
     var domo = new Domo(login.instance, login.sid);
-    server.start(domo).catch(fail);
+    server.start(domo, options).catch(fail);
   });
 
 program

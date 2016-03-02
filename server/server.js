@@ -18,6 +18,7 @@ var portfinder = require('portfinder');
 var serve = require('koa-static');
 var mount = require('koa-mount');
 var session = require('../util/session');
+var querystring = require('querystring');
 portfinder.basePort = 3000;
 
 api.get('/', function *(){
@@ -45,8 +46,8 @@ api.get('/', function *(){
     context = {id: 0};
   }
 
-  // TODO: pass actual userId in
-  var url = "index.html?userId=27&customer=dev&locale=en-US&platform=desktop&context=" + context.id;
+  var sid = JSON.parse(new Buffer(querystring.unescape(app.domo.sid), 'base64'));
+  var url = `index.html?userId=${app.options.userId || sid.userId}&customer=${sid.customerId}&locale=en-US&platform=desktop&context=${context.id}`;
   this.body = template({ manifest: manifest, width: width, height: height, url: url, isValidSession: isValidSession, isValidContext: isValidContext  });
 });
 
@@ -77,13 +78,14 @@ app.use(mount('/domodev', serve(path.resolve(__dirname + '/../server/domodev')))
 app.use(mount(serve('.')));
 
 module.exports = {
-  start: function(domo){
+  start: function(domo, options){
     return new Promise(function(resolve, reject){
 
       portfinder.getPorts(2, function (err, ports) {
         var assetsPort = ports[0];
         var dataPort = ports[1];
         app.domo = domo;
+        app.options = options;
 
         session.check(app.domo)
           .then(function(){
