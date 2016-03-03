@@ -1045,7 +1045,7 @@ function ensureValidAlias(name){
 }
 
 function isValidJSName(name){
-  return !name.match(/[^a-zA-Z\$\_]+/);
+  return !name.match(/[^a-zA-Z\$\_\d]+/);
 }
 
 Date.prototype.timeNow = function () {
