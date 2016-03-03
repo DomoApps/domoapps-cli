@@ -105,7 +105,9 @@ program
 
           console.log(table.toString());
         })
-        .catch(fail('Unable to fetch designs', 'You may not have any designs published yet.'))
+        .catch(function(e){
+          fail('Unable to fetch designs', 'You may not have any designs published yet.');
+        })
 
       })
       .catch(function(){
