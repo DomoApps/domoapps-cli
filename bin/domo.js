@@ -33,6 +33,7 @@ var request = Promise.promisify(require('request'));
 var extract = require('extract-zip');
 require('../polyfills/endswith');
 var session = require('../util/session');
+var slug = require('slug');
 
 var logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -267,6 +268,8 @@ program
         askDatasource(answers, function(allAnswers){
           var files;
           var dirs;
+          var step = 0;
+          var nextStepsMessage = 'Next steps: \n';
 
           if(allAnswers.starter === 'manifest only'){
             files = ['manifest.json'];
@@ -275,6 +278,12 @@ program
           else if (allAnswers.starter === 'hello world'){
             files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
             dirs = [null, null, null, null, null];
+
+            var dirname = slug(answers.name);
+            nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
+
+            shell.mkdir('-p', dirname);
+            process.chdir(path.resolve(dirname));
           }
 
           // populate and write out the template files
@@ -283,7 +292,8 @@ program
               fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
             }
             else {
-              ok("New design initialized", "Next steps: \n 1. Edit the files that were just generated (in this directory). \n 2. Run `domo publish` whenever you make changes (or `domo publish --watch` to publish continuously). \n 3. Add a Custom App card to any page in Domo.");
+              nextStepsMessage += `${stepNumber()} Edit the files that were just generated. \n${stepNumber()} Run ${chalk.cyan('domo publish')} whenever you make changes. \n${stepNumber()} Add a Custom App card to any page in Domo. `;
+              ok(`New design initialized in the ${chalk.green(dirname || 'current')} directory`, nextStepsMessage);
             }
 
             if (allAnswers.starter === 'hello world'){
@@ -291,6 +301,16 @@ program
             }
 
           });
+
+          /**
+           * Add an incrementing step to the instructions message
+           */
+          function stepNumber(){
+            step++;
+            return `${step}.`;
+          }
+
+
         });
       });
   });

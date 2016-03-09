@@ -30,6 +30,7 @@
     "ryuu.js": "latest",
     "semver": "~4.1.0",
     "shelljs": "^0.5.1",
+    "slug": "^0.9.1",
     "source-map-support": "^0.3.2",
     "superagent": "~0.18.1",
     "validator": "~3.35.0"
