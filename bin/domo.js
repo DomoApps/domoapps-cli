@@ -532,7 +532,7 @@ program
         .then(verifyVersion)
         .then(function(){
             ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
-            console.log(chalk.cyan(logo));
+            console.log(chalk.grey(logo));
             return login;
         })
         .then(persistLogin(answers.instance, answers.email))
