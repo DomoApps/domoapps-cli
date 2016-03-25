@@ -12,6 +12,7 @@ var request = require('request');
 var Domo = require('ryuu-client');
 var inquirer = require("inquirer");
 var Promise = require('bluebird');
+var body_parser = require('koa-bodyparser');
 var app = koa();
 var api = new Router();
 var portfinder = require('portfinder');
@@ -57,10 +58,27 @@ api.all('/data/*', function *(){
   var baseUrl = yield getDomoappsDomain();
   var j = request.jar();
   var url = baseUrl + this.request.url;
+  var method = this.request.method;
   var auth = 'DA-SID-'+getCustomer()+'="'+app.domo.sid+'"';
   var cookie = request.cookie(auth);
   j.setCookie(cookie, baseUrl);
-  this.body = request({url: url, jar: j, headers: { referer: this.request.headers.referer, accept: this.request.headers.accept}});
+
+  var headers = {
+    referer: this.request.headers.referer,
+    accept: this.request.headers.accept,
+  };
+
+  if (this.request.headers['content-type'] || this.request.headers['Content-Type']) {
+    headers['content-type'] = this.request.headers['content-type'] || this.request.headers['Content-Type'];
+  }
+
+  this.body = request({
+    url: url,
+    method: method,
+    jar: j,
+    body: JSON.stringify(this.request.body),
+    headers: headers,
+  });
 });
 
 api.all('/domo/*', function *(){
@@ -73,6 +91,11 @@ api.all('/domo/*', function *(){
   this.body = request({url: url, jar: j, headers: { referer: this.request.headers.referer, accept: this.request.headers.accept}});
 });
 
+app.use(body_parser({
+  detectJSON: function (ctx) {
+    return false;
+  }
+}));
 app.use(api.middleware());
 app.use(mount('/domodev', serve(path.resolve(__dirname + '/../server/domodev'))));
 app.use(mount(serve('.')));
