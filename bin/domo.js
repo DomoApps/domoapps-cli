@@ -37,6 +37,7 @@ var log = require('../util/log');
 var ok = log.ok;
 var fail = log.fail;
 var warn = log.warn;
+var multichoice = require('../util/multichoice');
 
 var logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -338,7 +339,7 @@ program
   .action(function(){
     // prompt user
     inquirer.prompt([
-      {
+      multichoice({
         type: "list",
         choices: function(){
           var options = _.pluck(previousLogins, 'instance');
@@ -352,7 +353,7 @@ program
         when: function(answers){
           return previousLogins.length > 0;
         }
-      },
+      }),
       {
         type: "input",
         message: "Domo instance " + chalk.grey("e.g. ebay.domo.com "),
@@ -509,12 +510,12 @@ program
         versions.unshift('latest');
 
         inquirer.prompt([
-          {
+          multichoice({
             type: 'list',
             message: 'select a version to release',
             name: 'version',
             choices: versions
-          }], function(answers){
+          })], function(answers){
             // release the kraken
             domo.release(manifest.id, answers.version)
               .tap(evoke(ok, 'Design version ('+answers.version+') released'))

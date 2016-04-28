@@ -7,8 +7,8 @@ var shell = require('shelljs');
 var async = require('async');
 var fs = require('fs-extra');
 var path = require('path');
-var isWin = /^win/.test(process.platform);
 var log = require('../util/log');
+var multichoice = require('../util/multichoice');
 
 module.exports = function(program){
   program
@@ -22,14 +22,15 @@ module.exports = function(program){
             message: 'design name',
             name: 'name'
           },
-          {
+          multichoice({
             type: 'list',
             message: 'select a starter',
             name: 'starter',
             choices: ['hello world', 'manifest only']
-          }
+          })
 
           ], function(answers){
+            // answers.list = multichoice.answer(answers.list);
             answers.datasources = [];
             askDatasource(answers, function(allAnswers){
               var files;
