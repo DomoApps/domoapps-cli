@@ -27,13 +27,16 @@ var Promise = require('bluebird');
 var validator = require('validator');
 var chokidar = require('chokidar');
 var server = require('../server/server');
-var async = require('async');
 var shell = require('shelljs');
 var request = Promise.promisify(require('request'));
 var extract = require('extract-zip');
 require('../polyfills/endswith');
 var session = require('../util/session');
-var slug = require('slug');
+var isValidJSName = require('../util/isValidJSName');
+var log = require('../util/log');
+var ok = log.ok;
+var fail = log.fail;
+var warn = log.warn;
 
 var logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -246,148 +249,7 @@ function createDesign(domo, manifest, login) {
     });
 }
 
-program
-  .command('init')
-  .description('initialize a new Custom App design')
-  .action(function(){
-    inquirer.prompt([
-      {
-        type: 'input',
-        message: 'design name',
-        name: 'name'
-      },
-      {
-        type: 'list',
-        message: 'select a starter',
-        name: 'starter',
-        choices: ['hello world', 'manifest only']
-      }
-
-      ], function(answers){
-        answers.datasources = [];
-        askDatasource(answers, function(allAnswers){
-          var files;
-          var dirs;
-          var step = 0;
-          var nextStepsMessage = 'Next steps: \n';
-
-          if(allAnswers.starter === 'manifest only'){
-            files = ['manifest.json'];
-            dirs = [null];
-          }
-          else if (allAnswers.starter === 'hello world'){
-            files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
-            dirs = [null, null, null, null, null];
-
-            var dirname = slug(answers.name);
-            nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
-
-            shell.mkdir('-p', dirname);
-            process.chdir(path.resolve(dirname));
-          }
-
-          // populate and write out the template files
-          writeFilesIfNonexistent(files, dirs, allAnswers, function(err, res) {
-            if(err) {
-              fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
-            }
-            else {
-              nextStepsMessage += `${stepNumber()} Edit the files that were just generated. \n${stepNumber()} Run ${chalk.cyan('domo publish')} whenever you make changes. \n${stepNumber()} Add a Custom App card to any page in Domo. `;
-              ok(`New design initialized in the ${chalk.green(dirname || 'current')} directory`, nextStepsMessage);
-            }
-
-            if (allAnswers.starter === 'hello world'){
-              fs.remove('node_modules');
-            }
-
-          });
-
-          /**
-           * Add an incrementing step to the instructions message
-           */
-          function stepNumber(){
-            step++;
-            return `${step}.`;
-          }
-
-
-        });
-      });
-  });
-
-function writeFilesIfNonexistent(files, dirs, allAnswers, callback) {
-  async.reduce(files, [], function(filesThatExist, file, reduceCallback) {
-    fs.open(file,'r',function(err, fd) {
-      var fileExists = !err;
-      if(fileExists) {
-        fs.closeSync(fd);
-        filesThatExist.push(file);
-      }
-      reduceCallback(null, filesThatExist);
-    });
-  }, function(err, filesThatExist) {
-    if(filesThatExist.length > 0) {
-      callback(filesThatExist, null);
-    }
-    else {
-      _.zip(files,dirs).forEach(writeTemplateFile);
-      callback(null, files);
-    }
-  });
-
-  function writeTemplateFile(filedir){
-    var file = filedir[0];
-    var dir = filedir[1];
-    dir = dir || (__dirname + '/../templates/');
-    var contents = _.template(fs.readFileSync(path.resolve(dir + file )))(allAnswers);
-
-    fs.writeFileSync(process.cwd() + '/' + file, contents);
-  }
-}
-
-function addDatasource(currentAnswers, callback){
-    inquirer.prompt([
-      {
-        type: 'input',
-        message: 'dataset id',
-        name: 'id'
-      },
-      {
-        type: 'input',
-        message: 'dataset alias',
-        name: 'alias',
-        validate: function(name){
-          if (!isValidJSName(name)) return 'Alias must be a valid JavaScript property';
-          return true;
-        }
-      }
-    ], function(datasource){
-        currentAnswers.datasources.push(datasource);
-        callback(currentAnswers);
-    });
-}
-
-// recursively ask user to enter all their datasources
-function askDatasource(currentAnswers, callback){
-  inquirer.prompt([
-    {
-      type: 'confirm',
-      message: currentAnswers.datasources.length > 0 ? 'add another dataset?' : 'would you like to connect to any datasets?',
-      name: 'askDatasource'
-    }
-  ], function(answers){
-    if (answers.askDatasource){
-      addDatasource(_.merge(currentAnswers, answers), function(combinedAnswers){
-        // ask for more datasources
-        askDatasource(combinedAnswers, callback);
-      });
-    }
-    else {
-      // all done with datasources, continue on.
-      callback(_.merge(currentAnswers, answers));
-    }
-  });
-}
+require('../commands/init')(program);
 
 program
   .command('owner <add|rm|ls> [user-emails...]')
@@ -872,64 +734,6 @@ function evoke(fn, message, submessage){
   };
 }
 
-/**
- * log a success
- */
-function ok(msg, submessage){
-  console.log(chalk.green('\u2713'), msg);
-  if(submessage){
-    console.log(chalk.gray(submessage));
-  }
-}
-
-/**
- * log info
- */
-function info(msg, submessage){
-  console.log(chalk.cyan(msg));
-  if(submessage){
-    console.log(chalk.gray(submessage));
-  }
-}
-
-/**
- * log warning
- */
- function warn(msg, submessage){
-   console.log(chalk.yellow(msg));
-   if(submessage){
-     console.log(chalk.gray(submessage));
-   }
- }
-
-
-/**
- * log an error
- */
-function fail(msg, submessage, result){
-  console.log(chalk.red('X'), msg);
-
-  if(submessage){
-    console.log(chalk.gray(submessage));
-  }
-
-  if(result && result.message){
-    console.log(chalk.gray(result.message));
-  }
-
-  if (program.verbose){
-    console.log(chalk.red("statusCode:"), result.statusCode);
-    if(result.details){
-      console.log(chalk.red("details:"), result.details);
-    }
-    console.log(chalk.red("method:"), result.method);
-    console.log(chalk.red("path:"), result.path);
-    console.log(chalk.red("response:"), result.res);
-  }
-
-  process.exit();
-}
-
 function getMostRecentLogin(){
   var logins = glob.sync(home + "/login/*.json");
   if (logins.length === 0) return {};
@@ -1066,9 +870,6 @@ function ensureValidAlias(name){
   }
 }
 
-function isValidJSName(name){
-  return !name.match(/[^a-zA-Z\$\_\d]+/);
-}
 
 Date.prototype.timeNow = function () {
      return "(" + ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds() + ")";
