@@ -113,6 +113,7 @@ program
         .catch(function(e){
           fail('Unable to fetch designs', 'You may not have any designs published yet.');
         })
+        .finally(process.exit)
 
       })
       .catch(function(){
@@ -157,6 +158,7 @@ program
               if (!err){
                 shell.chmod('-R', 'u+w', target);
                 fs.remove(source);
+                process.exit();
               }
             });
           });
@@ -279,14 +281,16 @@ program
         if (users) {
           domo.addOwners(designId, users)
             .tap(evoke(ok, 'Owners added ' + users))
-            .catch(evoke(fail, 'Error adding owners'));
+            .catch(evoke(fail, 'Error adding owners'))
+            .finally(process.exit)
         }
         break;
       case 'rm':
         if (users) {
           domo.removeOwners(designId, users)
             .tap(evoke(ok, 'Owners removed ' + users))
-            .catch(evoke(fail, 'Error removing owners'));
+            .catch(evoke(fail, 'Error removing owners'))
+            .finally(process.exit)
         }
         break;
       case 'ls':
@@ -298,7 +302,8 @@ program
               console.log("\t" + element);
             });
           })
-          .catch(evoke(fail, 'Error retrieving owners'));
+          .catch(evoke(fail, 'Error retrieving owners'))
+          .finally(process.exit)
         break;
     }
   });
@@ -330,7 +335,8 @@ program
 
     domo.deleteDesign(designId, force)
       .tap(evoke(ok, 'Deleted design ' + designId))
-      .catch(evoke(fail, 'Unable to delete design ' + designId));
+      .catch(evoke(fail, 'Unable to delete design ' + designId))
+      .finally(process.exit)
   });
 
 program
@@ -399,7 +405,8 @@ program
             return login;
         })
         .then(persistLogin(answers.instance, answers.email))
-        .catch(evoke(fail, 'Login unsuccessful'));
+        .catch(evoke(fail, 'Login unsuccessful'))
+        .finally(process.exit)
     });
   });
 
@@ -431,7 +438,8 @@ program
 
       migrateApp(domo, answers.id, manifest)
         .tap(evoke(ok, 'Migration successful'))
-        .catch(evoke(fail, 'Migration unsuccessful'));
+        .catch(evoke(fail, 'Migration unsuccessful'))
+        .finally(process.exit)
     });
   });
 
@@ -466,7 +474,8 @@ program
             return domo.updateKpi(kpi);
           })
           .tap(evoke(ok, 'Card reverted back to a mason app'))
-          .catch(evoke(fail, 'Error attempting to revert card'));
+          .catch(evoke(fail, 'Error attempting to revert card'))
+          .finally(process.exit)
     });
 
   });
@@ -483,7 +492,7 @@ program
     var login = getMostRecentLogin();
     verifyLogin(login);
     var domo = new Domo(login.instance, login.sid);
-    server.start(domo, options).catch(fail);
+    server.start(domo, options).catch(fail)
   });
 
 program
@@ -520,6 +529,7 @@ program
             domo.release(manifest.id, answers.version)
               .tap(evoke(ok, 'Design version ('+answers.version+') released'))
               .catch(fail)
+              .finally(process.exit)
           })
       })
   })

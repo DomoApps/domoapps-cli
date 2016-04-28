@@ -67,6 +67,8 @@ module.exports = function(program){
                   fs.remove('node_modules');
                 }
 
+                process.exit();
+
               });
 
               /**
