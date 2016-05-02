@@ -9,6 +9,11 @@
 var semver = require('semver');
 var chalk = require('chalk');
 var program = require('commander');
+var log = require('../util/log');
+var ok = log.ok;
+var fail = log.fail;
+var warn = log.warn;
+
 verifyNodeVersion();
 
 var path = require('path');
@@ -33,10 +38,6 @@ var extract = require('extract-zip');
 require('../polyfills/endswith');
 var session = require('../util/session');
 var isValidJSName = require('../util/isValidJSName');
-var log = require('../util/log');
-var ok = log.ok;
-var fail = log.fail;
-var warn = log.warn;
 var multichoice = require('../util/multichoice');
 
 var logo = `
