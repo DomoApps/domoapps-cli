@@ -9,11 +9,10 @@ process.env.BABEL_CACHE_PATH = path.join(os.tmpdir(), '/ryuu.json');
 require("babel/register")({
   stage: 0,
   sourceMap: 'inline',
-  only: ['domo.js', 'server.js']
+  only: ['domo.js', 'server.js', 'commands/**.js']
 });
 
 // enable source maps
 require('source-map-support').install();
 
 require('./domo');
-
