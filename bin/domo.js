@@ -13,6 +13,7 @@ var log = require('../util/log');
 var ok = log.ok;
 var fail = log.fail;
 var warn = log.warn;
+var info = log.info;
 
 verifyNodeVersion();
 
