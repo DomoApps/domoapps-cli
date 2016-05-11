@@ -79,7 +79,7 @@ var mostRecent = getMostRecentLogin();
 
 program
   .version(cliVersion, '-v, --version')
-  .option('-w, --watch', 'publish Custom App design every time a file changes')
+  .option('-w, --watch', '[DEPRECATED] publish Custom App design every time a file changes')
   .option('-vb, --verbose', 'log more details including XHR responses, useful for troubleshooting');
 
 program
@@ -227,7 +227,16 @@ program
         });
     }
 
-    if (program.watch){ watch(domo, login, manifest); }
+    if (program.watch) {
+        // domo-gyp (which is brought in by chokidar) is sometimes throwing
+        // warnings on windows when looking for python. we only use chokidar
+        // with the watch option which is no longer useful since we now have
+        // `domo dev`. deprecating this option.
+        // https://onjira.domo.com/browse/DOMO-75374
+        warn('The --watch flag will be deprecated on the next release.');
+        warn('Please use `domo dev` (https://developer.domo.com/docs/dev-studio/dev-studio-cli-reference).');
+        watch(domo, login, manifest);
+    }
   });
 
 /**
