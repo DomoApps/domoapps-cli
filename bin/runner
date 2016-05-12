@@ -14,9 +14,9 @@ require("babel/register")({
 
 process.on('uncaughtException', function (err) {
     console.error('[ERROR] The domo cli tool as experienced an unhandled error. As it is');
-    console.error('[ERROR] possible this bug has already been fixed, please update using');
-    console.error('[ERROR] `npm install -g ryuu` and running this command again. If this');
-    console.error('[ERROR] does not fix the issues, please contact your MajorDomo');
+    console.error('[ERROR] possible this bug has already been fixed, please try updating');
+    console.error('[ERROR] using `npm install -g ryuu` and run this command again. If this');
+    console.error('[ERROR] does not fix the issue, please contact your MajorDomo.');
     console.error('[ERROR] error message: %s', err.message);
 });
 
