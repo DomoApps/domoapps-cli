@@ -1,5 +1,8 @@
 #!/usr/bin/env node --harmony
 
+process.on('unhandledRejection', on_unhandled_error);
+process.on('uncaughtException', on_unhandled_error);
+
 var os = require('os'),
     path = require('path');
 
@@ -12,13 +15,14 @@ require("babel/register")({
   only: ['domo.js', 'server.js', 'commands/**.js']
 });
 
-process.on('uncaughtException', function (err) {
+function on_unhandled_error(err) {
+    console.log('');
     console.error('[ERROR] The domo cli tool as experienced an unhandled error. As it is');
     console.error('[ERROR] possible this bug has already been fixed, please try updating');
     console.error('[ERROR] using `npm install -g ryuu` and run this command again. If this');
     console.error('[ERROR] does not fix the issue, please contact your MajorDomo.');
     console.error('[ERROR] error message: %s', err.message);
-});
+}
 
 // enable source maps
 require('source-map-support').install();
