@@ -68,15 +68,30 @@ api.all('/data/*', function *(){
     accept: this.request.headers.accept,
   };
 
+  var body = JSON.stringify(this.request.body);
+
   if (this.request.headers['content-type'] || this.request.headers['Content-Type']) {
     headers['content-type'] = this.request.headers['content-type'] || this.request.headers['Content-Type'];
+  }
+
+  if (url.indexOf("dataversions") !== -1){
+    var getRawBody = require('raw-body')
+    body = yield getRawBody(this.req, {
+      length: this.length,
+      limit: '1mb',
+      encoding: this.charset
+    });
+    url = url.replace("/dataversions", "/dataversions/domodev");
+    url += "&designId=" + manifest.id;
+    var alias = url.match(/data\/(v1|v2|v3)\/(.*)\/dataversions/)[2];
+    url += "&datasetId=" + _.find(manifest.mapping, {alias: alias}).dataSetId;
   }
 
   this.body = request({
     url: url,
     method: method,
     jar: j,
-    body: JSON.stringify(this.request.body),
+    body: body,
     headers: headers,
   });
 });
