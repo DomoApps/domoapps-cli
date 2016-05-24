@@ -15,7 +15,14 @@ require("babel/register")({
   only: ['domo.js', 'server.js', 'commands/**.js']
 });
 
+var already_warned = false;
 function on_unhandled_error(err) {
+    if (already_warned) {
+        return;
+    }
+
+    already_warned = true;
+
     console.log('');
     console.error('[ERROR] The domo cli tool as experienced an unhandled error. As it is');
     console.error('[ERROR] possible this bug has already been fixed, please try updating');
