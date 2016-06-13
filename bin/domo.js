@@ -89,7 +89,7 @@ program
   .action(function(){
     var login = getMostRecentLogin();
     verifyLogin(login);
-    var domo = new Domo(login.instance, login.sid);
+    var domo = new Domo(login.instance, login.sid, login.devtoken);
 
     session.check(domo)
       .then(function(){
@@ -130,7 +130,7 @@ program
     var login = getMostRecentLogin();
     verifyLogin(login);
 
-    var domo = new Domo(login.instance, login.sid);
+    var domo = new Domo(login.instance, login.sid, login.devtoken);
 
     inquirer.prompt([{
         type: 'input',
@@ -178,8 +178,7 @@ program
 
     var login = getMostRecentLogin();
     verifyLogin(login);
-
-    var domo = new Domo(login.instance, login.sid);
+    var domo = new Domo(login.instance, login.sid, login.devtoken);
 
     if (!manifest.id){
       createDesign(domo, manifest, login);
@@ -285,7 +284,7 @@ program
     var login = getMostRecentLogin();
     verifyLogin(login);
 
-    var domo = new Domo(login.instance, login.sid);
+    var domo = new Domo(login.instance, login.sid, login.devtoken);
 
     switch(action) {
       case 'add':
@@ -342,7 +341,7 @@ program
     var login = getMostRecentLogin();
     verifyLogin(login);
 
-    var domo = new Domo(login.instance, login.sid);
+    var domo = new Domo(login.instance, login.sid, login.devtoken);
 
     domo.deleteDesign(designId, force)
       .tap(evoke(ok, 'Deleted design ' + designId))
@@ -402,7 +401,7 @@ program
 
       var login;
 
-      var domo = new Domo(answers.instance, null);
+      var domo = new Domo(answers.instance, null, null);
       domo
         .login(answers.email, answers.password)
         .then(function(l){
@@ -445,7 +444,7 @@ program
       var login = getLogin(answers.instance);
       verifyLogin(login);
 
-      var domo = new Domo(answers.instance, login.sid);
+      var domo = new Domo(answers.instance, login.sid, login.devtoken);
 
       migrateApp(domo, answers.id, manifest)
         .tap(evoke(ok, 'Migration successful'))
@@ -475,7 +474,7 @@ program
       var login = getLogin(answers.instance);
       verifyLogin(login);
 
-      var domo = new Domo(answers.instance, login.sid);
+      var domo = new Domo(answers.instance, login.sid, login.devtoken);
       domo.getKpi(answers.id)
           .then(function(kpi){
             kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'mason';
@@ -502,7 +501,7 @@ program
 
     var login = getMostRecentLogin();
     verifyLogin(login);
-    var domo = new Domo(login.instance, login.sid);
+    var domo = new Domo(login.instance, login.sid, login.devtoken);
     server.start(domo, options).catch(fail)
   });
 
@@ -512,7 +511,7 @@ program
   .action(function(){
     var login = getMostRecentLogin();
     verifyLogin(login);
-    var domo = new Domo(login.instance, login.sid);
+    var domo = new Domo(login.instance, login.sid, login.devtoken);
     var manifest = getManifest();
 
     // make sure app has been published first
@@ -692,7 +691,7 @@ function cleanupMappings(){
 }
 
 function verifyLogin(login){
-  if (!login.sid){
+  if (!login.devtoken && !login.sid){
     fail('Not authenticated', 'Please login using "domo login"');
     return;
   }

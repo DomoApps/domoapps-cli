@@ -23,7 +23,7 @@ var querystring = require('querystring');
 portfinder.basePort = 3000;
 
 api.get('/', function *(){
-
+  
   var isValidSession = yield session.check(app.domo);
   var isValidContext = true;
 
@@ -46,9 +46,17 @@ api.get('/', function *(){
     isValidContext = false;
     context = {id: 0};
   }
+  
+  var userId = app.options.userId;
+  var customerId = "1";
+  
+  if(app.domo.sid){
+      var sid = JSON.parse(new Buffer(querystring.unescape(app.domo.sid), 'base64'));
+      userId = userId || sid.userId;
+      customerId = customerId || sid.customerId;
+  }
 
-  var sid = JSON.parse(new Buffer(querystring.unescape(app.domo.sid), 'base64'));
-  var url = `index.html?userId=${app.options.userId || sid.userId}&customer=${sid.customerId}&locale=en-US&platform=desktop&context=${context.id}`;
+  var url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
   this.body = template({ manifest: manifest, width: width, height: height, url: url, isValidSession: isValidSession, isValidContext: isValidContext  });
 });
 
@@ -59,14 +67,10 @@ api.all('/data/*', function *(){
   var j = request.jar();
   var url = baseUrl + this.request.url;
   var method = this.request.method;
-  var auth = 'DA-SID-'+getCustomer()+'="'+app.domo.sid+'"';
-  var cookie = request.cookie(auth);
-  j.setCookie(cookie, baseUrl);
-
-  var headers = {
+  var headers = _.merge({
     referer: this.request.headers.referer,
     accept: this.request.headers.accept,
-  };
+  }, app.domo.getAuthHeader());
 
   var body = JSON.stringify(this.request.body);
 
@@ -100,10 +104,13 @@ api.all('/domo/*', function *(){
   var baseUrl = yield getDomoappsDomain();
   var j = request.jar();
   var url = baseUrl + this.request.url;
-  var auth = 'DA-SID-'+getCustomer()+'="'+app.domo.sid+'"';
-  var cookie = request.cookie(auth);
-  j.setCookie(cookie, baseUrl);
-  this.body = request({url: url, jar: j, headers: { referer: this.request.headers.referer, accept: this.request.headers.accept}});
+  
+  var headers = _.merge({
+    referer: this.request.headers.referer,
+    accept: this.request.headers.accept
+  }, app.domo.getAuthHeader());
+  
+  this.body = request({url: url, jar: j, headers: headers});
 });
 
 app.use(body_parser({
@@ -189,9 +196,9 @@ function createContext(designId, mapping){
       url: 'https://' + app.domo.instance + '/domoapps/apps/v2/contexts',
       method: 'POST',
       json: {designId: designId, mapping: mapping},
-      headers: { 'X-Domo-Authentication': app.domo.sid }
+      headers: app.domo.getAuthHeader()
     };
-
+    
     request(options, function(err, res){
       resolve(res.body[0]);
     });

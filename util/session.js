@@ -7,8 +7,14 @@ module.exports = {
       var options = {
         url: 'https://' + domo.instance + '/auth/validate',
         method: 'GET',
-        headers: { 'X-Domo-Authentication': domo.sid }
+        headers: domo.getAuthHeader()
       };
+      
+      // for now assume dev tokens are still valid. Will want to verify once thats supported
+      // https://git.empdev.domo.com/Development/apiData/issues/549
+      if(domo.devtoken){
+        resolve(true);
+      }
       
       request(options, function(err, res){
         try{
