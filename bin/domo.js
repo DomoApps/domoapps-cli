@@ -28,7 +28,6 @@ var home = Domo.getHomeDir();
 // can remove these in a few releases after deprecating older versions
 cleanupLogins();
 cleanupMappings();
-var previousLogins = Login.getPreviousLogins();
 
 var inquirer = require("inquirer");
 var Promise = require('bluebird');
@@ -42,38 +41,6 @@ require('../polyfills/endswith');
 var session = require('../util/session');
 var isValidJSName = require('../util/isValidJSName');
 var multichoice = require('../util/multichoice');
-
-var logo = `
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃██████████      ██████████  ███            ██   ██████████  ┃
-┃████████████  ███████████████████        ███████████████████┃
-┃███      ████████        ██████████    ██████████        ███┃
-┃███       ██████          ██████████████████████          ██┃
-┃███      ███████          ██████ ███████  ██████          ██┃
-┃███     █████████       ████████   ███    ███████       ████┃
-┃████████████  ██████████████████          ██████████████████┃
-┃██████████      ██████████  ████          ███   ██████████  ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
 
 var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
 
@@ -266,6 +233,7 @@ function createDesign(domo, manifest, login) {
 
 require('../commands/init')(program);
 require('../commands/token')(program);
+require('../commands/login')(program);
 
 program
   .command('owner <add|rm|ls> [user-emails...]')
@@ -352,76 +320,6 @@ program
       .finally(process.exit)
   });
 
-program
-  .command('login')
-  .description('login to Domo')
-  .action(function(){
-    // prompt user
-    inquirer.prompt([
-      multichoice({
-        type: "list",
-        choices: function(){
-          var options = _.pluck(previousLogins, 'instance');
-          options.push('new instance');
-          return options;
-        },
-        message: "Domo instance " + chalk.grey("e.g. ebay.domo.com "),
-        name: 'instance',
-        default: mostRecent.instance,
-        // only show up if they have previous logins
-        when: function(answers){
-          return previousLogins.length > 0;
-        }
-      }),
-      {
-        type: "input",
-        message: "Domo instance " + chalk.grey("e.g. ebay.domo.com "),
-        name: "instance",
-        when: function(answers){
-          // only ask if the instance selector wasn't used or new one was selected
-          return !answers.instance || answers.instance === 'new instance';
-        }
-      },
-      {
-        type: "input",
-        message: "user email",
-        name: "email",
-        default: function(answers){
-          // populate with previous email used with this instance
-          var previous = _.find(previousLogins, {instance: answers.instance});
-          if (previous) return previous.user;
-        }
-      },
-      {
-        type: "password",
-        message: "Domo password",
-        name: "password"
-      }
-    ], function(answers) {
-      if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io')){
-        fail('Please login using the full Domo instance.', 'Example: "ebay.domo.com"');
-      }
-
-      var login;
-
-      var domo = new Domo(answers.instance, null, null);
-      domo
-        .login(answers.email, answers.password)
-        .then(function(l){
-          return login = l;
-        })
-        .then(checkVersion.bind(null, answers.instance))
-        .then(verifyVersion)
-        .then(function(){
-            ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
-            console.log(chalk.grey(logo));
-            return login;
-        })
-        .then(Login.persistLogin(answers.instance, answers.email))
-        .catch(evoke(fail, 'Login unsuccessful'))
-        .finally(process.exit)
-    });
-  });
 
 program
   .command('migrate')
@@ -549,70 +447,6 @@ program
 
 program.parse(process.argv);
 
-
-/**
- * E.T. phone home
- */
-function checkVersion(instance){
-  var options = {
-    url: 'https://' + instance + '/domoapps/admin/checkversion?version=' + cliVersion,
-    method: 'GET',
-    json: true
-  };
-
-  return request(options);
-}
-
-/**
- * log message based on the action
- * if action is 'block' then 'fail' will get called and end the process early
- */
-function verifyVersion(res){
-
-  var body = res[0].body;
-  if (body.action === 'block'){
-    fail(body.message);
-  }
-
-  if (body.action === 'warn'){
-    warn(body.message);
-    return promptUpgrade(body.latest);
-  }
-
-  if (body.action === 'info'){
-    info(body.message);
-    return promptUpgrade(body.latest);
-  }
-}
-
-function promptUpgrade(latest){
-  return new Promise(function(resolve, reject){
-    inquirer.prompt([
-      {
-        type: "confirm",
-        message: "Would you like to upgrade now?",
-        name: "upgrade",
-        default: true
-      }
-
-    ], function(answers) {
-      if(answers.upgrade){
-        info('Upgrading to latest version', 'Hang tight, this may take a moment...');
-        var output = shell.exec('npm install ryuu -g', {async: false, silent: true});
-        if (output.code === 0){
-          ok('Upgrade to version '+latest+' successful');
-          resolve();
-        }
-        else {
-          warn('Upgrade unsuccessful', 'Please try upgrading manually with npm install -g ryuu');
-        }
-      }
-      else{
-        resolve();
-      }
-    });
-  });
-}
 
 /**
  * migrate a mason app to a Custom App
