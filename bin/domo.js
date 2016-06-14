@@ -264,6 +264,7 @@ function createDesign(domo, manifest, login) {
 }
 
 require('../commands/init')(program);
+require('../commands/token')(program);
 
 program
   .command('owner <add|rm|ls> [user-emails...]')
