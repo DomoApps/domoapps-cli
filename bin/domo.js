@@ -11,6 +11,7 @@ var chalk = require('chalk');
 var program = require('commander');
 var log = require('../util/log');
 var Login = require('../util/login');
+var evoke = require('../util/evoke');
 var ok = log.ok;
 var fail = log.fail;
 var warn = log.warn;
@@ -746,15 +747,6 @@ function logUploadSuccess(files){
   files.forEach(function(file){
     ok('Uploaded: ' + file.path);
   });
-}
-
-/**
- * curry a function
- */
-function evoke(fn, message, submessage){
-  return function(result){
-    fn(message, submessage, result);
-  };
 }
 
 /**
