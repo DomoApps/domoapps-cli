@@ -4,6 +4,9 @@
   "bin": {
     "domo": "./bin/runner"
   },
+  "scripts": {
+    "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 -u"
+  },
   "dependencies": {
     "async": "~1.3.0",
     "babel": "5.8.12",
@@ -38,6 +41,7 @@
     "validator": "~3.35.0"
   },
   "devDependencies": {
+    "conventional-changelog-cli": "1.2.0",
     "grunt": "^0.4.5",
     "grunt-release": "0.13.0"
   }
