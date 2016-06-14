@@ -10,6 +10,7 @@ var semver = require('semver');
 var chalk = require('chalk');
 var program = require('commander');
 var log = require('../util/log');
+var Login = require('../util/login');
 var ok = log.ok;
 var fail = log.fail;
 var warn = log.warn;
@@ -26,7 +27,7 @@ var home = Domo.getHomeDir();
 // can remove these in a few releases after deprecating older versions
 cleanupLogins();
 cleanupMappings();
-var previousLogins = getPreviousLogins();
+var previousLogins = Login.getPreviousLogins();
 
 var inquirer = require("inquirer");
 var Promise = require('bluebird');
@@ -76,7 +77,7 @@ var logo = `
 var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
 
 
-var mostRecent = getMostRecentLogin();
+var mostRecent = Login.getMostRecentLogin();
 
 program
   .version(cliVersion, '-v, --version')
@@ -87,7 +88,7 @@ program
   .command('ls')
   .description('get a list of all your Custom App designs')
   .action(function(){
-    var login = getMostRecentLogin();
+    var login = Login.getMostRecentLogin();
     verifyLogin(login);
     var domo = new Domo(login.instance, login.sid, login.devtoken);
 
@@ -127,7 +128,7 @@ program
   .command('download')
   .description('dowmload a Custom App design')
   .action(function(){
-    var login = getMostRecentLogin();
+    var login = Login.getMostRecentLogin();
     verifyLogin(login);
 
     var domo = new Domo(login.instance, login.sid, login.devtoken);
@@ -175,8 +176,8 @@ program
   .action(function(){
     var manifest = getManifest();
     if (!manifest) return;
-
-    var login = getMostRecentLogin();
+    
+    var login = Login.getMostRecentLogin();
     verifyLogin(login);
     var domo = new Domo(login.instance, login.sid, login.devtoken);
 
@@ -281,7 +282,7 @@ program
       designId = manifest.id;
     }
 
-    var login = getMostRecentLogin();
+    var login = Login.getMostRecentLogin();
     verifyLogin(login);
 
     var domo = new Domo(login.instance, login.sid, login.devtoken);
@@ -338,7 +339,7 @@ program
     var force = false;
     if (options.force) force = true;
 
-    var login = getMostRecentLogin();
+    var login = Login.getMostRecentLogin();
     verifyLogin(login);
 
     var domo = new Domo(login.instance, login.sid, login.devtoken);
@@ -414,7 +415,7 @@ program
             console.log(chalk.grey(logo));
             return login;
         })
-        .then(persistLogin(answers.instance, answers.email))
+        .then(Login.persistLogin(answers.instance, answers.email))
         .catch(evoke(fail, 'Login unsuccessful'))
         .finally(process.exit)
     });
@@ -441,7 +442,7 @@ program
         name: "id"
       }
     ], function(answers) {
-      var login = getLogin(answers.instance);
+      var login = Login.getLogin(answers.instance);
       verifyLogin(login);
 
       var domo = new Domo(answers.instance, login.sid, login.devtoken);
@@ -471,7 +472,7 @@ program
         name: "id"
       }
     ], function(answers) {
-      var login = getLogin(answers.instance);
+      var login = Login.getLogin(answers.instance);
       verifyLogin(login);
 
       var domo = new Domo(answers.instance, login.sid, login.devtoken);
@@ -499,7 +500,7 @@ program
       userId: program.userId
     };
 
-    var login = getMostRecentLogin();
+    var login = Login.getMostRecentLogin();
     verifyLogin(login);
     var domo = new Domo(login.instance, login.sid, login.devtoken);
     server.start(domo, options).catch(fail)
@@ -509,7 +510,7 @@ program
   .command('release')
   .description('prepare a design for app store release')
   .action(function(){
-    var login = getMostRecentLogin();
+    var login = Login.getMostRecentLogin();
     verifyLogin(login);
     var domo = new Domo(login.instance, login.sid, login.devtoken);
     var manifest = getManifest();
@@ -658,7 +659,7 @@ function migrateApp(domo, appId, manifest){
 }
 
 function cleanupLogins(){
-  var prev = getPreviousLogins();
+  var prev = Login.getPreviousLogins();
   var badLogins = _.filter(prev, function(login){
     return login.customer;
   });
@@ -755,36 +756,6 @@ function evoke(fn, message, submessage){
   };
 }
 
-function getMostRecentLogin(){
-  var logins = glob.sync(home + "/login/*.json");
-  if (logins.length === 0) return {};
-
-  var recent = logins.reduce(function(prev, next){
-    return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
-  });
-  return fs.readJsonSync(recent);
-}
-
-function getPreviousLogins(){
-  var logins = (glob.sync(home + "/login/*.json") || [])
-    .map(function(file){
-      return fs.readJsonSync(file);
-    });
-  return logins;
-}
-
-/**
- * persist login to user's domo home
- */
-function persistLogin(instance, email){
-  return function(login){
-    var loginFile = path.resolve(home + '/login/' + instance + '.json');
-    fs.ensureFileSync(loginFile);
-    fs.writeJsonSync(loginFile, { sid: login.sid, user: email, instance: instance });
-    return login;
-  };
-}
-
 /**
  * update the manifest (in memory and on disk)
  */
@@ -792,10 +763,6 @@ function persistDesignId(design, manifest){
   manifest.id = design.id;
   updateManifest(manifest);
   return design;
-}
-
-function getLogin(instance){
-  return fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
 }
 
 /**
