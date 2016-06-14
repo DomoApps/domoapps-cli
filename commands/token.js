@@ -30,7 +30,7 @@ module.exports = function(program) {
                   .then(function(res){
                     login.devtoken = res.token;
                     Login.persistLogin(login.instance, login.user)(login);
-                    log.ok(`Token created and set for ${login.instance}`, 'Future CLI logins to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.')
+                    log.ok(`Token created and set for ${login.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.')
                   })
                   .catch(function(e){
                     log.fail(e, 'Please login first using the `domo login` command. \nTokens may also be created in the Admin section of Domo, then manually added to the CLI with the `domo token add` command');
@@ -48,7 +48,7 @@ module.exports = function(program) {
             if (answers.fosho){
               delete login.devtoken;
               Login.persistLogin(login.instance, login.user)(login);
-              log.ok(`Token removed for ${login.instance}`, 'Future CLI logins to this instance will require username/password. \nUse the "domo token add" command to use another token.')
+              log.ok(`Token removed for ${login.instance}`, 'Future CLI commands to this instance will require username/password. \nUse the "domo token add" command to use another token.')
             }
           })
           break;
@@ -61,7 +61,7 @@ module.exports = function(program) {
           }], function(answers){
             login.devtoken = answers.devtoken;
             Login.persistLogin(login.instance, login.user)(login);
-            log.ok(`Token set for ${login.instance}`, 'Future CLI logins to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.')
+            log.ok(`Token set for ${login.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.')
           })
           break;
       }

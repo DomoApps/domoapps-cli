@@ -26,11 +26,12 @@ module.exports = {
   /**
    * persist login to user's domo home
    */
-  persistLogin: function(instance, user){
+  persistLogin: function(instance, user, existingData){
+    
     return function(login){
       var loginFile = path.resolve(home + '/login/' + instance + '.json');
       fs.ensureFileSync(loginFile);
-      var data = { user: user, instance: instance };
+      var data = existingData || { user: user, instance: instance };
       if (login.sid){
         data.sid = login.sid
       }
