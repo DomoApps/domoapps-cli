@@ -19,7 +19,8 @@ var portfinder = require('portfinder');
 var serve = require('koa-static');
 var mount = require('koa-mount');
 var session = require('../util/session');
-var querystring = require('querystring');
+var sidUtil = require('../util/sid');
+
 portfinder.basePort = 3000;
 
 api.get('/', function *(){
@@ -51,7 +52,7 @@ api.get('/', function *(){
   var customerId = "1";
   
   if(app.domo.sid){
-      var sid = JSON.parse(new Buffer(querystring.unescape(app.domo.sid), 'base64'));
+      var sid = sidUtil.parse(app.domo.sid);
       userId = userId || sid.userId;
       customerId = customerId || sid.customerId;
   }
