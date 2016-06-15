@@ -40,6 +40,8 @@ require('../polyfills/endswith');
 var session = require('../util/session');
 var isValidJSName = require('../util/isValidJSName');
 var multichoice = require('../util/multichoice');
+var appStructure = require('../util/appStructure');
+var messages = require('../util/messages');
 
 var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
 
@@ -145,6 +147,10 @@ program
     var login = Login.getMostRecentLogin();
     Login.verifyLogin(login);
     var domo = new Domo(login.instance, login.sid, login.devtoken);
+
+    if (!appStructure.hasThumbnail()) {
+      warn(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
+    }
 
     if (!manifest.id){
       createDesign(domo, manifest, login);
@@ -408,7 +414,9 @@ program
     }
 
     // make sure there is a thumbnail.png when releasing
-    ensureThumbnail();
+    if (!appStructure.hasThumbnail()) {
+      fail(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
+    }
 
     // prompt the user for which design version they want to release, defaulting to latest
     domo.getVersions(manifest.id)
@@ -606,19 +614,6 @@ function validateManifest(manifest){
   }
 
   return manifest;
-}
-
-/**
- * Ensure that there is a thumbnail.png file
- * Used on domo release
- */
-function ensureThumbnail(){
-  try {
-    var thumbnail = fs.readFileSync(path.resolve('thumbnail.png'));
-  }
-  catch (ex){
-    fail('Design thumbnail.png required.', 'Please add a 300x300 image named thumbnail.png to the root of your project to represent your design.');
-  }
 }
 
 /**

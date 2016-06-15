@@ -1,0 +1,47 @@
+<html>
+  <head>
+    <link href="domodev/assets/vendor/normalize.css" rel="stylesheet">
+    <link href="domodev/assets/css/index.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div>
+      <section class="messages">
+        <% if (!isValidSession) { %>
+        <div class="error note">Your session has expired. Please login again using domo login.</div>
+        <% } %>
+        <% if (!isValidContext) { %>
+        <div class="warn note">Warning: Fetching data from Domo requires the design to be published first.</div>
+        <% } %>
+        <% if (!hasThumbnail) { %>
+        <div class="warn note">Warning: a thumbnail is required before creating a card with this design. This is used to represent the App in the mobile application and the Appstore experience. Place a 300x300 image named thumbnail.png in the base directory of your design.</div>
+        <% } %>
+      </section>
+
+      <section class="app">
+        <div class="app__wrapper" style="width: <%- width %>">
+          <table>
+            <tr>
+              <% if (hasThumbnail) { %>
+              <td>
+                <img class="app__wrapper__thumbnail" src="/thumbnail.png" />
+              </td>
+              <% } %>
+              <td>
+                <h2><%- manifest.name %></h2>
+              </td>
+            </tr>
+          </table>
+
+          <iframe src="<%- url %>"style="width: <%- width %>; height: <%- height %>;"></iframe>
+
+          <div class="size"><%- width %> x <%- height %></div>
+        </div>
+      <section>
+    <div>
+
+    <script src="domodev/assets/vendor/lodash.js"></script>
+    <script src="domodev/assets/js/index.js"></script>
+  </body>
+
+</html>

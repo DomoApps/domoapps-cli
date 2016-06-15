@@ -20,17 +20,18 @@ var serve = require('koa-static');
 var mount = require('koa-mount');
 var session = require('../util/session');
 var sidUtil = require('../util/sid');
+var appStructure = require('../util/appStructure');
 
 portfinder.basePort = 3000;
 
 api.get('/', function *(){
-  
   var isValidSession = yield session.check(app.domo);
   var isValidContext = true;
+  var hasThumbnail = appStructure.hasThumbnail();
 
   // TODO: figure out why this is being called twice
   // console.log("=========here why twice?");
-  var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/wrapper.html')));
+  var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html')));
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/manifest.json'));
   var sizeMultiplier = {
     width: 235,
@@ -38,8 +39,8 @@ api.get('/', function *(){
   }
 
   // sizes consistent with Domo Web
-  var width = 235 * manifest.size.width - 10;
-  var height = 290 * manifest.size.height - 40;
+  var width = 235 * manifest.size.width - 10 + 'px';
+  var height = 290 * manifest.size.height - 40 + 'px';
 
   var context = yield createContext(manifest.id, manifest.mapping);
 
@@ -58,7 +59,15 @@ api.get('/', function *(){
   }
 
   var url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
-  this.body = template({ manifest: manifest, width: width, height: height, url: url, isValidSession: isValidSession, isValidContext: isValidContext  });
+  this.body = template({
+    manifest,
+    width,
+    height,
+    url,
+    isValidSession,
+    isValidContext,
+    hasThumbnail,
+  });
 });
 
 // Proxy requests to the correct domoapps service for the environment they're logged into.
