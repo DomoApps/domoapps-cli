@@ -190,14 +190,14 @@ function promptUpgrade(latest){
 
     ], function(answers) {
       if(answers.upgrade){
-        info('Upgrading to latest version', 'Hang tight, this may take a moment...');
+        log.info('Upgrading to latest version', 'Hang tight, this may take a moment...');
         var output = shell.exec('npm install ryuu -g', {async: false, silent: true});
         if (output.code === 0){
           log.ok('Upgrade to version '+latest+' successful');
           resolve();
         }
         else {
-          warn('Upgrade unsuccessful', 'Please try upgrading manually with npm install -g ryuu');
+          log.warn('Upgrade unsuccessful', 'Please try upgrading manually with npm install -g ryuu');
         }
       }
       else{
