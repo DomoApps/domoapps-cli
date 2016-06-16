@@ -1,7 +1,15 @@
+<a name="2.17.2"></a>
+## 2.17.2 (2016-06-16)
+
+* fixing bug with output logging during upgrades ([82a5cdb](https://github.com/DomoApps/domoapps-cli/commit/82a5cdb))
+
+
+
 <a name="2.17.1"></a>
 ## 2.17.1 (2016-06-16)
 
 * fixing owner command argument parsing ([e2447a7](https://github.com/DomoApps/domoapps-cli/commit/e2447a7))
+* v2.17.1 ([602a21a](https://github.com/DomoApps/domoapps-cli/commit/602a21a))
 
 
 
