@@ -57,7 +57,7 @@ module.exports = function(program) {
           inquirer.prompt([{
             name: 'devtoken',
             type: 'input',
-            message: 'Token (can be found in the Admin section of Domo)'
+            message: 'Token (can be found in the Admin section of Domo and pasted here)'
           }], function(answers){
             login.devtoken = answers.devtoken;
             Login.persistLogin(login.instance, login.user)(login);
