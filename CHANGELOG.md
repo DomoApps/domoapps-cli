@@ -1,8 +1,24 @@
-<a name="Unreleased"></a>
-# Unreleased (2016-06-14)
+<a name="2.17.0"></a>
+# 2.17.0 (2016-06-16)
 
+* (feature) domo token <add|remove|create> ([f3920e1](https://github.com/DomoApps/domoapps-cli/commit/f3920e1))
+* (feature) support dev tokens ([e8c1b36](https://github.com/DomoApps/domoapps-cli/commit/e8c1b36))
+* (internal) adding grunt shell:changelog command ([f1fe264](https://github.com/DomoApps/domoapps-cli/commit/f1fe264))
+* (mana) move evoke into own function ([a45aaca](https://github.com/DomoApps/domoapps-cli/commit/a45aaca))
+* (mana) move login into own command ([843131c](https://github.com/DomoApps/domoapps-cli/commit/843131c))
+* (mana) move login to own util ([9999bd4](https://github.com/DomoApps/domoapps-cli/commit/9999bd4))
+* (mana) move sid parsing to own util ([25c3b3c](https://github.com/DomoApps/domoapps-cli/commit/25c3b3c))
+* (polish) let user know they can paste token ([090d78a](https://github.com/DomoApps/domoapps-cli/commit/090d78a))
+* (polish) mention domo token create command ([bc42879](https://github.com/DomoApps/domoapps-cli/commit/bc42879))
+* (polish) move text below logo after login ([e34b0fb](https://github.com/DomoApps/domoapps-cli/commit/e34b0fb))
+* changelog command ([e2b71d8](https://github.com/DomoApps/domoapps-cli/commit/e2b71d8))
 * clearing change log ([fd9d32e](https://github.com/DomoApps/domoapps-cli/commit/fd9d32e))
+* respect dev tokens when set ([f4533ed](https://github.com/DomoApps/domoapps-cli/commit/f4533ed))
 * restoring change log ([e6a91b5](https://github.com/DomoApps/domoapps-cli/commit/e6a91b5))
+* running changelog before release ([6d8284e](https://github.com/DomoApps/domoapps-cli/commit/6d8284e))
+* update commander.js ([7036ccd](https://github.com/DomoApps/domoapps-cli/commit/7036ccd))
+* update latest client ([cb59e5f](https://github.com/DomoApps/domoapps-cli/commit/cb59e5f))
+* update latest client ([165bbcb](https://github.com/DomoApps/domoapps-cli/commit/165bbcb))
 
 
 
@@ -94,14 +110,20 @@
 ## 2.14.3 (2016-03-25)
 
 * sending method and body to data endpoint ([d2bc408](https://github.com/DomoApps/domoapps-cli/commit/d2bc408))
-* update domo.js to 2.5.2 ([103568d](https://github.com/DomoApps/domoapps-cli/commit/103568d))
-* v2.14.2 ([e6bd4e0](https://github.com/DomoApps/domoapps-cli/commit/e6bd4e0))
 * v2.14.3 ([b74689a](https://github.com/DomoApps/domoapps-cli/commit/b74689a))
 
 
 
 <a name="2.14.2"></a>
-## 2.14.2 (2016-03-14)
+## 2.14.2 (2016-03-25)
+
+* update domo.js to 2.5.2 ([103568d](https://github.com/DomoApps/domoapps-cli/commit/103568d))
+* v2.14.2 ([e6bd4e0](https://github.com/DomoApps/domoapps-cli/commit/e6bd4e0))
+
+
+
+<a name="2.14.1"></a>
+## 2.14.1 (2016-03-14)
 
 * make domo logo grey ([4711eaa](https://github.com/DomoApps/domoapps-cli/commit/4711eaa))
 * v2.14.1 ([d5cbed4](https://github.com/DomoApps/domoapps-cli/commit/d5cbed4))
@@ -218,11 +240,17 @@
 # 2.12.0 (2016-02-09)
 
 * (feature) domo release command ([e4e204e](https://github.com/DomoApps/domoapps-cli/commit/e4e204e))
-* (polish) using our cache file ([3b8a312](https://github.com/DomoApps/domoapps-cli/commit/3b8a312))
 * add #ensureThumbnail ([a2be70d](https://github.com/DomoApps/domoapps-cli/commit/a2be70d))
 * update ryuu-client lib to 2.6.1 ([2f8204a](https://github.com/DomoApps/domoapps-cli/commit/2f8204a))
-* v2.11.12 ([2d5fd0f](https://github.com/DomoApps/domoapps-cli/commit/2d5fd0f))
 * v2.12.0 ([515172d](https://github.com/DomoApps/domoapps-cli/commit/515172d))
+
+
+
+<a name="2.11.12"></a>
+## 2.11.12 (2016-02-08)
+
+* (polish) using our cache file ([3b8a312](https://github.com/DomoApps/domoapps-cli/commit/3b8a312))
+* v2.11.12 ([2d5fd0f](https://github.com/DomoApps/domoapps-cli/commit/2d5fd0f))
 
 
 
@@ -694,10 +722,16 @@
 # 1.9.0 (2015-06-09)
 
 * (login) instance selection list with populating email ([d7a1e39](https://github.com/DomoApps/domoapps-cli/commit/d7a1e39))
+* v1.9.0 ([91cf437](https://github.com/DomoApps/domoapps-cli/commit/91cf437))
+
+
+
+<a name="1.8.1"></a>
+## 1.8.1 (2015-06-09)
+
 * include domoapp design name in publish log ([352a249](https://github.com/DomoApps/domoapps-cli/commit/352a249))
 * update changelog ([2531e5c](https://github.com/DomoApps/domoapps-cli/commit/2531e5c))
 * v1.8.1 ([8c3a35f](https://github.com/DomoApps/domoapps-cli/commit/8c3a35f))
-* v1.9.0 ([91cf437](https://github.com/DomoApps/domoapps-cli/commit/91cf437))
 
 
 
