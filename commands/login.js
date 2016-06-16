@@ -112,8 +112,8 @@ module.exports = function(program){
           // LATER: verify that devtoken is still valid
           // persist login anyway to make it the most recent
           Login.persistLogin(answers.instance, null, instanceLogin)(instanceLogin);
-          log.ok('Login to ' + answers.instance + ' successful (using developer token)');
           console.log(chalk.grey(logo));
+          log.ok('Login to ' + answers.instance + ' successful (using developer token)');
           process.exit();
         }
         else{
@@ -127,9 +127,9 @@ module.exports = function(program){
             .then(checkVersion.bind(null, answers.instance))
             .then(verifyVersion)
             .then(function(){
-                log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
-                log.info(`FYI if you don't want to login all the time you can create a developer token instead by using the \`domo token create\` command.`);
                 console.log(chalk.grey(logo));
+                log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
+                log.info(`If you don't want to login all the time you can create a developer token instead by using the \`domo token create\` command.`);
                 return login;
             })
             .then(Login.persistLogin(answers.instance, answers.email))
