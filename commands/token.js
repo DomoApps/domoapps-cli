@@ -48,7 +48,7 @@ module.exports = function(program) {
             if (answers.fosho){
               delete login.devtoken;
               Login.persistLogin(login.instance, login.user)(login);
-              log.ok(`Token removed for ${login.instance}`, 'Future CLI commands to this instance will require username/password. \nUse the "domo token add" command to use another token.')
+              log.ok(`Token removed for ${login.instance}`, 'Future CLI commands to this instance will require username/password. \nUse the "domo token create" or "domo token add" commands to use another token.')
             }
           })
           break;
