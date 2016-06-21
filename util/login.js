@@ -44,6 +44,11 @@ module.exports = {
   },
 
   getLogin: function(instance){
-    return fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
+    try{
+      return fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
+    }
+    catch (ex){
+      return {};
+    }
   }
 }
