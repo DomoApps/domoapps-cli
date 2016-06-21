@@ -1,7 +1,15 @@
+<a name="2.17.3"></a>
+## 2.17.3 (2016-06-21)
+
+* (fix) new instance option now works again ([e52e1f4](https://github.com/DomoApps/domoapps-cli/commit/e52e1f4))
+
+
+
 <a name="2.17.2"></a>
 ## 2.17.2 (2016-06-16)
 
 * fixing bug with output logging during upgrades ([82a5cdb](https://github.com/DomoApps/domoapps-cli/commit/82a5cdb))
+* v2.17.2 ([7c64dc9](https://github.com/DomoApps/domoapps-cli/commit/7c64dc9))
 
 
 
@@ -126,14 +134,20 @@
 ## 2.14.3 (2016-03-25)
 
 * sending method and body to data endpoint ([d2bc408](https://github.com/DomoApps/domoapps-cli/commit/d2bc408))
-* update domo.js to 2.5.2 ([103568d](https://github.com/DomoApps/domoapps-cli/commit/103568d))
-* v2.14.2 ([e6bd4e0](https://github.com/DomoApps/domoapps-cli/commit/e6bd4e0))
 * v2.14.3 ([b74689a](https://github.com/DomoApps/domoapps-cli/commit/b74689a))
 
 
 
 <a name="2.14.2"></a>
-## 2.14.2 (2016-03-14)
+## 2.14.2 (2016-03-25)
+
+* update domo.js to 2.5.2 ([103568d](https://github.com/DomoApps/domoapps-cli/commit/103568d))
+* v2.14.2 ([e6bd4e0](https://github.com/DomoApps/domoapps-cli/commit/e6bd4e0))
+
+
+
+<a name="2.14.1"></a>
+## 2.14.1 (2016-03-14)
 
 * make domo logo grey ([4711eaa](https://github.com/DomoApps/domoapps-cli/commit/4711eaa))
 * v2.14.1 ([d5cbed4](https://github.com/DomoApps/domoapps-cli/commit/d5cbed4))
@@ -250,11 +264,17 @@
 # 2.12.0 (2016-02-09)
 
 * (feature) domo release command ([e4e204e](https://github.com/DomoApps/domoapps-cli/commit/e4e204e))
-* (polish) using our cache file ([3b8a312](https://github.com/DomoApps/domoapps-cli/commit/3b8a312))
 * add #ensureThumbnail ([a2be70d](https://github.com/DomoApps/domoapps-cli/commit/a2be70d))
 * update ryuu-client lib to 2.6.1 ([2f8204a](https://github.com/DomoApps/domoapps-cli/commit/2f8204a))
-* v2.11.12 ([2d5fd0f](https://github.com/DomoApps/domoapps-cli/commit/2d5fd0f))
 * v2.12.0 ([515172d](https://github.com/DomoApps/domoapps-cli/commit/515172d))
+
+
+
+<a name="2.11.12"></a>
+## 2.11.12 (2016-02-08)
+
+* (polish) using our cache file ([3b8a312](https://github.com/DomoApps/domoapps-cli/commit/3b8a312))
+* v2.11.12 ([2d5fd0f](https://github.com/DomoApps/domoapps-cli/commit/2d5fd0f))
 
 
 
@@ -726,10 +746,16 @@
 # 1.9.0 (2015-06-09)
 
 * (login) instance selection list with populating email ([d7a1e39](https://github.com/DomoApps/domoapps-cli/commit/d7a1e39))
+* v1.9.0 ([91cf437](https://github.com/DomoApps/domoapps-cli/commit/91cf437))
+
+
+
+<a name="1.8.1"></a>
+## 1.8.1 (2015-06-09)
+
 * include domoapp design name in publish log ([352a249](https://github.com/DomoApps/domoapps-cli/commit/352a249))
 * update changelog ([2531e5c](https://github.com/DomoApps/domoapps-cli/commit/2531e5c))
 * v1.8.1 ([8c3a35f](https://github.com/DomoApps/domoapps-cli/commit/8c3a35f))
-* v1.9.0 ([91cf437](https://github.com/DomoApps/domoapps-cli/commit/91cf437))
 
 
 
