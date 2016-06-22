@@ -25,6 +25,7 @@ module.exports = {
 
   /**
    * persist login to user's domo home
+   * TODO: REFACTOR w writeLogin
    */
   persistLogin: function(instance, user, existingData){
     
@@ -41,6 +42,12 @@ module.exports = {
       fs.writeJsonSync(loginFile, data);
       return login;
     };
+  },
+  
+  writeLogin: function(login){
+    var loginFile = path.resolve(home + '/login/' + login.instance + '.json');
+    fs.ensureFileSync(loginFile);
+    fs.writeJsonSync(loginFile, login);
   },
 
   getLogin: function(instance){

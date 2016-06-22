@@ -1,4 +1,6 @@
 var inquirer = require('inquirer');
+var chalk = require('chalk');
+var _ = require('lodash');
 var Domo = require('ryuu-client');
 var Login = require('../util/login');
 var log = require('../util/log');
@@ -11,6 +13,7 @@ module.exports = function(program) {
     .arguments('<cmd>')
     .action(function(cmd) {
       var login = Login.getMostRecentLogin();
+      var previousLogins = Login.getPreviousLogins();
       var domo = new Domo(login.instance, login.sid, login.devtoken);
       
       switch (cmd) {
@@ -40,29 +43,56 @@ module.exports = function(program) {
           break;
         
         case "remove":
-          inquirer.prompt([{
-            name: 'fosho',
-            message: `Are you sure you want to stop using a token for ${login.instance}?`,
-            type: 'confirm'
-          }], function(answers){
-            if (answers.fosho){
-              delete login.devtoken;
-              Login.persistLogin(login.instance, login.user)(login);
-              log.ok(`Token removed for ${login.instance}`, 'Future CLI commands to this instance will require username/password. \nUse the "domo token create" or "domo token add" commands to use another token.')
-            }
+          inquirer.prompt([
+            multichoice({
+              type: "list",
+              choices: function(){
+                return _.map(previousLogins, 'instance');
+              },
+              message: "Domo instance on which to remove the token " + chalk.grey("e.g. ebay.domo.com "),
+              name: 'instance',
+              default: login.instance
+            })
+            ], function(answers){
+              if (answers.instance){
+                var selectedLogin = Login.getLogin(answers.instance);
+                delete selectedLogin.devtoken;
+                Login.writeLogin(selectedLogin);
+                log.ok(`Token removed for ${answers.instance}`, 'Future CLI commands to this instance will require username/password. \nUse the "domo token create" or "domo token add" commands to use another token.')
+              }
           })
           break;
         
         case "add":
-          inquirer.prompt([{
-            name: 'devtoken',
-            type: 'input',
-            message: 'Token (can be found in the Admin section of Domo and pasted here)'
-          }], function(answers){
-            login.devtoken = answers.devtoken;
-            Login.persistLogin(login.instance, login.user)(login);
-            log.ok(`Token set for ${login.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.')
-          })
+          inquirer.prompt([
+            multichoice({
+              type: "list",
+              choices: function(){
+                var options = _.map(previousLogins, 'instance');
+                options.push('new instance');
+                return options;
+              },
+              message: "Domo instance on which to set the token " + chalk.grey("e.g. ebay.domo.com "),
+              name: 'instance',
+              default: login.instance
+            }),
+            {
+              type: "input",
+              message: "Domo instance " + chalk.grey("e.g. ebay.domo.com "),
+              name: "instance",
+              when: function(answers){
+                // only ask if the instance selector wasn't used or new one was selected
+                return !answers.instance || answers.instance === 'new instance';
+              }
+            },
+            {
+              name: 'devtoken',
+              type: 'input',
+              message: 'Token (can be found in the Admin section of Domo and pasted here)'
+            }], function(answers){
+              Login.writeLogin(answers);
+              log.ok(`Token set for ${answers.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.')
+            })
           break;
       }
       
