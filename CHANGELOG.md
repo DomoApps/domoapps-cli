@@ -1,7 +1,15 @@
+<a name="2.17.4"></a>
+## 2.17.4 (2016-06-22)
+
+* (polish) prompt for instance on token add/remove ([8eaecda](https://github.com/DomoApps/domoapps-cli/commit/8eaecda))
+
+
+
 <a name="2.17.3"></a>
 ## 2.17.3 (2016-06-21)
 
 * (fix) new instance option now works again ([e52e1f4](https://github.com/DomoApps/domoapps-cli/commit/e52e1f4))
+* v2.17.3 ([ea10d09](https://github.com/DomoApps/domoapps-cli/commit/ea10d09))
 
 
 
