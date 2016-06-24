@@ -38,14 +38,19 @@ function issueUrl() {
 
 var writerOpts = {
   transform: function(commit) {
-    var discard = true;
-
-    commit.notes.forEach(function(note) {
-      console.log("note", note);
-      note.title = 'BREAKING CHANGES';
-      discard = false;
-    });
     
+    if (commit.body){
+      // console.log(commit.body);
+      var match = commit.body.match(/(https:\/\/trello.com\/.*)/);
+      if (match){
+        commit.ticket = match[1];
+        console.log("commit.ticket", commit.ticket);
+      }
+      
+      // console.log(trelloLink);
+      // console.log("-------------");
+    }
+
     if (commit.type === 'feature') {
       commit.type = 'Features';
     } else if (commit.type === 'fix') {
