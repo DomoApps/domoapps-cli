@@ -32,7 +32,6 @@ cleanupMappings();
 var inquirer = require("inquirer");
 var Promise = require('bluebird');
 var validator = require('validator');
-var chokidar = require('chokidar');
 var server = require('../server/server');
 var shell = require('shelljs');
 var request = Promise.promisify(require('request'));
@@ -196,16 +195,6 @@ program
         });
     }
 
-    if (program.watch) {
-        // domo-gyp (which is brought in by chokidar) is sometimes throwing
-        // warnings on windows when looking for python. we only use chokidar
-        // with the watch option which is no longer useful since we now have
-        // `domo dev`. deprecating this option.
-        // https://onjira.domo.com/browse/DOMO-75374
-        warn('The --watch flag will be deprecated on the next release.');
-        warn('Please use `domo dev` (https://developer.domo.com/docs/dev-studio/dev-studio-cli-reference).');
-        watch(domo, login, manifest);
-    }
   });
 
 /**
@@ -540,41 +529,6 @@ function verifyNodeVersion(){
   if(!compatible){
     fail('Unsupported Node version', 'Please upgrade to Node v0.12.0 or higher. https://nodejs.org/');
   }
-}
-
-function watch(domo, login, manifest){
-  var currentVersion = manifest.version;
-  var currentDesignId = manifest.id;
-
-  chokidar.watch('.', {ignored: /[\/\\]\./, ignoreInitial: true}).on('all', function(event, filepath) {
-
-    // don't do anything for deleted files/folders
-    if (event == 'unlink' || event == 'unlinkDir') return;
-
-    // if manifest version or id changed, upload all assets
-    if (filepath.indexOf('manifest.json') !== -1){
-      var newManifest = getManifest();
-      if (!newManifest) return;
-
-      if (newManifest.version !== currentVersion || newManifest.id !== currentDesignId){
-        domo.uploadAllAssets(manifest)
-            .then(logUploadSuccess)
-            .then(function(a){
-              currentVersion = newManifest.version;
-              currentDesignId = newManifest.id;
-            })
-            .tap(evoke(ok, 'Published new version ' + newManifest.version))
-            .catch(evoke(fail, 'Error uploading assets'));
-        return;
-      }
-    }
-
-    // upload just the individual asset
-    var relFilePath = path.relative(process.cwd(), filepath);
-    domo.uploadAsset(manifest.id, manifest.version, relFilePath)
-        .tap(evoke(ok, 'Uploaded: ' + relFilePath + ' ' + new Date().timeNow()))
-        .catch(evoke(fail, 'Error uploading: ' + relFilePath));
-  });
 }
 
 function logUploadSuccess(files){
