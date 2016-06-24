@@ -4,9 +4,6 @@
   {{~header}}
 {{~/if}}
 
-{{#if commit.ticket}}
-  WOOT TRELLO
-{{~/if}}
 
 {{~!-- commit link --}} {{#if @root.linkReferences~}}
   ([{{hash}}](
@@ -24,4 +21,8 @@
   {{~@root.commit}}/{{hash}}))
 {{~else}}
   {{~hash}}
+{{~/if}}
+
+{{#if ticket}}
+  (<a href="{{ticket}}">ticket</a>)
 {{~/if}}
