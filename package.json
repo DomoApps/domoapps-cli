@@ -1,11 +1,11 @@
 {
   "name": "ryuu",
-  "version": "2.17.4",
+  "version": "2.17.5",
   "bin": {
     "domo": "./bin/runner"
   },
   "scripts": {
-    "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 --config ./changelog/changelog.js"
+    "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 -a --config ./changelog/changelog.js"
   },
   "dependencies": {
     "async": "~1.3.0",
