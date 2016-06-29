@@ -68,16 +68,15 @@ api.all('/data/*', function *(){
   var j = request.jar();
   var url = baseUrl + this.request.url;
   var method = this.request.method;
+  
   var headers = _.merge({
     referer: this.request.headers.referer,
     accept: this.request.headers.accept,
+    'Content-Type': this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json'
   }, app.domo.getAuthHeader());
+  
 
   var body = JSON.stringify(this.request.body);
-
-  if (this.request.headers['content-type'] || this.request.headers['Content-Type']) {
-    headers['content-type'] = this.request.headers['content-type'] || this.request.headers['Content-Type'];
-  }
 
   if (url.indexOf("dataversions") !== -1){
     var getRawBody = require('raw-body')
@@ -108,7 +107,8 @@ api.all('/domo/*', function *(){
   
   var headers = _.merge({
     referer: this.request.headers.referer,
-    accept: this.request.headers.accept
+    accept: this.request.headers.accept,
+    'Content-Type': this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json'
   }, app.domo.getAuthHeader());
   
   this.body = request({url: url, jar: j, headers: headers});
