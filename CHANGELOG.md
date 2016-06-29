@@ -1,3 +1,13 @@
+<a name="2.18.0"></a>
+# [2.18.0](https://github.com/DomoApps/domoapps-cli/compare/v2.17.8...v2.18.0) (2016-06-29)
+
+
+### Technical Improvements
+
+*  remove deprecated --watch option ([823e787](https://github.com/DomoApps/domoapps-cli/commit/823e787))
+*  support for node 6 ([1ba6589](https://github.com/DomoApps/domoapps-cli/commit/1ba6589))
+
+
 <a name="2.17.8"></a>
 ## [2.17.8](https://github.com/DomoApps/domoapps-cli/compare/v2.17.7...v2.17.8) (2016-06-24)
 
