@@ -1,3 +1,12 @@
+<a name="2.18.1"></a>
+## [2.18.1](https://github.com/DomoApps/domoapps-cli/compare/v2.18.0...v2.18.1) (2016-06-29)
+
+
+### Bug Fixes
+
+*  add content type header to server proxy ([018f933](https://github.com/DomoApps/domoapps-cli/commit/018f933))  (<a href="https://trello.com/c/5AFIWcHj/1020-domo-dev-doesn-t-fetch-data-when-using-dev-token">ticket</a>)
+
+
 <a name="2.18.0"></a>
 # [2.18.0](https://github.com/DomoApps/domoapps-cli/compare/v2.17.8...v2.18.0) (2016-06-29)
 
