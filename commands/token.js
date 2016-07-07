@@ -14,13 +14,23 @@ module.exports = function(program) {
     .action(function(cmd) {
       var login = Login.getMostRecentLogin();
       var previousLogins = Login.getPreviousLogins();
-      var domo = new Domo(login.instance, login.sid, login.devtoken);
       
       switch (cmd) {
         case "create":
-          var sid = sidUtil.parse(login.sid);
+          if (previousLogins.length < 1){
+            log.fail('domo token create requires a succesful initial login', 'Please login first using `domo login` or `domo token add`');
+          }
           
           inquirer.prompt([
+            multichoice({
+              type: "list",
+              choices: function(){
+                return _.map(previousLogins, 'instance');
+              },
+              message: "Domo instance on which to create a token " + chalk.grey("e.g. ebay.domo.com "),
+              name: 'instance',
+              default: login.instance
+            }),
             multichoice({
               type: "list",
               name: "days",
@@ -29,14 +39,30 @@ module.exports = function(program) {
               default: 4
             })
             ], function(answers){
-              domo.createDevToken(sid.userId, answers.days)
+              var selectedLogin = Login.getLogin(answers.instance);
+              var domo = new Domo(selectedLogin.instance, selectedLogin.sid, selectedLogin.devtoken);
+              
+              var userId = sidUtil.parse(login.sid).userId;
+              
+              domo.createDevToken(userId, answers.days)
                   .then(function(res){
+                    delete login.sid;
                     login.devtoken = res.token;
-                    Login.persistLogin(login.instance, login.user)(login);
-                    log.ok(`Token created and set for ${login.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.')
+                    login.user = res.ownerEmail;
+                    Login.writeLogin(login);
+                    log.ok(`Token created and set for ${login.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.');
                   })
                   .catch(function(e){
-                    log.fail(e, 'Please login first using the `domo login` command. \nTokens may also be created in the Admin section of Domo, then manually added to the CLI with the `domo token add` command');
+                    switch (e.reason){
+                      case "tokenexists":
+                        log.fail(`${answers.instance} already has a token associated with it.`, 'To create a new one please run `domo token remove`, then `domo login` with username/password, then `domo token create`.');
+                        break;
+                      case "nosid":
+                        log.fail('Not authenticated with username/password', 'This command requires an initial `domo login` with username/password. Alternatively you can create a token in the Admin section of Domo and use `domo token add`.');
+                        break;
+                      default:
+                        log.fail('Not authenticated', 'Please login first with username/password.');
+                    }
                   })
           })
           
