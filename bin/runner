@@ -24,7 +24,7 @@ function on_unhandled_error(err) {
     already_warned = true;
 
     console.log('');
-    console.error('[ERROR] The domo cli tool as experienced an unhandled error. As it is');
+    console.error('[ERROR] The domo cli tool has experienced an error. As it is');
     console.error('[ERROR] possible this bug has already been fixed, please try updating');
     console.error('[ERROR] using `npm install -g ryuu` and run this command again. If this');
     console.error('[ERROR] does not fix the issue, please contact your MajorDomo.');
