@@ -56,7 +56,7 @@ program
   .description('get a list of all your Custom App designs')
   .action(function(){
     var login = Login.getMostRecentLogin();
-    verifyLogin(login);
+    Login.verifyLogin(login);
     var domo = new Domo(login.instance, login.sid, login.devtoken);
 
     session.check(domo)
@@ -86,9 +86,7 @@ program
         .finally(process.exit)
 
       })
-      .catch(function(){
-        fail('Not authenticated', 'Please login using "domo login"');
-      })
+      .catch(log.notAuthenticated);
   });
 
 program
@@ -96,7 +94,7 @@ program
   .description('dowmload a Custom App design')
   .action(function(){
     var login = Login.getMostRecentLogin();
-    verifyLogin(login);
+    Login.verifyLogin(login);
 
     var domo = new Domo(login.instance, login.sid, login.devtoken);
 
@@ -145,7 +143,7 @@ program
     if (!manifest) return;
     
     var login = Login.getMostRecentLogin();
-    verifyLogin(login);
+    Login.verifyLogin(login);
     var domo = new Domo(login.instance, login.sid, login.devtoken);
 
     if (!manifest.id){
@@ -157,7 +155,7 @@ program
         .then(logUploadSuccess)
         .catch(function(e){
           if(e.statusCode === 401) {
-            fail('You are not logged in. Please login with \'domo login\' and then try logging in again.');
+            log.notAuthenticated(login);
           }
           else if(e.statusCode === 403) {
             fail('You do not have access to the design with id ' + manifest.id + ' on ' + login.instance
@@ -242,7 +240,7 @@ program
     }
 
     var login = Login.getMostRecentLogin();
-    verifyLogin(login);
+    Login.verifyLogin(login);
 
     var domo = new Domo(login.instance, login.sid, login.devtoken);
 
@@ -299,7 +297,7 @@ program
     if (options.force) force = true;
 
     var login = Login.getMostRecentLogin();
-    verifyLogin(login);
+    Login.verifyLogin(login);
 
     var domo = new Domo(login.instance, login.sid, login.devtoken);
 
@@ -332,7 +330,7 @@ program
       }
     ], function(answers) {
       var login = Login.getLogin(answers.instance);
-      verifyLogin(login);
+      Login.verifyLogin(login);
 
       var domo = new Domo(answers.instance, login.sid, login.devtoken);
 
@@ -362,7 +360,7 @@ program
       }
     ], function(answers) {
       var login = Login.getLogin(answers.instance);
-      verifyLogin(login);
+      Login.verifyLogin(login);
 
       var domo = new Domo(answers.instance, login.sid, login.devtoken);
       domo.getKpi(answers.id)
@@ -390,7 +388,7 @@ program
     };
 
     var login = Login.getMostRecentLogin();
-    verifyLogin(login);
+    Login.verifyLogin(login);
     var domo = new Domo(login.instance, login.sid, login.devtoken);
     server.start(domo, options).catch(fail)
   });
@@ -400,7 +398,7 @@ program
   .description('prepare a design for app store release')
   .action(function(){
     var login = Login.getMostRecentLogin();
-    verifyLogin(login);
+    Login.verifyLogin(login);
     var domo = new Domo(login.instance, login.sid, login.devtoken);
     var manifest = getManifest();
 
@@ -513,13 +511,6 @@ function cleanupMappings(){
 
   if (changed){
     updateManifest(manifest);
-  }
-}
-
-function verifyLogin(login){
-  if (!login.devtoken && !login.sid){
-    fail('Not authenticated', 'Please login using "domo login"');
-    return;
   }
 }
 

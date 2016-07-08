@@ -61,7 +61,7 @@ module.exports = function(program) {
                         log.fail('Not authenticated with username/password', 'This command requires an initial `domo login` with username/password. Alternatively you can create a token in the Admin section of Domo and use `domo token add`.');
                         break;
                       default:
-                        log.fail('Not authenticated', 'Please login first with username/password.');
+                        log.notAuthenticated(login);
                     }
                   })
           })

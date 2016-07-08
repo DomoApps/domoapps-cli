@@ -3,6 +3,7 @@ var fs = require('fs-extra');
 var path = require('path');
 var Domo = require('ryuu-client');
 var home = Domo.getHomeDir();
+var log = require('./log');
 
 module.exports = {
   getMostRecentLogin: function(){
@@ -42,6 +43,12 @@ module.exports = {
       fs.writeJsonSync(loginFile, data);
       return login;
     };
+  },
+  
+  verifyLogin: function(login){
+    if (!login.devtoken && !login.sid){
+      log.fail('Not authenticated', 'Please login using "domo login"');
+    }
   },
   
   writeLogin: function(login){
