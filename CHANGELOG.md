@@ -1,3 +1,24 @@
+<a name="2.18.2"></a>
+## [2.18.2](https://github.com/DomoApps/domoapps-cli/compare/v2.18.1...v2.18.2) (2016-07-11)
+
+
+### Bug Fixes
+
+*  prevent domo token create failures ([8be9caa](https://github.com/DomoApps/domoapps-cli/commit/8be9caa))  (<a href="https://trello.com/c/EtZPCesH/1013-cli-dev-token-create-error">ticket</a>)
+
+
+### Technical Improvements
+
+*  don't fail parsing when no sid ([18ec8bc](https://github.com/DomoApps/domoapps-cli/commit/18ec8bc))
+*  move verify login to login util ([cdfba18](https://github.com/DomoApps/domoapps-cli/commit/cdfba18))
+*  update latest client ([ae4d46a](https://github.com/DomoApps/domoapps-cli/commit/ae4d46a))
+
+
+### User Experience Polish
+
+*  fix typo in error message ([3a3cc72](https://github.com/DomoApps/domoapps-cli/commit/3a3cc72))
+
+
 <a name="2.18.1"></a>
 ## [2.18.1](https://github.com/DomoApps/domoapps-cli/compare/v2.18.0...v2.18.1) (2016-06-29)
 
