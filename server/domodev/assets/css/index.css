@@ -1,0 +1,83 @@
+html,
+body {
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  background: #fbfbfb;
+  cursor: default;
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  color: #5d5d5d;
+  font-size: 24px;
+  font-weight: 100;
+}
+
+.messages {
+  padding-top: 20px;
+  margin: 0 auto;
+  max-width: 60%;
+  overflow: visible;
+}
+
+.app {
+  text-align: center;
+}
+
+.app__wrapper {
+  display: inline-block;
+  text-align: left;
+  transition: margin .4s, padding .4s;
+}
+
+.app__wrapper table,
+.app__wrapper td {
+  border-collapse: collapse;
+  padding: 0;
+  vertical-align: bottom;
+}
+
+.app__wrapper td {
+  height: 80px;
+}
+
+.app__wrapper h2 {
+  margin: 0;
+}
+
+.app__wrapper iframe {
+  border: 1px solid #e4e5e5;
+  background: #fff;
+  height: 100%;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.app__wrapper__thumbnail {
+  height: 62px;
+  width: 62px;
+  position: relative;
+  top: -7px;
+  margin-right: 20px;
+}
+
+.size {
+  float: right;
+  color:  #dddddd;
+  font-size: 12px;
+  font-family: 'Open Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+
+.note {
+  text-align: center;
+  font-size: 24px;
+  padding-top: 20px;
+}
+
+.error {
+  color: #cb2c1c;
+}
+
+.warn {
+  color: #fc8f13;
+}
