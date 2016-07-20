@@ -49,8 +49,8 @@ api.get('/', function *(){
     context = {id: 0};
   }
   
-  var userId = app.options.userId;
-  var customerId = "1";
+  var userId = app.options.userId || 1;
+  var customerId = 1;
   
   if(app.domo.sid){
       var sid = sidUtil.parse(app.domo.sid);
