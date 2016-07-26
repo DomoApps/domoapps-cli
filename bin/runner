@@ -12,7 +12,7 @@ process.env.BABEL_CACHE_PATH = path.join(os.tmpdir(), '/ryuu.json');
 require("babel/register")({
   stage: 0,
   sourceMap: 'inline',
-  only: ['domo.js', 'server.js', 'commands/**.js']
+  only: ['domo.js', 'server.js', 'commands/**.js', 'util/**.js', 'polyfills/**.js']
 });
 
 var already_warned = false;
