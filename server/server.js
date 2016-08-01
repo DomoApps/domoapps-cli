@@ -54,7 +54,7 @@ api.get('/', function *(){
   
   if(app.domo.sid){
       var sid = sidUtil.parse(app.domo.sid);
-      userId = userId || sid.userId;
+      userId = app.options.userId || sid.userId;
       customerId = customerId || sid.customerId;
   }
 
