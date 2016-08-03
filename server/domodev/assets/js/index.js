@@ -27,7 +27,7 @@ window.addEventListener('message', function(e) {
 
 
 function isHostSafe(name){
-  var whitelist = ['domo.com', 'github.com', 'salesforce.com', 'trello.com', 'jira.com', 'coupahost.com', 'facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'linkedin.com', 'predictivetoolkit.net'];
+  var whitelist = ['domo.com', 'github.com', 'salesforce.com', 'trello.com', 'jira.com', 'coupahost.com', 'facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'linkedin.com', 'predictivetoolkit.net', 'egnyte.com', 'crmondemand.com'];
   return _.contains(whitelist, name);
 }
 
