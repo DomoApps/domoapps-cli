@@ -1,3 +1,12 @@
+<a name="2.19.4"></a>
+## [2.19.4](https://github.com/DomoApps/domoapps-cli/compare/v2.19.3...v2.19.4) (2016-08-03)
+
+
+### Technical Improvements
+
+* add more domains to whitelist ([fb11038](https://github.com/DomoApps/domoapps-cli/commit/fb11038))
+
+
 <a name="2.19.3"></a>
 ## [2.19.3](https://github.com/DomoApps/domoapps-cli/compare/v2.19.2...v2.19.3) (2016-08-02)
 
