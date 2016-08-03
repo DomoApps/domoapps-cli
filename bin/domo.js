@@ -93,7 +93,7 @@ program
 
 program
   .command('download')
-  .description('dowmload a Custom App design')
+  .description('download a Custom App design')
   .action(function(){
     var login = Login.getMostRecentLogin();
     Login.verifyLogin(login);
@@ -141,12 +141,12 @@ program
   .command('publish')
   .description('publish a new or existing Custom App design')
   .action(function(){
-    var manifest = getManifest();
-    if (!manifest) return;
-    
     var login = Login.getMostRecentLogin();
     Login.verifyLogin(login);
     var domo = new Domo(login.instance, login.sid, login.devtoken);
+
+    var manifest = getManifest(true, login.instance);
+    if (!manifest) return;
 
     if (!appStructure.hasThumbnail()) {
       warn(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
@@ -546,10 +546,12 @@ function persistDesignId(design, manifest){
 }
 
 /**
-* Get the local manifest.json file, ensuring it's valid.
+* Get the local manifest.json file and any instance-specific ones,
+* ensuring they're valid.
 */
-function getManifest(verify = true){
+function getManifest(verify = true, instance){
   var manifest;
+  var instanceManifest;
   try {
     manifest = fs.readFileSync(path.resolve('manifest.json'));
   }
@@ -568,6 +570,25 @@ function getManifest(verify = true){
   catch (e){
     return fail('Your manifest.json file is not valid JSON', e.message);
   }
+
+  if (typeof instance !== 'undefined') {
+    try {
+      instanceManifest = fs.readFileSync(path.resolve(instance + '.manifest.json'));
+    }
+    catch (e) {
+      instanceManifest = false;
+    }
+    if (instanceManifest) {
+      try {
+        instanceManifest = JSON.parse(instanceManifest);
+      }
+      catch (e) {
+        return fail('Your ' + instance + '.manifest.json file is not valid JSON', e.message);
+      }
+      manifest = Object.assign(manifest, instanceManifest);
+    }
+  }
+
   if (verify){
     validateManifest(manifest);
   }
