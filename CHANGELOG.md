@@ -1,3 +1,12 @@
+<a name="2.19.5"></a>
+## [2.19.5](https://github.com/DomoApps/domoapps-cli/compare/v2.19.4...v2.19.5) (2016-08-16)
+
+
+### Technical Improvements
+
+* update latest domo.js ([669fbda](https://github.com/DomoApps/domoapps-cli/commit/669fbda))
+
+
 <a name="2.19.4"></a>
 ## [2.19.4](https://github.com/DomoApps/domoapps-cli/compare/v2.19.3...v2.19.4) (2016-08-03)
 
