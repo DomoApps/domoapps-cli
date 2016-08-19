@@ -1,3 +1,12 @@
+<a name="2.19.6"></a>
+## [2.19.6](https://github.com/DomoApps/domoapps-cli/compare/v2.19.5...v2.19.6) (2016-08-19)
+
+
+### Bug Fixes
+
+*  data access in domo dev with tokens ([0202e2c](https://github.com/DomoApps/domoapps-cli/commit/0202e2c))  (<a href="https://trello.com/c/AFlr0H4D/1040-domo-token-domo-dev-no-longer-accessing-data-again">ticket</a>)
+
+
 <a name="2.19.5"></a>
 ## [2.19.5](https://github.com/DomoApps/domoapps-cli/compare/v2.19.4...v2.19.5) (2016-08-16)
 
