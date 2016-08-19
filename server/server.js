@@ -77,13 +77,13 @@ api.all('/data/*', function *(){
   var j = request.jar();
   var url = baseUrl + this.request.url;
   var method = this.request.method;
-  
+
   var headers = _.merge({
     referer: this.request.headers.referer,
     accept: this.request.headers.accept,
     'Content-Type': this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json'
   }, app.domo.getAuthHeader());
-  
+
 
   var body = JSON.stringify(this.request.body);
 
@@ -113,13 +113,13 @@ api.all('/domo/*', function *(){
   var baseUrl = yield getDomoappsDomain();
   var j = request.jar();
   var url = baseUrl + this.request.url;
-  
+
   var headers = _.merge({
     referer: this.request.headers.referer,
     accept: this.request.headers.accept,
     'Content-Type': this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json'
   }, app.domo.getAuthHeader());
-  
+
   this.body = request({url: url, jar: j, headers: headers});
 });
 
@@ -187,8 +187,13 @@ function getDomoappsDomain(){
   var cookie = request.cookie(auth);
   j.setCookie(cookie, 'https://' + app.domo.instance);
 
+  var options = {
+    url: 'https://' + app.domo.instance + '/api/content/v1/mobile/environment',
+    headers: app.domo.getAuthHeader()
+  }
+
   return new Promise(function(resolve, reject){
-    request({url: 'https://' + app.domo.instance + '/api/content/v1/mobile/environment', jar: j}, function(err, res){
+    request(options, function(err, res){
       if (res.statusCode === 200){
         var url = 'https://'+uuid+'.' + JSON.parse(res.body).domoappsDomain;
         resolve(url);
@@ -208,7 +213,7 @@ function createContext(designId, mapping){
       json: {designId: designId, mapping: mapping},
       headers: app.domo.getAuthHeader()
     };
-    
+
     request(options, function(err, res){
       resolve(res.body[0]);
     });
