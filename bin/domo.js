@@ -388,7 +388,8 @@ program
   .description('work locally on a Custom App')
   .action(function(){
     var options = {
-      userId: program.userId
+      userId: program.userId,
+      manifest: program.manifest
     };
 
     var login = Login.getMostRecentLogin();

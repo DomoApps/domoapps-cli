@@ -32,7 +32,8 @@ api.get('/', function *(){
   // TODO: figure out why this is being called twice
   // console.log("=========here why twice?");
   var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html')));
-  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/manifest.json'));
+
+  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
   var sizeMultiplier = {
     width: 235,
     height: 290
@@ -48,10 +49,10 @@ api.get('/', function *(){
     isValidContext = false;
     context = {id: 0};
   }
-  
+
   var userId = app.options.userId || 1;
   var customerId = 1;
-  
+
   if(app.domo.sid){
       var sid = sidUtil.parse(app.domo.sid);
       userId = app.options.userId || sid.userId;
@@ -72,7 +73,7 @@ api.get('/', function *(){
 
 // Proxy requests to the correct domoapps service for the environment they're logged into.
 api.all('/data/*', function *(){
-  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/manifest.json'));
+  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
   var baseUrl = yield getDomoappsDomain();
   var j = request.jar();
   var url = baseUrl + this.request.url;
