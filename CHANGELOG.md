@@ -1,3 +1,12 @@
+<a name="2.20.1"></a>
+## [2.20.1](https://github.com/DomoApps/domoapps-cli/compare/v2.20.0...v2.20.1) (2016-08-31)
+
+
+### Bug Fixes
+
+*  allow specifying manifest for domo dev ([6f9727e](https://github.com/DomoApps/domoapps-cli/commit/6f9727e))
+
+
 <a name="2.20.0"></a>
 # [2.20.0](https://github.com/DomoApps/domoapps-cli/compare/v2.19.6...v2.20.0) (2016-08-31)
 
