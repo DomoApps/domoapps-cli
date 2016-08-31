@@ -1,3 +1,17 @@
+<a name="2.20.0"></a>
+# [2.20.0](https://github.com/DomoApps/domoapps-cli/compare/v2.19.6...v2.20.0) (2016-08-31)
+
+
+### Features
+
+*  allow specifying manifest file ([a33a12d](https://github.com/DomoApps/domoapps-cli/commit/a33a12d))
+
+
+### Technical Improvements
+
+* remove old methods ([0df0ce1](https://github.com/DomoApps/domoapps-cli/commit/0df0ce1))
+
+
 <a name="2.19.6"></a>
 ## [2.19.6](https://github.com/DomoApps/domoapps-cli/compare/v2.19.5...v2.19.6) (2016-08-19)
 
