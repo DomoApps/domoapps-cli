@@ -25,10 +25,6 @@ var glob = require("glob");
 var fs = require('fs-extra');
 var Domo = require('ryuu-client');
 var home = Domo.getHomeDir();
-// can remove these in a few releases after deprecating older versions
-cleanupLogins();
-cleanupMappings();
-
 var inquirer = require("inquirer");
 var Promise = require('bluebird');
 var validator = require('validator');
@@ -143,7 +139,7 @@ program
   .action(function(){
     var manifest = getManifest();
     if (!manifest) return;
-    
+
     var login = Login.getMostRecentLogin();
     Login.verifyLogin(login);
     var domo = new Domo(login.instance, login.sid, login.devtoken);
@@ -487,39 +483,6 @@ function migrateApp(domo, appId, manifest){
         });
   });
 
-}
-
-function cleanupLogins(){
-  var prev = Login.getPreviousLogins();
-  var badLogins = _.filter(prev, function(login){
-    return login.customer;
-  });
-  badLogins.forEach(function(login){
-    var p = path.resolve(Domo.getHomeDir() + '/login/' + login.customer + '.json');
-    fs.deleteSync(p);
-  });
-}
-
-function cleanupMappings(){
-  var manifest = getManifest(false);
-
-  if (!manifest) { return; }
-
-  var changed = false;
-
-  if (!manifest.mapping || (manifest.mapping.length == 0)){ return; }
-
-  manifest.mapping.forEach(function(dataPoint){
-    if (dataPoint.dataSourceId && !dataPoint.dataSetId){
-      dataPoint.dataSetId = dataPoint.dataSourceId;
-      delete dataPoint.dataSourceId;
-      changed = true;
-    }
-  });
-
-  if (changed){
-    updateManifest(manifest);
-  }
 }
 
 function verifyNodeVersion(){
