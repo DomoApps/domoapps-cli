@@ -47,7 +47,9 @@ var mostRecent = Login.getMostRecentLogin();
 program
   .version(cliVersion, '-v, --version')
   .option('-w, --watch', '[DEPRECATED] publish Custom App design every time a file changes')
-  .option('-vb, --verbose', 'log more details including XHR responses, useful for troubleshooting');
+  .option('-vb, --verbose', 'log more details including XHR responses, useful for troubleshooting')
+  .option('-m, --manifest [type]', 'use a specific manifest file')
+  .parse(process.argv);
 
 program
   .command('ls')
@@ -512,9 +514,10 @@ function persistDesignId(design, manifest){
 * Get the local manifest.json file, ensuring it's valid.
 */
 function getManifest(verify = true){
+  var manifestPath = program.manifest || 'manifest.json';
   var manifest;
   try {
-    manifest = fs.readFileSync(path.resolve('manifest.json'));
+    manifest = fs.readFileSync(path.resolve(manifestPath));
   }
   catch (e){
     if (verify){
