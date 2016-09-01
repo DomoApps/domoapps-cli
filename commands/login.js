@@ -49,10 +49,10 @@ module.exports = function(program){
     .command('login')
     .description('login to Domo')
     .action(function(){
-      
+
       var previousLogins = Login.getPreviousLogins();
       var mostRecent = Login.getMostRecentLogin();
-      
+
       // prompt user
       inquirer.prompt([
         multichoice({
@@ -106,15 +106,18 @@ module.exports = function(program){
         if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io')){
           log.fail('Please login using the full Domo instance.', 'Example: "ebay.domo.com"');
         }
-        
+
         var instanceLogin = Login.getLogin(answers.instance);
         if (instanceLogin.devtoken){
           // LATER: verify that devtoken is still valid
           // persist login anyway to make it the most recent
-          Login.persistLogin(answers.instance, null, instanceLogin)(instanceLogin);
-          console.log(chalk.grey(logo));
-          log.ok('Login to ' + answers.instance + ' successful (using developer token)');
-          process.exit();
+          checkVersion(answers.instance)
+          .then(function(){
+            Login.persistLogin(answers.instance, null, instanceLogin)(instanceLogin);
+            console.log(chalk.grey(logo));
+            log.ok('Login to ' + answers.instance + ' successful (using developer token)');
+            process.exit();
+          })
         }
         else{
           var login;
