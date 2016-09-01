@@ -1,3 +1,12 @@
+<a name="2.20.2"></a>
+## [2.20.2](https://github.com/DomoApps/domoapps-cli/compare/v2.20.1...v2.20.2) (2016-09-01)
+
+
+### Bug Fixes
+
+*  check CLI version when using tokens ([abbe302](https://github.com/DomoApps/domoapps-cli/commit/abbe302))  (<a href="https://trello.com/c/yhM33tfO/1033-cli-update-and-dev-token-do-not-work-together">ticket</a>)
+
+
 <a name="2.20.1"></a>
 ## [2.20.1](https://github.com/DomoApps/domoapps-cli/compare/v2.20.0...v2.20.1) (2016-08-31)
 
