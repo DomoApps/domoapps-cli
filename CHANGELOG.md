@@ -1,3 +1,12 @@
+<a name="2.20.3"></a>
+## [2.20.3](https://github.com/DomoApps/domoapps-cli/compare/v2.20.2...v2.20.3) (2016-09-06)
+
+
+### Technical Improvements
+
+*  update readme to point to developer docs ([5b5b6bb](https://github.com/DomoApps/domoapps-cli/commit/5b5b6bb))
+
+
 <a name="2.20.2"></a>
 ## [2.20.2](https://github.com/DomoApps/domoapps-cli/compare/v2.20.1...v2.20.2) (2016-09-01)
 
