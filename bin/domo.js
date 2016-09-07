@@ -31,7 +31,6 @@ var validator = require('validator');
 var server = require('../server/server');
 var request = Promise.promisify(require('request'));
 require('../polyfills/endswith');
-var isValidJSName = require('../util/isValidJSName');
 var multichoice = require('../util/multichoice');
 var appStructure = require('../util/appStructure');
 var messages = require('../util/messages');
@@ -48,98 +47,13 @@ program
   .option('-m, --manifest [type]', 'use a specific manifest file')
   .parse(process.argv);
 
-program
-  .command('publish')
-  .description('publish a new or existing Custom App design')
-  .action(function(){
-    var manifest = getManifest();
-    if (!manifest) return;
-
-    var login = Login.getMostRecentLogin();
-    Login.verifyLogin(login);
-    var domo = new Domo(login.instance, login.sid, login.devtoken);
-
-    if (!appStructure.hasThumbnail()) {
-      warn(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
-    }
-
-    if (!manifest.id){
-      createDesign(domo, manifest, login);
-    }
-    else{
-      domo.uploadAllAssets(manifest)
-        .tap(evoke(ok, 'Publishing ' + manifest.name + ' to ' + login.instance + ' on ' + new Date()))
-        .then(logUploadSuccess)
-        .catch(function(e){
-          if(e.statusCode === 401) {
-            log.notAuthenticated(login);
-          }
-          else if(e.statusCode === 403) {
-            fail('You do not have access to the design with id ' + manifest.id + ' on ' + login.instance
-              + '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.'
-              + '\nAlternatively, you may have inadvertently changed the design id.');
-          }
-          else if(e.message && e.message.startsWith('DA')) {
-            switch (e.message.substr(0, 6)) {
-              case 'DA0086':
-                warn(e.message);
-                inquirer.prompt([
-                  {
-                    type: 'confirm',
-                    message: 'This design has been deleted. Would you like to publish a new design with these assets?',
-                    name: 'askRecreate'
-                  }
-                ], function (answers) {
-                  if (answers.askRecreate){
-                    manifest.id = null;
-                    createDesign(domo, manifest, login);
-                  }
-                });
-
-                break;
-
-              default:
-                // Pass on error messages that are in the set of documented errors.
-                fail(e.message);
-                break;
-            }
-          }
-          else {
-            fail(e || 'Error uploading assets');
-          }
-        });
-    }
-
-  });
-
-/**
- * @param {Object} domo
- * @param {Object} manifest
- * @param {Object} login
- * @return {Promise}
- */
-function createDesign(domo, manifest, login) {
-  return domo.createDesign(manifest)
-    .then(function(designResult){
-      var design = designResult[0];
-      // add the version returned when design published
-      design.version = designResult[1].version;
-      return persistDesignId(design, manifest);
-    })
-    .tap(evoke(ok, 'New design created on ' + login.instance))
-    .catch(evoke(fail, 'Error creating new design'))
-    .then(domo.uploadAllAssets.bind(domo))
-    .then(logUploadSuccess)
-    .catch(function(e){
-      fail(e || 'Error uploading assets');
-    });
-}
 
 require('../commands/init')(program);
 require('../commands/token')(program);
 require('../commands/login')(program);
 require('../commands/ls')(program);
 require('../commands/download')(program);
+require('../commands/publish')(program);
 
 program
   .command('owner <add|rm|ls> [user-emails]')
@@ -411,12 +325,6 @@ function verifyNodeVersion(){
   }
 }
 
-function logUploadSuccess(files){
-  files.forEach(function(file){
-    ok('Uploaded: ' + file.path);
-  });
-}
-
 /**
  * update the manifest (in memory and on disk)
  */
@@ -426,85 +334,8 @@ function persistDesignId(design, manifest){
   return design;
 }
 
-/**
-* Get the local manifest.json file, ensuring it's valid.
-*/
-function getManifest(verify = true){
-  var manifestPath = program.manifest || 'manifest.json';
-  var manifest;
-  try {
-    manifest = fs.readFileSync(path.resolve(manifestPath));
-  }
-  catch (e){
-    if (verify){
-      return fail('No manifest.json file in this directory', 'Please publish from a directory containing a Custom App design manifest.json file');
-    }
-    else{
-      return;
-    }
-  }
-
-  try {
-    manifest = JSON.parse(manifest);
-  }
-  catch (e){
-    return fail('Your manifest.json file is not valid JSON', e.message);
-  }
-  if (verify){
-    validateManifest(manifest);
-  }
-  return manifest;
-}
-
 function updateManifest(manifest){
   fs.writeJsonSync('manifest.json', manifest, {spaces: 2});
-}
-
-/**
-* Validate the manifest file.
-*/
-function validateManifest(manifest){
-
-  // validate manifest file for required fields
-  requireProperty(manifest, 'name');
-  requireProperty(manifest, 'version');
-
-  // validate required mapping fields
-  manifest.mapping.forEach(function(dataPoint){
-    requireProperty(dataPoint, 'dataSetId');
-    requireProperty(dataPoint, 'alias');
-    requireProperty(dataPoint, 'fields');
-    ensureValidAlias(dataPoint.alias);
-
-    // validate dataPoint mapping fields
-    dataPoint.fields.forEach(function(field){
-      requireProperty(field, 'alias');
-      requireProperty(field, 'columnName');
-      ensureValidAlias(field.alias);
-    });
-  });
-
-  // validate semver
-  if (!semver.valid(manifest.version)){
-    fail('Invalid version', 'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/');
-  }
-
-  function requireProperty(obj, prop){
-    if (!obj[prop]){
-      fail('Missing required property: ' + prop, 'Please add the missing `'+ prop +'` property to your manifest.json file.');
-    }
-  }
-
-  return manifest;
-}
-
-/**
- * Alias must be a valid JS property
- */
-function ensureValidAlias(name){
-  if (!isValidJSName(name)){
-    fail('Alias names must be valid JavaScript properties', 'Please rename the `' + name + '` alias and update any /data/v1/<alias> calls with the new alias name');
-  }
 }
 
 
