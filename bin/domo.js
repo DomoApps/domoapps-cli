@@ -29,9 +29,7 @@ var inquirer = require("inquirer");
 var Promise = require('bluebird');
 var validator = require('validator');
 var server = require('../server/server');
-var shell = require('shelljs');
 var request = Promise.promisify(require('request'));
-var extract = require('extract-zip');
 require('../polyfills/endswith');
 var isValidJSName = require('../util/isValidJSName');
 var multichoice = require('../util/multichoice');
@@ -49,52 +47,6 @@ program
   .option('-vb, --verbose', 'log more details including XHR responses, useful for troubleshooting')
   .option('-m, --manifest [type]', 'use a specific manifest file')
   .parse(process.argv);
-
-program
-  .command('download')
-  .description('dowmload a Custom App design')
-  .action(function(){
-    var login = Login.getMostRecentLogin();
-    Login.verifyLogin(login);
-
-    var domo = new Domo(login.instance, login.sid, login.devtoken);
-
-    inquirer.prompt([{
-        type: 'input',
-        message: 'design id',
-        name: 'designId'
-      },
-      {
-        type: 'input',
-        message: 'version',
-        name: 'version',
-        default: 'latest'
-      }], function(answers){
-        var req = domo.download(answers.designId, answers.version);
-
-        req.on('response', function(response){
-          var regexp = /filename="(.*)"/;
-          var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
-
-          var writeStream = fs.createWriteStream('./'+name+'.zip', {flags: 'w+', mode: 0o666});
-          req.pipe(writeStream);
-
-          writeStream.on('finish', function(){
-            var source = path.resolve('./'+name+'.zip');
-            var target = path.resolve('./'+name);
-
-            extract(source, {dir: target}, function(err, results) {
-              if (!err){
-                shell.chmod('-R', 'u+w', target);
-                fs.remove(source);
-                process.exit();
-              }
-            });
-          });
-        });
-      });
-
-  });
 
 program
   .command('publish')
@@ -187,6 +139,7 @@ require('../commands/init')(program);
 require('../commands/token')(program);
 require('../commands/login')(program);
 require('../commands/ls')(program);
+require('../commands/download')(program);
 
 program
   .command('owner <add|rm|ls> [user-emails]')
