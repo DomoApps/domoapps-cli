@@ -33,7 +33,6 @@ var shell = require('shelljs');
 var request = Promise.promisify(require('request'));
 var extract = require('extract-zip');
 require('../polyfills/endswith');
-var session = require('../util/session');
 var isValidJSName = require('../util/isValidJSName');
 var multichoice = require('../util/multichoice');
 var appStructure = require('../util/appStructure');
@@ -50,44 +49,6 @@ program
   .option('-vb, --verbose', 'log more details including XHR responses, useful for troubleshooting')
   .option('-m, --manifest [type]', 'use a specific manifest file')
   .parse(process.argv);
-
-program
-  .command('ls')
-  .description('get a list of all your Custom App designs')
-  .action(function(){
-    var login = Login.getMostRecentLogin();
-    Login.verifyLogin(login);
-    var domo = new Domo(login.instance, login.sid, login.devtoken);
-
-    session.check(domo)
-      .then(function(){
-
-        domo.getDesigns().then(function(designs){
-          var Table = require('cli-table');
-
-          // instantiate
-          var table = new Table({
-            head: [chalk.cyan('Design Name'), chalk.cyan('Design Id'), chalk.cyan('Date Created'), chalk.cyan('Last Updated')]
-          });
-
-          designs.forEach(function(design){
-            table.push([design.design.name, design.design.id, new Date(design.design.createdDate).toUTCString(), new Date(design.design.lastModifiedDate).toUTCString()]);
-          });
-
-          if (designs.length === 0){
-            fail('No Designs Published', "`domo ls` will list designs once they're published to Domo");
-          }
-
-          console.log(table.toString());
-        })
-        .catch(function(e){
-          fail('Unable to fetch designs', 'You may not have any designs published yet.');
-        })
-        .finally(process.exit)
-
-      })
-      .catch(log.notAuthenticated);
-  });
 
 program
   .command('download')
@@ -225,6 +186,7 @@ function createDesign(domo, manifest, login) {
 require('../commands/init')(program);
 require('../commands/token')(program);
 require('../commands/login')(program);
+require('../commands/ls')(program);
 
 program
   .command('owner <add|rm|ls> [user-emails]')

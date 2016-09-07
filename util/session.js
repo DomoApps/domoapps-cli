@@ -9,13 +9,12 @@ module.exports = {
         method: 'GET',
         headers: domo.getAuthHeader()
       };
-      
       // for now assume dev tokens are still valid. Will want to verify once thats supported
       // https://git.empdev.domo.com/Development/apiData/issues/549
       if(domo.devtoken){
         resolve(true);
       }
-      
+
       request(options, function(err, res){
         try{
           var isValid = JSON.parse(res.body).isValid;
@@ -32,7 +31,7 @@ module.exports = {
           resolve(true);
         }
       })
-      
+
     });
   }
 }
