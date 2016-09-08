@@ -55,37 +55,7 @@ require('../commands/ls')(program);
 require('../commands/download')(program);
 require('../commands/publish')(program);
 require('../commands/owner')(program);
-
-program
-  .command('delete')
-  .description('Deletes a published design')
-  .option('-i, --design_id <id>', 'Specify design ID, otherwise it is retrieved from a manifest file')
-  .option('-f, --force', 'Delete the design even if it is referenced by Custom Apps')
-  .action(function(options) {
-
-    var designId;
-    if (options.design_id) {
-      designId = options.design_id;
-      if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
-    } else {
-      var manifest = getManifest();
-      if (!manifest || !manifest.id) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
-      designId = manifest.id;
-    }
-
-    var force = false;
-    if (options.force) force = true;
-
-    var login = Login.getMostRecentLogin();
-    Login.verifyLogin(login);
-
-    var domo = new Domo(login.instance, login.sid, login.devtoken);
-
-    domo.deleteDesign(designId, force)
-      .tap(evoke(ok, 'Deleted design ' + designId))
-      .catch(evoke(fail, 'Unable to delete design ' + designId))
-      .finally(process.exit)
-  });
+require('../commands/delete')(program);
 
 
 program
