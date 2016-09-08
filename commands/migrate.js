@@ -11,7 +11,7 @@ module.exports = function(program){
     .command('migrate')
     .description('migrate a mason app to a Custom App')
     .action(function(){
-      var manifest = Manifest.get();
+      var manifest = Manifest.get(program.manifest);
       var mostRecent = Login.getMostRecentLogin();
       if (!manifest) return;
 
