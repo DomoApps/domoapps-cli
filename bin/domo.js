@@ -7,37 +7,16 @@
  */
 
 var semver = require('semver');
-var chalk = require('chalk');
 var program = require('commander');
-var log = require('../util/log');
-var Login = require('../util/login');
-var evoke = require('../util/evoke');
-var ok = log.ok;
-var fail = log.fail;
-var warn = log.warn;
-var info = log.info;
 
+var log = require('../util/log');
 verifyNodeVersion();
 
 var path = require('path');
 var _ = require('lodash');
-var glob = require("glob");
-var fs = require('fs-extra');
-var Domo = require('ryuu-client');
-var home = Domo.getHomeDir();
-var inquirer = require("inquirer");
-var Promise = require('bluebird');
-var validator = require('validator');
-var request = Promise.promisify(require('request'));
 require('../polyfills/endswith');
-var multichoice = require('../util/multichoice');
-var appStructure = require('../util/appStructure');
-var messages = require('../util/messages');
 
 var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
-
-
-var mostRecent = Login.getMostRecentLogin();
 
 program
   .version(cliVersion, '-v, --version')
@@ -67,10 +46,6 @@ function verifyNodeVersion(){
   var version = semver(process.version);
   var compatible = semver.gte(version, '0.12.0');
   if(!compatible){
-    fail('Unsupported Node version', 'Please upgrade to Node v0.12.0 or higher. https://nodejs.org/');
+    log.fail('Unsupported Node version', 'Please upgrade to Node v0.12.0 or higher. https://nodejs.org/');
   }
-}
-
-Date.prototype.timeNow = function () {
-     return "(" + ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds() + ")";
 }
