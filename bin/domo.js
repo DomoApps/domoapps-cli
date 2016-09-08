@@ -57,43 +57,7 @@ require('../commands/publish')(program);
 require('../commands/owner')(program);
 require('../commands/delete')(program);
 require('../commands/migrate')(program);
-
-program
-  .command('revert')
-  .description('revert a migration, turning a Custom App back into a mason app')
-  .action(function(){
-
-    inquirer.prompt([
-      {
-        type: "input",
-        message: "Domo instance",
-        name: "instance",
-        default: mostRecent.instance
-      },
-      {
-        type: "input",
-        message: "app id",
-        name: "id"
-      }
-    ], function(answers) {
-      var login = Login.getLogin(answers.instance);
-      Login.verifyLogin(login);
-
-      var domo = new Domo(answers.instance, login.sid, login.devtoken);
-      domo.getKpi(answers.id)
-          .then(function(kpi){
-            kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'mason';
-            return kpi;
-          })
-          .then(function(kpi){
-            return domo.updateKpi(kpi);
-          })
-          .tap(evoke(ok, 'Card reverted back to a mason app'))
-          .catch(evoke(fail, 'Error attempting to revert card'))
-          .finally(process.exit)
-    });
-
-  });
+require('../commands/revert')(program);
 
 program
   .option('--userId [value]', 'Use a specific userId')
