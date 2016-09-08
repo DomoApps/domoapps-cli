@@ -28,7 +28,6 @@ var home = Domo.getHomeDir();
 var inquirer = require("inquirer");
 var Promise = require('bluebird');
 var validator = require('validator');
-var server = require('../server/server');
 var request = Promise.promisify(require('request'));
 require('../polyfills/endswith');
 var multichoice = require('../util/multichoice');
@@ -58,22 +57,8 @@ require('../commands/owner')(program);
 require('../commands/delete')(program);
 require('../commands/migrate')(program);
 require('../commands/revert')(program);
+require('../commands/dev')(program);
 
-program
-  .option('--userId [value]', 'Use a specific userId')
-  .command('dev')
-  .description('work locally on a Custom App')
-  .action(function(){
-    var options = {
-      userId: program.userId,
-      manifest: program.manifest
-    };
-
-    var login = Login.getMostRecentLogin();
-    Login.verifyLogin(login);
-    var domo = new Domo(login.instance, login.sid, login.devtoken);
-    server.start(domo, options).catch(fail)
-  });
 
 program
   .command('release')
