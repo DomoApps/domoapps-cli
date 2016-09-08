@@ -9,6 +9,7 @@
 var path = require('path');
 var program = require('commander');
 var _ = require('lodash');
+var glob = require('glob');
 var verifyNodeVersion = require('../util/verifyNodeVersion');
 verifyNodeVersion();
 require('../polyfills/endswith');
@@ -22,18 +23,11 @@ program
   .option('-m, --manifest [type]', 'use a specific manifest file')
   .parse(process.argv);
 
-
-require('../commands/init')(program);
-require('../commands/token')(program);
-require('../commands/login')(program);
-require('../commands/ls')(program);
-require('../commands/download')(program);
-require('../commands/publish')(program);
-require('../commands/owner')(program);
-require('../commands/delete')(program);
-require('../commands/migrate')(program);
-require('../commands/revert')(program);
-require('../commands/dev')(program);
-require('../commands/release')(program);
+// import all commands
+glob
+  .sync(path.resolve(__dirname + "/../commands/*.js"))
+  .forEach(function(command){
+    require(command)(program);
+  });
 
 program.parse(process.argv);
