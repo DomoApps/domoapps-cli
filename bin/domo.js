@@ -71,20 +71,6 @@ function verifyNodeVersion(){
   }
 }
 
-/**
- * update the manifest (in memory and on disk)
- */
-function persistDesignId(design, manifest){
-  manifest.id = design.id;
-  updateManifest(manifest);
-  return design;
-}
-
-function updateManifest(manifest){
-  fs.writeJsonSync('manifest.json', manifest, {spaces: 2});
-}
-
-
 Date.prototype.timeNow = function () {
      return "(" + ((this.getHours() < 10)?"0":"") + this.getHours() +":"+ ((this.getMinutes() < 10)?"0":"") + this.getMinutes() +":"+ ((this.getSeconds() < 10)?"0":"") + this.getSeconds() + ")";
 }

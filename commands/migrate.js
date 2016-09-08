@@ -61,7 +61,7 @@ function migrateApp(domo, appId, manifest){
       .tap(evoke(log.ok, 'Design published'))
       .then(function(designResult){
         var design = designResult[0];
-        return persistDesignId(design, manifest);
+        return Manifest.persistDesignId(design, manifest);
       })
       .catch(function(){
         return manifest;

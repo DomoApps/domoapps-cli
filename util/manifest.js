@@ -1,4 +1,4 @@
-var fs = require('fs');
+var fs = require('fs-extra');
 var path = require('path');
 var semver = require('semver');
 var log = require('../util/log');
@@ -32,6 +32,19 @@ module.exports = {
       validateManifest(manifest);
     }
     return manifest;
+  },
+
+  /**
+   * update the manifest (in memory and on disk)
+   */
+  persistDesignId: function(design, manifest){
+    manifest.id = design.id;
+    this.updateManifest(manifest);
+    return design;
+  },
+
+  updateManifest: function(manifest){
+    fs.writeJsonSync('manifest.json', manifest, {spaces: 2});
   }
 }
 

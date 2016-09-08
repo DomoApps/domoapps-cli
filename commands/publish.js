@@ -87,7 +87,7 @@ function createDesign(domo, manifest, login) {
       var design = designResult[0];
       // add the version returned when design published
       design.version = designResult[1].version;
-      return persistDesignId(design, manifest);
+      return Manifest.persistDesignId(design, manifest);
     })
     .tap(evoke(log.ok, 'New design created on ' + login.instance))
     .catch(evoke(log.fail, 'Error creating new design'))
