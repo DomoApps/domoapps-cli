@@ -6,14 +6,11 @@
  *
  */
 
-var semver = require('semver');
-var program = require('commander');
-
-var log = require('../util/log');
-verifyNodeVersion();
-
 var path = require('path');
+var program = require('commander');
 var _ = require('lodash');
+var verifyNodeVersion = require('../util/verifyNodeVersion');
+verifyNodeVersion();
 require('../polyfills/endswith');
 
 var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
@@ -40,12 +37,3 @@ require('../commands/dev')(program);
 require('../commands/release')(program);
 
 program.parse(process.argv);
-
-
-function verifyNodeVersion(){
-  var version = semver(process.version);
-  var compatible = semver.gte(version, '0.12.0');
-  if(!compatible){
-    log.fail('Unsupported Node version', 'Please upgrade to Node v0.12.0 or higher. https://nodejs.org/');
-  }
-}
