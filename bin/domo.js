@@ -56,40 +56,7 @@ require('../commands/download')(program);
 require('../commands/publish')(program);
 require('../commands/owner')(program);
 require('../commands/delete')(program);
-
-
-program
-  .command('migrate')
-  .description('migrate a mason app to a Custom App')
-  .action(function(){
-    var manifest = getManifest();
-    if (!manifest) return;
-
-
-    inquirer.prompt([
-      {
-        type: "input",
-        message: "Domo instance",
-        name: "instance",
-        default: mostRecent.instance
-      },
-      {
-        type: "input",
-        message: "app id",
-        name: "id"
-      }
-    ], function(answers) {
-      var login = Login.getLogin(answers.instance);
-      Login.verifyLogin(login);
-
-      var domo = new Domo(answers.instance, login.sid, login.devtoken);
-
-      migrateApp(domo, answers.id, manifest)
-        .tap(evoke(ok, 'Migration successful'))
-        .catch(evoke(fail, 'Migration unsuccessful'))
-        .finally(process.exit)
-    });
-  });
+require('../commands/migrate')(program);
 
 program
   .command('revert')
@@ -187,52 +154,6 @@ program
 
 program.parse(process.argv);
 
-
-/**
- * migrate a mason app to a Custom App
- * 1. get the kpi info
- * 2. create a new Custom App design
- * 3. publish design assets
- * 4. create a new Custom App
- * 5. update the kpi
- */
-function migrateApp(domo, appId, manifest){
-  return Promise.all([
-    domo.getKpi(appId),
-
-        // .catch(evoke(fail, 'No app found with id ' + appId)),
-    // publish new design (and persist id) if not already published
-    domo.createDesign(manifest)
-      .tap(evoke(ok, 'Design published'))
-      .then(function(designResult){
-        var design = designResult[0];
-        return persistDesignId(design, manifest);
-      })
-      .catch(function(){
-        return manifest;
-      })
-  ])
-  .spread(function(kpi, design){
-    return domo
-        .createApp(design.id)
-        .tap(evoke(ok, 'New Custom App created'))
-        .catch(evoke(fail, 'Error creating new Custom App'))
-        .then(function(domoapp){
-          kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'domoapp';
-          kpi.domoapp.id = domoapp.id;
-
-          return domo.updateKpi(kpi)
-              .tap(evoke(ok, 'Card type updated and linked'))
-              .catch(evoke(fail, 'Error updating card'))
-              .then(function(){
-                return domo.uploadAllAssets(manifest);
-              })
-              .tap(evoke(ok, 'Assets uploaded'))
-              .catch(evoke(fail, 'Error uploading assets'));
-        });
-  });
-
-}
 
 function verifyNodeVersion(){
   var version = semver(process.version);
