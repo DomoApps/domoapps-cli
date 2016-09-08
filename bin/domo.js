@@ -54,60 +54,7 @@ require('../commands/login')(program);
 require('../commands/ls')(program);
 require('../commands/download')(program);
 require('../commands/publish')(program);
-
-program
-  .command('owner <add|rm|ls> [user-emails]')
-  .description('Manage design owners')
-  .option('-i, --design_id <id>', 'Specify design ID, otherwise it is retrieved from a manifest file')
-  .action(function(action, users, options) {
-
-    var designId;
-    if (options.design_id) {
-      designId = options.design_id;
-      if (!designId || !validator.isUUID(designId)) return fail('The value specified for option -i is not a valid design ID', designId);
-    } else {
-      var manifest = getManifest();
-      if (!manifest) return fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
-      if (!manifest.id) return fail('No manifest id. Please publish your design before attempting to add owners to it.');
-      designId = manifest.id;
-    }
-
-    var login = Login.getMostRecentLogin();
-    Login.verifyLogin(login);
-
-    var domo = new Domo(login.instance, login.sid, login.devtoken);
-
-    switch(action) {
-      case 'add':
-        if (users) {
-          domo.addOwners(designId, users)
-            .tap(evoke(ok, 'Owners added ' + users))
-            .catch(evoke(fail, 'Error adding owners'))
-            .finally(process.exit)
-        }
-        break;
-      case 'rm':
-        if (users) {
-          domo.removeOwners(designId, users)
-            .tap(evoke(ok, 'Owners removed ' + users))
-            .catch(evoke(fail, 'Error removing owners'))
-            .finally(process.exit)
-        }
-        break;
-      case 'ls':
-        domo.getOwners(designId)
-          .tap(function listUsers(res) {
-            res.sort();
-            ok("Owners for design " + designId);
-            res.forEach(function(element, index, array) {
-              console.log("\t" + element);
-            });
-          })
-          .catch(evoke(fail, 'Error retrieving owners'))
-          .finally(process.exit)
-        break;
-    }
-  });
+require('../commands/owner')(program);
 
 program
   .command('delete')
