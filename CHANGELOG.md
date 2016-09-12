@@ -1,3 +1,31 @@
+<a name="2.20.4"></a>
+## [2.20.4](https://github.com/DomoApps/domoapps-cli/compare/v2.20.3...v2.20.4) (2016-09-12)
+
+
+### Bug Fixes
+
+*  pass manifest override to migrate command ([d6f6536](https://github.com/DomoApps/domoapps-cli/commit/d6f6536))
+
+
+### Technical Improvements
+
+* move dev to own command ([d52fad8](https://github.com/DomoApps/domoapps-cli/commit/d52fad8))
+* bump client dep ([5a5af3c](https://github.com/DomoApps/domoapps-cli/commit/5a5af3c))
+* bump node version support message to 5.0.0 ([369f687](https://github.com/DomoApps/domoapps-cli/commit/369f687))
+* move verifyNodeVersion into util ([28b1f9c](https://github.com/DomoApps/domoapps-cli/commit/28b1f9c))
+* cleanup main script ([94d993e](https://github.com/DomoApps/domoapps-cli/commit/94d993e))
+* group manifest related utils ([b25471d](https://github.com/DomoApps/domoapps-cli/commit/b25471d))
+* move release to own command ([d5b1ec3](https://github.com/DomoApps/domoapps-cli/commit/d5b1ec3))
+* auto import all commands ([206f7b8](https://github.com/DomoApps/domoapps-cli/commit/206f7b8))
+* move revert to own command ([2bc6e15](https://github.com/DomoApps/domoapps-cli/commit/2bc6e15))
+* move migrate to own command ([a06fe7c](https://github.com/DomoApps/domoapps-cli/commit/a06fe7c))
+* move delete to own command ([61aa162](https://github.com/DomoApps/domoapps-cli/commit/61aa162))
+* move owner actions into own command ([b19cf72](https://github.com/DomoApps/domoapps-cli/commit/b19cf72))
+* separate out manifest util and publish command ([86521c0](https://github.com/DomoApps/domoapps-cli/commit/86521c0))
+* move download into own command ([32e650e](https://github.com/DomoApps/domoapps-cli/commit/32e650e))
+* move ls out into own command ([df88feb](https://github.com/DomoApps/domoapps-cli/commit/df88feb))
+
+
 <a name="2.20.3"></a>
 ## [2.20.3](https://github.com/DomoApps/domoapps-cli/compare/v2.20.2...v2.20.3) (2016-09-06)
 
