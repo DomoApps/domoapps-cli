@@ -94,7 +94,7 @@ function createDesign(domo, manifest, login) {
     .then(domo.uploadAllAssets.bind(domo))
     .then(logUploadSuccess)
     .catch(function(e){
-      fail(e || 'Error uploading assets');
+      log.fail(e || 'Error uploading assets');
     });
 }
 
