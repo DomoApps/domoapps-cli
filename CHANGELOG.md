@@ -1,3 +1,12 @@
+<a name="2.20.5"></a>
+## [2.20.5](https://github.com/DomoApps/domoapps-cli/compare/v2.20.4...v2.20.5) (2016-09-12)
+
+
+### Bug Fixes
+
+*  publish error ([e8bebf9](https://github.com/DomoApps/domoapps-cli/commit/e8bebf9))
+
+
 <a name="2.20.4"></a>
 ## [2.20.4](https://github.com/DomoApps/domoapps-cli/compare/v2.20.3...v2.20.4) (2016-09-12)
 
