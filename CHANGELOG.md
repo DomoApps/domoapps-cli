@@ -1,3 +1,12 @@
+<a name="2.20.6"></a>
+## [2.20.6](https://github.com/DomoApps/domoapps-cli/compare/v2.20.5...v2.20.6) (2016-09-13)
+
+
+### Technical Improvements
+
+* upgrade client ([1deb1fa](https://github.com/DomoApps/domoapps-cli/commit/1deb1fa))
+
+
 <a name="2.20.5"></a>
 ## [2.20.5](https://github.com/DomoApps/domoapps-cli/compare/v2.20.4...v2.20.5) (2016-09-12)
 
