@@ -91,7 +91,7 @@ function createDesign(domo, manifest, login) {
     })
     .tap(evoke(log.ok, 'New design created on ' + login.instance))
     .catch(evoke(log.fail, 'Error creating new design'))
-    .then(domo.uploadAllAssets.bind(domo))
+    .then(domo.uploadAllAssets.bind(domo, manifest))
     .then(logUploadSuccess)
     .catch(function(e){
       log.fail(e || 'Error uploading assets');
