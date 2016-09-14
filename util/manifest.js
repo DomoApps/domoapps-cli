@@ -76,12 +76,12 @@ function validateManifest(manifest){
 
   // validate semver
   if (!semver.valid(manifest.version)){
-    fail('Invalid version', 'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/');
+    log.fail('Invalid version', 'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/');
   }
 
   function requireProperty(obj, prop){
     if (!obj[prop]){
-      fail('Missing required property: ' + prop, 'Please add the missing `'+ prop +'` property to your manifest.json file.');
+      log.fail('Missing required property: ' + prop, 'Please add the missing `'+ prop +'` property to your manifest.json file.');
     }
   }
 
@@ -94,6 +94,6 @@ function validateManifest(manifest){
  */
 function ensureValidAlias(name){
   if (!isValidJSName(name)){
-    fail('Alias names must be valid JavaScript properties', 'Please rename the `' + name + '` alias and update any /data/v1/<alias> calls with the new alias name');
+    log.fail('Alias names must be valid JavaScript properties', 'Please rename the `' + name + '` alias and update any /data/v1/<alias> calls with the new alias name');
   }
 }

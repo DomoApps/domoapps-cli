@@ -1,4 +1,5 @@
 var Domo = require('ryuu-client');
+var inquirer = require('inquirer');
 var Manifest = require('../util/manifest');
 var Login = require('../util/login');
 var log = require('../util/log');
