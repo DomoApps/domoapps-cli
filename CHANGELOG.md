@@ -1,3 +1,12 @@
+<a name="2.20.8"></a>
+## [2.20.8](https://github.com/DomoApps/domoapps-cli/compare/v2.20.7...v2.20.8) (2016-09-14)
+
+
+### Bug Fixes
+
+*  fixing imports ([ea3e399](https://github.com/DomoApps/domoapps-cli/commit/ea3e399))
+
+
 <a name="2.20.7"></a>
 ## [2.20.7](https://github.com/DomoApps/domoapps-cli/compare/v2.20.6...v2.20.7) (2016-09-13)
 
@@ -212,16 +221,13 @@
 
 
 <a name="2.17.7"></a>
-## [2.17.7](https://github.com/DomoApps/domoapps-cli/compare/v2.17.6...v2.17.7) (2016-06-24)
+## [2.17.7](https://github.com/DomoApps/domoapps-cli/compare/v2.17.5...v2.17.7) (2016-06-24)
 
 
 ### Technical Improvements
 
+* v2.17.6 ([9537f05](https://github.com/DomoApps/domoapps-cli/commit/9537f05))
 *  include ticket link in changelog ([63b3d38](https://github.com/DomoApps/domoapps-cli/commit/63b3d38))  (<a href="https://trello.com/c/1QzUvqHY/1017-update-changelog-to-include-trello-card-links">ticket</a>)
-
-
-<a name="2.17.6"></a>
-## [2.17.6](https://github.com/DomoApps/domoapps-cli/compare/v2.17.5...v2.17.6) (2016-06-24)
 
 
 <a name="2.17.5"></a>
@@ -400,23 +406,17 @@
 ### Technical Improvements
 
 * sending method and body to data endpoint ([d2bc408](https://github.com/DomoApps/domoapps-cli/commit/d2bc408))
-
-
-<a name="2.14.2"></a>
-## [2.14.2](https://github.com/DomoApps/domoapps-cli/compare/v2.14.1...v2.14.2) (2016-03-25)
-
-
-### Technical Improvements
-
+* v2.14.2 ([e6bd4e0](https://github.com/DomoApps/domoapps-cli/commit/e6bd4e0))
 * update domo.js to 2.5.2 ([103568d](https://github.com/DomoApps/domoapps-cli/commit/103568d))
 
 
-<a name="2.14.1"></a>
-## [2.14.1](https://github.com/DomoApps/domoapps-cli/compare/v2.14.0...v2.14.1) (2016-03-14)
+<a name="2.14.2"></a>
+## [2.14.2](https://github.com/DomoApps/domoapps-cli/compare/v2.14.1...v2.14.2) (2016-03-14)
 
 
 ### Technical Improvements
 
+* v2.14.1 ([d5cbed4](https://github.com/DomoApps/domoapps-cli/commit/d5cbed4))
 * make domo logo grey ([4711eaa](https://github.com/DomoApps/domoapps-cli/commit/4711eaa))
 
 
@@ -1091,22 +1091,15 @@
 
 
 <a name="1.9.0"></a>
-# [1.9.0](https://github.com/DomoApps/domoapps-cli/compare/v1.8.1...v1.9.0) (2015-06-09)
+# [1.9.0](https://github.com/DomoApps/domoapps-cli/compare/v1.8.0...v1.9.0) (2015-06-09)
 
 
 ### Technical Improvements
 
-*  instance selection list with populating email ([d7a1e39](https://github.com/DomoApps/domoapps-cli/commit/d7a1e39))
-
-
-<a name="1.8.1"></a>
-## [1.8.1](https://github.com/DomoApps/domoapps-cli/compare/v1.8.0...v1.8.1) (2015-06-09)
-
-
-### Technical Improvements
-
+* v1.8.1 ([8c3a35f](https://github.com/DomoApps/domoapps-cli/commit/8c3a35f))
 * include domoapp design name in publish log ([352a249](https://github.com/DomoApps/domoapps-cli/commit/352a249))
 * update changelog ([2531e5c](https://github.com/DomoApps/domoapps-cli/commit/2531e5c))
+*  instance selection list with populating email ([d7a1e39](https://github.com/DomoApps/domoapps-cli/commit/d7a1e39))
 
 
 <a name="1.8.0"></a>
