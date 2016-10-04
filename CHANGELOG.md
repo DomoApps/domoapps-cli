@@ -1,3 +1,13 @@
+<a name="2.20.9"></a>
+## [2.20.9](https://github.com/DomoApps/domoapps-cli/compare/v2.20.8...v2.20.9) (2016-10-04)
+
+
+### Technical Improvements
+
+* (fix) using universal node with harmony flag (#26) ([d954298](https://github.com/DomoApps/domoapps-cli/commit/d954298))
+* (polish) update Hello World template to include a limit in the data call along with documentation. (#27) ([86f640a](https://github.com/DomoApps/domoapps-cli/commit/86f640a))
+
+
 <a name="2.20.8"></a>
 ## [2.20.8](https://github.com/DomoApps/domoapps-cli/compare/v2.20.7...v2.20.8) (2016-09-14)
 
