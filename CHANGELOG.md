@@ -1,3 +1,12 @@
+<a name="2.20.10"></a>
+## [2.20.10](https://github.com/DomoApps/domoapps-cli/compare/v2.20.9...v2.20.10) (2016-10-06)
+
+
+### Bug Fixes
+
+*  using universal node with no harmony flag ([933b606](https://github.com/DomoApps/domoapps-cli/commit/933b606))
+
+
 <a name="2.20.9"></a>
 ## [2.20.9](https://github.com/DomoApps/domoapps-cli/compare/v2.20.8...v2.20.9) (2016-10-04)
 
