@@ -1,27 +1,17 @@
-var validator = require('validator');
 var Domo = require('ryuu-client');
-var Manifest = require('../util/manifest');
 var Login = require('../util/login');
+var design = require('../util/design');
 var log = require('../util/log');
 var evoke = require('../util/evoke');
 var inquirer = require('inquirer');
 
-module.exports = function(program){
+module.exports = function(program) {
   program
     .command('undelete [id]')
     .description('Undeletes a soft-deleted design')
-    .option('-i, --design_id <id>', '[DEPRECATED] Specify design ID, otherwise it is retrieved from a manifest file')
     .action(function(arg, options) {
 
-      var designId = arg || options.design_id || null;
-
-      if (designId) {
-        if (!validator.isUUID(designId)) return log.fail('The value specified for option -i is not a valid design ID', designId);
-      } else {
-        var manifest = Manifest.get(program.manifest);
-        if (!manifest || !manifest.id) return log.fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
-        designId = manifest.id;
-      }
+      var designId = design.getDesignId(arg, null, program.manifest);
 
       inquirer.prompt([{
         type: 'confirm',

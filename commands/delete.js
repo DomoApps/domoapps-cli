@@ -1,7 +1,6 @@
-var validator = require('validator');
 var Domo = require('ryuu-client');
-var Manifest = require('../util/manifest');
 var Login = require('../util/login');
+var design = require('../util/design');
 var log = require('../util/log');
 var evoke = require('../util/evoke');
 var inquirer = require('inquirer');
@@ -14,21 +13,13 @@ module.exports = function(program) {
     .option('-f, --force', 'Delete the design even if it is referenced by Custom Apps')
     .action(function(arg, options) {
 
-      var designId = arg || options.design_id || null;
-
-      if (designId) {
-        if (!validator.isUUID(designId)) return log.fail('The value specified for option -i is not a valid design ID', designId);
-      } else {
-        var manifest = Manifest.get(program.manifest);
-        if (!manifest || !manifest.id) return log.fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
-        designId = manifest.id;
-      }
+      var designId = design.getDesignId(arg, options.design_id, program.manifest);
 
       inquirer.prompt([{
         type: 'confirm',
         message: 'Are you sure you want to delete design with id: ' + designId + '?',
         name: 'delete',
-        default: true
+        default: false
       }], handleUserResponse);
 
       function handleUserResponse(answer) {

@@ -1,5 +1,4 @@
-#!/bin/sh
-":" //# comment; exec /usr/bin/env node --harmony "$0" "$@"
+#!/usr/bin/env node
 
 process.on('unhandledRejection', on_unhandled_error);
 process.on('uncaughtException', on_unhandled_error);
