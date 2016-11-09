@@ -1,10 +1,16 @@
-<a name="2.20.10"></a>
-## [2.20.10](https://github.com/DomoApps/domoapps-cli/compare/v2.20.9...v2.20.10) (2016-10-06)
+<a name="2.20.11"></a>
+## [2.20.11](https://github.com/DomoApps/domoapps-cli/compare/v2.20.9...v2.20.11) (2016-11-09)
 
 
-### Bug Fixes
+### Technical Improvements
 
-*  using universal node with no harmony flag ([933b606](https://github.com/DomoApps/domoapps-cli/commit/933b606))
+* nicer help and also showing output when no arguments are passed or an invalid argument is used (#33) ([11e8698](https://github.com/DomoApps/domoapps-cli/commit/11e8698))
+* (fix) using universal node with no harmony flag (#29) ([52c364c](https://github.com/DomoApps/domoapps-cli/commit/52c364c))
+
+
+### User Experience Polish
+
+*  fixing typo ([0706128](https://github.com/DomoApps/domoapps-cli/commit/0706128))
 
 
 <a name="2.20.9"></a>
