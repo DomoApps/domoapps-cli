@@ -20,8 +20,7 @@ program
   .version(cliVersion, '-v, --version')
   .option('-w, --watch', '[DEPRECATED] publish Custom App design every time a file changes')
   .option('-vb, --verbose', 'log more details including XHR responses, useful for troubleshooting')
-  .option('-m, --manifest [type]', 'use a specific manifest file')
-  .parse(process.argv);
+  .option('-m, --manifest [type]', 'use a specific manifest file');
 
 // import all commands
 glob
@@ -30,4 +29,13 @@ glob
     require(command)(program);
   });
 
-program.parse(process.argv);
+if (!process.argv.slice(2).length) {
+    program.help();
+} else {
+    program.parse(process.argv);
+
+    if (!program.args || !program.args[0] || !(program.args[0] instanceof program.Command)) {
+        console.log('  Invalid option "%s"', program.args[0]);
+        program.help();
+    }
+}
