@@ -34,8 +34,21 @@ if (!process.argv.slice(2).length) {
 } else {
     program.parse(process.argv);
 
-    if (!program.args || !program.args[0] || !(program.args[0] instanceof program.Command)) {
-        console.log('  Invalid option "%s"', program.args[0]);
+    var has_command = false;
+
+    if (!program.args) {
+        program.args = [];
+    }
+
+    for (var i = 0, len = program.args.length; i < len; i++) {
+        if (program.args[i] instanceof program.Command) {
+            has_command = true;
+            break;
+        }
+    }
+
+    if (!has_command) {
+        console.log('  Invalid option "%s"', program.args.join(' '));
         program.help();
     }
 }
