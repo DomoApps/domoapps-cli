@@ -42,6 +42,7 @@ api.get('/', function *(){
   // sizes consistent with Domo Web
   var width = 235 * manifest.size.width - 10 + 'px';
   var height = 290 * manifest.size.height - 40 + 'px';
+  var fullpage = manifest.fullpage;
 
   var context = yield createContext(manifest.id, manifest.mapping);
 
@@ -68,6 +69,7 @@ api.get('/', function *(){
     isValidSession,
     isValidContext,
     hasThumbnail,
+    fullpage
   });
 });
 

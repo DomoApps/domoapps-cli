@@ -18,8 +18,8 @@
         <% } %>
       </section>
 
-      <section class="app">
-        <div class="app__wrapper" style="width: <%- width %>">
+      <section class="app" style="padding: <%- fullpage ? '50px 50px 110px 50px' : 0 %>">
+        <div class="app__wrapper" style="width: <%- fullpage ? '100%' : width %>">
           <table>
             <tr>
               <% if (hasThumbnail) { %>
@@ -33,9 +33,9 @@
             </tr>
           </table>
 
-          <iframe src="<%- url %>"style="width: <%- width %>; height: <%- height %>;"></iframe>
+          <iframe src="<%- url %>"style="width: <%- fullpage ? '100%' : width %>; height: <%- height %>;"></iframe>
 
-          <div class="size"><%- width %> x <%- height %></div>
+          <div class="size"><%- fullpage ? 'FULL-WIDTH' : width %> x <%- height %></div>
         </div>
       <section>
     <div>
