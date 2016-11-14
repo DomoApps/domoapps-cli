@@ -153,6 +153,8 @@ module.exports = {
               notify: false,
               ui: false,
               logLevel: 'info',
+              logPrefix: 'Domo Dev',
+              online: Boolean(app.options.external),
               // TODO: add user's ignored files here too?
               files: ['**/*', '!node_modules/**/*']
             });
