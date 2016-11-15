@@ -18,6 +18,7 @@ var api = new Router();
 var portfinder = require('portfinder');
 var serve = require('koa-static');
 var mount = require('koa-mount');
+var proxyaddr = require('proxy-addr');
 var session = require('../util/session');
 var sidUtil = require('../util/sid');
 var appStructure = require('../util/appStructure');
@@ -156,7 +157,17 @@ module.exports = {
               logPrefix: 'Domo Dev',
               online: Boolean(app.options.external),
               // TODO: add user's ignored files here too?
-              files: ['**/*', '!node_modules/**/*']
+              files: ['**/*', '!node_modules/**/*'],
+              middleware: [
+                function (req, res, next) {
+                  if (proxyaddr(req, '127.0.0.1') !== '::1') {
+                    // FIXME real error page
+                    next(new Error('local only'));
+                  } else {
+                    next();
+                  }
+                }
+              ],
             });
 
           })

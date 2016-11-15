@@ -27,6 +27,7 @@
     "koa-static": "^1.4.9",
     "lodash": "~2.4.1",
     "portfinder": "^0.4.0",
+    "proxy-addr": "1.1.2",
     "q": "~1.0.1",
     "raw-body": "^2.1.6",
     "request": "^2.42.0",
