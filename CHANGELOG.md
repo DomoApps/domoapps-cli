@@ -1,10 +1,16 @@
-<a name="2.20.12"></a>
-## [2.20.12](https://github.com/DomoApps/domoapps-cli/compare/v2.20.11...v2.20.12) (2016-11-15)
+<a name="2.20.13"></a>
+## [2.20.13](https://github.com/DomoApps/domoapps-cli/compare/v2.20.12...v2.20.13) (2016-11-21)
 
 
 ### Bug Fixes
 
 *  fixing help output for commands with more than one string ([c5c022b](https://github.com/DomoApps/domoapps-cli/commit/c5c022b))
+
+
+### Technical Improvements
+
+* feat(dev): external access false by default (#35) ([bd6e67a](https://github.com/DomoApps/domoapps-cli/commit/bd6e67a))
+* v2.20.12 ([a01b041](https://github.com/DomoApps/domoapps-cli/commit/a01b041))
 
 
 ### User Experience Polish
