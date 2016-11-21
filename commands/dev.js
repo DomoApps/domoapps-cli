@@ -8,7 +8,7 @@ module.exports = function(program) {
     .command('dev')
     .description('Work locally on a Custom App')
     .option('-u, --userId <value>', 'Use a specific userId')
-    .option('-e, --external', 'Allow external connection to access dev site')
+    .option('-e, --external', 'Allow external connection to access the dev site')
     .action(function(opts) {
 
       var options = {
