@@ -3,15 +3,18 @@ var Login = require('../util/login');
 var log = require('../util/log');
 var server = require('../server/server');
 
-module.exports = function(program){
+module.exports = function(program) {
   program
-    .option('--userId [value]', 'Use a specific userId')
     .command('dev')
-    .description('work locally on a Custom App')
-    .action(function(){
+    .description('Work locally on a Custom App')
+    .option('-u, --userId <value>', 'Use a specific userId')
+    .option('-e, --external', 'Allow external connection to access the dev site')
+    .action(function(opts) {
+
       var options = {
-        userId: program.userId,
-        manifest: program.manifest
+        userId: opts.userId,
+        external: opts.external,
+        manifest: opts.manifest
       };
 
       var login = Login.getMostRecentLogin();

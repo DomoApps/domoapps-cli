@@ -1,19 +1,36 @@
+<a name="2.20.13"></a>
+## [2.20.13](https://github.com/DomoApps/domoapps-cli/compare/v2.20.12...v2.20.13) (2016-11-21)
+
+
+### Bug Fixes
+
+*  fixing help output for commands with more than one string ([c5c022b](https://github.com/DomoApps/domoapps-cli/commit/c5c022b))
+
+
+### Technical Improvements
+
+* feat(dev): external access false by default (#35) ([bd6e67a](https://github.com/DomoApps/domoapps-cli/commit/bd6e67a))
+* v2.20.12 ([a01b041](https://github.com/DomoApps/domoapps-cli/commit/a01b041))
+
+
+### User Experience Polish
+
+*  changelog cleanup ([9dbd267](https://github.com/DomoApps/domoapps-cli/commit/9dbd267))
+
+
 <a name="2.20.11"></a>
-## [2.20.11](https://github.com/DomoApps/domoapps-cli/compare/v2.20.10...v2.20.11) (2016-11-09)
+## [2.20.11](https://github.com/DomoApps/domoapps-cli/compare/v2.20.9...v2.20.11) (2016-11-09)
 
 
 ### Technical Improvements
 
-* better help output (#33) ([11e8698](https://github.com/DomoApps/domoapps-cli/commit/11e8698))
+* nicer help and also showing output when no arguments are passed or an invalid argument is used (#33) ([11e8698](https://github.com/DomoApps/domoapps-cli/commit/11e8698))
+* (fix) using universal node with no harmony flag (#29) ([52c364c](https://github.com/DomoApps/domoapps-cli/commit/52c364c))
 
 
-<a name="2.20.10"></a>
-## [2.20.10](https://github.com/DomoApps/domoapps-cli/compare/v2.20.9...v2.20.10) (2016-11-09)
+### User Experience Polish
 
-
-### Technical Improvements
-
-* using universal node with no harmony flag (#29) ([52c364c](https://github.com/DomoApps/domoapps-cli/commit/52c364c))
+*  fixing typo ([0706128](https://github.com/DomoApps/domoapps-cli/commit/0706128))
 
 
 <a name="2.20.9"></a>
