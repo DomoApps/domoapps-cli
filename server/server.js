@@ -18,6 +18,7 @@ var api = new Router();
 var portfinder = require('portfinder');
 var serve = require('koa-static');
 var mount = require('koa-mount');
+var proxyaddr = require('proxy-addr');
 var session = require('../util/session');
 var sidUtil = require('../util/sid');
 var appStructure = require('../util/appStructure');
@@ -144,7 +145,10 @@ module.exports = {
         app.options = options;
 
         session.check(app.domo)
-          .then(function(){
+          .then(function() {
+            var external = Boolean(app.options.external);
+            var middleware = external ? [] : getMiddleware();
+
             app.listen(dataPort)
 
             bs.init({
@@ -153,8 +157,11 @@ module.exports = {
               notify: false,
               ui: false,
               logLevel: 'info',
+              logPrefix: 'Domo Dev',
+              online: external,
               // TODO: add user's ignored files here too?
-              files: ['**/*', '!node_modules/**/*']
+              files: ['**/*', '!node_modules/**/*'],
+              middleware: middleware,
             });
 
           })
@@ -175,6 +182,17 @@ function getCustomer(){
 function getEnv(){
   var regexp = /([-_\w]+)\.(.*)/;
   return app.domo.instance.match(regexp)[2];
+}
+
+function getMiddleware() {
+    return [ function(req, res, next) {
+      if (proxyaddr(req, '127.0.0.1') !== '::1') {
+        Error.stackTraceLimit = 0;
+        next(new Error('Access Denied'));
+      } else {
+        next();
+      }
+    }];
 }
 
 /**
