@@ -160,9 +160,9 @@ module.exports = {
               files: ['**/*', '!node_modules/**/*'],
               middleware: [
                 function (req, res, next) {
-                  if (proxyaddr(req, '127.0.0.1') !== '::1') {
-                    // FIXME real error page
-                    next(new Error('local only'));
+                  if (proxyaddr(req, '127.0.0.1') !== '::1' && !Boolean(app.options.external)) {
+                    Error.stackTraceLimit = 0;
+                    next(new Error('Access Denied'));
                   } else {
                     next();
                   }
