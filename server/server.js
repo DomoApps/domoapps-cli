@@ -145,7 +145,10 @@ module.exports = {
         app.options = options;
 
         session.check(app.domo)
-          .then(function(){
+          .then(function() {
+            var external = Boolean(app.options.external);
+            var middleware = external ? [] : getMiddleware();
+
             app.listen(dataPort)
 
             bs.init({
@@ -155,19 +158,10 @@ module.exports = {
               ui: false,
               logLevel: 'info',
               logPrefix: 'Domo Dev',
-              online: Boolean(app.options.external),
+              online: external,
               // TODO: add user's ignored files here too?
               files: ['**/*', '!node_modules/**/*'],
-              middleware: [
-                function (req, res, next) {
-                  if (proxyaddr(req, '127.0.0.1') !== '::1' && !Boolean(app.options.external)) {
-                    Error.stackTraceLimit = 0;
-                    next(new Error('Access Denied'));
-                  } else {
-                    next();
-                  }
-                }
-              ],
+              middleware: middleware,
             });
 
           })
@@ -188,6 +182,17 @@ function getCustomer(){
 function getEnv(){
   var regexp = /([-_\w]+)\.(.*)/;
   return app.domo.instance.match(regexp)[2];
+}
+
+function getMiddleware() {
+    return [ function(req, res, next) {
+      if (proxyaddr(req, '127.0.0.1') !== '::1') {
+        Error.stackTraceLimit = 0;
+        next(new Error('Access Denied'));
+      } else {
+        next();
+      }
+    }];
 }
 
 /**
