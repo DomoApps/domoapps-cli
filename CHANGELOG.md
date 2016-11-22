@@ -1,3 +1,12 @@
+<a name="2.21.0"></a>
+# [2.21.0](https://github.com/DomoApps/domoapps-cli/compare/v2.20.13...v2.21.0) (2016-11-22)
+
+
+### Technical Improvements
+
+* * feat(fullscreen): add fullscreen preview to 'domo dev' window ([09a9cd6](https://github.com/DomoApps/domoapps-cli/commit/09a9cd6))
+
+
 <a name="2.20.13"></a>
 ## [2.20.13](https://github.com/DomoApps/domoapps-cli/compare/v2.20.12...v2.20.13) (2016-11-21)
 
