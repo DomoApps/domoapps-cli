@@ -1,3 +1,12 @@
+<a name="2.21.1"></a>
+## [2.21.1](https://github.com/DomoApps/domoapps-cli/compare/v2.21.0...v2.21.1) (2017-01-19)
+
+
+### Technical Improvements
+
+* add adobe.com and google.com to the whitelist array (#37) ([06968d1](https://github.com/DomoApps/domoapps-cli/commit/06968d1))
+
+
 <a name="2.21.0"></a>
 # [2.21.0](https://github.com/DomoApps/domoapps-cli/compare/v2.20.13...v2.21.0) (2016-11-22)
 
