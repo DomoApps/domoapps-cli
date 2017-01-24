@@ -1,3 +1,12 @@
+<a name="2.23.0"></a>
+# [2.23.0](https://github.com/DomoApps/domoapps-cli/compare/v2.21.1...v2.23.0) (2017-01-24)
+
+
+### Technical Improvements
+
+* trifecta pull request (#32) ([c0d8afb](https://github.com/DomoApps/domoapps-cli/commit/c0d8afb))
+
+
 <a name="2.21.1"></a>
 ## [2.21.1](https://github.com/DomoApps/domoapps-cli/compare/v2.21.0...v2.21.1) (2017-01-19)
 
@@ -18,10 +27,6 @@
 
 <a name="2.20.13"></a>
 ## [2.20.13](https://github.com/DomoApps/domoapps-cli/compare/v2.20.12...v2.20.13) (2016-11-21)
-
-
-<a name="2.20.10"></a>
-## [2.20.10](https://github.com/DomoApps/domoapps-cli/compare/v2.20.9...v2.20.10) (2016-10-06)
 
 
 ### Bug Fixes
@@ -53,7 +58,6 @@
 ### User Experience Polish
 
 *  fixing typo ([0706128](https://github.com/DomoApps/domoapps-cli/commit/0706128))
-*  using universal node with no harmony flag ([933b606](https://github.com/DomoApps/domoapps-cli/commit/933b606))
 
 
 <a name="2.20.9"></a>
