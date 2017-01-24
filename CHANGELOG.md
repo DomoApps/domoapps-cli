@@ -1,10 +1,16 @@
-<a name="2.20.10"></a>
-## [2.20.10](https://github.com/DomoApps/domoapps-cli/compare/v2.20.9...v2.20.10) (2016-10-06)
+<a name="2.21.0"></a>
+# [2.21.0](https://github.com/DomoApps/domoapps-cli/compare/v2.20.9...v2.21.0) (2017-01-24)
 
 
-### Bug Fixes
+### Technical Improvements
 
-*  using universal node with no harmony flag ([933b606](https://github.com/DomoApps/domoapps-cli/commit/933b606))
+* bump ryuu-client to 2.9.0 ([6ec5c32](https://github.com/DomoApps/domoapps-cli/commit/6ec5c32))
+* (fix) using universal node with no harmony flag (#29) ([cd15cd0](https://github.com/DomoApps/domoapps-cli/commit/cd15cd0))
+* refactor(utils): add design util with getDesignId function ([c33e1bb](https://github.com/DomoApps/domoapps-cli/commit/c33e1bb))
+* refactor(prompt): add confirmation to all valid deletions ([12a06f9](https://github.com/DomoApps/domoapps-cli/commit/12a06f9))
+* fix(cli): add logic to disallow del by id w/o -i ([bfc8ac0](https://github.com/DomoApps/domoapps-cli/commit/bfc8ac0))
+* refactor(undelete):add confirmation to undeletion ([475a228](https://github.com/DomoApps/domoapps-cli/commit/475a228))
+* feature(undelete): add command to attempt an undelete of designid ([10b1d9f](https://github.com/DomoApps/domoapps-cli/commit/10b1d9f))
 
 
 <a name="2.20.9"></a>
