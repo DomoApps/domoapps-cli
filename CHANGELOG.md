@@ -20,6 +20,10 @@
 ## [2.20.13](https://github.com/DomoApps/domoapps-cli/compare/v2.20.12...v2.20.13) (2016-11-21)
 
 
+<a name="2.20.10"></a>
+## [2.20.10](https://github.com/DomoApps/domoapps-cli/compare/v2.20.9...v2.20.10) (2016-10-06)
+
+
 ### Bug Fixes
 
 *  fixing help output for commands with more than one string ([c5c022b](https://github.com/DomoApps/domoapps-cli/commit/c5c022b))
@@ -49,6 +53,7 @@
 ### User Experience Polish
 
 *  fixing typo ([0706128](https://github.com/DomoApps/domoapps-cli/commit/0706128))
+*  using universal node with no harmony flag ([933b606](https://github.com/DomoApps/domoapps-cli/commit/933b606))
 
 
 <a name="2.20.9"></a>

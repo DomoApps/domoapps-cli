@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "2.21.1",
+  "version": "2.22.0",
   "bin": {
     "domo": "./bin/runner"
   },
@@ -31,7 +31,7 @@
     "q": "~1.0.1",
     "raw-body": "^2.1.6",
     "request": "^2.42.0",
-    "ryuu-client": "2.8.4",
+    "ryuu-client": "2.9.0",
     "ryuu.js": "latest",
     "semver": "~4.1.0",
     "shelljs": "^0.5.1",
