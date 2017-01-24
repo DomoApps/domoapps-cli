@@ -1,9 +1,10 @@
-<a name="2.21.0"></a>
-# [2.21.0](https://github.com/DomoApps/domoapps-cli/compare/v2.20.9...v2.21.0) (2017-01-24)
+<a name="2.22.0"></a>
+# [2.22.0](https://github.com/DomoApps/domoapps-cli/compare/v2.20.9...v2.22.0) (2017-01-24)
 
 
 ### Technical Improvements
 
+* v2.21.0 ([7f281d7](https://github.com/DomoApps/domoapps-cli/commit/7f281d7))
 * bump ryuu-client to 2.9.0 ([6ec5c32](https://github.com/DomoApps/domoapps-cli/commit/6ec5c32))
 * (fix) using universal node with no harmony flag (#29) ([cd15cd0](https://github.com/DomoApps/domoapps-cli/commit/cd15cd0))
 * refactor(utils): add design util with getDesignId function ([c33e1bb](https://github.com/DomoApps/domoapps-cli/commit/c33e1bb))
