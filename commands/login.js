@@ -62,7 +62,7 @@ module.exports = function(program){
             options.push('new instance');
             return options;
           },
-          message: "Domo instance " + chalk.grey("e.g. ebay.domo.com "),
+          message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
           name: 'instance',
           default: mostRecent.instance,
           // only show up if they have previous logins
@@ -72,7 +72,7 @@ module.exports = function(program){
         }),
         {
           type: "input",
-          message: "Domo instance " + chalk.grey("e.g. ebay.domo.com "),
+          message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
           name: "instance",
           when: function(answers){
             // only ask if the instance selector wasn't used or new one was selected
@@ -104,7 +104,7 @@ module.exports = function(program){
         }
       ], function(answers) {
         if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io')){
-          log.fail('Please login using the full Domo instance.', 'Example: "ebay.domo.com"');
+          log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
         }
 
         var instanceLogin = Login.getLogin(answers.instance);
