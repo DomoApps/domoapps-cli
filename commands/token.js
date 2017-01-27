@@ -14,20 +14,20 @@ module.exports = function(program) {
     .action(function(cmd) {
       var login = Login.getMostRecentLogin();
       var previousLogins = Login.getPreviousLogins();
-      
+
       switch (cmd) {
         case "create":
           if (previousLogins.length < 1){
             log.fail('domo token create requires a succesful initial login', 'Please login first using `domo login` or `domo token add`');
           }
-          
+
           inquirer.prompt([
             multichoice({
               type: "list",
               choices: function(){
                 return _.map(previousLogins, 'instance');
               },
-              message: "Domo instance on which to create a token " + chalk.grey("e.g. ebay.domo.com "),
+              message: "Domo instance on which to create a token " + chalk.grey("e.g. company.domo.com "),
               name: 'instance',
               default: login.instance
             }),
@@ -41,9 +41,9 @@ module.exports = function(program) {
             ], function(answers){
               var selectedLogin = Login.getLogin(answers.instance);
               var domo = new Domo(selectedLogin.instance, selectedLogin.sid, selectedLogin.devtoken);
-              
+
               var userId = sidUtil.parse(login.sid).userId;
-              
+
               domo.createDevToken(userId, answers.days)
                   .then(function(res){
                     delete login.sid;
@@ -65,9 +65,9 @@ module.exports = function(program) {
                     }
                   })
           })
-          
+
           break;
-        
+
         case "remove":
           inquirer.prompt([
             multichoice({
@@ -75,7 +75,7 @@ module.exports = function(program) {
               choices: function(){
                 return _.map(previousLogins, 'instance');
               },
-              message: "Domo instance on which to remove the token " + chalk.grey("e.g. ebay.domo.com "),
+              message: "Domo instance on which to remove the token " + chalk.grey("e.g. company.domo.com "),
               name: 'instance',
               default: login.instance
             })
@@ -88,7 +88,7 @@ module.exports = function(program) {
               }
           })
           break;
-        
+
         case "add":
           inquirer.prompt([
             multichoice({
@@ -98,13 +98,13 @@ module.exports = function(program) {
                 options.push('new instance');
                 return options;
               },
-              message: "Domo instance on which to set the token " + chalk.grey("e.g. ebay.domo.com "),
+              message: "Domo instance on which to set the token " + chalk.grey("e.g. company.domo.com "),
               name: 'instance',
               default: login.instance
             }),
             {
               type: "input",
-              message: "Domo instance " + chalk.grey("e.g. ebay.domo.com "),
+              message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
               name: "instance",
               when: function(answers){
                 // only ask if the instance selector wasn't used or new one was selected
@@ -121,6 +121,6 @@ module.exports = function(program) {
             })
           break;
       }
-      
+
     });
 }
