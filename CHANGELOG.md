@@ -1,3 +1,12 @@
+<a name="2.24.0"></a>
+# [2.24.0](https://github.com/DomoApps/domoapps-cli/compare/v2.23.0...v2.24.0) (2017-01-27)
+
+
+### Technical Improvements
+
+* change endpoint to simple for faster domo ls(#39) ([2df6746](https://github.com/DomoApps/domoapps-cli/commit/2df6746))
+
+
 <a name="2.23.0"></a>
 # [2.23.0](https://github.com/DomoApps/domoapps-cli/compare/v2.21.1...v2.23.0) (2017-01-24)
 
