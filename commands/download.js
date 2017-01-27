@@ -5,6 +5,7 @@ var inquirer = require('inquirer');
 var shell = require('shelljs');
 var Login = require('../util/login');
 var Domo = require('ryuu-client');
+var log = require('../util/log');
 
 module.exports = function(program){
   program
@@ -31,7 +32,12 @@ module.exports = function(program){
 
           req.on('response', function(response){
             var regexp = /filename="(.*)"/;
-            var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
+            try {
+              var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
+            }
+            catch(e) {
+              log.fail('Invalid design id or version');
+            }
 
             var writeStream = fs.createWriteStream('./'+name+'.zip', {flags: 'w+', mode: 0o666});
             req.pipe(writeStream);
