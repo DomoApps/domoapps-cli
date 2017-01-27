@@ -16,7 +16,7 @@ module.exports = function(program){
       session.check(domo)
         .then(function(){
 
-          domo.getDesigns().then(function(designs){
+          domo.getSimpleDesigns().then(function(designs){
             var Table = require('cli-table');
 
             // instantiate
