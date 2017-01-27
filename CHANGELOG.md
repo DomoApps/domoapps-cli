@@ -1,3 +1,12 @@
+<a name="2.23.0"></a>
+# [2.23.0](https://github.com/DomoApps/domoapps-cli/compare/v2.21.1...v2.23.0) (2017-01-24)
+
+
+### Technical Improvements
+
+* trifecta pull request (#32) ([c0d8afb](https://github.com/DomoApps/domoapps-cli/commit/c0d8afb))
+
+
 <a name="2.21.1"></a>
 ## [2.21.1](https://github.com/DomoApps/domoapps-cli/compare/v2.21.0...v2.21.1) (2017-01-19)
 
