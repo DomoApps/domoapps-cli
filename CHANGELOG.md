@@ -1,3 +1,12 @@
+<a name="2.24.1"></a>
+## [2.24.1](https://github.com/DomoApps/domoapps-cli/compare/v2.24.0...v2.24.1) (2017-01-27)
+
+
+### Technical Improvements
+
+* changed for login command to removed company name ebay (#40) ([20d13da](https://github.com/DomoApps/domoapps-cli/commit/20d13da))
+
+
 <a name="2.24.0"></a>
 # [2.24.0](https://github.com/DomoApps/domoapps-cli/compare/v2.23.0...v2.24.0) (2017-01-27)
 
