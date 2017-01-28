@@ -31,7 +31,6 @@ module.exports = function(program){
           var req = domo.download(answers.designId, answers.version);
 
           req.on('response', function(response){
-            console.log(response.statusCode);
             if (response.statusCode === 200) {
               var regexp = /filename="(.*)"/;
               var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
