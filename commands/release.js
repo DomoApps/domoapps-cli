@@ -11,7 +11,7 @@ var messages = require('../util/messages');
 module.exports = function(program){
   program
     .command('release')
-    .description('prepare a design for app store release')
+    .description('Prepare a design for app store release')
     .action(function(){
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);

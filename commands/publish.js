@@ -11,7 +11,7 @@ var evoke = require('../util/evoke');
 module.exports = function(program){
   program
     .command('publish')
-    .description('publish a new or existing Custom App design')
+    .description('Publish a new or existing Custom App design')
     .action(function(){
       var manifest = Manifest.get(program.manifest);
       if (!manifest) return;

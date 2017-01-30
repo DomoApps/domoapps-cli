@@ -8,7 +8,7 @@ var evoke = require('../util/evoke');
 module.exports = function(program){
   program
     .command('revert')
-    .description('revert a migration, turning a Custom App back into a mason app')
+    .description('Revert a migration, turning a Custom App back into a mason app')
     .action(function(){
       var mostRecent = Login.getMostRecentLogin();
 

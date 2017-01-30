@@ -9,7 +9,7 @@ var Domo = require('ryuu-client');
 module.exports = function(program){
   program
     .command('download')
-    .description('download a Custom App design')
+    .description('Download a Custom App design')
     .action(function(){
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);

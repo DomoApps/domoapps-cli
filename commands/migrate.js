@@ -9,7 +9,7 @@ var evoke = require('../util/evoke');
 module.exports = function(program){
   program
     .command('migrate')
-    .description('migrate a mason app to a Custom App')
+    .description('Migrate a mason app to a Custom App')
     .action(function(){
       var manifest = Manifest.get(program.manifest);
       var mostRecent = Login.getMostRecentLogin();
