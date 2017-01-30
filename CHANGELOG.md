@@ -1,3 +1,17 @@
+<a name="2.23.1"></a>
+## [2.23.1](https://github.com/DomoApps/domoapps-cli/compare/v2.24.1...v2.23.1) (2017-01-30)
+
+
+### Technical Improvements
+
+* Revert "change endpoint to simple" ([fb9a11a](https://github.com/DomoApps/domoapps-cli/commit/fb9a11a))
+* reworded error message for incorrect design id ([e15f75c](https://github.com/DomoApps/domoapps-cli/commit/e15f75c))
+* removed console log ([39b846e](https://github.com/DomoApps/domoapps-cli/commit/39b846e))
+* changed error checking to check response status code ([92f0e6f](https://github.com/DomoApps/domoapps-cli/commit/92f0e6f))
+* caught error in domo download and added friendly error message ([bf0a6d5](https://github.com/DomoApps/domoapps-cli/commit/bf0a6d5))
+* caught error in domo download and added friendly error message ([4610d78](https://github.com/DomoApps/domoapps-cli/commit/4610d78))
+
+
 <a name="2.24.1"></a>
 ## [2.24.1](https://github.com/DomoApps/domoapps-cli/compare/v2.24.0...v2.24.1) (2017-01-27)
 
