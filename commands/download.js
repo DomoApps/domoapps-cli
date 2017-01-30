@@ -35,7 +35,7 @@ module.exports = function(program){
               var regexp = /filename="(.*)"/;
               var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
             } else {
-              log.fail('Invalid design id or version');
+              log.fail('Design not found. Make sure you have the correct design id.');
             }
 
             var writeStream = fs.createWriteStream('./'+name+'.zip', {flags: 'w+', mode: 0o666});
