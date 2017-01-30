@@ -5,6 +5,7 @@ var inquirer = require('inquirer');
 var shell = require('shelljs');
 var Login = require('../util/login');
 var Domo = require('ryuu-client');
+var log = require('../util/log');
 
 module.exports = function(program){
   program
@@ -30,8 +31,12 @@ module.exports = function(program){
           var req = domo.download(answers.designId, answers.version);
 
           req.on('response', function(response){
-            var regexp = /filename="(.*)"/;
-            var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
+            if (response.statusCode === 200) {
+              var regexp = /filename="(.*)"/;
+              var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
+            } else {
+              log.fail('Design not found. Make sure you have the correct design id.');
+            }
 
             var writeStream = fs.createWriteStream('./'+name+'.zip', {flags: 'w+', mode: 0o666});
             req.pipe(writeStream);
