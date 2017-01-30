@@ -8,7 +8,7 @@ var inquirer = require('inquirer');
 module.exports = function(program) {
   program
     .command('undelete [id]')
-    .description('Undeletes a soft-deleted design')
+    .description('Undelete a soft-deleted design')
     .action(function(arg, options) {
 
       var designId = design.getDesignId(arg, null, program.manifest);

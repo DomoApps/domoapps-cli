@@ -7,7 +7,7 @@ var chalk = require('chalk');
 module.exports = function(program){
   program
     .command('ls')
-    .description('get a list of all your Custom App designs')
+    .description('Get a list of all your Custom App designs')
     .action(function(){
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);
