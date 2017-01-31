@@ -47,7 +47,7 @@ var logo = `
 module.exports = function(program){
   program
     .command('login')
-    .description('Login to Domo')
+    .description('login to Domo')
     .action(function(){
 
       var previousLogins = Login.getPreviousLogins();
