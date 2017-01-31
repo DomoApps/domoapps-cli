@@ -13,7 +13,7 @@ var multichoice = require('../util/multichoice');
 module.exports = function(program){
   program
     .command('init')
-    .description('Initialize a new Custom App design')
+    .description('initialize a new Custom App design')
     .action(function(){
 
         inquirer.prompt([

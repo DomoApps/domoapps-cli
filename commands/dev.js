@@ -6,7 +6,7 @@ var server = require('../server/server');
 module.exports = function(program) {
   program
     .command('dev')
-    .description('Work locally on a Custom App')
+    .description('work locally on a Custom App')
     .option('-u, --userId <value>', 'Use a specific userId')
     .option('-e, --external', 'Allow external connection to access the dev site')
     .action(function(opts) {
