@@ -2,6 +2,12 @@ var Domo = require('ryuu-client');
 var Login = require('../util/login');
 var log = require('../util/log');
 var server = require('../server/server');
+var template = "[{blue:%s}] ";
+var logger   = require("eazy-logger").Logger({
+    prefix: template.replace("%s", "Domo Dev"),
+    useLevelPrefixes: false
+});
+
 
 module.exports = function(program) {
   program
@@ -20,6 +26,7 @@ module.exports = function(program) {
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);
       var domo = new Domo(login.instance, login.sid, login.devtoken);
+      logger.info('Instance: ' + domo.instance);
       server.start(domo, options).catch(log.fail)
     });
 
