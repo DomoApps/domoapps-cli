@@ -112,6 +112,7 @@ module.exports = function(program){
           // LATER: verify that devtoken is still valid
           // persist login anyway to make it the most recent
           checkVersion(answers.instance)
+          .then(verifyVersion)
           .then(function(){
             Login.persistLogin(answers.instance, null, instanceLogin)(instanceLogin);
             console.log(chalk.grey(logo));
