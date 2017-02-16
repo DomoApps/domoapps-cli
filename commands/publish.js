@@ -66,7 +66,7 @@ module.exports = function(program){
               }
             }
             else {
-              log.fail(e || 'Error uploading assets');
+              log.fail('Error sending request: ' + e.message + '\n' + 'Toe: ' + e.res.body.toe || 'Error uploading assets');
             }
           });
       }
