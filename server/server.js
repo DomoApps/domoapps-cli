@@ -150,7 +150,6 @@ module.exports = {
           .then(function() {
             var external = Boolean(app.options.external);
             var middleware = external ? [] : getMiddleware();
-            var devInstance = app.options.instance;
 
             app.listen(dataPort)
 
@@ -166,7 +165,7 @@ module.exports = {
               files: ['**/*', '!node_modules/**/*'],
               middleware: middleware,
             });
-            bs.instance.logger.info('Instance: ' + devInstance);
+            bs.instance.logger.info('Instance: ' + app.domo.instance);
           })
           .catch(function(e){
             reject('Session expired. Please login again using domo login.');
