@@ -73,7 +73,8 @@ module.exports = {
 
   handleErrorMessage: function(err, label){
     label = label || 'Error sending request'
-    var toe = '\nToe: ' + err.res.body.toe || '';
+    var toe = err && err.res && err.res.body && err.res.body.toe ? '\nToe: ' + err.res.body.toe : '';
+
     return label + ': ' + err.message + toe;
   }
 }
