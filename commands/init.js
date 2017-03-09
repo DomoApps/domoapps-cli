@@ -34,7 +34,6 @@ module.exports = function(program){
             // answers.list = multichoice.answer(answers.list);
             answers.datasources = [];
             askDatasource(answers, function(allAnswers){
-              console.log(allAnswers);
               var files;
               var dirs;
               var step = 0;
