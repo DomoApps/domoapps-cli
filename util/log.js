@@ -58,7 +58,7 @@ module.exports = {
 
     process.exit();
   },
-  
+
   notAuthenticated: function(login){
     if (!login.devtoken && !login.sid){
       module.exports.fail('Not authenticated', 'Please login using "domo login"');
@@ -69,5 +69,12 @@ module.exports = {
     else{
       module.exports.fail('Not authenticated');
     }
+  },
+
+  handleErrorMessage: function(err, label){
+    label = label || 'Error sending request'
+    var toe = err && err.res && err.res.body && err.res.body.toe ? '\nToe: ' + err.res.body.toe : '';
+
+    return label + toe;
   }
 }
