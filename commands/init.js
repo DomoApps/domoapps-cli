@@ -7,6 +7,7 @@ var shell = require('shelljs');
 var async = require('async');
 var fs = require('fs-extra');
 var path = require('path');
+var validator = require('validator');
 var log = require('../util/log');
 var multichoice = require('../util/multichoice');
 
@@ -33,6 +34,7 @@ module.exports = function(program){
             // answers.list = multichoice.answer(answers.list);
             answers.datasources = [];
             askDatasource(answers, function(allAnswers){
+              console.log(allAnswers);
               var files;
               var dirs;
               var step = 0;
@@ -120,7 +122,8 @@ function addDatasource(currentAnswers, callback){
       {
         type: 'input',
         message: 'dataset id',
-        name: 'id'
+        name: 'id',
+
       },
       {
         type: 'input',
