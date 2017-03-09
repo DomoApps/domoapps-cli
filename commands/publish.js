@@ -41,8 +41,8 @@ module.exports = function(program){
           if(!_.isEqual(oldMapping, newMapping)) {
             log.warn('Mapping has changed. Check current cards for potential miss-mappings.');
           }
-        });
-        domo.uploadAllAssets(manifest)
+
+          domo.uploadAllAssets(manifest)
           .tap(evoke(log.ok, 'Publishing ' + manifest.name + ' to ' + login.instance + ' on ' + new Date()))
           .then(logUploadSuccess)
           .catch(function(e){
@@ -83,10 +83,9 @@ module.exports = function(program){
               log.fail(e || 'Error uploading assets');
             }
           });
+        });
       }
-
     });
-
 }
 
 
