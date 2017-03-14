@@ -11,18 +11,18 @@ module.exports = function(program) {
   program
     .command('token')
     .arguments('<cmd>')
-    .action(function(cmd) {
+    .option('-i, --instance <value>', 'Domo instance')
+    .option('-t, --token <value>', 'Dev Token')
+    .action(function(cmd, options) {
       var login = Login.getMostRecentLogin();
       var previousLogins = Login.getPreviousLogins();
 
+      var prompts = [];
+
       switch (cmd) {
         case "create":
-          if (previousLogins.length < 1){
-            log.fail('domo token create requires a succesful initial login', 'Please login first using `domo login` or `domo token add`');
-          }
-
-          inquirer.prompt([
-            multichoice({
+        if(!options.instance) {
+          prompts.push( multichoice({
               type: "list",
               choices: function(){
                 return _.map(previousLogins, 'instance');
@@ -30,7 +30,13 @@ module.exports = function(program) {
               message: "Domo instance on which to create a token " + chalk.grey("e.g. company.domo.com "),
               name: 'instance',
               default: login.instance
-            }),
+            }));
+          }
+          if (previousLogins.length < 1){
+            log.fail('domo token create requires a succesful initial login', 'Please login first using `domo login` or `domo token add`');
+          }
+
+          inquirer.prompt(prompts.concat([
             multichoice({
               type: "list",
               name: "days",
@@ -38,7 +44,8 @@ module.exports = function(program) {
               message: "Expires after",
               default: 4
             })
-            ], function(answers){
+          ]), function(answers){
+            answers.instance = options.instance || answers.instance;
               var selectedLogin = Login.getLogin(answers.instance);
               var domo = new Domo(selectedLogin.instance, selectedLogin.sid, selectedLogin.devtoken);
 
@@ -69,8 +76,8 @@ module.exports = function(program) {
           break;
 
         case "remove":
-          inquirer.prompt([
-            multichoice({
+          if(!options.instance) {
+            prompts.push(multichoice({
               type: "list",
               choices: function(){
                 return _.map(previousLogins, 'instance');
@@ -78,8 +85,11 @@ module.exports = function(program) {
               message: "Domo instance on which to remove the token " + chalk.grey("e.g. company.domo.com "),
               name: 'instance',
               default: login.instance
-            })
-            ], function(answers){
+            }));
+          }
+
+          inquirer.prompt(prompts, function(answers){
+            answers.instance = options.instance || answers.instance;
               if (answers.instance){
                 var selectedLogin = Login.getLogin(answers.instance);
                 delete selectedLogin.devtoken;
@@ -90,36 +100,47 @@ module.exports = function(program) {
           break;
 
         case "add":
-          inquirer.prompt([
-            multichoice({
-              type: "list",
-              choices: function(){
-                var options = _.map(previousLogins, 'instance');
-                options.push('new instance');
-                return options;
-              },
-              message: "Domo instance on which to set the token " + chalk.grey("e.g. company.domo.com "),
-              name: 'instance',
-              default: login.instance
-            }),
-            {
-              type: "input",
-              message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
-              name: "instance",
-              when: function(answers){
-                // only ask if the instance selector wasn't used or new one was selected
-                return !answers.instance || answers.instance === 'new instance';
-              }
-            },
-            {
+          if(!options.instance) {
+            prompts.push(multichoice({
+                type: "list",
+                choices: function(){
+                  var options = _.map(previousLogins, 'instance');
+                  options.push('new instance');
+                  return options;
+                },
+                message: "Domo instance on which to set the token " + chalk.grey("e.g. company.domo.com "),
+                name: 'instance',
+                default: login.instance
+              }),
+              {
+                type: "input",
+                message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
+                name: "instance",
+                when: function(answers){
+                  // only ask if the instance selector wasn't used or new one was selected
+                  return !answers.instance || answers.instance === 'new instance';
+                }
+              });
+          }
+
+          if(!options.token) {
+            prompts.push({
               name: 'devtoken',
               type: 'input',
               message: 'Token (can be found in the Admin section of Domo and pasted here)'
-            }], function(answers){
+            });
+          }
+
+          inquirer.prompt(prompts, function(answers){
+              answers.instance = options.instance || answers.instance;
+              answers.devtoken = options.token || answers.devtoken;
               Login.writeLogin(answers);
               log.ok(`Token set for ${answers.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.')
             })
           break;
+
+        default:
+          console.log('Invalid option "' + cmd + '"\nValid options are "create", "remove", and "add"');
       }
 
     });
