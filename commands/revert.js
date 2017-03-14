@@ -9,22 +9,33 @@ module.exports = function(program){
   program
     .command('revert')
     .description('revert a migration, turning a Custom App back into a mason app')
-    .action(function(){
+    .option('-i, --instance <value>', 'Domo instance')
+    .option('-a, --app_id <id>', 'App ID')
+    .action(function(args){
       var mostRecent = Login.getMostRecentLogin();
+      var prompts = [];
 
-      inquirer.prompt([
-        {
+      if(!args.instance) {
+        prompts.push({
           type: "input",
           message: "Domo instance",
           name: "instance",
           default: mostRecent.instance
-        },
-        {
+        });
+      }
+
+      if(!args.app_id) {
+        prompts.push({
           type: "input",
           message: "app id",
           name: "id"
-        }
-      ], function(answers) {
+        });
+      }
+
+      inquirer.prompt(prompts, function(answers) {
+        answers.instance = args.instance || answers.instance;
+        answers.id = args.app_id || answers.id;
+
         var login = Login.getLogin(answers.instance);
         Login.verifyLogin(login);
 
