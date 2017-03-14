@@ -48,14 +48,16 @@ module.exports = function(program){
   program
     .command('login')
     .description('login to Domo')
-    .action(function(){
+    .option('-i, --instance <value>', 'Domo instance')
+    .option('-u, --user_email <value>', 'User email')
+    .action(function(args){
 
       var previousLogins = Login.getPreviousLogins();
       var mostRecent = Login.getMostRecentLogin();
+      var prompts = [];
 
-      // prompt user
-      inquirer.prompt([
-        multichoice({
+      if(!args.instance) {
+        prompts.push(multichoice({
           type: "list",
           choices: function(){
             var options = _.pluck(previousLogins, 'instance');
@@ -78,8 +80,11 @@ module.exports = function(program){
             // only ask if the instance selector wasn't used or new one was selected
             return !answers.instance || answers.instance === 'new instance';
           }
-        },
-        {
+        });
+      }
+
+      if(!args.user_email) {
+        prompts.push({
           type: "input",
           message: "user email",
           name: "email",
@@ -92,7 +97,11 @@ module.exports = function(program){
             var instanceLogin = Login.getLogin(answers.instance);
             return !instanceLogin.devtoken;
           }
-        },
+        });
+      }
+
+      // prompt user
+      inquirer.prompt(prompts.concat([
         {
           type: "password",
           message: "Domo password",
@@ -102,7 +111,10 @@ module.exports = function(program){
             return !instanceLogin.devtoken;
           }
         }
-      ], function(answers) {
+      ]), function(answers) {
+        answers.instance = args.instance || answers.instance;
+        answers.email = args.user_email || answers.email;
+
         if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io')){
           log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
         }
