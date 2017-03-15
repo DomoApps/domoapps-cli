@@ -11,7 +11,7 @@ module.exports = function(program){
     .command('migrate')
     .description('migrate a mason app to a Custom App')
     .option('-i, --instance <value>', 'Domo instance')
-    .option('-a, --app_id <id>', 'App ID')
+    .option('-a, --app-id <id>', 'App ID')
     .action(function(args){
       var manifest = Manifest.get(program.manifest);
       var mostRecent = Login.getMostRecentLogin();
@@ -28,7 +28,7 @@ module.exports = function(program){
         });
       }
 
-      if(!args.app_id) {
+      if(!args.app-id) {
         prompts.push({
           type: "input",
           message: "app id",
@@ -38,7 +38,7 @@ module.exports = function(program){
 
       inquirer.prompt(prompts, function(answers) {
         answers.instance = args.instance || answers.instance;
-        answers.id = args.app_id || answers.id;
+        answers.id = args.app-id || answers.id;
         var login = Login.getLogin(answers.instance);
         Login.verifyLogin(login);
 

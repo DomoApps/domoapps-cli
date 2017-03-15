@@ -11,8 +11,8 @@ module.exports = function(program){
   program
     .command('download')
     .description('download a Custom App design')
-    .option('-i, --design_id <id>', 'Design ID')
-    .option('-d, --design_version <design_version>', 'Design version')
+    .option('-i, --design-id <id>', 'Design ID')
+    .option('-d, --design-version <design-version>', 'Design version')
     .action(function(args){
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);
@@ -21,7 +21,7 @@ module.exports = function(program){
 
       var prompts = [];
 
-      if(!args.design_id) {
+      if(!args.design-id) {
         prompts.push({
           type: 'input',
           message: 'design id',
@@ -29,7 +29,7 @@ module.exports = function(program){
         });
       }
 
-      if(!args.design_version) {
+      if(!args.design-version) {
         prompts.push({
           type: 'input',
           message: 'version',
@@ -38,8 +38,8 @@ module.exports = function(program){
         });
       }
       inquirer.prompt(prompts, function(answers){
-        answers.designId = args.design_id || answers.designId;
-        answers.version = args.design_version || answers.version;
+        answers.designId = args.design-id || answers.designId;
+        answers.version = args.design-version || answers.version;
 
         var req = domo.download(answers.designId, answers.version);
 

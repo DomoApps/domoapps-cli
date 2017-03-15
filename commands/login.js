@@ -49,7 +49,7 @@ module.exports = function(program){
     .command('login')
     .description('login to Domo')
     .option('-i, --instance <value>', 'Domo instance')
-    .option('-u, --user_email <value>', 'User email')
+    .option('-u, --user-email <value>', 'User email')
     .action(function(args){
 
       var previousLogins = Login.getPreviousLogins();
@@ -83,7 +83,7 @@ module.exports = function(program){
         });
       }
 
-      if(!args.user_email) {
+      if(!args.user-email) {
         prompts.push({
           type: "input",
           message: "user email",
@@ -113,7 +113,7 @@ module.exports = function(program){
         }
       ]), function(answers) {
         answers.instance = args.instance || answers.instance;
-        answers.email = args.user_email || answers.email;
+        answers.email = args.user-email || answers.email;
 
         if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io')){
           log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
