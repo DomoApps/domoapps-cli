@@ -122,7 +122,7 @@ module.exports = function(program) {
           break;
 
           default:
-            console.log('Invalid option "' + cmd + '"\nValid options are "create", "remove", and "add"');
+            log.fail('Invalid option "' + cmd + '"\nValid options are "create", "remove", and "add"');
       }
 
     });
