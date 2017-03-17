@@ -13,6 +13,7 @@ module.exports = function(program) {
     .arguments('<cmd>')
     .option('-i, --instance <value>', 'Domo instance')
     .option('-t, --token <value>', 'Dev Token')
+    .option('-d, --days <value>', 'days until token expires')
     .action(function(cmd, options) {
       var login = Login.getMostRecentLogin();
       var previousLogins = Login.getPreviousLogins();
@@ -21,56 +22,85 @@ module.exports = function(program) {
 
       switch (cmd) {
         case "create":
-        if(!options.instance) {
-          prompts.push( multichoice({
-              type: "list",
-              choices: function(){
-                return _.map(previousLogins, 'instance');
-              },
-              message: "Domo instance on which to create a token " + chalk.grey("e.g. company.domo.com "),
-              name: 'instance',
-              default: login.instance
-            }));
-          }
           if (previousLogins.length < 1){
             log.fail('domo token create requires a succesful initial login', 'Please login first using `domo login` or `domo token add`');
           }
 
-          inquirer.prompt(prompts.concat([
-            multichoice({
+          if(!options.instance) {
+            prompts.push(multichoice({
+                type: "list",
+                choices: function(){
+                  return _.map(previousLogins, 'instance');
+                },
+                message: "Domo instance on which to create a token " + chalk.grey("e.g. company.domo.com "),
+                name: 'instance',
+                default: login.instance
+              }));
+          }
+
+          if(!options.days) {
+            prompts.push(multichoice({
               type: "list",
               name: "days",
               choices: [{name: "30 days", value: 30}, {name: "60 days", value: 60}, {name: "90 days", value: 90},{name: "180 days", value: 180},{name: "1 year", value: 365}, {name: "5 years", value: 1825}, {name: "10 years", value: 3650}],
               message: "Expires after",
               default: 4
-            })
-          ]), function(answers){
+            }));
+          }
+          else if(options.days > 3650) {
+            prompts.push({
+              name: 'days',
+              type: 'input',
+              message: 'Days until expiration cannot be longer than 10 years (3650 days)\nExpires after',
+              validate: function(num){
+                if (num > 3650 || num < 1) return 'Days until expiration cannot be longer than 10 years (3650 days)';
+                if (num < 1) return  'Days until expiration cannot shorter than 1 day';
+                return true;
+              }
+            });
+          }
+          else if(options.days < 1) {
+            prompts.push({
+              name: 'days',
+              type: 'input',
+              message: 'Days until expiration cannot shorter than 1 day\nExpires after',
+              validate: function(num){
+                if (num > 3650) return 'Days until expiration cannot be longer than 10 years (3650 days)';
+                if (num < 1) return  'Days until expiration cannot shorter than 1 day';
+                return true;
+              }
+            });
+          }
+
+          inquirer.prompt(prompts, function(answers){
             answers.instance = options.instance || answers.instance;
-              var selectedLogin = Login.getLogin(answers.instance);
-              var domo = new Domo(selectedLogin.instance, selectedLogin.sid, selectedLogin.devtoken);
+            answers.days = options.days || answers.days;
 
-              var userId = sidUtil.parse(login.sid).userId;
+            var selectedLogin = Login.getLogin(answers.instance);
+            var domo = new Domo(selectedLogin.instance, selectedLogin.sid, selectedLogin.devtoken);
 
-              domo.createDevToken(userId, answers.days)
-                  .then(function(res){
-                    delete login.sid;
-                    login.devtoken = res.token;
-                    login.user = res.ownerEmail;
-                    Login.writeLogin(login);
-                    log.ok(`Token created and set for ${login.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.');
-                  })
-                  .catch(function(e){
-                    switch (e.reason){
-                      case "tokenexists":
-                        log.fail(`${answers.instance} already has a token associated with it.`, 'To create a new one please run `domo token remove`, then `domo login` with username/password, then `domo token create`.');
-                        break;
-                      case "nosid":
-                        log.fail('Not authenticated with username/password', 'This command requires an initial `domo login` with username/password. Alternatively you can create a token in the Admin section of Domo and use `domo token add`.');
-                        break;
-                      default:
-                        log.notAuthenticated(login);
-                    }
-                  })
+            var userId = sidUtil.parse(login.sid).userId;
+
+            domo.createDevToken(userId, answers.days)
+                .then(function(res){
+                  delete login.sid;
+                  login.devtoken = res.token;
+                  login.user = res.ownerEmail;
+                  Login.writeLogin(login);
+                  log.ok(`Token created and set for ${login.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.');
+                })
+                .catch(function(e){
+                  switch (e.reason){
+                    case "tokenexists":
+                      log.fail(`${answers.instance} already has a token associated with it.`, 'To create a new one please run `domo token remove`, then `domo login` with username/password, then `domo token create`.');
+                      break;
+                    case "nosid":
+                      log.fail('Not authenticated with username/password', 'This command requires an initial `domo login` with username/password. Alternatively you can create a token in the Admin section of Domo and use `domo token add`.');
+                      break;
+                    default:
+                      log.notAuthenticated(login);
+                  }
+                })
           })
 
           break;
