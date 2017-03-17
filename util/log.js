@@ -56,9 +56,9 @@ module.exports = {
       console.log(chalk.red("response:"), result.res);
     }
 
-    process.exit();
+    process.exit(1);
   },
-  
+
   notAuthenticated: function(login){
     if (!login.devtoken && !login.sid){
       module.exports.fail('Not authenticated', 'Please login using "domo login"');
