@@ -12,7 +12,7 @@ module.exports = function(program) {
     .command('token')
     .arguments('<cmd>')
     .option('-i, --instance <value>', 'Domo instance')
-    .option('-t, --token <value>', 'Dev Token')
+    .option('-t, --token <value>', 'dev token')
     .option('-d, --days <value>', 'days until token expires')
     .action(function(cmd, options) {
       var login = Login.getMostRecentLogin();

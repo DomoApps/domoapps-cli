@@ -11,8 +11,8 @@ module.exports = function(program){
   program
     .command('download')
     .description('download a Custom App design')
-    .option('-i, --design-id <id>', 'Design ID')
-    .option('-d, --design-version <design-version>', 'Design version')
+    .option('-i, --design-id <id>', 'design ID')
+    .option('-d, --design-version <design-version>', 'design version')
     .action(function(args){
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);

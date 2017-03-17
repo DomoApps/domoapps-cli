@@ -49,7 +49,7 @@ module.exports = function(program){
     .command('login')
     .description('login to Domo')
     .option('-i, --instance <value>', 'Domo instance')
-    .option('-u, --user-email <value>', 'User email')
+    .option('-u, --user-email <value>', 'user email')
     .action(function(args){
 
       var previousLogins = Login.getPreviousLogins();
