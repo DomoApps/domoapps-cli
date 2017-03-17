@@ -56,7 +56,7 @@ module.exports = function(program){
       var mostRecent = Login.getMostRecentLogin();
       var prompts = [];
 
-      if(!args.instance) {
+      if (!args.instance) {
         prompts.push(multichoice({
           type: "list",
           choices: function(){
@@ -83,7 +83,7 @@ module.exports = function(program){
         });
       }
 
-      if(!args.userEmail) {
+      if (!args.userEmail) {
         prompts.push({
           type: "input",
           message: "user email",
@@ -204,7 +204,7 @@ function promptUpgrade(latest){
       }
 
     ], function(answers) {
-      if(answers.upgrade){
+      if (answers.upgrade){
         log.info('Upgrading to latest version', 'Hang tight, this may take a moment...');
         var output = shell.exec('npm install ryuu -g', {async: false, silent: true});
         if (output.code === 0){

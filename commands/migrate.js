@@ -19,7 +19,7 @@ module.exports = function(program){
 
       var prompts = [];
 
-      if(!args.instance) {
+      if (!args.instance) {
         prompts.push({
           type: "input",
           message: "Domo instance",
@@ -28,7 +28,7 @@ module.exports = function(program){
         });
       }
 
-      if(!args.appId) {
+      if (!args.appId) {
         prompts.push({
           type: "input",
           message: "app id",

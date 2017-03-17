@@ -21,7 +21,7 @@ module.exports = function(program){
 
       var prompts = [];
 
-      if(!args.designId) {
+      if (!args.designId) {
         prompts.push({
           type: 'input',
           message: 'design id',
@@ -29,7 +29,7 @@ module.exports = function(program){
         });
       }
 
-      if(!args.designVersion) {
+      if (!args.designVersion) {
         prompts.push({
           type: 'input',
           message: 'version',
