@@ -94,6 +94,6 @@ function validateManifest(manifest){
  */
 function ensureValidAlias(name){
   if (!isValidJSName(name)){
-    log.fail('Alias names must be valid JavaScript properties', 'Please rename the `' + name + '` alias and update any /data/v1/<alias> calls with the new alias name');
+    log.fail('Alias names must be valid JavaScript properties', 'Please rename the `' + JSON.stringify(name) + '` alias and update any /data/v1/<alias> calls with the new alias name');
   }
 }
