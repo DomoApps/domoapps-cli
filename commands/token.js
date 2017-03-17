@@ -26,6 +26,10 @@ module.exports = function(program) {
             log.fail('domo token create requires a succesful initial login', 'Please login first using `domo login` or `domo token add`');
           }
 
+          if(options.days && (options.days < 1 || options.days > 3650)) {
+            log.fail('days until expiration cannot be longer than 10 years (3650 days) nor shorter than 1 day');
+          }
+
           if(!options.instance) {
             prompts.push(multichoice({
                 type: "list",
@@ -46,30 +50,6 @@ module.exports = function(program) {
               message: "Expires after",
               default: 4
             }));
-          }
-          else if(options.days > 3650) {
-            prompts.push({
-              name: 'days',
-              type: 'input',
-              message: 'Days until expiration cannot be longer than 10 years (3650 days)\nExpires after',
-              validate: function(num){
-                if (num > 3650 || num < 1) return 'Days until expiration cannot be longer than 10 years (3650 days)';
-                if (num < 1) return  'Days until expiration cannot shorter than 1 day';
-                return true;
-              }
-            });
-          }
-          else if(options.days < 1) {
-            prompts.push({
-              name: 'days',
-              type: 'input',
-              message: 'Days until expiration cannot shorter than 1 day\nExpires after',
-              validate: function(num){
-                if (num > 3650) return 'Days until expiration cannot be longer than 10 years (3650 days)';
-                if (num < 1) return  'Days until expiration cannot shorter than 1 day';
-                return true;
-              }
-            });
           }
 
           inquirer.prompt(prompts, function(answers){
