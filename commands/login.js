@@ -83,7 +83,7 @@ module.exports = function(program){
         });
       }
 
-      if(!args.user-email) {
+      if(!args.userEmail) {
         prompts.push({
           type: "input",
           message: "user email",
@@ -113,7 +113,7 @@ module.exports = function(program){
         }
       ]), function(answers) {
         answers.instance = args.instance || answers.instance;
-        answers.email = args.user-email || answers.email;
+        answers.email = args.userEmail || answers.email;
 
         if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io')){
           log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');

@@ -24,7 +24,7 @@ module.exports = function(program){
         });
       }
 
-      if(!args.app-id) {
+      if(!args.appId) {
         prompts.push({
           type: "input",
           message: "app id",
@@ -34,7 +34,7 @@ module.exports = function(program){
 
       inquirer.prompt(prompts, function(answers) {
         answers.instance = args.instance || answers.instance;
-        answers.id = args.app-id || answers.id;
+        answers.id = args.appId || answers.id;
 
         var login = Login.getLogin(answers.instance);
         Login.verifyLogin(login);
