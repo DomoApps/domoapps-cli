@@ -21,7 +21,8 @@ module.exports = function(program){
 
             // instantiate
             var table = new Table({
-              head: [chalk.cyan('Design Name'), chalk.cyan('Design Id'), chalk.cyan('Date Created'), chalk.cyan('Last Updated')]
+              head: [chalk.cyan('Design Name'), chalk.cyan('Design Id'), chalk.cyan('Date Created'), chalk.cyan('Last Updated')],
+              colWidths: [40, 38, 31, 31]
             });
 
             designs.forEach(function(design){
