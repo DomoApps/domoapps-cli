@@ -10,7 +10,7 @@ module.exports = function(program){
     .command('revert')
     .description('revert a migration, turning a Custom App back into a mason app')
     .option('-i, --instance <value>', 'Domo instance')
-    .option('-a, --app-id <id>', 'app ID')
+    .option('-a, --app-id <id>', 'app id')
     .action(function(args){
       var mostRecent = Login.getMostRecentLogin();
       var prompts = [];

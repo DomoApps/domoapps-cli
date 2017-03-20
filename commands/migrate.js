@@ -11,7 +11,7 @@ module.exports = function(program){
     .command('migrate')
     .description('migrate a mason app to a Custom App')
     .option('-i, --instance <value>', 'Domo instance')
-    .option('-a, --app-id <id>', 'app ID')
+    .option('-a, --app-id <id>', 'app id')
     .action(function(args){
       var manifest = Manifest.get(program.manifest);
       var mostRecent = Login.getMostRecentLogin();
