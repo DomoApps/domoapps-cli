@@ -106,6 +106,9 @@ function createDesign(domo, manifest, login) {
     })
     .then(function () {
       console.log('Desgin can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
+      if(options.go) {
+        opn('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
+      }
     });
 }
 
