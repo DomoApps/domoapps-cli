@@ -49,7 +49,6 @@ module.exports = function(program){
             }
           })
           .catch(function(e){
-            console.log(e);
             log.fail('Unable to fetch designs', 'You may not have any designs published yet.');
           })
           .finally(process.exit)
