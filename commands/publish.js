@@ -87,7 +87,7 @@ module.exports = function(program){
           });
         })
         .then(function () {
-          console.log('Desgin can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
+          console.log('Design can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
           if(options.go) {
             opn('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
           }
@@ -122,7 +122,7 @@ function createDesign(domo, manifest, login) {
       log.fail(e || 'Error uploading assets');
     })
     .then(function () {
-      console.log('Desgin can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
+      console.log('Design can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
       if(options.go) {
         opn('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
       }
