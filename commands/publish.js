@@ -1,12 +1,12 @@
 var Domo = require('ryuu-client');
 var inquirer = require('inquirer');
+var _ = require('lodash');
 var Manifest = require('../util/manifest');
 var Login = require('../util/login');
 var log = require('../util/log');
 var appStructure = require('../util/appStructure');
 var messages = require('../util/messages');
 var evoke = require('../util/evoke');
-
 
 module.exports = function(program){
   program
@@ -28,7 +28,21 @@ module.exports = function(program){
         createDesign(domo, manifest, login);
       }
       else{
-        domo.uploadAllAssets(manifest)
+        domo.getDesign(manifest.id).then(function(result) {
+          var latestVersionNumber = result.latestVersion;
+          var latestVersion = result.versions.filter(function(obj) {
+            return obj.version === latestVersionNumber;
+          });
+          var oldMapping = latestVersion[0].mapping[0];
+          var newMapping = manifest.mapping[0];
+
+          delete oldMapping.dql;
+
+          if(!_.isEqual(oldMapping, newMapping)) {
+            log.warn('Mapping has changed. Check current cards for potential miss-mappings.');
+          }
+
+          domo.uploadAllAssets(manifest)
           .tap(evoke(log.ok, 'Publishing ' + manifest.name + ' to ' + login.instance + ' on ' + new Date()))
           .then(logUploadSuccess)
           .catch(function(e){
@@ -66,13 +80,12 @@ module.exports = function(program){
               }
             }
             else {
-              log.fail(e || 'Error uploading assets');
+              log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
             }
           });
+        });
       }
-
     });
-
 }
 
 
@@ -91,7 +104,9 @@ function createDesign(domo, manifest, login) {
       return Manifest.persistDesignId(design, manifest);
     })
     .tap(evoke(log.ok, 'New design created on ' + login.instance))
-    .catch(evoke(log.fail, 'Error creating new design'))
+    .catch(function (e) {
+      log.fail(log.handleErrorMessage(e, 'Error creating new design'));
+    })
     .then(domo.uploadAllAssets.bind(domo, manifest))
     .then(logUploadSuccess)
     .catch(function(e){

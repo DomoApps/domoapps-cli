@@ -10,6 +10,7 @@ var multichoice = require('../util/multichoice');
 module.exports = function(program) {
   program
     .command('token')
+    .description('create, add, or remove a developer token')
     .arguments('<cmd>')
     .action(function(cmd) {
       var login = Login.getMostRecentLogin();

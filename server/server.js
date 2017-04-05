@@ -165,7 +165,7 @@ module.exports = {
               files: ['**/*', '!node_modules/**/*'],
               middleware: middleware,
             });
-
+            bs.instance.logger.info('Instance: ' + app.domo.instance);
           })
           .catch(function(e){
             reject('Session expired. Please login again using domo login.');

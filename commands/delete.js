@@ -8,7 +8,7 @@ var inquirer = require('inquirer');
 module.exports = function(program) {
   program
     .command('delete [id]')
-    .description('Deletes a published design')
+    .description('delete a published design')
     .option('-i, --design_id <id>', '[DEPRECATED] Specify design ID, otherwise it is retrieved from a manifest file')
     .option('-f, --force', 'Delete the design even if it is referenced by Custom Apps')
     .action(function(arg, options) {
