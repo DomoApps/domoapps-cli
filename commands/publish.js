@@ -70,11 +70,8 @@ module.exports = function(program){
               log.fail(e || 'Error uploading assets');
             }
           })
-        .then(function () {
-          console.log('Design can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
-          if(options.go) {
-            opn('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
-          }
+        .then(function() {
+          goToDomo(options, domo, manifest);
         });
       }
 
@@ -104,11 +101,8 @@ function createDesign(domo, manifest, login) {
     .catch(function(e){
       log.fail(e || 'Error uploading assets');
     })
-    .then(function () {
-      console.log('Design can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
-      if(options.go) {
-        opn('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
-      }
+    .then(function() {
+      goToDomo(options, domo, manifest);
     });
 }
 
@@ -116,4 +110,11 @@ function logUploadSuccess(files){
   files.forEach(function(file){
     log.ok('Uploaded: ' + file.path);
   });
+}
+
+function goToDomo(options, domo, manifest) {
+  console.log('Design can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
+  if(options.go) {
+   opn('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
+  }
 }
