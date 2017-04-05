@@ -5,6 +5,11 @@
   </head>
 
   <body>
+  <div class="slideOne">
+      <input type="checkbox" value="None" id="slideOne" name="check" <%- fullpage ? 'checked="checked"' : '' %> onclick="fullscreen(this.checked, '<%- height %>', '<%- width %>')"/>
+      <label for="slideOne"></label>
+      <h2>Fullscreen</h2>
+    </div>
     <div>
       <section class="messages">
         <% if (!isValidSession) { %>
@@ -37,8 +42,8 @@
 
           <div class="size"><%- fullpage ? 'FULL-WIDTH x FULL-HEIGHT' : width +' x '+ height %></div>
         </div>
-      <section>
-    <div>
+      </section>
+    </div>
 
     <script src="domodev/assets/vendor/lodash.js"></script>
     <script src="domodev/assets/js/index.js"></script>

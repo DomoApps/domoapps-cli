@@ -81,3 +81,44 @@ h2 {
 .warn {
   color: #fc8f13;
 }
+
+.slideOne {
+  width: 50px;
+  height: 10px;
+  background: #333;
+  margin: 20px auto;
+  position: fixed;
+  border-radius: 50px;
+  box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px rgba(255, 255, 255, 0.2);
+  right: 10px;
+}
+
+.slideOne h2 {
+  position: absolute;
+  right: 5px;
+}
+
+.slideOne label {
+  display: block;
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  cursor: pointer;
+  background: #fcfff4;
+  background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+  background: linear-gradient(to bottom, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+  border-radius: 50px;
+  box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3);
+  -webkit-transition: all 0.4s ease;
+  transition: all 0.4s ease;
+}
+
+.slideOne input[type=checkbox] {
+  visibility: hidden;
+}
+
+.slideOne input[type=checkbox]:checked + label {
+  left: 37px;
+}
