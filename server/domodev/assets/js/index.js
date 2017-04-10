@@ -62,7 +62,7 @@ function fullscreen(chk, h, w) {
   document.querySelectorAll('.app__wrapper')[0].style.width = chk ? '100%' : width;
   document.querySelectorAll('iframe')[0].style.width = chk ? '100%' : width;
   document.querySelectorAll('iframe')[0].style.height = chk ? 'calc(100% - 140px)' : height;
-  document.querySelectorAll('.size')[0].innerHtml = chk ? 'FULL-WIDTH x FULL-HEIGHT' : width +' x '+ height;
+  document.querySelectorAll('.size')[0].innerHTML = chk ? 'FULL-WIDTH x FULL-HEIGHT' : width +' x '+ height;
 }
 
 function setDims(h, w) {
