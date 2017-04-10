@@ -50,12 +50,12 @@ function fullscreen(chk, h, w) {
   if(!height && !width) {
     setDims(h, w);
   }
-  document.querySelectorAll('.app')[0].style.padding = chk ? '0px 50px' : 0;
-  document.querySelectorAll('.app__wrapper')[0].style.height = chk ? 'calc(100% - 60px)' : height;
-  document.querySelectorAll('.app__wrapper')[0].style.width = chk ? '100%' : width;
-  document.querySelectorAll('iframe')[0].style.width = chk ? '100%' : width;
-  document.querySelectorAll('iframe')[0].style.height = chk ? 'calc(100% - 140px)' : height;
-  document.querySelectorAll('.size')[0].innerHTML = chk ? 'FULL-WIDTH x FULL-HEIGHT' : width +' x '+ height;
+  document.querySelector('.app').style.padding = chk ? '0px 50px' : 0;
+  document.querySelector('.app__wrapper').style.height = chk ? 'calc(100% - 60px)' : height;
+  document.querySelector('.app__wrapper').style.width = chk ? '100%' : width;
+  document.querySelector('iframe').style.width = chk ? '100%' : width;
+  document.querySelector('iframe').style.height = chk ? 'calc(100% - 140px)' : height;
+  document.querySelector('.size').innerHTML = chk ? 'FULL-WIDTH x FULL-HEIGHT' : width +' x '+ height;
 }
 
 function setDims(h, w) {
