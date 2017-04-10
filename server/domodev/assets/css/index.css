@@ -5,6 +5,8 @@ body {
   cursor: default;
   margin: 0;
   padding: 0;
+  -webkit-transition: all 0.4s ease;
+  transition: all 0.4s ease;
 }
 
 h2 {
@@ -22,12 +24,15 @@ h2 {
 
 .app {
   text-align: center;
+  -webkit-transition: all 0.4s ease;
+  transition: all 0.4s ease;
 }
 
 .app__wrapper {
   display: inline-block;
   text-align: left;
-  transition: margin .4s, padding .4s;
+  -webkit-transition: all 0.4s ease;
+  transition: all 0.4s ease;
 }
 
 .app__wrapper table,
@@ -51,6 +56,8 @@ h2 {
   height: 100%;
   width: 100%;
   margin-top: 20px;
+  -webkit-transition: all 0.4s ease;
+  transition: all 0.4s ease;
 }
 
 .app__wrapper__thumbnail {
@@ -62,8 +69,7 @@ h2 {
 }
 
 .size {
-  float: right;
-  color:  #dddddd;
+  color:  #bfbfbf;
   font-size: 12px;
   font-family: 'Open Sans', 'Helvetica Neue', Arial, Helvetica, sans-serif;
 }
@@ -113,6 +119,24 @@ h2 {
   box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3);
   -webkit-transition: all 0.4s ease;
   transition: all 0.4s ease;
+}
+
+.slideOne label:after {
+    position: absolute;
+    content: '';
+    top: -5px;
+    right: -40px;
+    left: -5px;
+    bottom: -5px;
+}
+
+.slideOne label:before {
+    position: absolute;
+    content: '';
+    top: -5px;
+    right: -5px;
+    left: -40px;
+    bottom: -5px;
 }
 
 .slideOne input[type=checkbox] {
