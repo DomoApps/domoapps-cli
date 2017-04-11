@@ -1,6 +1,7 @@
 var Domo = require('ryuu-client');
 var inquirer = require('inquirer');
 var _ = require('lodash');
+var opn = require('opn');
 var Manifest = require('../util/manifest');
 var Login = require('../util/login');
 var log = require('../util/log');
@@ -12,7 +13,8 @@ module.exports = function(program){
   program
     .command('publish')
     .description('publish a new or existing Custom App design')
-    .action(function(){
+    .option('-g, --go', 'navigate to design in Asset Library after publishing')
+    .action(function(options){
       var manifest = Manifest.get(program.manifest);
       if (!manifest) return;
 
@@ -82,10 +84,16 @@ module.exports = function(program){
             else {
               log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
             }
+<<<<<<< HEAD
           });
         })
         .catch(function(e) {
           log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
+=======
+          })
+        .then(function() {
+          goToDomo(options, domo, manifest);
+>>>>>>> users/wrosenberg/DOMO-51237
         });
       }
     });
@@ -114,6 +122,9 @@ function createDesign(domo, manifest, login) {
     .then(logUploadSuccess)
     .catch(function(e){
       log.fail(e || 'Error uploading assets');
+    })
+    .then(function() {
+      goToDomo(options, domo, manifest);
     });
 }
 
@@ -121,4 +132,11 @@ function logUploadSuccess(files){
   files.forEach(function(file){
     log.ok('Uploaded: ' + file.path);
   });
+}
+
+function goToDomo(options, domo, manifest) {
+  console.log('Design can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
+  if(options.go) {
+   opn('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
+  }
 }
