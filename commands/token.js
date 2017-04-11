@@ -12,8 +12,8 @@ module.exports = function(program) {
     .command('token')
     .arguments('<cmd>')
     .option('-i, --instance <value>', 'Domo instance')
-    .option('-t, --token <value>', 'dev token')
-    .option('-d, --days <value>', 'days until token expires')
+    .option('-t, --token <value>', 'dev token value used with token add')
+    .option('-d, --days <value>', 'days until token expires used with token create')
     .action(function(cmd, options) {
       var login = Login.getMostRecentLogin();
       var previousLogins = Login.getPreviousLogins();
