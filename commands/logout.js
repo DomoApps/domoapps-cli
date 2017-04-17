@@ -1,15 +1,4 @@
-var inquirer = require("inquirer");
-var _ = require('lodash');
-var chalk = require('chalk');
-var shell = require('shelljs');
-var multichoice = require('../util/multichoice');
-var log = require('../util/log');
 var Login = require('../util/login');
-var evoke = require('../util/evoke');
-var Domo = require('ryuu-client');
-var Promise = require('bluebird');
-var path = require('path');
-var request = Promise.promisify(require('request'));
 
 module.exports = function(program){
   program
