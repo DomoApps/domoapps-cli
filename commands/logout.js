@@ -8,12 +8,16 @@ module.exports = function(program){
 
       var mostRecent = Login.getMostRecentLogin();
       var instance = mostRecent.instance;
-      Login.verifyLogout(mostRecent, instance);
+      if (Login.verifyLogout(mostRecent, instance)) {
+        process.exit();
+      }
 
       delete mostRecent.sid;
       delete mostRecent.devtoken;
 
       Login.writeLogin(mostRecent);
       Login.verifyLogout(mostRecent, instance);
+
+      process.exit();
     });
 }

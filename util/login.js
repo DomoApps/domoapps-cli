@@ -54,8 +54,9 @@ module.exports = {
   verifyLogout: function(login, instance){
     if (!login.devtoken && !login.sid){
       log.ok('Successful logout from ' + instance);
-      process.exit();
+      return true;
     }
+    return false;
   },
 
   writeLogin: function(login){
