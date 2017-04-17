@@ -10,7 +10,9 @@ module.exports = function(program){
       var instance = mostRecent.instance;
       Login.verifyLogout(mostRecent, instance);
 
-      mostRecent.sid ? delete mostRecent.sid : delete mostRecent.devtoken;
+      delete mostRecent.sid;
+      delete mostRecent.devtoken;
+
       Login.writeLogin(mostRecent);
       Login.verifyLogout(mostRecent, instance);
     });
