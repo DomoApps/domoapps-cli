@@ -10,24 +10,35 @@ module.exports = function(program){
   program
     .command('migrate')
     .description('migrate a mason app to a Custom App')
-    .action(function(){
+    .option('-i, --instance <value>', 'Domo instance')
+    .option('-a, --app-id <id>', 'app id')
+    .action(function(args){
       var manifest = Manifest.get(program.manifest);
       var mostRecent = Login.getMostRecentLogin();
       if (!manifest) return;
 
-      inquirer.prompt([
-        {
+      var prompts = [];
+
+      if (!args.instance) {
+        prompts.push({
           type: "input",
           message: "Domo instance",
           name: "instance",
           default: mostRecent.instance
-        },
-        {
+        });
+      }
+
+      if (!args.appId) {
+        prompts.push({
           type: "input",
           message: "app id",
           name: "id"
-        }
-      ], function(answers) {
+        });
+      }
+
+      inquirer.prompt(prompts, function(answers) {
+        answers.instance = args.instance || answers.instance;
+        answers.id = args.appId || answers.id;
         var login = Login.getLogin(answers.instance);
         Login.verifyLogin(login);
 
