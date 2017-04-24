@@ -84,16 +84,13 @@ module.exports = function(program){
             else {
               log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
             }
-<<<<<<< HEAD
           });
         })
         .catch(function(e) {
           log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
-=======
           })
         .then(function() {
           goToDomo(options, domo, manifest);
->>>>>>> users/wrosenberg/DOMO-51237
         });
       }
     });
