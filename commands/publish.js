@@ -27,7 +27,7 @@ module.exports = function(program){
       }
 
       if (!manifest.id){
-        createDesign(domo, manifest, login);
+        createDesign(domo, manifest, login, options);
       }
       else{
         domo.getDesign(manifest.id).then(function(result) {
@@ -35,8 +35,8 @@ module.exports = function(program){
           var latestVersion = result.versions.filter(function(obj) {
             return obj.version === latestVersionNumber;
           });
-          var oldMapping = latestVersion[0].mapping[0];
-          var newMapping = manifest.mapping[0];
+          var oldMapping = latestVersion[0].mapping;
+          var newMapping = manifest.mapping;
 
           delete oldMapping.dql;
 
@@ -69,7 +69,7 @@ module.exports = function(program){
                   ], function (answers) {
                     if (answers.askRecreate){
                       manifest.id = null;
-                      createDesign(domo, manifest, login);
+                      createDesign(domo, manifest, login, options);
                     }
                   });
 
@@ -101,9 +101,10 @@ module.exports = function(program){
  * @param {Object} domo
  * @param {Object} manifest
  * @param {Object} login
+ * @param {Object} options from commander
  * @return {Promise}
  */
-function createDesign(domo, manifest, login) {
+function createDesign(domo, manifest, login, options) {
   return domo.createDesign(manifest)
     .then(function(designResult){
       var design = designResult[0];
