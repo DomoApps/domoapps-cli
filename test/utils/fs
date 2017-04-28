@@ -1,0 +1,24 @@
+#!/bin/bash
+
+function domo:fs:tmp() {
+    [ ! -d tmp ] && mkdir tmp || true
+    domo:runner:validate
+}
+
+function domo:fs:tmp:clear() {
+    [ -d tmp ] && rm -r tmp || true
+    domo:runner:validate
+}
+
+function domo:fs:tmp:cd() {
+    domo:fs:tmp
+    cd tmp
+}
+
+# param 1 - file name
+# returns - tmp file path
+function domo:fs:tmp:file() {
+    local name=$1
+    domo:fs:tmp
+    echo "./tmp/$name"
+}

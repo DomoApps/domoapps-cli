@@ -1,0 +1,5 @@
+#!/bin/bash
+
+domo:log:comment "clearing token and tmp directory"
+domo:auth:token:remove
+domo:fs:tmp:clear

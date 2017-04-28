@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# USAGE: ./script/test <command test file>
+#        runs all command tests if argument provided
+#
+# environment variables:
+# - DOMO_CLI: eg. domo, ./bin/runner, /usr/bin/domo, defaults to ./bin/runner
+# - DOMO_INSTANCE: eg. dev.dev.domo.com
+# - DOMO_USERNAME: eg. user.name@domo.com
+# - DOMO_PASSWORD: eg. myveryverysecurepasswordhere
+
+[ -z "$DOMO_CLI" ] && DOMO_CLI=$(pwd)/bin/runner
+
+command=$1
+commands=(login publish)
+
+function load_utils() {
+    source test/utils/runner
+    source test/utils/log
+    source test/utils/auth
+    source test/utils/fs
+}
+
+function load_test() {
+    local command=$1
+
+    (source test/commands/setup)
+    domo:runner:validate
+
+    (source test/commands/$command)
+    domo:runner:validate
+
+    (source test/commands/cleanup)
+    domo:runner:validate
+}
+
+function run_command_tests() {
+    local command=$1
+
+    if [ -f "./test/commands/$command" ]; then
+        load_utils
+        domo:log:start "$command tests"
+        load_test $command
+        domo:runner:validate
+        domo:log:end "$command tests"
+    else
+        echo "\"$command\" test file not found"
+        exit 1
+    fi
+}
+
+if [ -z "$command" ]; then
+    for command in "${commands[@]}"; do
+        run_command_tests $command
+    done
+else
+    run_command_tests $command
+fi

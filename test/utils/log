@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# param 1 - label
+function domo:log:start() {
+    echo "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+    echo "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+    echo "  START $1"
+    echo "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+    echo "::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+    echo
+}
+
+# param 1 - label
+function domo:log:end() {
+    echo
+    echo ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+    echo ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+    echo "  END $1"
+    echo ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+    echo ":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"
+    echo
+}
+
+# param 1 - comment
+function domo:log:comment() {
+    echo
+    echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    echo "  $1"
+    echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+    echo
+}
+
+# param 1 - error
+function domo:log:error() {
+    echo
+    echo "::ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR::"
+    echo "::ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR::"
+    echo "  ERROR: $1"
+    echo "::ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR::"
+    echo "::ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR:ERROR::"
+    echo
+}

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+function domo() {
+    $DOMO_CLI $@
+}
+
+function domo:runner:validate() {
+    local last_status=$?
+
+    if [ $last_status -ne 0 ]; then
+        domo:log:error "detected an exit code of $last_status."
+        exit 1
+    fi
+}

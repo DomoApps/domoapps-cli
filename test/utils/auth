@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# param 1 - instance, defaults to DOMO_INSTANCE
+# param 2 - username, defaults to DOMO_USERNAME
+# param 3 - password, defaults to DOMO_PASSWORD
+function domo:auth:login() {
+    local instance="$1"
+    local username="$2"
+    local password="$3"
+
+    [ -z "$instance" ] && instance="$DOMO_INSTANCE"
+    [ -z "$username" ] && username="$DOMO_USERNAME"
+    [ -z "$password" ] && password="$DOMO_PASSWORD"
+
+    if [ -z "$instance" ]; then
+        echo -n "instance: "
+        read instance
+    fi
+
+    if [ -z "$username" ]; then
+        echo -n "username: "
+        read username
+    fi
+
+    if [ -z "$password" ]; then
+        echo -n "password: "
+        read -s password
+        echo
+    fi
+
+    echo "$password" | domo login -i "$instance" -u "$username" --no-upgrade-check
+    domo:runner:validate
+}
+
+# param 1 - instance, defaults to DOMO_INSTANCE
+function domo:auth:token:remove() {
+    local instance="$1"
+
+    [ -z "$instance" ] && instance="$DOMO_INSTANCE"
+
+    if [ -z "$instance" ]; then
+        echo -n "instance: "
+        read instance
+    fi
+
+    domo token remove -i "$instance"
+    domo:runner:validate
+}

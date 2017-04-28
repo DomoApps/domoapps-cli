@@ -1,0 +1,4 @@
+#!/bin/bash
+
+domo:log:comment "clearing tmp directory"
+domo:fs:tmp:clear

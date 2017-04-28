@@ -5,6 +5,7 @@
     "domo": "./bin/runner"
   },
   "scripts": {
+    "test": "./script/test",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 --config ./changelog/changelog.js"
   },
   "dependencies": {
