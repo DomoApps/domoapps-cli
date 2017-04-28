@@ -50,11 +50,16 @@ module.exports = function(program){
     .description('login to Domo')
     .option('-i, --instance <value>', 'Domo instance')
     .option('-u, --user-email <value>', 'user email')
+    .option('--no-upgrade-check', 'do not check for new versions')
     .action(function(args){
 
       var previousLogins = Login.getPreviousLogins();
       var mostRecent = Login.getMostRecentLogin();
       var prompts = [];
+
+      var versionCheckFn = !args.upgradeCheck ?
+        function (x) { return x; } :
+        verifyVersion;
 
       if (!args.instance) {
         prompts.push(multichoice({
@@ -124,7 +129,7 @@ module.exports = function(program){
           // LATER: verify that devtoken is still valid
           // persist login anyway to make it the most recent
           checkVersion(answers.instance)
-          .then(verifyVersion)
+          .then(versionCheckFn)
           .then(function(){
             Login.persistLogin(answers.instance, null, instanceLogin)(instanceLogin);
             console.log(chalk.grey(logo));
@@ -140,7 +145,7 @@ module.exports = function(program){
               return login = l;
             })
             .then(checkVersion.bind(null, answers.instance))
-            .then(verifyVersion)
+            .then(versionCheckFn)
             .then(function(){
                 console.log(chalk.grey(logo));
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
