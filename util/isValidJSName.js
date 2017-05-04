@@ -1,3 +1,3 @@
 module.exports = function isValidJSName(name){
-  return !name.match(/[^a-zA-Z\$\_\d]+/);
+  return name.match ? !name.match(/[^a-zA-Z\$\_\d]+/) : false;
 }
