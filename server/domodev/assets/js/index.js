@@ -30,7 +30,14 @@ window.addEventListener('message', function(e) {
 
 
 function isHostSafe(name){
-  var whitelist = ['domo.com', 'github.com', 'salesforce.com', 'trello.com', 'jira.com', 'coupahost.com', 'facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'linkedin.com', 'predictivetoolkit.net', 'egnyte.com', 'crmondemand.com', 'google.com', 'adobe.com', 'domo.buzz'];
+  var whitelist = [
+    'domo.com', 'github.com', 'salesforce.com', 'trello.com', 'jira.com', 'coupahost.com',
+    'facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'linkedin.com', 'predictivetoolkit.net',
+    'egnyte.com', 'crmondemand.com', 'google.com', 'adobe.com', 'domo.buzz', 'spotify.com', 'wired.com',
+    'gizmodo.com', 'techcrunch.com', 'fastcodesign.com', 'nytimes.com', 'thenextweb.com', 'medium.com',
+    'mashable.com', 'springboard.com', 'theverge.com', 'sciencebulletin.com', 'buzzfeed.com', 'huffingtonpost.com',
+    'bloomberg.com'
+  ];
   return _.contains(whitelist, name);
 }
 
