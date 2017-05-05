@@ -1,0 +1,27 @@
+#!/bin/bash
+
+test_group "token command"
+
+days_error="days until expiration cannot be longer than 10 years (3650 days) nor shorter than 1 day"
+token_created_message="Future CLI commands to this instance will not require username/password."
+token_deleted_message="Future CLI commands to this instance will require username/password."
+source test/design_assets
+
+domo:fs:tmp:cd
+domo:auth:login
+
+it "cannot create a token for less than a day"
+contains "$days_error" "$(domo token create -i "$DOMO_INSTANCE" -d 0)"
+ok
+
+it "cannot create a token for more than ten years"
+contains "$days_error" "$(domo token create -i "$DOMO_INSTANCE" -d 3651)"
+ok
+
+it "can create a token"
+contains "$token_created_message" "$(domo token create -i "$DOMO_INSTANCE" -d 30)"
+ok
+
+it "can delete a token"
+contains "$token_deleted_message" "$(domo token remove -i "$DOMO_INSTANCE")"
+ok
