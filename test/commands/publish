@@ -59,3 +59,8 @@ contains "id" "$(cat manifest.json)"
 ok
 msg design name: $(json_extract "name" "$manifest_content")
 msg design id: $(json_extract "id" "$manifest_content")
+
+it "design id should be returned from domo ls"
+designid=$(cat manifest.json | grep '"id"')
+contains "${designid:9:36}" "$(domo ls)"
+ok
