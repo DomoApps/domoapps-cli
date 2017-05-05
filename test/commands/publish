@@ -1,9 +1,9 @@
 #!/bin/bash
 
-source test/design_assets
-
 test_group "publish command"
+
 thumbnail_warning="A thumbnail is required before creating a card with this design. This is used to represent the App in the mobile application and the Appstore experience."
+source test/design_assets
 
 domo:fs:tmp:cd
 domo:auth:login

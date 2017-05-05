@@ -1,0 +1,32 @@
+#!/bin/bash
+
+test_group "owner command"
+
+one_owner_error="DA0049: DESIGN entities must have at least one owner. A new owner needs to be assigned before removing this one."
+invalid_remove_error="Error removing owners"
+invalid_add_error="Error adding owners"
+
+source test/design_assets
+
+domo:fs:tmp:cd
+domo:auth:login
+
+it "should publish a design first"
+domo publish &> /dev/null
+ok
+
+it "should include the user that published as an owner"
+contains "$DOMO_USERNAME" "$(domo owner ls)"
+ok
+
+it "prevents the only owner from being removed"
+contains "$one_owner_error" "$(domo owner rm $DOMO_USERNAME)"
+ok
+
+it "throws error when removing an invalid user"
+contains "$invalid_remove_error" "$(domo owner rm $DOMO_USERNAME.invalid)"
+ok
+
+it "throws error when adding an invalid user"
+contains "$invalid_add_error" "$(domo owner add $DOMO_USERNAME.invalid)"
+ok

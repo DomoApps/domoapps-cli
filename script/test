@@ -12,7 +12,7 @@
 [ -z "$DOMO_CLI" ] && DOMO_CLI=$(pwd)/bin/runner
 
 command=$1
-commands=(login publish)
+commands=(login publish owner)
 
 function load_utils() {
     source test/utils/runner
