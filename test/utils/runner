@@ -1,5 +1,9 @@
 #!/bin/bash
 
+COLOR_OK='\033[0;32m'
+COLOR_TEST_GROUP='\033[1;30m'
+COLOR_RESET='\033[0m'
+
 function domo() {
     $DOMO_CLI $@
 }
@@ -19,7 +23,7 @@ function fail() {
 }
 
 function ok() {
-    echo ok
+    echo -e "${COLOR_OK}ok${COLOR_RESET}"
 }
 
 function validate() {
@@ -28,7 +32,7 @@ function validate() {
 
 function test_group() {
     echo
-    echo "## $@"
+    echo -e "## ${COLOR_TEST_GROUP}$@${COLOR_RESET}"
     echo
 }
 
