@@ -7,8 +7,6 @@ manifest_json=$(domo:fs:tmp:file manifest.json)
 index_html=$(domo:fs:tmp:file index.html)
 styles_css=$(domo:fs:tmp:file styles.css)
 
-domo:log:comment "creating design assets"
-
 cat > $manifest_json <<- DELIM
 {
   "name": "$design_name",
@@ -38,23 +36,24 @@ body {
 }
 DELIM
 
+test_group "creating design assets"
+
 domo:fs:tmp:cd
 domo:auth:login
 
-domo:log:comment "you should see a warning about the thumbnail"
-domo publish
-domo:runner:validate
+it "should include a warning when no thumbnail exists"
+contains "A thumbnail is required before creating a card with this design. This is used to represent the App in the mobile application and the Appstore experience." \
+    "$(domo publish)"
 
-domo:log:comment "you should *NOT* see a warning about the thumbnail"
+
+it "should not have a warning when a thumbnail is present"
 touch thumbnail.png
-domo publish
-domo:runner:validate
+not_contains "A thumbnail is required before creating a card with this design. This is used to represent the App in the mobile application and the Appstore experience." \
+    "$(domo publish --go)"
 
-domo:log:comment "publishing a third time"
-domo publish
-domo:runner:validate
 
-domo:log:comment "should have an id"
-cat manifest.json
-cat manifest.json | grep '"id"' &> /dev/null
-domo:runner:validate
+it "should have an id in the manifest.json file"
+manifest_content=$(cat manifest.json)
+contains "id" "$(cat manifest.json)"
+msg design name: $(json_extract "name" "$manifest_content")
+msg design id: $(json_extract "id" "$manifest_content")

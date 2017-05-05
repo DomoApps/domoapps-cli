@@ -28,7 +28,7 @@ function domo:auth:login() {
         echo
     fi
 
-    echo "$password" | domo login -i "$instance" -u "$username" --no-upgrade-check
+    echo "$password" | domo login -i "$instance" -u "$username" --no-upgrade-check &> /dev/null
     domo:runner:validate
 }
 

@@ -9,6 +9,68 @@ function domo:runner:validate() {
 
     if [ $last_status -ne 0 ]; then
         domo:log:error "detected an exit code of $last_status."
-        exit 1
+        fail
     fi
 }
+
+function fail() {
+    domo:log:error "error"
+    exit 1
+}
+
+function ok() {
+    echo ok
+}
+
+function validate() {
+    domo:runner:validate
+}
+
+function test_group() {
+    echo
+    echo "## $@"
+    echo
+}
+
+function it() {
+    echo -n " - $@: "
+}
+
+function msg() {
+    echo "    - $@"
+}
+
+function flip_status() {
+    [ $? -eq 0 ] && false || true
+}
+
+function not_contains() {
+    internal_contains "$1" "$2"
+
+    flip_status
+    validate
+    ok
+}
+
+function contains() {
+    internal_contains "$1" "$2"
+
+    validate
+    ok
+}
+
+function internal_contains() {
+    local substr="$1"
+    local fullstr="$2"
+
+    echo "$fullstr" | grep "$substr" &> /dev/null
+}
+
+function json_extract() {
+    local prop="$1"
+    local json="$2"
+
+    echo "$json" | grep -w "$prop" | awk '{print $2}' | sed -E 's/^"|"$|",$//g'
+}
+
+not contains "hi" "bye aa"
