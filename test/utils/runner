@@ -49,14 +49,12 @@ function not_contains() {
 
     flip_status
     validate
-    ok
 }
 
 function contains() {
     internal_contains "$1" "$2"
 
     validate
-    ok
 }
 
 function internal_contains() {
@@ -72,5 +70,3 @@ function json_extract() {
 
     echo "$json" | grep -w "$prop" | awk '{print $2}' | sed -E 's/^"|"$|",$//g'
 }
-
-not contains "hi" "bye aa"

@@ -2,12 +2,12 @@
 
 function domo:fs:tmp() {
     [ ! -d tmp ] && mkdir tmp || true
-    domo:runner:validate
+    validate
 }
 
 function domo:fs:tmp:clear() {
     [ -d tmp ] && rm -r tmp || true
-    domo:runner:validate
+    validate
 }
 
 function domo:fs:tmp:cd() {

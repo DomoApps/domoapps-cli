@@ -1,5 +1,11 @@
 #!/bin/bash
 
-domo:log:comment "clearing token and tmp directory"
+test_group "getting ready to run tests"
+
+it "should remove the token"
 domo:auth:token:remove
+ok
+
+it "clear tmp directory"
 domo:fs:tmp:clear
+ok

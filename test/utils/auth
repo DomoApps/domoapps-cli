@@ -29,7 +29,8 @@ function domo:auth:login() {
     fi
 
     echo "$password" | domo login -i "$instance" -u "$username" --no-upgrade-check &> /dev/null
-    domo:runner:validate
+
+    validate
 }
 
 # param 1 - instance, defaults to DOMO_INSTANCE
@@ -43,6 +44,6 @@ function domo:auth:token:remove() {
         read instance
     fi
 
-    domo token remove -i "$instance"
-    domo:runner:validate
+    domo token remove -i "$instance" &> /dev/null
+    validate
 }

@@ -1,4 +1,7 @@
 #!/bin/bash
 
-domo:log:comment "clearing tmp directory"
+test_group "clearing tmp directory"
+
+it "should remove the tmp directory"
 domo:fs:tmp:clear
+ok

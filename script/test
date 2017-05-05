@@ -39,10 +39,8 @@ function run_command_tests() {
 
     if [ -f "./test/commands/$command" ]; then
         load_utils
-        domo:log:start "$command tests"
         load_test $command
         domo:runner:validate
-        domo:log:end "$command tests"
     else
         echo "\"$command\" test file not found"
         exit 1
