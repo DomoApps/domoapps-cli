@@ -25,3 +25,9 @@ contains "id" "$(cat manifest.json)"
 ok
 msg design name: $(json_extract "name" "$manifest_content")
 msg design id: $(json_extract "id" "$manifest_content")
+
+it "delete the published design"
+manifest_content=$(cat manifest.json)
+design_id=$(json_extract "id" "$manifest_content")
+echo "y" | domo delete --design_id "$design_id" &> /dev/null
+ok

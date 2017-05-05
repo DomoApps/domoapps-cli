@@ -49,3 +49,9 @@ ok
 it "should not include that user anymore"
 not_contains "$DOMO_USERNAME_2" "$(domo owner ls)"
 ok
+
+it "delete the published design"
+manifest_content=$(cat manifest.json)
+design_id=$(json_extract "id" "$manifest_content")
+echo "y" | domo delete --design_id "$design_id" &> /dev/null
+ok
