@@ -14,6 +14,9 @@ domo:auth:login
 it "should publish a design first"
 domo publish &> /dev/null
 ok
+manifest_content=$(cat manifest.json)
+msg design name: $(json_extract "name" "$manifest_content")
+msg design id: $(json_extract "id" "$manifest_content")
 
 it "should include the user that published as an owner"
 contains "$DOMO_USERNAME" "$(domo owner ls)"
@@ -29,4 +32,20 @@ ok
 
 it "throws error when adding an invalid user"
 contains "$invalid_add_error" "$(domo owner add $DOMO_USERNAME.invalid)"
+ok
+
+it "can add a new owner"
+domo owner add $DOMO_USERNAME_2 &> /dev/null
+ok
+
+it "lists the new owner in the list of owners"
+contains "$DOMO_USERNAME_2" "$(domo owner ls)"
+ok
+
+it "should be able to remove the new user"
+domo owner rm $DOMO_USERNAME_2 &> /dev/null
+ok
+
+it "should not include that user anymore"
+not_contains "$DOMO_USERNAME_2" "$(domo owner ls)"
 ok
