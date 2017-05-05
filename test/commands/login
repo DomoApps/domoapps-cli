@@ -1,4 +1,7 @@
 #!/bin/bash
 
-domo:log:comment "logging in"
+test_group "login command"
+
+it "should be able to login"
 domo:auth:login
+ok
