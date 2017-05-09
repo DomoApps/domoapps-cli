@@ -1,6 +1,6 @@
 {
   "name": "ryuu-beta",
-  "version": "2.23.2-beta-10",
+  "version": "2.23.2-beta-11",
   "bin": {
     "domo": "./bin/runner"
   },
