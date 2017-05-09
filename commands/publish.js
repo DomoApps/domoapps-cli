@@ -27,7 +27,7 @@ module.exports = function(program){
       }
 
       if (!manifest.id){
-        createDesign(domo, manifest, login);
+        createDesign(domo, manifest, login, options);
       }
       else{
         domo.getDesign(manifest.id).then(function(result) {
@@ -69,7 +69,7 @@ module.exports = function(program){
                   ], function (answers) {
                     if (answers.askRecreate){
                       manifest.id = null;
-                      createDesign(domo, manifest, login);
+                      createDesign(domo, manifest, login, options);
                     }
                   });
 
@@ -103,7 +103,7 @@ module.exports = function(program){
  * @param {Object} login
  * @return {Promise}
  */
-function createDesign(domo, manifest, login) {
+function createDesign(domo, manifest, login, options) {
   return domo.createDesign(manifest)
     .then(function(designResult){
       var design = designResult[0];
