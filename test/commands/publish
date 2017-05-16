@@ -12,12 +12,10 @@ it "should include a warning when no thumbnail exists"
 contains "$thumbnail_warning" "$(domo publish)"
 ok
 
-
 it "should not have a warning when a thumbnail is present"
 touch thumbnail.png
 not_contains "$thumbnail_warning" "$(domo publish --go)"
 ok
-
 
 it "should have an id in the manifest.json file"
 manifest_content=$(cat manifest.json)

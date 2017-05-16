@@ -1,7 +1,7 @@
 #!/bin/bash
 
 COLOR_OK='\033[0;32m'
-COLOR_TEST_GROUP='\033[1;30m'
+COLOR_TEST_GROUP=$(tput bold)
 COLOR_RESET='\033[0m'
 
 function domo() {
