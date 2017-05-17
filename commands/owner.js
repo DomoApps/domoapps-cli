@@ -8,7 +8,7 @@ var log = require('../util/log');
 module.exports = function(program){
   program
     .command('owner <add|rm|ls> [user-emails]')
-    .description('Manage design owners')
+    .description('manage design owners')
     .option('-i, --design_id <id>', 'Specify design ID, otherwise it is retrieved from a manifest file')
     .action(function(action, users, options) {
 
