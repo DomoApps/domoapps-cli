@@ -66,7 +66,7 @@ module.exports = function(program){
               }
             }
             else {
-              log.fail(e || 'Error uploading assets');
+              log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
             }
           });
       }
