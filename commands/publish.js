@@ -27,7 +27,7 @@ module.exports = function(program){
       }
 
       if (!manifest.id){
-        createDesign(domo, manifest, login);
+        createDesign(domo, manifest, login, options);
       }
       else{
         domo.getDesign(manifest.id).then(function(result) {
@@ -108,9 +108,10 @@ module.exports = function(program){
  * @param {Object} domo
  * @param {Object} manifest
  * @param {Object} login
+ * @param {Object} options
  * @return {Promise}
  */
-function createDesign(domo, manifest, login) {
+function createDesign(domo, manifest, login, options) {
   return domo.createDesign(manifest)
     .then(function(designResult){
       var design = designResult[0];
