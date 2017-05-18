@@ -92,7 +92,6 @@ module.exports = function(program){
           goToDomo(options, domo, manifest);
         })
         .catch(function(e) {
-            console.log(e);
           log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
         });
       }
