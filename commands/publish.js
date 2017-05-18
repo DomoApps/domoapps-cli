@@ -82,7 +82,10 @@ module.exports = function(program){
             else {
               log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
             }
-          });
+          })
+        })
+        .catch(function(e) {
+          log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
         });
       }
     });

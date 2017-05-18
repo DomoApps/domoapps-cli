@@ -56,7 +56,7 @@ module.exports = {
       console.log(chalk.red("response:"), result.res);
     }
 
-    process.exit();
+    process.exit(1);
   },
 
   notAuthenticated: function(login){

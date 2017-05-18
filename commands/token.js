@@ -121,6 +121,9 @@ module.exports = function(program) {
               log.ok(`Token set for ${answers.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.')
             })
           break;
+
+          default:
+            log.fail('Invalid option "' + cmd + '"\nValid options are "create", "remove", and "add"');
       }
 
     });

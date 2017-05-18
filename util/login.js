@@ -29,7 +29,7 @@ module.exports = {
    * TODO: REFACTOR w writeLogin
    */
   persistLogin: function(instance, user, existingData){
-    
+
     return function(login){
       var loginFile = path.resolve(home + '/login/' + instance + '.json');
       fs.ensureFileSync(loginFile);
@@ -44,13 +44,21 @@ module.exports = {
       return login;
     };
   },
-  
+
   verifyLogin: function(login){
     if (!login.devtoken && !login.sid){
       log.fail('Not authenticated', 'Please login using "domo login"');
     }
   },
-  
+
+  verifyLogout: function(login, instance){
+    if (!login.devtoken && !login.sid){
+      log.ok('Successful logout from ' + instance);
+      return true;
+    }
+    return false;
+  },
+
   writeLogin: function(login){
     var loginFile = path.resolve(home + '/login/' + login.instance + '.json');
     fs.ensureFileSync(loginFile);
