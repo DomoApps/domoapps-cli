@@ -38,7 +38,9 @@ module.exports = function(program){
           var oldMapping = latestVersion[0].mapping[0];
           var newMapping = manifest.mapping[0];
 
-          delete oldMapping.dql;
+          if (oldMapping) {
+            delete oldMapping.dql;
+          }
 
           if(!_.isEqual(oldMapping, newMapping)) {
             log.warn('Mapping has changed. Check current cards for potential miss-mappings.');
@@ -85,12 +87,6 @@ module.exports = function(program){
               log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
             }
           });
-        })
-        .then(function () {
-          console.log('Design can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
-          if(options.go) {
-            opn('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
-          }
         })
         .then(function() {
           goToDomo(options, domo, manifest);
