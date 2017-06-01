@@ -107,7 +107,7 @@ module.exports = function(program){
           message: "Domo password",
           name: "password",
           when: function(answers){
-            var instanceLogin = Login.getLogin(answers.instance);
+            var instanceLogin = Login.getLogin(args.instance || answers.instance);
             return !instanceLogin.devtoken;
           }
         }
@@ -131,8 +131,7 @@ module.exports = function(program){
             log.ok('Login to ' + answers.instance + ' successful (using developer token)');
             process.exit();
           })
-        }
-        else{
+        } else {
           var login;
           var domo = new Domo(answers.instance, null, null);
           domo
