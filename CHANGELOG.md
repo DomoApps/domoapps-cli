@@ -1,3 +1,45 @@
+<a name="2.23.2"></a>
+## [2.23.2](https://github.com/DomoApps/domoapps-cli/compare/v2.23.1...v2.23.2) (2017-06-02)
+
+
+### Technical Improvements
+
+* DOMO-104459 (#49) ([b707212](https://github.com/DomoApps/domoapps-cli/commit/b707212))
+* adding --no-upgrade-check flat to login command ([d5b60d4](https://github.com/DomoApps/domoapps-cli/commit/d5b60d4))
+* DOMO-99403: domo dev UI switch for full screen (#68) ([0d5e4b8](https://github.com/DomoApps/domoapps-cli/commit/0d5e4b8))
+* DOMO-51237: option to go directly to Asset Library (#59) ([fc6b594](https://github.com/DomoApps/domoapps-cli/commit/fc6b594))
+* fix 3 whitelist urls ([76b9426](https://github.com/DomoApps/domoapps-cli/commit/76b9426))
+* DOMO-93433: validate and give user message for token command (#54) ([df82bbd](https://github.com/DomoApps/domoapps-cli/commit/df82bbd))
+* added catch for bad design id error in publish ([fd35fcb](https://github.com/DomoApps/domoapps-cli/commit/fd35fcb))
+* DOMO-105428: moving back to getSimpleDesigns ([43346e8](https://github.com/DomoApps/domoapps-cli/commit/43346e8))
+* DOMO-60067: ls looks bad if you have long design names (#57) ([ca2865a](https://github.com/DomoApps/domoapps-cli/commit/ca2865a))
+* DOMO-105428: going back to getDesigns to bring in ls updates ([4ff46b7](https://github.com/DomoApps/domoapps-cli/commit/4ff46b7))
+* DOMO-98376: passing an object for a data set alias causes an unhandled exception (#55) ([d85d61a](https://github.com/DomoApps/domoapps-cli/commit/d85d61a))
+* DOMO-98047: normalized case and verb form of command descriptions (#44) ([0d6617b](https://github.com/DomoApps/domoapps-cli/commit/0d6617b))
+* DOMO-93534: added logout command (#63) ([547795e](https://github.com/DomoApps/domoapps-cli/commit/547795e))
+* DOMO-91876: prompt for update with dev token login if applicable (#48) ([99d9ac9](https://github.com/DomoApps/domoapps-cli/commit/99d9ac9))
+* DOMO-112649: Log.fail method in cli should set exit code to 1 (#56) ([da01288](https://github.com/DomoApps/domoapps-cli/commit/da01288))
+* DOMO-110270: Publish mapping update warning (#50) ([e16025e](https://github.com/DomoApps/domoapps-cli/commit/e16025e))
+* DOMO-109103: add spotify to whitelist (#47) ([56aff96](https://github.com/DomoApps/domoapps-cli/commit/56aff96))
+* fix login with args to use dev token if one is available ([9ec7271](https://github.com/DomoApps/domoapps-cli/commit/9ec7271))
+* (DOMO-101838) added instance to domo dev output (#46) ([822e1d3](https://github.com/DomoApps/domoapps-cli/commit/822e1d3))
+* DOMO-105428: change endpoint to simple ([917e1b0](https://github.com/DomoApps/domoapps-cli/commit/917e1b0))
+* added clarification that specific options are only available for token add/token create ([b9e8996](https://github.com/DomoApps/domoapps-cli/commit/b9e8996))
+* switched option description text from ID to id ([07162b4](https://github.com/DomoApps/domoapps-cli/commit/07162b4))
+* added space between if and ( ([9b2dbc9](https://github.com/DomoApps/domoapps-cli/commit/9b2dbc9))
+* fixed validation of days until expiration ([2f3414d](https://github.com/DomoApps/domoapps-cli/commit/2f3414d))
+* lowercased options with the exception of proper nouns and acronyms ([91d707c](https://github.com/DomoApps/domoapps-cli/commit/91d707c))
+* fixed accessing of multi word options containing dashes ([8463b7a](https://github.com/DomoApps/domoapps-cli/commit/8463b7a))
+* added option for days on token creation ([80c4184](https://github.com/DomoApps/domoapps-cli/commit/80c4184))
+* changed underscores to dashes ([3abc88f](https://github.com/DomoApps/domoapps-cli/commit/3abc88f))
+* added options to token command to allow by passing of prompts ([ab8225b](https://github.com/DomoApps/domoapps-cli/commit/ab8225b))
+* added options to revert command to allow by passing of prompts ([b935b3c](https://github.com/DomoApps/domoapps-cli/commit/b935b3c))
+* added options to migrate command to allow by passing of prompts ([6727a04](https://github.com/DomoApps/domoapps-cli/commit/6727a04))
+* added options to download command to allow by passing of prompts ([7b7b2b8](https://github.com/DomoApps/domoapps-cli/commit/7b7b2b8))
+* added options to login command to allow by passing of prompts ([3aa0847](https://github.com/DomoApps/domoapps-cli/commit/3aa0847))
+* add buzz to whitelist ([7f8c0d9](https://github.com/DomoApps/domoapps-cli/commit/7f8c0d9))
+
+
 <a name="2.23.1"></a>
 ## [2.23.1](https://github.com/DomoApps/domoapps-cli/compare/v2.24.1...v2.23.1) (2017-01-30)
 
