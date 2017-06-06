@@ -120,7 +120,7 @@ module.exports = function(program){
         answers.instance = args.instance || answers.instance;
         answers.email = args.userEmail || answers.email;
 
-        if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io')){
+        if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
           log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
         }
 
