@@ -36,7 +36,7 @@ function isHostSafe(name){
     'egnyte.com', 'crmondemand.com', 'google.com', 'adobe.com', 'domo.buzz', 'spotify.com', 'wired.com',
     'gizmodo.com', 'techcrunch.com', 'fastcodesign.com', 'arstechnica.com', 'fastcompany.com',
     'nytimes.com', 'thenextweb.com', 'medium.com', 'mashable.com', 'springboard.com', 'theverge.com',
-    'sciencebulletin.org', 'buzzfeed.com', 'huffingtonpost.com', 'bloomberg.com'
+    'sciencebulletin.org', 'buzzfeed.com', 'huffingtonpost.com', 'bloomberg.com', 'zendesk.com'
   ];
   return _.contains(whitelist, name);
 }
