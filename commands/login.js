@@ -148,7 +148,7 @@ module.exports = function(program){
             .then(versionCheckFn)
             .then(function(){
                 console.log(chalk.grey(logo));
-                log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
+                log.ok('Login to ' + answers.instance + ' successful.');
                 log.info(`If you don't want to login all the time you can create a developer token instead by using the \`domo token create\` command.`);
                 return login;
             })
