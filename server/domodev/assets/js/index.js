@@ -36,7 +36,10 @@ function isHostSafe(name){
     'egnyte.com', 'crmondemand.com', 'google.com', 'adobe.com', 'domo.buzz', 'spotify.com', 'wired.com',
     'gizmodo.com', 'techcrunch.com', 'fastcodesign.com', 'arstechnica.com', 'fastcompany.com',
     'nytimes.com', 'thenextweb.com', 'medium.com', 'mashable.com', 'springboard.com', 'theverge.com',
-    'sciencebulletin.org', 'buzzfeed.com', 'huffingtonpost.com', 'bloomberg.com'
+    'sciencebulletin.org', 'buzzfeed.com', 'huffingtonpost.com', 'bloomberg.com', 'zendesk.com',
+    'vizadata.com/about-us.html','solutionstream.com/about','bluemoondigital.co/about-us/','reddoor.biz/about/',
+    'pelotonsap.com/', 'searchdiscovery.com/about/', 'fathomdelivers.com/about/', 'anovasvs.com/',
+    'bigsquid.com/connect/about-us/', 'qualtrics.com'
   ];
   return _.contains(whitelist, name);
 }
