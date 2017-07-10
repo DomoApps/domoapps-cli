@@ -37,9 +37,8 @@ function isHostSafe(name){
     'gizmodo.com', 'techcrunch.com', 'fastcodesign.com', 'arstechnica.com', 'fastcompany.com',
     'nytimes.com', 'thenextweb.com', 'medium.com', 'mashable.com', 'springboard.com', 'theverge.com',
     'sciencebulletin.org', 'buzzfeed.com', 'huffingtonpost.com', 'bloomberg.com', 'zendesk.com',
-    'vizadata.com/about-us.html','solutionstream.com/about','bluemoondigital.co/about-us/','reddoor.biz/about/',
-    'pelotonsap.com/', 'searchdiscovery.com/about/', 'fathomdelivers.com/about/', 'anovasvs.com/',
-    'bigsquid.com/connect/about-us/', 'qualtrics.com'
+    'vizadata.com', 'solutionstream.com', 'bluemoondigital.com', 'reddoor.biz', 'pelotonsap.com',
+    'searchdiscovery.com', 'fathomdelivers.com', 'anovasvs.com', 'bigsquid.com', 'qualtrics.com'
   ];
   return _.contains(whitelist, name);
 }
