@@ -38,7 +38,8 @@ function isHostSafe(name){
     'nytimes.com', 'thenextweb.com', 'medium.com', 'mashable.com', 'springboard.com', 'theverge.com',
     'sciencebulletin.org', 'buzzfeed.com', 'huffingtonpost.com', 'bloomberg.com', 'zendesk.com',
     'vizadata.com', 'solutionstream.com', 'bluemoondigital.com', 'reddoor.biz', 'pelotonsap.com',
-    'searchdiscovery.com', 'fathomdelivers.com', 'anovasvs.com', 'bigsquid.com', 'qualtrics.com'
+    'searchdiscovery.com', 'fathomdelivers.com', 'anovasvs.com', 'bigsquid.com', 'qualtrics.com',
+    'cisco.com', 'sharevideo.cisco.com', 'vimeo.com', 'eread.com.au'
   ];
   return _.contains(whitelist, name);
 }
