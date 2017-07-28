@@ -39,7 +39,8 @@ function isHostSafe(name){
     'sciencebulletin.org', 'buzzfeed.com', 'huffingtonpost.com', 'bloomberg.com', 'zendesk.com',
     'vizadata.com', 'solutionstream.com', 'bluemoondigital.com', 'reddoor.biz', 'pelotonsap.com',
     'searchdiscovery.com', 'fathomdelivers.com', 'anovasvs.com', 'bigsquid.com', 'qualtrics.com',
-    'cisco.com', 'sharevideo.cisco.com', 'vimeo.com', 'eread.com.au'
+    'cisco.com', 'sharevideo.cisco.com', 'vimeo.com', 'eread.com.au', 'pfinancial.com.au', 'box.com',
+    '.cisco'
   ];
   return _.contains(whitelist, name);
 }
