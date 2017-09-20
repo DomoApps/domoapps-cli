@@ -30,7 +30,7 @@
     "proxy-addr": "1.1.2",
     "q": "~1.0.1",
     "raw-body": "^2.1.6",
-    "request": "^2.42.0",
+    "request": "2.80.0",
     "ryuu-client": "^2.11.0",
     "ryuu.js": "latest",
     "semver": "~4.1.0",
