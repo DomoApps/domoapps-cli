@@ -9,22 +9,19 @@ var multichoice = require('../util/multichoice');
 
 module.exports = function(program) {
   program
-    .command('token')
+    .command('token <create|add|remove>')
     .description('create, add, or remove a developer token')
-    .arguments('<cmd>')
     .option('-i, --instance <value>', 'Domo instance')
     .option('-t, --token <value>', 'dev token value used with token add')
     .option('-d, --days <value>', 'days until token expires used with token create')
-    .parse(process.argv);
+    .action(function(cmd, options) {
 
-  program
-    .action(function(cmd, args, options) {
       var login = Login.getMostRecentLogin();
       var previousLogins = Login.getPreviousLogins();
 
       var prompts = [];
 
-      switch (args) {
+      switch (cmd) {
         case "create":
           if (previousLogins.length < 1){
             log.fail('domo token create requires a succesful initial login', 'Please login first using `domo login` or `domo token add`');
@@ -152,12 +149,6 @@ module.exports = function(program) {
               log.ok(`Token set for ${answers.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.')
             })
           break;
-
-          default:
-          program.outputHelp();
-          if(args !== []) {
-            log.fail('Invalid option "' + args + '"\nValid options are "create", "remove", and "add"');
-          }
       }
 
     });
