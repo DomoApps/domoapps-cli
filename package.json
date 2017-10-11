@@ -19,7 +19,7 @@
     "commander": "2.9.0",
     "extract-zip": "^1.0.3",
     "form-data": "~0.1.4",
-    "fs-extra": "~0.30.0",
+    "fs-extra": "^2.1.2",
     "glob": "7.0.5",
     "inquirer": "0.6.0",
     "keytar": "^4.0.5",
