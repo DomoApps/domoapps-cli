@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "async": "^2.5.0",
-    "babel": "5.8.12",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-register": "^6.26.0",
     "bluebird": "~2.3.2",
     "browser-sync": "^2.18.13",
     "chalk": "~0.5.1",

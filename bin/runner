@@ -9,8 +9,7 @@ var os = require('os'),
 process.env.BABEL_CACHE_PATH = path.join(os.tmpdir(), '/ryuu.json');
 
 // enable awesomeness
-require("babel/register")({
-  stage: 0,
+require('babel-register')({
   sourceMap: 'inline',
   only: ['domo.js', 'server.js', 'commands/**.js', 'util/**.js', 'polyfills/**.js']
 });
