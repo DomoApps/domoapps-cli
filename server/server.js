@@ -5,7 +5,7 @@
 var fs = require('fs-extra');
 var path = require('path');
 var _ = require('lodash');
-var koa = require('koa');
+var Koa = require('koa');
 var Router = require('koa-router');
 var bs = require('browser-sync').create();
 var request = require('request');
@@ -13,7 +13,7 @@ var Domo = require('ryuu-client');
 var inquirer = require("inquirer");
 var Promise = require('bluebird');
 var body_parser = require('koa-bodyparser');
-var app = koa();
+var app = new Koa();
 var api = new Router();
 var portfinder = require('portfinder');
 var serve = require('koa-static');

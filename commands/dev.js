@@ -16,6 +16,9 @@ module.exports = function(program) {
         manifest: opts.manifest,
       };
 
+      // Wait to require the dev server until the action is called, for startup performance
+      const server = require('../server/server');
+
       Login.getMostRecentLogin().then(function(login) {
         Login.verifyLogin(login);
         var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
