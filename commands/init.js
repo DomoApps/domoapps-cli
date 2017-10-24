@@ -7,7 +7,6 @@ var shell = require('shelljs');
 var async = require('async');
 var fs = require('fs-extra');
 var path = require('path');
-var validator = require('validator');
 var log = require('../util/log');
 var multichoice = require('../util/multichoice');
 
@@ -122,10 +121,6 @@ function addDatasource(currentAnswers, callback){
         type: 'input',
         message: 'dataset id',
         name: 'id',
-        validate: function(name) {
-          if (!validator.isUUID(name)) return 'ID must be a valid UUID';
-          return true;
-        }
       },
       {
         type: 'input',

@@ -38,8 +38,9 @@ module.exports = function(program){
           var oldMapping = latestVersion[0].mapping[0];
           var newMapping = manifest.mapping[0];
 
-          delete oldMapping.dql;
-
+          if (oldMapping) {
+            delete oldMapping.dql;
+          }
 
           if(!_.isEqual(oldMapping, newMapping)) {
             log.warn('Mapping has changed. Check current cards for potential miss-mappings.');
@@ -70,7 +71,7 @@ module.exports = function(program){
                   ], function (answers) {
                     if (answers.askRecreate){
                       manifest.id = null;
-                      createDesign(domo, manifest, login, options);
+                      createDesign(domo, manifest, login);
                     }
                   });
 
@@ -87,19 +88,11 @@ module.exports = function(program){
             }
           });
         })
-<<<<<<< HEAD
         .then(function() {
           goToDomo(options, domo, manifest);
         })
         .catch(function(e) {
           log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
-=======
-        .catch(function(e) {
-          log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
-          })
-        .then(function() {
-          goToDomo(options, domo, manifest);
->>>>>>> beta/2.23.2
         });
       }
     });
