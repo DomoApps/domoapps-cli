@@ -150,14 +150,7 @@ module.exports = function(program) {
           break;
 
           default:
-<<<<<<< HEAD
             log.fail('Invalid option "' + cmd + '"\nValid options are "create", "remove", and "add"');
-=======
-          program.outputHelp();
-          if(args !== []) {
-            log.fail('Invalid option "' + args + '"\nValid options are "create", "remove", and "add"');
-          }
->>>>>>> beta/2.23.2
       }
 
     });
