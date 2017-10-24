@@ -15,8 +15,7 @@ module.exports = function(program){
 
       session.check(domo)
         .then(function(){
-
-          domo.getSimpleDesigns().then(function(designs){
+          domo.getDesigns().then(function(designs){
             var windowWidth = process.stdout.columns;
             if (windowWidth >= 130) {
               var Table = require('cli-table');

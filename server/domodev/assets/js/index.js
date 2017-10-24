@@ -34,9 +34,10 @@ function isHostSafe(name){
     'domo.com', 'github.com', 'salesforce.com', 'trello.com', 'jira.com', 'coupahost.com',
     'facebook.com', 'twitter.com', 'instagram.com', 'youtube.com', 'linkedin.com', 'predictivetoolkit.net',
     'egnyte.com', 'crmondemand.com', 'google.com', 'adobe.com', 'domo.buzz', 'spotify.com', 'wired.com',
-    'gizmodo.com', 'techcrunch.com', 'fastcodesign.com', 'arstechnica.com', 'fastcompany.com',
-    'nytimes.com', 'thenextweb.com', 'medium.com', 'mashable.com', 'springboard.com', 'theverge.com',
-    'sciencebulletin.org', 'buzzfeed.com', 'huffingtonpost.com', 'bloomberg.com'
+    'gizmodo.com', 'techcrunch.com', 'fastcodesign.com', 'nytimes.com', 'thenextweb.com', 'medium.com',
+    'mashable.com', 'springboard.com', 'theverge.com', 'sciencebulletin.com', 'buzzfeed.com', 'huffingtonpost.com',
+    'bloomberg.com'
+
   ];
   return _.contains(whitelist, name);
 }
@@ -57,12 +58,12 @@ function fullscreen(chk, h, w) {
   if(!height && !width) {
     setDims(h, w);
   }
-  document.querySelector('.app').style.padding = chk ? '0px 50px' : 0;
-  document.querySelector('.app__wrapper').style.height = chk ? 'calc(100% - 60px)' : height;
-  document.querySelector('.app__wrapper').style.width = chk ? '100%' : width;
-  document.querySelector('iframe').style.width = chk ? '100%' : width;
-  document.querySelector('iframe').style.height = chk ? 'calc(100% - 140px)' : height;
-  document.querySelector('.size').innerHTML = chk ? 'FULL-WIDTH x FULL-HEIGHT' : width +' x '+ height;
+  document.querySelectorAll('.app')[0].style.padding = chk ? '0px 50px' : 0;
+  document.querySelectorAll('.app__wrapper')[0].style.height = chk ? 'calc(100% - 60px)' : height;
+  document.querySelectorAll('.app__wrapper')[0].style.width = chk ? '100%' : width;
+  document.querySelectorAll('iframe')[0].style.width = chk ? '100%' : width;
+  document.querySelectorAll('iframe')[0].style.height = chk ? 'calc(100% - 140px)' : height;
+  document.querySelectorAll('.size')[0].innerHtml = chk ? 'FULL-WIDTH x FULL-HEIGHT' : width +' x '+ height;
 }
 
 function setDims(h, w) {

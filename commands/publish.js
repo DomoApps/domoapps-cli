@@ -38,9 +38,8 @@ module.exports = function(program){
           var oldMapping = latestVersion[0].mapping[0];
           var newMapping = manifest.mapping[0];
 
-          if (oldMapping) {
-            delete oldMapping.dql;
-          }
+          delete oldMapping.dql;
+
 
           if(!_.isEqual(oldMapping, newMapping)) {
             log.warn('Mapping has changed. Check current cards for potential miss-mappings.');
@@ -71,7 +70,7 @@ module.exports = function(program){
                   ], function (answers) {
                     if (answers.askRecreate){
                       manifest.id = null;
-                      createDesign(domo, manifest, login);
+                      createDesign(domo, manifest, login, options);
                     }
                   });
 
@@ -88,11 +87,19 @@ module.exports = function(program){
             }
           });
         })
+<<<<<<< HEAD
         .then(function() {
           goToDomo(options, domo, manifest);
         })
         .catch(function(e) {
           log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
+=======
+        .catch(function(e) {
+          log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
+          })
+        .then(function() {
+          goToDomo(options, domo, manifest);
+>>>>>>> beta/2.23.2
         });
       }
     });
@@ -115,7 +122,9 @@ function createDesign(domo, manifest, login, options) {
       return Manifest.persistDesignId(design, manifest);
     })
     .tap(evoke(log.ok, 'New design created on ' + login.instance))
-    .catch(evoke(log.fail, 'Error creating new design'))
+    .catch(function (e) {
+      log.fail(log.handleErrorMessage(e, 'Error creating new design'));
+    })
     .then(domo.uploadAllAssets.bind(domo, manifest))
     .then(logUploadSuccess)
     .catch(function(e){

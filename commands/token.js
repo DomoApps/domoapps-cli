@@ -15,13 +15,12 @@ module.exports = function(program) {
     .option('-t, --token <value>', 'dev token value used with token add')
     .option('-d, --days <value>', 'days until token expires used with token create')
     .action(function(cmd, options) {
-
       var login = Login.getMostRecentLogin();
       var previousLogins = Login.getPreviousLogins();
 
       var prompts = [];
 
-      switch (cmd) {
+      switch (args) {
         case "create":
           if (previousLogins.length < 1){
             log.fail('domo token create requires a succesful initial login', 'Please login first using `domo login` or `domo token add`');
@@ -151,7 +150,14 @@ module.exports = function(program) {
           break;
 
           default:
+<<<<<<< HEAD
             log.fail('Invalid option "' + cmd + '"\nValid options are "create", "remove", and "add"');
+=======
+          program.outputHelp();
+          if(args !== []) {
+            log.fail('Invalid option "' + args + '"\nValid options are "create", "remove", and "add"');
+          }
+>>>>>>> beta/2.23.2
       }
 
     });
