@@ -115,7 +115,9 @@ function createDesign(domo, manifest, login, options) {
       return Manifest.persistDesignId(design, manifest);
     })
     .tap(evoke(log.ok, 'New design created on ' + login.instance))
-    .catch(evoke(log.fail, 'Error creating new design'))
+    .catch(function (e) {
+      log.fail(log.handleErrorMessage(e, 'Error creating new design'));
+    })
     .then(domo.uploadAllAssets.bind(domo, manifest))
     .then(logUploadSuccess)
     .catch(function(e){

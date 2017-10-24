@@ -9,9 +9,8 @@ var multichoice = require('../util/multichoice');
 
 module.exports = function(program) {
   program
-    .command('token')
+    .command('token <create|add|remove>')
     .description('create, add, or remove a developer token')
-    .arguments('<cmd>')
     .option('-i, --instance <value>', 'Domo instance')
     .option('-t, --token <value>', 'dev token value used with token add')
     .option('-d, --days <value>', 'days until token expires used with token create')

@@ -120,7 +120,7 @@ function addDatasource(currentAnswers, callback){
       {
         type: 'input',
         message: 'dataset id',
-        name: 'id'
+        name: 'id',
       },
       {
         type: 'input',
