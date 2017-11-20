@@ -18,9 +18,14 @@ module.exports = function(program) {
 
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);
-      var domo = new Domo(login.instance, login.refreshToken);
 
-      server.start(domo, options).catch(log.fail)
+      if (login.refreshToken) {
+        var domo = new Domo(login.instance, login.refreshToken);
+
+        server.start(domo, options).catch(log.fail)
+      } else {
+        module.exports.fail('Not authenticated', 'Please login using "domo login"');
+      }
     });
 
 }
