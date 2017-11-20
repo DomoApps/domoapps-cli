@@ -58,7 +58,7 @@ module.exports = function(program) {
             answers.days = options.days || answers.days;
 
             var selectedLogin = Login.getLogin(answers.instance);
-            var domo = new Domo(selectedLogin.instance, selectedLogin.sid, selectedLogin.devtoken);
+            var domo = new Domo(selectedLogin.instance, selectedLogin.refreshToken, selectedLogin.devtoken);
 
             var userId = sidUtil.parse(login.sid).userId;
 

@@ -88,75 +88,32 @@ module.exports = function(program){
         });
       }
 
-      if (!args.userEmail) {
-        prompts.push({
-          type: "input",
-          message: "user email",
-          name: "email",
-          default: function(answers){
-            // populate with previous email used with this instance
-            var previous = _.find(previousLogins, {instance: answers.instance});
-            if (previous) return previous.user;
-          },
-          when: function(answers){
-            var instanceLogin = Login.getLogin(answers.instance);
-            return !instanceLogin.devtoken;
-          }
-        });
-      }
-
       // prompt user
-      inquirer.prompt(prompts.concat([
-        {
-          type: "password",
-          message: "Domo password",
-          name: "password",
-          when: function(answers){
-            var instanceLogin = Login.getLogin(args.instance || answers.instance);
-            return !instanceLogin.devtoken;
-          }
-        }
-      ]), function(answers) {
+      inquirer.prompt(prompts, function(answers) {
+
         answers.instance = args.instance || answers.instance;
-        answers.email = args.userEmail || answers.email;
 
         if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
           log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
         }
 
         var instanceLogin = Login.getLogin(answers.instance);
-        if (instanceLogin.devtoken){
-          // LATER: verify that devtoken is still valid
-          // persist login anyway to make it the most recent
-          checkVersion(answers.instance)
+        var login;
+        var domo = new Domo(answers.instance, instanceLogin.refreshToken);
+        domo
+          .login()
+          .then(function(l){
+            return login = l;
+          })
+          .then(checkVersion.bind(null, answers.instance))
           .then(versionCheckFn)
           .then(function(){
-            Login.persistLogin(answers.instance, null, instanceLogin)(instanceLogin);
             console.log(chalk.grey(logo));
-            log.ok('Login to ' + answers.instance + ' successful (using developer token)');
-            process.exit();
+            log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
+            return Login.persistLogin(answers.instance)(login);
           })
-        } else {
-          var login;
-          var domo = new Domo(answers.instance, null, null);
-          domo
-            .login(answers.email, answers.password)
-            .then(function(l){
-              return login = l;
-            })
-            .then(checkVersion.bind(null, answers.instance))
-            .then(versionCheckFn)
-            .then(function(){
-                console.log(chalk.grey(logo));
-                log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.user.USER_FULLNAME + '.');
-                log.info(`If you don't want to login all the time you can create a developer token instead by using the \`domo token create\` command.`);
-                return login;
-            })
-            .then(Login.persistLogin(answers.instance, answers.email))
-            .catch(evoke(log.fail, 'Login unsuccessful'))
-            .finally(process.exit)
-        }
-
+          .catch(evoke(log.fail, 'Login unsuccessful'))
+          .finally(process.exit)
       });
     });
 }

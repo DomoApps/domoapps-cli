@@ -60,11 +60,11 @@ module.exports = {
   },
 
   notAuthenticated: function(login){
-    if (!login.devtoken && !login.sid){
+    if (!login.refreshToken){
       module.exports.fail('Not authenticated', 'Please login using "domo login"');
     }
-    else if (login.devtoken){
-      module.exports.fail('Not authenticated', 'Your developer token may have expired. Remove it with `domo token remove` then login again.');
+    else if (login.refreshToken){
+      module.exports.fail('Not authenticated', 'Your refresh token may have been revoked, please login again with "domo login".');
     }
     else{
       module.exports.fail('Not authenticated');

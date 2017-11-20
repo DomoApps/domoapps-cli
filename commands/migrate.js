@@ -42,7 +42,7 @@ module.exports = function(program){
         var login = Login.getLogin(answers.instance);
         Login.verifyLogin(login);
 
-        var domo = new Domo(answers.instance, login.sid, login.devtoken);
+        var domo = new Domo(answers.instance, login.refreshToken);
 
         migrateApp(domo, answers.id, manifest)
           .tap(evoke(log.ok, 'Migration successful'))
