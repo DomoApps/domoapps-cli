@@ -75,11 +75,11 @@ api.all('/data/*', function *(){
   var url = baseUrl + this.request.url;
   var method = this.request.method;
 
-  var headers = _.merge({
+  var headers = {
     referer: this.request.headers.referer,
     accept: this.request.headers.accept,
     'Content-Type': this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json'
-  }, app.domo.getAuthHeader());
+  };
 
 
   var body = JSON.stringify(this.request.body);
@@ -97,13 +97,15 @@ api.all('/data/*', function *(){
     url += "&datasetId=" + _.find(manifest.mapping, {alias: alias}).dataSetId;
   }
 
-  this.body = request({
+  var options = {
     url: url,
     method: method,
     jar: j,
     body: body,
     headers: headers,
-  });
+  }
+
+  this.body = app.domo.processRequest(options);
 });
 
 api.all('/domo/*', function *(){
@@ -111,13 +113,19 @@ api.all('/domo/*', function *(){
   var j = request.jar();
   var url = baseUrl + this.request.url;
 
-  var headers = _.merge({
+  var headers = {
     referer: this.request.headers.referer,
     accept: this.request.headers.accept,
     'Content-Type': this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json'
-  }, app.domo.getAuthHeader());
+  };
 
-  this.body = request({url: url, jar: j, headers: headers});
+  var options = {
+    url: url, 
+    jar: j, 
+    headers: headers
+  }
+
+  this.body = app.domo.processRequest(options);
 });
 
 app.use(body_parser({
@@ -201,19 +209,19 @@ function getDomoappsDomain(){
     url: 'https://' + app.domo.instance + '/api/content/v1/mobile/environment'
   }
 
-  return app.domo.getAuthHeader().then(function(headers) {
-    options.headers = headers
-    return new Promise(function(resolve, reject){
-      request(options, function(err, res){
-        if (res.statusCode === 200){
-          var url = 'https://'+uuid+'.' + JSON.parse(res.body).domoappsDomain;
-          resolve(url);
-        }
-        else {
-          resolve('https://'+uuid+'.domoapps.' + getEnv());
-        }
+  return app.domo.processRequest(options)
+    .then(function() {
+      return new Promise(function(resolve, reject){
+        request(options, function(err, res){
+          if (res.statusCode === 200){
+            var url = 'https://'+uuid+'.' + JSON.parse(res.body).domoappsDomain;
+            resolve(url);
+          }
+          else {
+            resolve('https://'+uuid+'.domoapps.' + getEnv());
+          }
+        });
       });
-    });
   });
 }
 
@@ -225,11 +233,11 @@ function createContext(designId, mapping){
       json: {designId: designId, mapping: mapping}
     };
 
-    app.domo.getAuthHeader().then(function(headers) {
-      options.headers = headers
-      request(options, function(err, res){
-        resolve(res.body[0]);
+    app.domo.processRequest()
+      .then(function() {
+        request(options, function(err, res){
+          resolve(res.body[0]);
+        });
       });
-    });
   });
 }

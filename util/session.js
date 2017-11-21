@@ -9,9 +9,8 @@ module.exports = {
         method: 'GET'
       };
 
-      domo.getAuthHeader().then(function(headers) {
-        options.headers = headers;
-        request(options, function(err, res){
+      domo.processRequest(options)
+        .then(function(res) {
           try{
             var isValid = JSON.parse(res.body).isValid;
             if(isValid){
@@ -27,8 +26,6 @@ module.exports = {
             resolve(true);
           }
         })
-      })
-
     });
   }
 }
