@@ -30,7 +30,7 @@ module.exports = function(program) {
           if (options.force) force = true;
           Login.verifyLogin(login);
 
-          var domo = new Domo(login.instance, login.refreshToken);
+          var domo = new Domo(login.instance, login.refreshToken, 'domo:internal:devstudio');
 
           domo.deleteDesign(designId, force)
             .tap(evoke(log.ok, 'Deleted design ' + designId))

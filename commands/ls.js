@@ -11,7 +11,7 @@ module.exports = function(program){
     .action(function(){
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);
-      var domo = new Domo(login.instance, login.refreshToken);
+      var domo = new Domo(login.instance, login.refreshToken, 'domo:internal:devstudio');
 
       session.check(domo)
         .then(function(){

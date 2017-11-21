@@ -25,7 +25,7 @@ module.exports = function(program) {
           var login = Login.getMostRecentLogin();
           Login.verifyLogin(login);
 
-          var domo = new Domo(login.instance, login.refreshToken);
+          var domo = new Domo(login.instance, login.refreshToken, 'domo:internal:devstudio');
 
           domo.unDeleteDesign(designId)
             .tap(evoke(log.ok, 'Undeleted design ' + designId))

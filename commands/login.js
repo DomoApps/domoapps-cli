@@ -99,7 +99,7 @@ module.exports = function(program){
 
         var instanceLogin = Login.getLogin(answers.instance);
         var login;
-        var domo = new Domo(answers.instance, instanceLogin.refreshToken);
+        var domo = new Domo(answers.instance, instanceLogin.refreshToken, 'domo:internal:devstudio');
         domo
           .login()
           .then(function(l){

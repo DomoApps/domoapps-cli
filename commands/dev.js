@@ -20,7 +20,7 @@ module.exports = function(program) {
       Login.verifyLogin(login);
 
       if (login.refreshToken) {
-        var domo = new Domo(login.instance, login.refreshToken);
+        var domo = new Domo(login.instance, login.refreshToken, 'domo:internal:devstudio');
 
         server.start(domo, options).catch(log.fail)
       } else {

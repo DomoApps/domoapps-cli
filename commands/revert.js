@@ -39,7 +39,7 @@ module.exports = function(program){
         var login = Login.getLogin(answers.instance);
         Login.verifyLogin(login);
 
-        var domo = new Domo(answers.instance, login.refreshToken);
+        var domo = new Domo(answers.instance, login.refreshToken, 'domo:internal:devstudio');
         domo.getKpi(answers.id)
             .then(function(kpi){
               kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'mason';
