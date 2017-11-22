@@ -29,7 +29,7 @@ module.exports = function(program) {
 
           domo.unDeleteDesign(designId)
             .tap(evoke(log.ok, 'Undeleted design ' + designId))
-            .catch(evoke(log.fail, 'Unable to undelete design ' + designId))
+            .catch(evoke(log.clientRequestFailed, 'Unable to undelete design ' + designId))
             .finally(process.exit);
         } else {
           log.fail('Undelete command aborted');

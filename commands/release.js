@@ -48,6 +48,7 @@ module.exports = function(program){
                 .finally(process.exit)
             })
         })
+        .catch(evoke(log.clientRequestFailed, 'Error releasing app design'))
     })
 
 }

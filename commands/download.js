@@ -6,6 +6,7 @@ var shell = require('shelljs');
 var Login = require('../util/login');
 var Domo = require('ryuu-client');
 var log = require('../util/log');
+var evoke = require('../util/evoke');
 
 module.exports = function(program){
   program
@@ -66,7 +67,8 @@ module.exports = function(program){
               });
             });
           });
-        });
+        })
+        .catch(evoke(log.clientRequestFailed, 'Unable to download design ' + answers.designId));
       });
 
     });

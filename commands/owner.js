@@ -33,7 +33,7 @@ module.exports = function(program){
           if (users) {
             domo.addOwners(designId, users)
               .tap(evoke(log.ok, 'Owners added ' + users))
-              .catch(evoke(log.fail, 'Error adding owners'))
+              .catch(evoke(log.clientRequestFailed, 'Error adding owners'))
               .finally(process.exit)
           }
           break;
@@ -41,7 +41,7 @@ module.exports = function(program){
           if (users) {
             domo.removeOwners(designId, users)
               .tap(evoke(log.ok, 'Owners removed ' + users))
-              .catch(evoke(log.fail, 'Error removing owners'))
+              .catch(evoke(log.clientRequestFailed, 'Error removing owners'))
               .finally(process.exit)
           }
           break;
@@ -54,7 +54,7 @@ module.exports = function(program){
                 console.log("\t" + element);
               });
             })
-            .catch(evoke(log.fail, 'Error retrieving owners'))
+            .catch(evoke(log.clientRequestFailed, 'Error retrieving owners'))
             .finally(process.exit)
           break;
       }

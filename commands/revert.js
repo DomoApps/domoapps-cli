@@ -49,7 +49,7 @@ module.exports = function(program){
               return domo.updateKpi(kpi);
             })
             .tap(evoke(log.ok, 'Card reverted back to a mason app'))
-            .catch(evoke(log.fail, 'Error attempting to revert card'))
+            .catch(evoke(log.clientRequestFailed, 'Error attempting to revert card'))
             .finally(process.exit)
       });
 

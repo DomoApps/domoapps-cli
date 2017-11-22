@@ -1,5 +1,7 @@
 var request = require('request');
 var Promise = require('bluebird');
+var evoke = require('./evoke');
+var log = require('./log');
 
 module.exports = {
   check: function(domo){
@@ -26,6 +28,7 @@ module.exports = {
             resolve(true);
           }
         })
+        .catch(evoke(log.clientRequestFailed, 'Not authenticated'));
     });
   }
 }

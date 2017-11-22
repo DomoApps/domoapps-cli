@@ -54,6 +54,5 @@ module.exports = function(program){
           .finally(process.exit)
 
         })
-        .catch(log.notAuthenticated);
     });
 }

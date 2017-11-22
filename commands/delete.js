@@ -34,7 +34,7 @@ module.exports = function(program) {
 
           domo.deleteDesign(designId, force)
             .tap(evoke(log.ok, 'Deleted design ' + designId))
-            .catch(evoke(log.fail, 'Unable to delete design ' + designId))
+            .catch(evoke(log.clientRequestFailed, 'Unable to delete design ' + designId))
             .finally(process.exit);
         } else {
           log.fail('Delete command aborted');

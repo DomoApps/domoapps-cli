@@ -71,6 +71,10 @@ module.exports = {
     }
   },
 
+  clientRequestFailed: function(err){
+    module.exports.fail(err, 'You are not authenticated or your refresh token may have been revoked, please login again with "domo login".');
+  },
+
   handleErrorMessage: function(err, label){
     label = label || 'Error sending request'
     var toe = err && err.res && err.res.body && err.res.body.toe ? '\nToe: ' + err.res.body.toe : '';
