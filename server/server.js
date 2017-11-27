@@ -233,7 +233,7 @@ function createContext(designId, mapping){
       json: {designId: designId, mapping: mapping}
     };
 
-    app.domo.processRequest()
+    app.domo.processRequest(options)
       .then(function() {
         request(options, function(err, res){
           resolve(res.body[0]);
