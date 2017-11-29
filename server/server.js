@@ -51,10 +51,10 @@ api.get('/', function *(){
     context = {id: 0};
   }
 
-  var user = yield app.domo.getUserInfo();
+  var appData = yield getDomoappsData();
 
-  var userId = app.options.userId || JSON.parse(user).id;
-  var customerId = 1;
+  var userId = app.options.userId || appData.user.id;
+  var customerId = 1 || appData.customer;
 
   var url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
   this.body = template({
@@ -72,9 +72,9 @@ api.get('/', function *(){
 // Proxy requests to the correct domoapps service for the environment they're logged into.
 api.all('/data/*', function *(){
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
-  var baseUrl = yield getDomoappsDomain();
+  var appData = yield getDomoappsData();
   var j = request.jar();
-  var url = baseUrl + this.request.url;
+  var url = appData.url + this.request.url;
   var method = this.request.method;
 
   var headers = {
@@ -109,9 +109,9 @@ api.all('/data/*', function *(){
 });
 
 api.all('/domo/*', function *(){
-  var baseUrl = yield getDomoappsDomain();
+  var appData = yield getDomoappsData();
   var j = request.jar();
-  var url = baseUrl + this.request.url;
+  var url = appData.url + this.request.url;
 
   var headers = {
     referer: this.request.headers.referer,
@@ -197,7 +197,7 @@ function getMiddleware() {
  * Fetch domoapps domain from maestro.
  * Fallback to inferring it by the instance URL.
  */
-function getDomoappsDomain(){
+function getDomoappsData(){
   var uuid = Domo.createUUID();
 
   var options = {
@@ -206,10 +206,12 @@ function getDomoappsDomain(){
 
   return app.domo.processRequest(options)
     .then(function(res) {
-      var url = 'https://'+uuid+'.' + JSON.parse(res).domoappsDomain;
-      return url;
+      var data = JSON.parse(res);
+      data.url = 'https://'+uuid+'.' + JSON.parse(res).domoappsDomain;
+      return data;
     }, function() {
-      return 'https://'+uuid+'.domoapps.' + getEnv();
+      var data = {url: 'https://'+uuid+'.domoapps.' + getEnv()};
+      return data;
     });
 }
 
