@@ -57,6 +57,7 @@ api.get('/', function *(){
   var customerId = 1 || appData.customer;
 
   var url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
+
   this.body = template({
     manifest,
     width,
@@ -225,5 +226,7 @@ function createContext(designId, mapping){
   return app.domo.processRequest(options)
     .then(function(res) {
       return res[0];
-    });
+    }).catch(function(err) {
+      return;
+    })
 }
