@@ -100,7 +100,7 @@ api.all('/data/*', function *(){
     url += "&datasetId=" + _.find(manifest.mapping, {alias: alias}).dataSetId;
   }
 
-  this.body = yield app.domo.processRequest({
+  this.body = yield app.domo.processRequestRaw({
     url: url,
     method: method,
     jar: j,
@@ -120,7 +120,7 @@ api.all('/domo/*', function *(){
     'Content-Type': this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json'
   };
 
-  this.body = yield app.domo.processRequest({url: url, jar: j, headers: headers});
+  this.body = yield app.domo.processRequestRaw({url: url, jar: j, headers: headers});
 
 });
 
