@@ -8,6 +8,7 @@ var log = require('../util/log');
 var appStructure = require('../util/appStructure');
 var messages = require('../util/messages');
 var evoke = require('../util/evoke');
+var constants = require('constants');
 
 module.exports = function(program){
   program
@@ -20,7 +21,7 @@ module.exports = function(program){
 
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);
-      var domo = new Domo(login.instance, login.refreshToken, 'domo:internal:devstudio');
+      var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
       if (!appStructure.hasThumbnail()) {
         log.warn(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);

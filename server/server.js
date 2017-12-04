@@ -195,7 +195,7 @@ function getMiddleware() {
 }
 
 /**
- * Fetch domoapps domain from maestro.
+ * Fetch domoapps environment data from maestro.
  * Fallback to inferring it by the instance URL.
  */
 function getDomoappsData(){
@@ -210,7 +210,7 @@ function getDomoappsData(){
       var data = JSON.parse(res);
       data.url = 'https://'+uuid+'.' + JSON.parse(res).domoappsDomain;
       return data;
-    }, function() {
+    }).catch(function() {
       var data = {url: 'https://'+uuid+'.domoapps.' + getEnv()};
       return data;
     });

@@ -10,6 +10,7 @@ var Domo = require('ryuu-client');
 var Promise = require('bluebird');
 var path = require('path');
 var request = Promise.promisify(require('request'));
+var constants = require('constants');
 
 var logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -99,7 +100,7 @@ module.exports = function(program){
 
         var instanceLogin = Login.getLogin(answers.instance);
         var login;
-        var domo = new Domo(answers.instance, instanceLogin.refreshToken, 'domo:internal:devstudio');
+        var domo = new Domo(answers.instance, instanceLogin.refreshToken, constants.CLIENT_ID);
         domo
           .login()
           .then(function(l){

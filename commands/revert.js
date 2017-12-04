@@ -3,7 +3,7 @@ var Login = require('../util/login');
 var Domo = require('ryuu-client');
 var log = require('../util/log');
 var evoke = require('../util/evoke');
-
+var constants = require('constants');
 
 module.exports = function(program){
   program
@@ -39,7 +39,7 @@ module.exports = function(program){
         var login = Login.getLogin(answers.instance);
         Login.verifyLogin(login);
 
-        var domo = new Domo(answers.instance, login.refreshToken, 'domo:internal:devstudio');
+        var domo = new Domo(answers.instance, login.refreshToken, constants.CLIENT_ID);
         domo.getKpi(answers.id)
             .then(function(kpi){
               kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'mason';

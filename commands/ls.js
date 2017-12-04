@@ -3,6 +3,7 @@ var Domo = require('ryuu-client');
 var log = require('../util/log');
 var session = require('../util/session');
 var chalk = require('chalk');
+var constants = require('constants');
 
 module.exports = function(program){
   program
@@ -11,7 +12,7 @@ module.exports = function(program){
     .action(function(){
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);
-      var domo = new Domo(login.instance, login.refreshToken, 'domo:internal:devstudio');
+      var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
       session.check(domo)
         .then(function(){

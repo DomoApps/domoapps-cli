@@ -4,6 +4,7 @@ var design = require('../util/design');
 var log = require('../util/log');
 var evoke = require('../util/evoke');
 var inquirer = require('inquirer');
+var constants = require('constants');
 
 module.exports = function(program) {
   program
@@ -30,7 +31,7 @@ module.exports = function(program) {
           if (options.force) force = true;
           Login.verifyLogin(login);
 
-          var domo = new Domo(login.instance, login.refreshToken, 'domo:internal:devstudio');
+          var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
           domo.deleteDesign(designId, force)
             .tap(evoke(log.ok, 'Deleted design ' + designId))
