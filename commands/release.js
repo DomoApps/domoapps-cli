@@ -7,7 +7,7 @@ var evoke = require('../util/evoke');
 var multichoice = require('../util/multichoice');
 var appStructure = require('../util/appStructure');
 var messages = require('../util/messages');
-var constants = require('constants');
+var constants = require('../util/constants');
 
 module.exports = function(program){
   program

@@ -4,7 +4,7 @@ var design = require('../util/design');
 var log = require('../util/log');
 var evoke = require('../util/evoke');
 var inquirer = require('inquirer');
-var constants = require('constants');
+var constants = require('../util/constants');
 
 module.exports = function(program) {
   program

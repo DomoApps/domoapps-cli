@@ -10,7 +10,7 @@ var Domo = require('ryuu-client');
 var Promise = require('bluebird');
 var path = require('path');
 var request = Promise.promisify(require('request'));
-var constants = require('constants');
+var constants = require('../util/constants');
 
 var logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓

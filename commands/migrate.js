@@ -5,7 +5,7 @@ var Manifest = require('../util/manifest');
 var Login = require('../util/login');
 var log = require('../util/log');
 var evoke = require('../util/evoke');
-var constants = require('constants');
+var constants = require('../util/constants');
 
 module.exports = function(program){
   program

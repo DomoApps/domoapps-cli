@@ -7,7 +7,7 @@ var Login = require('../util/login');
 var Domo = require('ryuu-client');
 var log = require('../util/log');
 var evoke = require('../util/evoke');
-var constants = require('constants');
+var constants = require('../util/constants');
 
 module.exports = function(program){
   program

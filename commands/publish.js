@@ -8,7 +8,7 @@ var log = require('../util/log');
 var appStructure = require('../util/appStructure');
 var messages = require('../util/messages');
 var evoke = require('../util/evoke');
-var constants = require('constants');
+var constants = require('../util/constants');
 
 module.exports = function(program){
   program

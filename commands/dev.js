@@ -2,7 +2,7 @@ var Domo = require('ryuu-client');
 var Login = require('../util/login');
 var log = require('../util/log');
 var server = require('../server/server');
-var constants = require('constants');
+var constants = require('../util/constants');
 
 module.exports = function(program) {
   program
