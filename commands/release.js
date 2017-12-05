@@ -7,6 +7,7 @@ var evoke = require('../util/evoke');
 var multichoice = require('../util/multichoice');
 var appStructure = require('../util/appStructure');
 var messages = require('../util/messages');
+var constants = require('../util/constants');
 
 module.exports = function(program){
   program
@@ -15,7 +16,7 @@ module.exports = function(program){
     .action(function(){
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);
-      var domo = new Domo(login.instance, login.sid, login.devtoken);
+      var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
       var manifest = Manifest.get(program.manifest);
 
       // make sure app has been published first
@@ -48,6 +49,7 @@ module.exports = function(program){
                 .finally(process.exit)
             })
         })
+        .catch(evoke(log.clientRequestFailed, 'Error releasing app design'))
     })
 
 }

@@ -3,7 +3,7 @@ var Login = require('../util/login');
 var Domo = require('ryuu-client');
 var log = require('../util/log');
 var evoke = require('../util/evoke');
-
+var constants = require('../util/constants');
 
 module.exports = function(program){
   program
@@ -39,7 +39,7 @@ module.exports = function(program){
         var login = Login.getLogin(answers.instance);
         Login.verifyLogin(login);
 
-        var domo = new Domo(answers.instance, login.sid, login.devtoken);
+        var domo = new Domo(answers.instance, login.refreshToken, constants.CLIENT_ID);
         domo.getKpi(answers.id)
             .then(function(kpi){
               kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'mason';
@@ -49,7 +49,7 @@ module.exports = function(program){
               return domo.updateKpi(kpi);
             })
             .tap(evoke(log.ok, 'Card reverted back to a mason app'))
-            .catch(evoke(log.fail, 'Error attempting to revert card'))
+            .catch(evoke(log.clientRequestFailed, 'Error attempting to revert card'))
             .finally(process.exit)
       });
 

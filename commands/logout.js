@@ -24,8 +24,7 @@ module.exports = function(program){
         process.exit();
       }
 
-      delete login.sid;
-      delete login.devtoken;
+      delete login.refreshToken;
 
       Login.writeLogin(login);
       Login.verifyLogout(login, instance);

@@ -6,6 +6,8 @@ var shell = require('shelljs');
 var Login = require('../util/login');
 var Domo = require('ryuu-client');
 var log = require('../util/log');
+var evoke = require('../util/evoke');
+var constants = require('../util/constants');
 
 module.exports = function(program){
   program
@@ -17,7 +19,7 @@ module.exports = function(program){
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);
 
-      var domo = new Domo(login.instance, login.sid, login.devtoken);
+      var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
       var prompts = [];
 
@@ -41,32 +43,33 @@ module.exports = function(program){
         answers.designId = args.designId || answers.designId;
         answers.version = args.designVersion || answers.version;
 
-        var req = domo.download(answers.designId, answers.version);
+        domo.download(answers.designId, answers.version).then(function(req) {
+          req.on('response', function(response){
+            if (response.statusCode === 200) {
+              var regexp = /filename="(.*)"/;
+              var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
+            } else {
+              log.fail('Design not found. Make sure you have the correct design id.');
+            }
 
-        req.on('response', function(response){
-          if (response.statusCode === 200) {
-            var regexp = /filename="(.*)"/;
-            var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
-          } else {
-            log.fail('Design not found. Make sure you have the correct design id.');
-          }
+            var writeStream = fs.createWriteStream('./'+name+'.zip', {flags: 'w+', mode: 0o666});
+            req.pipe(writeStream);
 
-          var writeStream = fs.createWriteStream('./'+name+'.zip', {flags: 'w+', mode: 0o666});
-          req.pipe(writeStream);
+            writeStream.on('finish', function(){
+              var source = path.resolve('./'+name+'.zip');
+              var target = path.resolve('./'+name);
 
-          writeStream.on('finish', function(){
-            var source = path.resolve('./'+name+'.zip');
-            var target = path.resolve('./'+name);
-
-            extract(source, {dir: target}, function(err, results) {
-              if (!err){
-                shell.chmod('-R', 'u+w', target);
-                fs.remove(source);
-                process.exit();
-              }
+              extract(source, {dir: target}, function(err, results) {
+                if (!err){
+                  shell.chmod('-R', 'u+w', target);
+                  fs.remove(source);
+                  process.exit();
+                }
+              });
             });
           });
-        });
+        })
+        .catch(evoke(log.clientRequestFailed, 'Unable to download design ' + answers.designId));
       });
 
     });
