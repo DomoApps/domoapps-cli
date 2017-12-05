@@ -20,7 +20,6 @@ var serve = require('koa-static');
 var mount = require('koa-mount');
 var proxyaddr = require('proxy-addr');
 var session = require('../util/session');
-var sidUtil = require('../util/sid');
 var appStructure = require('../util/appStructure');
 
 portfinder.basePort = 3000;
@@ -52,16 +51,13 @@ api.get('/', function *(){
     context = {id: 0};
   }
 
-  var userId = app.options.userId || 1;
-  var customerId = 1;
+  var appData = yield getDomoappsData();
 
-  if(app.domo.sid){
-      var sid = sidUtil.parse(app.domo.sid);
-      userId = app.options.userId || sid.userId;
-      customerId = customerId || sid.customerId;
-  }
+  var userId = app.options.userId || appData.user.id;
+  var customerId = 1 || appData.customer;
 
   var url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
+
   this.body = template({
     manifest,
     width,
@@ -77,16 +73,16 @@ api.get('/', function *(){
 // Proxy requests to the correct domoapps service for the environment they're logged into.
 api.all('/data/*', function *(){
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
-  var baseUrl = yield getDomoappsDomain();
+  var appData = yield getDomoappsData();
   var j = request.jar();
-  var url = baseUrl + this.request.url;
+  var url = appData.url + this.request.url;
   var method = this.request.method;
 
-  var headers = _.merge({
+  var headers = {
     referer: this.request.headers.referer,
     accept: this.request.headers.accept,
     'Content-Type': this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json'
-  }, app.domo.getAuthHeader());
+  };
 
 
   var body = JSON.stringify(this.request.body);
@@ -104,27 +100,28 @@ api.all('/data/*', function *(){
     url += "&datasetId=" + _.find(manifest.mapping, {alias: alias}).dataSetId;
   }
 
-  this.body = request({
+  this.body = yield app.domo.processRequestRaw({
     url: url,
     method: method,
     jar: j,
     body: body,
-    headers: headers,
+    headers: headers
   });
 });
 
 api.all('/domo/*', function *(){
-  var baseUrl = yield getDomoappsDomain();
+  var appData = yield getDomoappsData();
   var j = request.jar();
-  var url = baseUrl + this.request.url;
+  var url = appData.url + this.request.url;
 
-  var headers = _.merge({
+  var headers = {
     referer: this.request.headers.referer,
     accept: this.request.headers.accept,
     'Content-Type': this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json'
-  }, app.domo.getAuthHeader());
+  };
 
-  this.body = request({url: url, jar: j, headers: headers});
+  this.body = yield app.domo.processRequestRaw({url: url, jar: j, headers: headers});
+
 });
 
 app.use(body_parser({
@@ -198,46 +195,38 @@ function getMiddleware() {
 }
 
 /**
- * Fetch domoapps domain from maestro.
+ * Fetch domoapps environment data from maestro.
  * Fallback to inferring it by the instance URL.
  */
-function getDomoappsDomain(){
+function getDomoappsData(){
   var uuid = Domo.createUUID();
-  var j = request.jar();
-  var auth = 'SID="'+app.domo.sid+'"';
-  var cookie = request.cookie(auth);
-  j.setCookie(cookie, 'https://' + app.domo.instance);
 
   var options = {
-    url: 'https://' + app.domo.instance + '/api/content/v1/mobile/environment',
-    headers: app.domo.getAuthHeader()
+    url: 'https://' + app.domo.instance + '/api/content/v1/mobile/environment'
   }
 
-  return new Promise(function(resolve, reject){
-    request(options, function(err, res){
-      if (res.statusCode === 200){
-        var url = 'https://'+uuid+'.' + JSON.parse(res.body).domoappsDomain;
-        resolve(url);
-      }
-      else {
-        resolve('https://'+uuid+'.domoapps.' + getEnv());
-      }
+  return app.domo.processRequest(options)
+    .then(function(res) {
+      var data = JSON.parse(res);
+      data.url = 'https://'+uuid+'.' + JSON.parse(res).domoappsDomain;
+      return data;
+    }).catch(function() {
+      var data = {url: 'https://'+uuid+'.domoapps.' + getEnv()};
+      return data;
     });
-  });
 }
 
 function createContext(designId, mapping){
-  return new Promise(function(resolve, reject){
-    var options = {
-      url: 'https://' + app.domo.instance + '/domoapps/apps/v2/contexts',
-      method: 'POST',
-      json: {designId: designId, mapping: mapping},
-      headers: app.domo.getAuthHeader()
-    };
+  var options = {
+    url: 'https://' + app.domo.instance + '/domoapps/apps/v2/contexts',
+    method: 'POST',
+    json: {designId: designId, mapping: mapping}
+  };                     
 
-    request(options, function(err, res){
-      resolve(res.body[0]);
-    });
-
-  });
+  return app.domo.processRequest(options)
+    .then(function(res) {
+      return res[0];
+    }).catch(function(err) {
+      return;
+    })
 }

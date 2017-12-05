@@ -4,6 +4,7 @@ var design = require('../util/design');
 var log = require('../util/log');
 var evoke = require('../util/evoke');
 var inquirer = require('inquirer');
+var constants = require('../util/constants');
 
 module.exports = function(program) {
   program
@@ -25,11 +26,11 @@ module.exports = function(program) {
           var login = Login.getMostRecentLogin();
           Login.verifyLogin(login);
 
-          var domo = new Domo(login.instance, login.sid, login.devtoken);
+          var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
           domo.unDeleteDesign(designId)
             .tap(evoke(log.ok, 'Undeleted design ' + designId))
-            .catch(evoke(log.fail, 'Unable to undelete design ' + designId))
+            .catch(evoke(log.clientRequestFailed, 'Unable to undelete design ' + designId))
             .finally(process.exit);
         } else {
           log.fail('Undelete command aborted');

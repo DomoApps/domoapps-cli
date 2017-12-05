@@ -4,6 +4,7 @@ var Manifest = require('../util/manifest');
 var Login = require('../util/login');
 var evoke = require('../util/evoke');
 var log = require('../util/log');
+var constants = require('../util/constants');
 
 module.exports = function(program){
   program
@@ -26,7 +27,7 @@ module.exports = function(program){
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);
 
-      var domo = new Domo(login.instance, login.sid, login.devtoken);
+      var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
       switch(action) {
         case 'add':

@@ -8,6 +8,7 @@ var log = require('../util/log');
 var appStructure = require('../util/appStructure');
 var messages = require('../util/messages');
 var evoke = require('../util/evoke');
+var constants = require('../util/constants');
 
 module.exports = function(program){
   program
@@ -20,7 +21,7 @@ module.exports = function(program){
 
       var login = Login.getMostRecentLogin();
       Login.verifyLogin(login);
-      var domo = new Domo(login.instance, login.sid, login.devtoken);
+      var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
       if (!appStructure.hasThumbnail()) {
         log.warn(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
@@ -92,7 +93,7 @@ module.exports = function(program){
           goToDomo(options, domo, manifest);
         })
         .catch(function(e) {
-          log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
+          log.clientRequestFailed('Error uploading assets');
         });
       }
     });

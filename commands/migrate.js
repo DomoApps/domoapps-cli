@@ -5,6 +5,7 @@ var Manifest = require('../util/manifest');
 var Login = require('../util/login');
 var log = require('../util/log');
 var evoke = require('../util/evoke');
+var constants = require('../util/constants');
 
 module.exports = function(program){
   program
@@ -42,7 +43,7 @@ module.exports = function(program){
         var login = Login.getLogin(answers.instance);
         Login.verifyLogin(login);
 
-        var domo = new Domo(answers.instance, login.sid, login.devtoken);
+        var domo = new Domo(answers.instance, login.refreshToken, constants.CLIENT_ID);
 
         migrateApp(domo, answers.id, manifest)
           .tap(evoke(log.ok, 'Migration successful'))
