@@ -55,67 +55,68 @@ module.exports = function(program){
     .action(function(args){
 
       var previousLogins = Login.getPreviousLogins();
-      var mostRecent = Login.getMostRecentLogin();
-      var prompts = [];
+      Login.getMostRecentLogin().then(function(mostRecent) {
+        var prompts = [];
 
-      var versionCheckFn = !args.upgradeCheck ?
-        function (x) { return x; } :
-        verifyVersion;
+        var versionCheckFn = !args.upgradeCheck ?
+          function (x) { return x; } :
+          verifyVersion;
 
-      if (!args.instance) {
-        prompts.push(multichoice({
-          type: "list",
-          choices: function(){
-            var options = _.pluck(previousLogins, 'instance');
-            options.push('new instance');
-            return options;
-          },
-          message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
-          name: 'instance',
-          default: mostRecent.instance,
-          // only show up if they have previous logins
-          when: function(answers){
-            return previousLogins.length > 0;
-          }
-        }),
-        {
-          type: "input",
-          message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
-          name: "instance",
-          when: function(answers){
-            // only ask if the instance selector wasn't used or new one was selected
-            return !answers.instance || answers.instance === 'new instance';
-          }
-        });
-      }
-
-      // prompt user
-      inquirer.prompt(prompts, function(answers) {
-
-        answers.instance = args.instance || answers.instance;
-
-        if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
-          log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
+        if (!args.instance) {
+          prompts.push(multichoice({
+            type: "list",
+            choices: function(){
+              var options = _.pluck(previousLogins, 'instance');
+              options.push('new instance');
+              return options;
+            },
+            message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
+            name: 'instance',
+            default: mostRecent.instance,
+            // only show up if they have previous logins
+            when: function(answers){
+              return previousLogins.length > 0;
+            }
+          }),
+          {
+            type: "input",
+            message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
+            name: "instance",
+            when: function(answers){
+              // only ask if the instance selector wasn't used or new one was selected
+              return !answers.instance || answers.instance === 'new instance';
+            }
+          });
         }
 
-        var instanceLogin = Login.getLogin(answers.instance);
-        var login;
-        var domo = new Domo(answers.instance, instanceLogin.refreshToken, constants.CLIENT_ID);
-        domo
-          .login()
-          .then(function(l){
-            return login = l;
-          })
-          .then(checkVersion.bind(null, answers.instance))
-          .then(versionCheckFn)
-          .then(function(){
-            console.log(chalk.grey(logo));
-            log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
-            return Login.persistLogin(answers.instance)(login);
-          })
-          .catch(evoke(log.fail, 'Login unsuccessful'))
-          .finally(process.exit)
-      });
+        // prompt user
+        inquirer.prompt(prompts, function(answers) {
+
+          answers.instance = args.instance || answers.instance;
+
+          if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
+            log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
+          }
+          Login.getLogin(answers.instance).then(function(instanceLogin) {
+            var login;
+            var domo = new Domo(answers.instance, instanceLogin.refreshToken, constants.CLIENT_ID);
+            domo
+              .login()
+              .then(function(l){
+                return login = l;
+              })
+              .then(checkVersion.bind(null, answers.instance))
+              .then(versionCheckFn)
+              .then(function(){
+                console.log(chalk.grey(logo));
+                log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
+                return Login.persistLogin(answers.instance)(login);
+              })
+              .catch(evoke(log.fail, 'Login unsuccessful'))
+              .finally(process.exit)
+          }).catch(log.notAuthenticated);
+        });
+      }).catch(log.notAuthenticated);
     });
 }
 

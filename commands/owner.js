@@ -24,40 +24,41 @@ module.exports = function(program){
         designId = manifest.id;
       }
 
-      var login = Login.getMostRecentLogin();
-      Login.verifyLogin(login);
+      Login.getMostRecentLogin().then(function(login) {
+        Login.verifyLogin(login);
 
-      var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
+        var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
-      switch(action) {
-        case 'add':
-          if (users) {
-            domo.addOwners(designId, users)
-              .tap(evoke(log.ok, 'Owners added ' + users))
-              .catch(evoke(log.fail, 'Error adding owners'))
+        switch(action) {
+          case 'add':
+            if (users) {
+              domo.addOwners(designId, users)
+                .tap(evoke(log.ok, 'Owners added ' + users))
+                .catch(evoke(log.fail, 'Error adding owners'))
+                .finally(process.exit)
+            }
+            break;
+          case 'rm':
+            if (users) {
+              domo.removeOwners(designId, users)
+                .tap(evoke(log.ok, 'Owners removed ' + users))
+                .catch(evoke(log.fail, 'Error removing owners'))
+                .finally(process.exit)
+            }
+            break;
+          case 'ls':
+            domo.getOwners(designId)
+              .tap(function listUsers(res) {
+                res.sort();
+                log.ok("Owners for design " + designId);
+                res.forEach(function(element, index, array) {
+                  console.log("\t" + element);
+                });
+              })
+              .catch(evoke(log.fail, 'Error retrieving owners'))
               .finally(process.exit)
-          }
-          break;
-        case 'rm':
-          if (users) {
-            domo.removeOwners(designId, users)
-              .tap(evoke(log.ok, 'Owners removed ' + users))
-              .catch(evoke(log.fail, 'Error removing owners'))
-              .finally(process.exit)
-          }
-          break;
-        case 'ls':
-          domo.getOwners(designId)
-            .tap(function listUsers(res) {
-              res.sort();
-              log.ok("Owners for design " + designId);
-              res.forEach(function(element, index, array) {
-                console.log("\t" + element);
-              });
-            })
-            .catch(evoke(log.fail, 'Error retrieving owners'))
-            .finally(process.exit)
-          break;
-      }
+            break;
+        }
+      }).catch(log.notAuthenticated);
     });
 }
