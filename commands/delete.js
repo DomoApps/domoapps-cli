@@ -26,17 +26,17 @@ module.exports = function(program) {
       function handleUserResponse(answer) {
         if (answer.delete) {
           var force = false;
-          var login = Login.getMostRecentLogin();
+          Login.getMostRecentLogin().then(function(login) {
+            if (options.force) force = true;
+            Login.verifyLogin(login);
 
-          if (options.force) force = true;
-          Login.verifyLogin(login);
+            var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
-          var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
-
-          domo.deleteDesign(designId, force)
-            .tap(evoke(log.ok, 'Deleted design ' + designId))
-            .catch(evoke(log.clientRequestFailed, 'Unable to delete design ' + designId))
-            .finally(process.exit);
+            domo.deleteDesign(designId, force)
+              .tap(evoke(log.ok, 'Deleted design ' + designId))
+              .catch(evoke(log.clientRequestFailed, 'Unable to delete design ' + designId))
+              .finally(process.exit);
+          }).catch(log.notAuthenticated);
         } else {
           log.fail('Delete command aborted');
         }

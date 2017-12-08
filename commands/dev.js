@@ -17,12 +17,13 @@ module.exports = function(program) {
         manifest: opts.manifest,
       };
 
-      var login = Login.getMostRecentLogin();
-      Login.verifyLogin(login);
-      var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
+      Login.getMostRecentLogin().then(function(login) {
+        Login.verifyLogin(login);
+        var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
-      //session will stop authenticated users
-      server.start(domo, options).catch(log.fail)
+        //session will stop authenticated users
+        server.start(domo, options).catch(log.fail)
+      }).catch(log.notAuthenticated);
     });
 
 }

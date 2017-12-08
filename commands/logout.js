@@ -11,24 +11,33 @@ module.exports = function(program){
       var login;
       if(args.instance) {
         instance = args.instance;
-        login = Login.getLogin(instance);
-        if (!login.instance) {
+        Login.getLogin(instance).then(function(login) {
+          verifyLogout(login, instance);
+        }).catch(function() {
           log.fail('No current login with instance ' + instance);
-        }
+        })
       } else {
-        login = Login.getMostRecentLogin();
-        instance = login.instance;
+        Login.getMostRecentLogin().then(function(login) {
+          instance = login.instance;
+          verifyLogout(login, instance);
+        }).catch(log.notAuthenticated);
       }
 
-      if (Login.verifyLogout(login, instance)) {
-        process.exit();
+
+      function verifyLogout(login, instance) {
+        Login.verifyLogout(login, instance).then(function(logout) {
+          if (logout) {
+            process.exit();
+          }
+
+          Login.deleteRefreshToken(login).then(function() {
+            Login.verifyLogout(login, instance);
+          }).then(function(logout) {
+            process.exit();
+          }).catch(function(){
+            log.fail('Failed to logout');
+          });
+        });
       }
-
-      delete login.refreshToken;
-
-      Login.writeLogin(login);
-      Login.verifyLogout(login, instance);
-
-      process.exit();
     });
 }
