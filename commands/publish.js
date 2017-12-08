@@ -19,83 +19,84 @@ module.exports = function(program){
       var manifest = Manifest.get(program.manifest);
       if (!manifest) return;
 
-      var login = Login.getMostRecentLogin();
-      Login.verifyLogin(login);
-      var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
+      Login.getMostRecentLogin().then(function(login) {
+        Login.verifyLogin(login);
+        var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
-      if (!appStructure.hasThumbnail()) {
-        log.warn(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
-      }
+        if (!appStructure.hasThumbnail()) {
+          log.warn(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
+        }
 
-      if (!manifest.id){
-        createDesign(domo, manifest, login, options);
-      }
-      else{
-        domo.getDesign(manifest.id).then(function(result) {
-          var latestVersionNumber = result.latestVersion;
-          var latestVersion = result.versions.filter(function(obj) {
-            return obj.version === latestVersionNumber;
-          });
-          var oldMapping = latestVersion[0].mapping[0];
-          var newMapping = manifest.mapping[0];
+        if (!manifest.id){
+          createDesign(domo, manifest, login, options);
+        }
+        else{
+          domo.getDesign(manifest.id).then(function(result) {
+            var latestVersionNumber = result.latestVersion;
+            var latestVersion = result.versions.filter(function(obj) {
+              return obj.version === latestVersionNumber;
+            });
+            var oldMapping = latestVersion[0].mapping[0];
+            var newMapping = manifest.mapping[0];
 
-          if (oldMapping) {
-            delete oldMapping.dql;
-          }
-
-          if(!_.isEqual(oldMapping, newMapping)) {
-            log.warn('Mapping has changed. Check current cards for potential miss-mappings.');
-          }
-
-          domo.uploadAllAssets(manifest)
-          .tap(evoke(log.ok, 'Publishing ' + manifest.name + ' to ' + login.instance + ' on ' + new Date()))
-          .then(logUploadSuccess)
-          .catch(function(e){
-            if(e.statusCode === 401) {
-              log.notAuthenticated(login);
+            if (oldMapping) {
+              delete oldMapping.dql;
             }
-            else if(e.statusCode === 403) {
-              log.fail('You do not have access to the design with id ' + manifest.id + ' on ' + login.instance
-                + '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.'
-                + '\nAlternatively, you may have inadvertently changed the design id.');
+
+            if(!_.isEqual(oldMapping, newMapping)) {
+              log.warn('Mapping has changed. Check current cards for potential miss-mappings.');
             }
-            else if(e.message && e.message.startsWith('DA')) {
-              switch (e.message.substr(0, 6)) {
-                case 'DA0086':
-                  log.warn(e.message);
-                  inquirer.prompt([
-                    {
-                      type: 'confirm',
-                      message: 'This design has been deleted. Would you like to publish a new design with these assets?',
-                      name: 'askRecreate'
-                    }
-                  ], function (answers) {
-                    if (answers.askRecreate){
-                      manifest.id = null;
-                      createDesign(domo, manifest, login);
-                    }
-                  });
 
-                  break;
-
-                default:
-                  // Pass on error messages that are in the set of documented errors.
-                  log.fail(e.message);
-                  break;
+            domo.uploadAllAssets(manifest)
+            .tap(evoke(log.ok, 'Publishing ' + manifest.name + ' to ' + login.instance + ' on ' + new Date()))
+            .then(logUploadSuccess)
+            .catch(function(e){
+              if(e.statusCode === 401) {
+                log.notAuthenticated(login);
               }
-            }
-            else {
-              log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
-            }
+              else if(e.statusCode === 403) {
+                log.fail('You do not have access to the design with id ' + manifest.id + ' on ' + login.instance
+                  + '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.'
+                  + '\nAlternatively, you may have inadvertently changed the design id.');
+              }
+              else if(e.message && e.message.startsWith('DA')) {
+                switch (e.message.substr(0, 6)) {
+                  case 'DA0086':
+                    log.warn(e.message);
+                    inquirer.prompt([
+                      {
+                        type: 'confirm',
+                        message: 'This design has been deleted. Would you like to publish a new design with these assets?',
+                        name: 'askRecreate'
+                      }
+                    ], function (answers) {
+                      if (answers.askRecreate){
+                        manifest.id = null;
+                        createDesign(domo, manifest, login);
+                      }
+                    });
+
+                    break;
+
+                  default:
+                    // Pass on error messages that are in the set of documented errors.
+                    log.fail(e.message);
+                    break;
+                }
+              }
+              else {
+                log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
+              }
+            });
+          })
+          .then(function() {
+            goToDomo(options, domo, manifest);
+          })
+          .catch(function(e) {
+            log.clientRequestFailed('Error uploading assets');
           });
-        })
-        .then(function() {
-          goToDomo(options, domo, manifest);
-        })
-        .catch(function(e) {
-          log.clientRequestFailed('Error uploading assets');
-        });
-      }
+        }
+      }).catch(log.notAuthenticated);
     });
 }
 

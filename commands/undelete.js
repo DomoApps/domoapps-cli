@@ -23,15 +23,16 @@ module.exports = function(program) {
 
       function handleUserResponse(answer) {
         if (answer.undelete) {
-          var login = Login.getMostRecentLogin();
-          Login.verifyLogin(login);
+          Login.getMostRecentLogin().then(function(login) {
+            Login.verifyLogin(login);
 
-          var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
+            var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
-          domo.unDeleteDesign(designId)
-            .tap(evoke(log.ok, 'Undeleted design ' + designId))
-            .catch(evoke(log.clientRequestFailed, 'Unable to undelete design ' + designId))
-            .finally(process.exit);
+            domo.unDeleteDesign(designId)
+              .tap(evoke(log.ok, 'Undeleted design ' + designId))
+              .catch(evoke(log.clientRequestFailed, 'Unable to undelete design ' + designId))
+              .finally(process.exit);
+          }).catch(log.notAuthenticated);
         } else {
           log.fail('Undelete command aborted');
         }

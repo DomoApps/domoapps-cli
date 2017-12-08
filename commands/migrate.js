@@ -15,41 +15,43 @@ module.exports = function(program){
     .option('-a, --app-id <id>', 'app id')
     .action(function(args){
       var manifest = Manifest.get(program.manifest);
-      var mostRecent = Login.getMostRecentLogin();
-      if (!manifest) return;
+      Login.getMostRecentLogin().then(function(mostRecent) {
+        if (!manifest) return;
 
-      var prompts = [];
+        var prompts = [];
 
-      if (!args.instance) {
-        prompts.push({
-          type: "input",
-          message: "Domo instance",
-          name: "instance",
-          default: mostRecent.instance
+        if (!args.instance) {
+          prompts.push({
+            type: "input",
+            message: "Domo instance",
+            name: "instance",
+            default: mostRecent.instance
+          });
+        }
+
+        if (!args.appId) {
+          prompts.push({
+            type: "input",
+            message: "app id",
+            name: "id"
+          });
+        }
+
+        inquirer.prompt(prompts, function(answers) {
+          answers.instance = args.instance || answers.instance;
+          answers.id = args.appId || answers.id;
+          Login.getLogin(answers.instance).then(function(login) {
+            Login.verifyLogin(login);
+
+            var domo = new Domo(answers.instance, login.refreshToken, constants.CLIENT_ID);
+
+            migrateApp(domo, answers.id, manifest)
+              .tap(evoke(log.ok, 'Migration successful'))
+              .catch(evoke(log.fail, 'Migration unsuccessful'))
+              .finally(process.exit)
+          }).catch(log.notAuthenticated);
         });
-      }
-
-      if (!args.appId) {
-        prompts.push({
-          type: "input",
-          message: "app id",
-          name: "id"
-        });
-      }
-
-      inquirer.prompt(prompts, function(answers) {
-        answers.instance = args.instance || answers.instance;
-        answers.id = args.appId || answers.id;
-        var login = Login.getLogin(answers.instance);
-        Login.verifyLogin(login);
-
-        var domo = new Domo(answers.instance, login.refreshToken, constants.CLIENT_ID);
-
-        migrateApp(domo, answers.id, manifest)
-          .tap(evoke(log.ok, 'Migration successful'))
-          .catch(evoke(log.fail, 'Migration unsuccessful'))
-          .finally(process.exit)
-      });
+      }).catch(log.notAuthenticated);
     });
 
 }
