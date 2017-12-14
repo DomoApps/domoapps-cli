@@ -2,6 +2,7 @@ var Domo = require('ryuu-client');
 var Login = require('../util/login');
 var log = require('../util/log');
 var constants = require('../util/constants');
+var server = require('../server/server');
 
 module.exports = function(program) {
   program
@@ -15,9 +16,6 @@ module.exports = function(program) {
         external: opts.external,
         manifest: opts.manifest,
       };
-
-      // Wait to require the dev server until the action is called, for startup performance
-      const server = require('../server/server');
 
       Login.getMostRecentLogin().then(function(login) {
         Login.verifyLogin(login);
