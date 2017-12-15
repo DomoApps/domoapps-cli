@@ -65,7 +65,7 @@ module.exports = {
 
   deleteRefreshToken: function(login){
     var loginFile = path.resolve(home + '/login/' + login.instance + '.json');
-    return keytar.deletePassword('domoapps-cli', instance); //runs async to delete, not concerned about waiting
+    return keytar.deletePassword('domoapps-cli', login.instance); //runs async to delete, not concerned about waiting
   },
 
   getLogin: function(instance){
