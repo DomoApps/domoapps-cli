@@ -1,7 +1,6 @@
 var Domo = require('ryuu-client');
 var Login = require('../util/login');
 var log = require('../util/log');
-var server = require('../server/server');
 var constants = require('../util/constants');
 
 module.exports = function(program) {
@@ -22,6 +21,7 @@ module.exports = function(program) {
         var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
 
         //session will stop authenticated users
+        const server = require('../server/server');
         server.start(domo, options).catch(log.fail)
       }).catch(log.notAuthenticated);
     });
