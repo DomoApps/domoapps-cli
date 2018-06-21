@@ -5,11 +5,17 @@ var Domo = require('ryuu-client');
 var home = Domo.getHomeDir();
 var log = require('./log');
 var keytar = require('keytar');
+var $q = require('q');
 
 module.exports = {
   getMostRecentLogin: function(){
     var logins = glob.sync(home + "/login/*.json");
-    if (logins.length === 0) return {};
+
+    if (logins.length === 0) {
+      var d = $q.defer();
+      d.resolve({});
+      return d.promise;
+    }
 
     var recent = logins.reduce(function(prev, next){
       return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
