@@ -26,7 +26,7 @@ module.exports = function(program){
             type: 'list',
             message: 'select a starter',
             name: 'starter',
-            choices: ['hello world', 'manifest only']
+            choices: ['hello world', 'manifest only', 'basic chart', 'map chart']
           })
 
           ], function(answers){
@@ -45,6 +45,28 @@ module.exports = function(program){
               else if (allAnswers.starter === 'hello world'){
                 files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
                 dirs = [null, null, null, null, null];
+
+                var dirname = slug(answers.name);
+                nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
+
+                shell.mkdir('-p', dirname);
+                process.chdir(path.resolve(dirname));
+              }
+              else if (allAnswers.starter === 'basic chart') {
+                files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js', 'domoPhoenix.js'];
+                const customChartTemplateDir = path.join(__dirname, '/../templates/', 'basic chart/');
+                dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
+
+                var dirname = slug(answers.name);
+                nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
+
+                shell.mkdir('-p', dirname);
+                process.chdir(path.resolve(dirname));
+              }
+              else if (allAnswers.starter === 'map chart') {
+                files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js', 'domoPhoenix.js'];
+                const customChartTemplateDir = path.join(__dirname, '/../templates/', 'map chart/');
+                dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
                 var dirname = slug(answers.name);
                 nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
