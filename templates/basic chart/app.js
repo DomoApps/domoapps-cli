@@ -5,8 +5,8 @@ function chartIt(data){
 
   // Set your "Chart Options": https://domoapps.github.io/domo-phoenix/#/domo-phoenix/api
   var options = {
-    width: 600,
-    height: 500
+    width: 650,
+    height: 400
   };
 
   // Create the Phoenix Chart
