@@ -23,13 +23,12 @@ function chartIt(data){
 var columns = [
   {
       type: DomoPhoenix.DATA_TYPE.STRING,
-      name: 'Region',
+      name: 'Order Priority',
       mapping: DomoPhoenix.MAPPING.SERIES
   },
   {
-      type: DomoPhoenix.DATA_TYPE.DATE,
-      name: 'Order Date',
-      dateGrain: 'month',
+      type: DomoPhoenix.DATA_TYPE.STRING,
+      name: 'Customer Segment',
       mapping: DomoPhoenix.MAPPING.ITEM
   },
   {
