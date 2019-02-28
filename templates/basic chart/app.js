@@ -1,3 +1,6 @@
+// For more on how to use Phoenix view the documentation at:
+// https://domoapps.github.io/domo-phoenix/
+
 // Call this with your data to render a PhoenixChart
 function chartIt(data){
   // Set a chart type using the correct enum: https://domoapps.github.io/domo-phoenix/#/domo-phoenix/properties
@@ -87,8 +90,8 @@ chartIt(sampleData);
 
 ////// Query Data ////////////
 function getData(datasetAlias, columns){
-  // Create query parameters
-  // For a full list of parameters see: https://developer.domo.com/docs/dev-studio-references/data-api
+  // Create a query object
+  // For a full list of "query operators" see: https://developer.domo.com/docs/dev-studio-references/data-api
   var query = {
     "fields": getColumnNames(columns)
   };
