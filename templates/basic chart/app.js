@@ -19,6 +19,7 @@ function chartIt(data){
   chart.render();
 }
 
+
 // Set this to use the columns in your dataset: 
 var columns = [
   {
@@ -42,9 +43,11 @@ var columns = [
 <% datasources.forEach(function(datasource){ %>
 // Start get data from <%= datasource.alias %>
 /* Remove this line to chart data from your "<%= datasource.alias %>" dataset
-getData('<%= datasource.alias %>', columns).then(function(data){
-  var phoenixData = { columns: columns, rows: data };
-  chartIt(phoenixData);
+getData('<%= datasource.alias %>', columns).catch(displayError).then(function(data){
+  if(data){
+    var phoenixData = { columns: columns, rows: data };
+    chartIt(phoenixData);
+  }
 });
 /* End get data from <%= datasource.alias %> */
 <% }); %>
@@ -108,7 +111,7 @@ function getData(datasetAlias, columns){
 
 
 ////// Helper functions ////////////
-var makeQueryString = function (datasetAlias, queryObject){
+function makeQueryString(datasetAlias, queryObject){
   var query = '/data/v1/' + datasetAlias + '?';
   for(var key in queryObject){
     if (queryObject.hasOwnProperty(key)) {
@@ -121,15 +124,17 @@ var makeQueryString = function (datasetAlias, queryObject){
   }
 
   return query;
-};
-var getColumnNames = function(cols){ 
+}
+
+function getColumnNames(cols){ 
   var names = [];
   for(var i in cols){
     if(cols[i] && cols[i].name) names.push(cols[i].name);
   }
   return names;
-};
-var processGrains = function(cols, query) {
+}
+
+function processGrains(cols, query) {
   var grainColumn = null;
   for(var i in cols){
     if(cols[i] && cols[i].dateGrain != null){
@@ -138,11 +143,11 @@ var processGrains = function(cols, query) {
     }
   }
   if(grainColumn){
-    query.dateGrain = grainColumn.name + ' by ' + grainColumn.dateGrain;
+    query.dategrain = "'" + grainColumn.name + "' by " + grainColumn.dateGrain;
     var groupBys = [];
     for(var i in cols){
       if(cols[i] && cols[i].type === DomoPhoenix.DATA_TYPE.STRING){
-        groupBys.push(cols[i] && cols[i].name);
+        groupBys.push(cols[i] && ("'" + cols[i].name + "'"));
       }
     }
     if(query.groupby != null){
@@ -155,4 +160,8 @@ var processGrains = function(cols, query) {
       query.groupby = groupBys;
     }
   }
-};
+}
+
+function displayError(){
+  document.body.appendChild(document.createTextNode('Error getting data'));
+}
