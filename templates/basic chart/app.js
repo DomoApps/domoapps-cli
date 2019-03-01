@@ -156,7 +156,10 @@ function processGrains(cols, query) {
     if(query.groupby != null){
       typeof query.groupby === "string" && (query.groupby = query.groupby.split(","));
       for(var i in groupBys){
-        if(query.groupby.indexOf(groupBys[i])) query.groupby.push(groupBys[i]);
+        const withoutParens = groupBys[i].replace(/'/g, "");
+        if(query.groupby.indexOf(groupBys[i]) === -1 && query.groupby.indexOf(withoutParens) === -1){
+          query.groupby.push(groupBys[i]);
+        }
       }
     }
     else{
