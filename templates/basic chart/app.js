@@ -119,7 +119,7 @@ function makeQueryString(datasetAlias, queryObject){
   for(var key in queryObject){
     if (queryObject.hasOwnProperty(key)) {
       var value = queryObject[key];
-      if(typeof value === "object" && value[0] != null){
+      if(typeof value === "object" && value.join != null){
         value = value.join(",");
       }
       query += "&" + key + "=" + value;
