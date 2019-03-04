@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "3.0.1",
+  "version": "3.0.2-beta.1",
   "bin": {
     "domo": "./bin/runner"
   },
@@ -9,9 +9,9 @@
   },
   "dependencies": {
     "async": "~1.3.0",
-    "babel": "5.8.12",
+    "babel": "^5.8.38",
     "bluebird": "~2.3.2",
-    "browser-sync": "2.14.0",
+    "browser-sync": "^2.26.3",
     "chalk": "~0.5.1",
     "cli-table": "^0.3.1",
     "commander": "2.9.0",
@@ -30,11 +30,11 @@
     "portfinder": "^0.4.0",
     "proxy-addr": "1.1.2",
     "publish": "^0.6.0",
-    "q": "~1.0.1",
+    "q": "^1.4.1",
     "raw-body": "^2.1.6",
-    "request": "2.80.0",
+    "request": "^2.88.0",
     "ryuu-client": "^3.0.0",
-    "ryuu.js": "latest",
+    "ryuu.js": "^2.6.1",
     "semver": "~4.1.0",
     "shelljs": "^0.5.1",
     "slug": "^0.9.1",
@@ -48,7 +48,7 @@
     "conventional-changelog-cli": "1.2.0",
     "github-url-from-git": "^1.4.0",
     "grunt": "^0.4.5",
-    "grunt-release": "0.13.0",
+    "grunt-release": "^0.14.0",
     "grunt-shell": "1.3.0",
     "q": "^1.4.1"
   }
