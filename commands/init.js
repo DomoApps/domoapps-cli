@@ -53,7 +53,7 @@ module.exports = function(program){
                 process.chdir(path.resolve(dirname));
               }
               else if (allAnswers.starter === 'basic chart') {
-                files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js', 'domoPhoenix.js', 'thumbnail.png'];
+                files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js', 'domoPhoenix.js'];
                 const customChartTemplateDir = path.join(__dirname, '/../templates/', 'basic chart/');
                 dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
@@ -64,7 +64,7 @@ module.exports = function(program){
                 process.chdir(path.resolve(dirname));
               }
               else if (allAnswers.starter === 'map chart') {
-                files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js', 'domoPhoenix.js', 'thumbnail.png'];
+                files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js', 'domoPhoenix.js'];
                 const customChartTemplateDir = path.join(__dirname, '/../templates/', 'map chart/');
                 dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
@@ -183,13 +183,7 @@ function writeFilesIfNonexistent(files, dirs, allAnswers, callback) {
     var file = filedir[0];
     var dir = filedir[1];
     dir = dir || (__dirname + '/../templates/');
-    var contents = null;
-    if(file.indexOf('.png') > 0){
-      contents = fs.readFileSync(path.resolve(dir + file));
-    }
-    else{
-      contents = _.template(fs.readFileSync(path.resolve(dir + file)))(allAnswers);
-    }
+    var contents = _.template(fs.readFileSync(path.resolve(dir + file )))(allAnswers);
 
     fs.writeFileSync(process.cwd() + '/' + file, contents);
   }
