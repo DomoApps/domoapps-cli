@@ -1,15 +1,16 @@
 {
   "name": "ryuu",
-  "version": "3.0.2-beta.1",
+  "version": "3.0.2-beta.3",
   "bin": {
     "domo": "./bin/runner"
   },
   "scripts": {
-    "preversion": "npm run build",
-    "version": "npm run changelog",
     "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 --config ./changelog/changelog.js",
     "build": "npm run build:phoenix",
-    "build:phoenix": "ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenix.js\" \"./templates/basic chart/domoPhoenix.js\" && ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenixWithMaps.js\" \"./templates/basic chart/domoPhoenixWithMaps.js\""
+    "build:phoenix": "ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenix.js\" \"./templates/basic chart/domoPhoenix.js\" && ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenixWithMaps.js\" \"./templates/basic chart/domoPhoenixWithMaps.js\"",
+    "postversion": "git push && git push --tags",
+    "preversion": "npm run build",
+    "version": "npm run changelog"
   },
   "dependencies": {
     "async": "~1.3.0",
@@ -52,10 +53,6 @@
     "@domoinc/domo-phoenix": "^0.8.2",
     "compare-func": "^1.3.1",
     "conventional-changelog-cli": "1.2.0",
-    "github-url-from-git": "^1.4.0",
-    "grunt": "^0.4.5",
-    "grunt-release": "^0.14.0",
-    "grunt-shell": "1.3.0",
-    "q": "^1.4.1"
+    "github-url-from-git": "^1.4.0"
   }
 }
