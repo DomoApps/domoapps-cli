@@ -10,7 +10,7 @@
     "build:phoenix": "ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenix.js\" \"./templates/basic chart/domoPhoenix.js\" && ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenixWithMaps.js\" \"./templates/basic chart/domoPhoenixWithMaps.js\"",
     "postversion": "git push && git push --tags",
     "preversion": "npm run build",
-    "version": "npm run changelog"
+    "version": "npm run changelog && git add CHANGELOG.md templates/**/domoPhoenix*.js"
   },
   "dependencies": {
     "async": "~1.3.0",
