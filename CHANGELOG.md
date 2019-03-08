@@ -1,40 +1,14 @@
-<a name="3.0.2-beta.1"></a>
-## [3.0.2-beta.1](https://github.com/DomoApps/domoapps-cli/compare/v2.23.1...v3.0.2-beta.1) (2019-03-08)
+<a name="2.23.2"></a>
+## [2.23.2](https://github.com/DomoApps/domoapps-cli/compare/v2.23.1...v2.23.2) (2017-06-02)
 
 
 ### Technical Improvements
 
-* fix 3 whitelist urls ([76b9426](https://github.com/DomoApps/domoapps-cli/commit/76b9426))
-* Update release tasks ([ebe1a21](https://github.com/DomoApps/domoapps-cli/commit/ebe1a21))
-* Updated packages and version of domo.js ([e70124d](https://github.com/DomoApps/domoapps-cli/commit/e70124d))
-* Remove files that aren't needed ([adae5ef](https://github.com/DomoApps/domoapps-cli/commit/adae5ef))
-* Add two new starter templates for accelerating development using domo-phoenix ([c70a063](https://github.com/DomoApps/domoapps-cli/commit/c70a063))
-* Fixed login task for case where the system has never logged in before. ([a446013](https://github.com/DomoApps/domoapps-cli/commit/a446013))
-* Defer loading server code for faster startup (#88) ([e1388c8](https://github.com/DomoApps/domoapps-cli/commit/e1388c8))
-* fix(login): instance should be referenced (#87) ([4613bb1](https://github.com/DomoApps/domoapps-cli/commit/4613bb1))
-* feat(keychain): place refresh token in keychain (#85) ([b060eed](https://github.com/DomoApps/domoapps-cli/commit/b060eed))
-* fix(constants): add path to constant file ([cb5f6ec](https://github.com/DomoApps/domoapps-cli/commit/cb5f6ec))
-* clean(cli): clean up references and comments ([b999742](https://github.com/DomoApps/domoapps-cli/commit/b999742))
-* fix(server): process raw requests for proxy ([22ba1ba](https://github.com/DomoApps/domoapps-cli/commit/22ba1ba))
-* fix(server): handle error message for init when no context available ([0673cb8](https://github.com/DomoApps/domoapps-cli/commit/0673cb8))
-* fix(server): add dynamic way to get user id and customer ([899398a](https://github.com/DomoApps/domoapps-cli/commit/899398a))
-* fix(server): handle proxy requests with new oauth ([9bc93c4](https://github.com/DomoApps/domoapps-cli/commit/9bc93c4))
-* fix(server): add request options to createContext ([c028583](https://github.com/DomoApps/domoapps-cli/commit/c028583))
-* fix(loggin): logging messages for revoked tokens or non authenticated users ([c1844c5](https://github.com/DomoApps/domoapps-cli/commit/c1844c5))
-* fix(sessions): handle headers with new authentication ([8f63827](https://github.com/DomoApps/domoapps-cli/commit/8f63827))
-* fix(commands): update the domo object creation with client Id ([16a724e](https://github.com/DomoApps/domoapps-cli/commit/16a724e))
-* fix(download): download works with oauth ([4fea431](https://github.com/DomoApps/domoapps-cli/commit/4fea431))
-* fix(dev): only users with a refreshToken should be able to start the dev server ([270b143](https://github.com/DomoApps/domoapps-cli/commit/270b143))
-* refactor(login): use OAuth instead of dev tokens and current login practices ([2b015a5](https://github.com/DomoApps/domoapps-cli/commit/2b015a5))
-* fix request version to before breaking change ([d81c924](https://github.com/DomoApps/domoapps-cli/commit/d81c924))
-* bump version ([f7bf1db](https://github.com/DomoApps/domoapps-cli/commit/f7bf1db))
-* add domorig.io to accepted logins ([a8f7325](https://github.com/DomoApps/domoapps-cli/commit/a8f7325))
-* release 2.23.2 ([9219666](https://github.com/DomoApps/domoapps-cli/commit/9219666))
+* DOMO-104459 (#49) ([b707212](https://github.com/DomoApps/domoapps-cli/commit/b707212))
 * adding --no-upgrade-check flat to login command ([d5b60d4](https://github.com/DomoApps/domoapps-cli/commit/d5b60d4))
-* fix login with args to use dev token if one is available ([9ec7271](https://github.com/DomoApps/domoapps-cli/commit/9ec7271))
 * DOMO-99403: domo dev UI switch for full screen (#68) ([0d5e4b8](https://github.com/DomoApps/domoapps-cli/commit/0d5e4b8))
 * DOMO-51237: option to go directly to Asset Library (#59) ([fc6b594](https://github.com/DomoApps/domoapps-cli/commit/fc6b594))
-* Improve domo init for Phoenix (#90) ([9fa1337](https://github.com/DomoApps/domoapps-cli/commit/9fa1337))
+* fix 3 whitelist urls ([76b9426](https://github.com/DomoApps/domoapps-cli/commit/76b9426))
 * DOMO-93433: validate and give user message for token command (#54) ([df82bbd](https://github.com/DomoApps/domoapps-cli/commit/df82bbd))
 * added catch for bad design id error in publish ([fd35fcb](https://github.com/DomoApps/domoapps-cli/commit/fd35fcb))
 * DOMO-105428: moving back to getSimpleDesigns ([43346e8](https://github.com/DomoApps/domoapps-cli/commit/43346e8))
@@ -47,7 +21,7 @@
 * DOMO-112649: Log.fail method in cli should set exit code to 1 (#56) ([da01288](https://github.com/DomoApps/domoapps-cli/commit/da01288))
 * DOMO-110270: Publish mapping update warning (#50) ([e16025e](https://github.com/DomoApps/domoapps-cli/commit/e16025e))
 * DOMO-109103: add spotify to whitelist (#47) ([56aff96](https://github.com/DomoApps/domoapps-cli/commit/56aff96))
-* DOMO-104459 (#49) ([b707212](https://github.com/DomoApps/domoapps-cli/commit/b707212))
+* fix login with args to use dev token if one is available ([9ec7271](https://github.com/DomoApps/domoapps-cli/commit/9ec7271))
 * (DOMO-101838) added instance to domo dev output (#46) ([822e1d3](https://github.com/DomoApps/domoapps-cli/commit/822e1d3))
 * DOMO-105428: change endpoint to simple ([917e1b0](https://github.com/DomoApps/domoapps-cli/commit/917e1b0))
 * added clarification that specific options are only available for token add/token create ([b9e8996](https://github.com/DomoApps/domoapps-cli/commit/b9e8996))
@@ -67,7 +41,7 @@
 
 
 <a name="2.23.1"></a>
-## [2.23.1](https://github.com/DomoApps/domoapps-cli/compare/v2.23.0...v2.23.1) (2017-01-30)
+## [2.23.1](https://github.com/DomoApps/domoapps-cli/compare/v2.24.1...v2.23.1) (2017-01-30)
 
 
 ### Technical Improvements
@@ -78,9 +52,23 @@
 * changed error checking to check response status code ([92f0e6f](https://github.com/DomoApps/domoapps-cli/commit/92f0e6f))
 * caught error in domo download and added friendly error message ([bf0a6d5](https://github.com/DomoApps/domoapps-cli/commit/bf0a6d5))
 * caught error in domo download and added friendly error message ([4610d78](https://github.com/DomoApps/domoapps-cli/commit/4610d78))
-* v2.24.1 ([188842a](https://github.com/DomoApps/domoapps-cli/commit/188842a))
+
+
+<a name="2.24.1"></a>
+## [2.24.1](https://github.com/DomoApps/domoapps-cli/compare/v2.24.0...v2.24.1) (2017-01-27)
+
+
+### Technical Improvements
+
 * changed for login command to removed company name ebay (#40) ([20d13da](https://github.com/DomoApps/domoapps-cli/commit/20d13da))
-* v2.24.0 ([2c05208](https://github.com/DomoApps/domoapps-cli/commit/2c05208))
+
+
+<a name="2.24.0"></a>
+# [2.24.0](https://github.com/DomoApps/domoapps-cli/compare/v2.23.0...v2.24.0) (2017-01-27)
+
+
+### Technical Improvements
+
 * change endpoint to simple for faster domo ls(#39) ([2df6746](https://github.com/DomoApps/domoapps-cli/commit/2df6746))
 
 
@@ -115,18 +103,15 @@
 ## [2.20.13](https://github.com/DomoApps/domoapps-cli/compare/v2.20.12...v2.20.13) (2016-11-21)
 
 
-### Technical Improvements
-
-* feat(dev): external access false by default (#35) ([bd6e67a](https://github.com/DomoApps/domoapps-cli/commit/bd6e67a))
-
-
-<a name="2.20.12"></a>
-## [2.20.12](https://github.com/DomoApps/domoapps-cli/compare/v2.20.11...v2.20.12) (2016-11-15)
-
-
 ### Bug Fixes
 
 *  fixing help output for commands with more than one string ([c5c022b](https://github.com/DomoApps/domoapps-cli/commit/c5c022b))
+
+
+### Technical Improvements
+
+* feat(dev): external access false by default (#35) ([bd6e67a](https://github.com/DomoApps/domoapps-cli/commit/bd6e67a))
+* v2.20.12 ([a01b041](https://github.com/DomoApps/domoapps-cli/commit/a01b041))
 
 
 ### User Experience Polish
