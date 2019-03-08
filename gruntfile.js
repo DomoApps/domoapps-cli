@@ -5,7 +5,8 @@ module.exports = function(grunt) {
   grunt.initConfig({
     shell: {
       changelog: {
-        command: 'npm run changelog; git add CHANGELOG.md'
+        preversion: 'npm run preversion',
+        command: 'npm run changelog; git add CHANGELOG.md templates/**/domoPhoenix*.js'
       }
     },
     release: {
@@ -13,7 +14,7 @@ module.exports = function(grunt) {
         npm: true,
         tagName: 'v<%= version %>',
         commitMessage: 'v<%= version %>',
-        beforeRelease: ['shell:changelog'],
+        beforeRelease: ['shell:preversion','shell:changelog'],
         github: {
           repo: 'DomoApps/domoapps-cli',
           usernameVar: 'GITHUB_USERNAME', //ENVIRONMENT VARIABLE that contains Github username
