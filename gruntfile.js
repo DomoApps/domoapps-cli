@@ -4,10 +4,8 @@ module.exports = function(grunt) {
 
   grunt.initConfig({
     shell: {
-      changelog: {
-        preversion: 'npm run preversion',
-        command: 'npm run changelog; git add CHANGELOG.md templates/**/domoPhoenix*.js'
-      }
+      preversion: { command: 'npm run preversion' },
+      changelog: { command: 'npm run changelog; git add templates/**/domoPhoenix*.js CHANGELOG.md' }
     },
     release: {
       options: {
