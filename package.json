@@ -7,7 +7,7 @@
   "scripts": {
     "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 --config ./changelog/changelog.js",
     "build": "npm run build:phoenix",
-    "build:phoenix": "ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenix.js\" \"./templates/basic chart/domoPhoenix.js\" && ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenixWithMaps.js\" \"./templates/basic chart/domoPhoenixWithMaps.js\"",
+    "build:phoenix": "ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenix.js\" \"./templates/basic chart/domoPhoenix.js\" && ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenixWithMaps.js\" \"./templates/map chart/domoPhoenixWithMaps.js\"",
     "postversion": "git push && git push --tags",
     "preversion": "npm run build",
     "version": "npm run changelog && git add CHANGELOG.md templates/**/domoPhoenix*.js"
