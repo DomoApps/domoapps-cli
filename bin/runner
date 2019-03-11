@@ -6,15 +6,6 @@ process.on('uncaughtException', on_unhandled_error);
 var os = require('os'),
     path = require('path');
 
-process.env.BABEL_CACHE_PATH = path.join(os.tmpdir(), '/ryuu.json');
-
-// enable awesomeness
-require("babel/register")({
-  stage: 0,
-  sourceMap: 'inline',
-  only: ['domo.js', 'server.js', 'commands/**.js', 'util/**.js', 'polyfills/**.js']
-});
-
 var already_warned = false;
 function on_unhandled_error(err) {
     if (already_warned) {
