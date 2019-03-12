@@ -64,7 +64,7 @@ module.exports = function(program){
                 process.chdir(path.resolve(dirname));
               }
               else if (allAnswers.starter === 'map chart') {
-                files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js', 'domoPhoenix.js'];
+                files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js', 'domoPhoenixWithMaps.js'];
                 const customChartTemplateDir = path.join(__dirname, '/../templates/', 'map chart/');
                 dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
