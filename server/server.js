@@ -12,7 +12,7 @@ var request = require('request');
 var Domo = require('ryuu-client');
 var inquirer = require("inquirer");
 var Promise = require('bluebird');
-var body_parser = require('koa-bodyparser');
+var koaBetterBody = require('koa-better-body');
 var app = koa();
 var api = new Router();
 var portfinder = require('portfinder');
@@ -113,22 +113,42 @@ api.all('/domo/*', function *(){
   var appData = yield getDomoappsData();
   var j = request.jar();
   var url = appData.url + this.request.url;
-
+  var method = this.request.method;
+  var contentType = this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json';
+  var multipart = contentType.toLowerCase().includes('multipart');
+  var body = contentType === 'application/json' ? JSON.stringify(this.request.fields) : request.fields;
+  
   var headers = {
     referer: this.request.headers.referer,
     accept: this.request.headers.accept,
-    'Content-Type': this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json'
+    'Content-Type': contentType
   };
 
-  this.body = yield app.domo.processRequestRaw({url: url, jar: j, headers: headers});
+  var options = multipart 
+    ? { 
+      url: url,
+      method: method,
+      jar: j,
+      headers: headers,
+      formData: { 
+        file: {
+          value: fs.createReadStream(this.request.files[0].path),
+          options: { contentType: this.request.files[0].type }
+        }
+      }
+    }
+    : {
+      url: url,
+      method: method,
+      jar: j,
+      headers: headers,
+      body: body
+    }
 
+  this.body = yield app.domo.processRequestRaw(options);
 });
 
-app.use(body_parser({
-  detectJSON: function (ctx) {
-    return false;
-  }
-}));
+app.use(koaBetterBody());
 app.use(api.middleware());
 app.use(mount('/domodev', serve(path.resolve(__dirname + '/../server/domodev'))));
 app.use(mount(serve('.')));
@@ -199,7 +219,8 @@ function getMiddleware() {
  * Fallback to inferring it by the instance URL.
  */
 function getDomoappsData(){
-  var uuid = Domo.createUUID();
+  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
+  var uuid = (manifest['proxyId']) ? manifest.proxyId : Domo.createUUID();
 
   var options = {
     url: 'https://' + app.domo.instance + '/api/content/v1/mobile/environment'
