@@ -94,7 +94,6 @@ module.exports = function(program){
           })
           .catch((err) => {
             log.fail(log.handleErrorMessage(err, err.message));
-            log.clientRequestFailed('Error uploading assets');
           });
         }
       }).catch(log.notAuthenticated);
