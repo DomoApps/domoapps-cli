@@ -23,7 +23,7 @@ module.exports = function(program) {
         //session will stop authenticated users
         const server = require('../server/server');
         server.start(domo, options).catch(log.fail)
-      }).catch(log.notAuthenticated);
+      }).catch((err) => log.fail(log.handleErrorMessage(err, err.message)))
     });
 
 }
