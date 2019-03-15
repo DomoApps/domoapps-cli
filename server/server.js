@@ -124,7 +124,7 @@ api.all('/domo/*', function *(){
     'Content-Type': contentType
   };
 
-  var options = multipart 
+  var options = yield multipart 
     ? { 
       url: url,
       method: method,
