@@ -21,8 +21,10 @@ var mount = require('koa-mount');
 var proxyaddr = require('proxy-addr');
 var session = require('../util/session');
 var appStructure = require('../util/appStructure');
+var Manifest = require('../util/manifest');
 
 portfinder.basePort = 3000;
+var manifest;
 
 api.get('/', function *(){
   var isValidSession = yield session.check(app.domo);
@@ -33,7 +35,7 @@ api.get('/', function *(){
   // console.log("=========here why twice?");
   var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html')));
 
-  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
+  manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
   var sizeMultiplier = {
     width: 235,
     height: 290
@@ -45,6 +47,7 @@ api.get('/', function *(){
   var fullpage = manifest.fullpage;
 
   var context = yield createContext(manifest.id, manifest.mapping);
+  manifest.contextId = context.id;
 
   if (!context){
     isValidContext = false;
@@ -98,13 +101,40 @@ api.all('/data/*', function *(){
     url += "&designId=" + manifest.id;
     var alias = url.match(/data\/(v1|v2|v3)\/(.*)\/dataversions/)[2];
     url += "&datasetId=" + _.find(manifest.mapping, {alias: alias}).dataSetId;
+    url += "&context=" + manifest.contextId
   }
 
+  //add the contextId
+  // url += "&context=" + manifest.contextId;
   this.body = yield app.domo.processRequestRaw({
     url: url,
     method: method,
     jar: j,
     body: body,
+    headers: headers
+  });
+});
+
+// Proxy sql queries for the environment they're logged into.
+api.post('/sql/*', function *(){
+  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
+  var appData = yield getDomoappsData();
+  var j = request.jar();
+//  var url = appData.url + this.request.url;
+//  request.qs
+  var method = this.request.method;
+
+  var headers = {
+    referer: this.request.headers.referer,
+    accept: this.request.headers.accept,
+    'Content-Type': 'text/plain'
+  };
+
+  this.body = yield app.domo.processRequestRaw({
+    url: url,
+    method: method,
+    jar: j,
+    body: this.request.body,
     headers: headers
   });
 });
