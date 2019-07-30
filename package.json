@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "3.1.2",
+  "version": "3.1.5",
   "bin": {
     "domo": "./bin/runner"
   },
@@ -15,7 +15,7 @@
   "dependencies": {
     "async": "~1.3.0",
     "bluebird": "~2.3.2",
-    "browser-sync": "^2.26.3",
+    "browser-sync": "^2.26.7",
     "chalk": "~0.5.1",
     "cli-table": "^0.3.1",
     "commander": "2.9.0",
@@ -24,7 +24,7 @@
     "fs-extra": "~0.30.0",
     "glob": "7.0.5",
     "inquirer": "0.6.0",
-    "keytar": "^4.0.5",
+    "keytar": "^4.11.0",
     "koa": "^0.21.0",
     "koa-better-body": "^3.0.4",
     "koa-bodyparser": "2.0.1",
@@ -37,10 +37,10 @@
     "proxy-addr": "1.1.2",
     "publish": "^0.6.0",
     "q": "^1.4.1",
-    "raw-body": "^2.1.6",
+    "raw-body": "^2.4.1",
     "request": "^2.88.0",
     "ryuu-client": "^3.0.1",
-    "ryuu.js": "^2.6.3",
+    "ryuu.js": "^2.6.5",
     "semver": "~4.1.0",
     "shelljs": "^0.5.1",
     "slug": "^0.9.1",
