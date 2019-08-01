@@ -120,8 +120,7 @@ api.post('/sql/*', function *(){
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
   var appData = yield getDomoappsData();
   var j = request.jar();
-//  var url = appData.url + this.request.url;
-//  request.qs
+ var url = appData.url + this.request.url;
   var method = this.request.method;
 
   var headers = {
@@ -278,6 +277,7 @@ function createContext(designId, mapping){
     .then(function(res) {
       return res[0];
     }).catch(function(err) {
+      console.log("Error: ", err.message);
       return;
     })
 }
