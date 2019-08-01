@@ -47,8 +47,6 @@ api.get('/', function *(){
   var fullpage = manifest.fullpage;
 
   var context = yield createContext(manifest.id, manifest.mapping);
-  console.log("context ", context)
-  console.log("contextId", context.id);
   manifest.contextId = context.id;
 
   if (!context){
@@ -77,6 +75,7 @@ api.get('/', function *(){
 
 // Proxy requests to the correct domoapps service for the environment they're logged into.
 api.all('/data/*', function *(){
+  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
   var appData = yield getDomoappsData();
   var j = request.jar();
   var url = appData.url + this.request.url;
@@ -118,15 +117,11 @@ api.all('/data/*', function *(){
 
 // Proxy sql queries for the environment they're logged into.
 api.post('/sql/*', function *(){
+  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
   var appData = yield getDomoappsData();
   var j = request.jar();
-
-  const url = new URL(appData.url + this.request.url);
-  const searchParams = new URLSearchParams(url.search);
-  searchParams.context = manifest.contextId;
-  url.search = searchParams;
-  console.log("contextId: " + manifest.contextId + " (" + searchParams.context + ")");
-  console.log("URL: " + url.toString());
+//  var url = appData.url + this.request.url;
+//  request.qs
   var method = this.request.method;
 
   var headers = {
@@ -136,7 +131,7 @@ api.post('/sql/*', function *(){
   };
 
   this.body = yield app.domo.processRequestRaw({
-    url: url.toString(),
+    url: url,
     method: method,
     jar: j,
     body: this.request.body,
