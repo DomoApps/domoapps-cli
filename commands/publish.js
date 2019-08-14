@@ -4,6 +4,8 @@ var _ = require('lodash');
 var opn = require('opn');
 var Manifest = require('../util/manifest');
 var Login = require('../util/login');
+var glob = require('glob');
+var fs = require('fs-extra');
 var log = require('../util/log');
 var appStructure = require('../util/appStructure');
 var messages = require('../util/messages');
@@ -22,6 +24,25 @@ module.exports = function(program){
       Login.getMostRecentLogin().then(function(login) {
         Login.verifyLogin(login);
         var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
+        var ignore = ['**/*/node_modules/**/*', 'node_modules/**/*'];
+        var userIgnore = manifest.ignore;
+        if (userIgnore){
+          if (userIgnore instanceof Array){
+            ignore = ignore.concat(userIgnore);
+          }
+          else{
+            log.fail('The manifest.json "ignore" property must be an Array');
+            return;
+          }
+        }
+        var badFileList = glob.sync("**/*", {ignore: ignore})
+          .filter(function(file) {
+            return !fs.lstatSync(file).isDirectory() && file.indexOf(' ') !== -1;
+          });
+        if (badFileList.length > 0) {
+          log.fail('Spaces in file names not allowed. Please rename the following file(s): ' + badFileList);
+          return;
+        }
 
         if (!appStructure.hasThumbnail()) {
           log.warn(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
