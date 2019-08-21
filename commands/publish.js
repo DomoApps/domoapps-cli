@@ -162,7 +162,7 @@ function logUploadSuccess(files){
 
 function goToDomo(options, domo, manifest) {
   console.log('Design can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
-  if(options.go) {
+  if (options && options.go) {
    opn('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
   }
 }
