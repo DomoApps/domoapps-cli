@@ -47,12 +47,12 @@ api.get('/', function *(){
   var fullpage = manifest.fullpage;
 
   var context = yield createContext(manifest.id, manifest.mapping);
-  manifest.contextId = context.id;
 
   if (!context){
     isValidContext = false;
     context = {id: 0};
   }
+  manifest.contextId = context.id;
 
   var appData = yield getDomoappsData();
 
