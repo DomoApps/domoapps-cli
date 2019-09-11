@@ -145,7 +145,7 @@ api.all('/domo/*', function *(){
   var method = this.request.method;
   var contentType = this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json';
   var multipart = contentType.toLowerCase().includes('multipart');
-  var body = contentType === 'application/json' ? JSON.stringify(this.request.fields) : request.fields;
+  var body = contentType.includes('application/json') ? JSON.stringify(this.request.fields) : request.fields;
   
   var headers = {
     referer: this.request.headers.referer,
