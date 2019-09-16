@@ -43,9 +43,9 @@ module.exports = {
 
     return function(login){
       var loginFile = path.resolve(home + '/login/' + instance + '.json');
-      var loginData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
+      const loginData = fs.readJsonSync(loginFile, {throws: false});
       fs.ensureFileSync(loginFile);
-      var data = {
+      const data = {
         ...loginData,
         instance
       };
