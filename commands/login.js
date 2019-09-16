@@ -11,6 +11,7 @@ var Promise = require('bluebird');
 var path = require('path');
 var request = Promise.promisify(require('request'));
 var constants = require('../util/constants');
+var Oauth = require('../util/oauth');
 
 var logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -105,6 +106,18 @@ module.exports = function(program){
               .then(function(l){
                 return login = l;
               })
+              .then(function(){
+                if (Oauth.isOAuthEnabled()) {
+                  if (Oauth.hasAppProxyId()) {
+                    return setupOauth(answers.instance, Oauth.getAppProxyId());
+                  }
+                  else {
+                    return promptAppProxyId().then(proxyId => {
+                      return setupOauth(answers.instance, proxyId);
+                    });
+                  }
+                }
+              })
               .then(checkVersion.bind(null, answers.instance))
               .then(versionCheckFn)
               .then(function(){
@@ -184,4 +197,47 @@ function promptUpgrade(latest){
       }
     });
   });
+}
+
+/**
+ * Oauth Code
+ */
+function promptAppProxyId() {
+  return new Promise(function(resolve, reject){
+    inquirer.prompt([
+      {
+        type: 'input',
+        message: 'Please enter the app instance id ' + chalk.grey('(oauth proxy) '),
+        name: 'proxyId'
+      }
+    ], (answer) => resolve(answer.proxyId.trim()));
+  });
+}
+
+function setupOauth(instance, proxyId) {
+  if (!Oauth.hasTokens({ instance, proxyId })) {
+    return Oauth.register({instance, proxyId})
+      .then(result => {
+        log.ok('Valid Device Id');
+        return Oauth.verifyRegistration({
+          instance,
+          proxyId,
+          verificationUri: result.verification_uri,
+          userCode: result.user_code,
+          deviceCode: result.device_code
+        });
+      })
+      .then(result => {
+        log.ok('Retrieved Oauth Tokens');
+        Oauth.persistTokens({
+          instance,
+          proxyId,
+          accessToken: result.access_token,
+          refreshToken: result.refresh_token
+        });
+      })
+      .catch(error => {
+        log.fail(error);
+      });
+  }
 }
