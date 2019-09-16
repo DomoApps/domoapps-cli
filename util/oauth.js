@@ -59,7 +59,7 @@ module.exports = {
           },
           form: {
             client_id: `domo:ryuu:${proxyId}`,
-            scope: 'domoapps'
+            scope: this.getScopes().join(' '),
           }
         },
         (error, httpResponse, body) => {
