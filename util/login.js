@@ -43,8 +43,12 @@ module.exports = {
 
     return function(login){
       var loginFile = path.resolve(home + '/login/' + instance + '.json');
+      const loginData = fs.readJsonSync(loginFile, {throws: false});
       fs.ensureFileSync(loginFile);
-      var data = { instance: instance };
+      const data = {
+        ...loginData,
+        instance
+      };
       if (login.refreshToken){
         keytar.setPassword('domoapps-cli', instance, login.refreshToken); //runs async to writing, not concerned about waiting
       }
