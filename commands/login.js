@@ -98,9 +98,7 @@ module.exports = function(program){
           if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
             log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
           }
-          Login.getLogin(answers.instance).then(function(instanceLogin) {
-            var login;
-            var domo = new Domo(answers.instance, instanceLogin.refreshToken, constants.CLIENT_ID);
+          Login.getLogin(answers.instance).then(function(domo) {
             domo
               .login()
               .then(function(l){
@@ -123,7 +121,7 @@ module.exports = function(program){
               .then(function(){
                 console.log(chalk.grey(logo));
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
-                return Login.persistLogin(answers.instance)(login);
+                return Login.persistLogin(answers.instance, login.refreshToken);
               })
               .catch(evoke(log.fail, 'Login unsuccessful'))
               .finally(process.exit)

@@ -21,9 +21,7 @@ module.exports = function(program){
       var manifest = Manifest.get(program.manifest);
       if (!manifest) return;
 
-      Login.getMostRecentLogin().then(function(login) {
-        Login.verifyLogin(login);
-        var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
+      Login.getMostRecentLogin().then(function(domo) {
         var ignore = ['**/*/node_modules/**/*', 'node_modules/**/*'];
         var userIgnore = manifest.ignore;
         if (userIgnore){
