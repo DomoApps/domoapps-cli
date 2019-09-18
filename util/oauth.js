@@ -94,13 +94,13 @@ module.exports = {
           resolve(result);
         })
         .catch(error => {
-          console.log(chalk.grey('Trying to retrieve oauth tokens...'));
+          console.log(chalk.grey('Waiting for browser oauth registration'));
         })
       }, 1000);
   
       setTimeout(() => {
         clearInterval(checkRegistration);
-        reject('Unable to retrieve oauth tokens.');
+        reject('Timed out for oauth registration verification.');
       }, 10000);
     });
   },
