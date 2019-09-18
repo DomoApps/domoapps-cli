@@ -12,7 +12,7 @@ var request = require('request');
 var Domo = require('ryuu-client');
 var inquirer = require("inquirer");
 var Promise = require('bluebird');
-var koaBetterBody = require('koa-better-body');
+const koaBody = require('koa-body');
 var app = koa();
 var api = new Router();
 var portfinder = require('portfinder');
@@ -145,7 +145,7 @@ api.all('/domo/*', function *(){
   var method = this.request.method;
   var contentType = this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json';
   var multipart = contentType.toLowerCase().includes('multipart');
-  var body = contentType.includes('application/json') ? JSON.stringify(this.request.fields) : request.fields;
+  var body = contentType.includes('application/json') ? JSON.stringify(this.request.body) : request.body;
   
   var headers = {
     referer: this.request.headers.referer,
@@ -161,8 +161,8 @@ api.all('/domo/*', function *(){
       headers: headers,
       formData: { 
         file: {
-          value: fs.createReadStream(this.request.files[0].path),
-          options: { contentType: this.request.files[0].type }
+          value: fs.createReadStream(this.request.files.file.path),
+          options: { contentType: this.request.files.file.type }
         }
       }
     }
@@ -177,7 +177,7 @@ api.all('/domo/*', function *(){
   this.body = yield app.domo.processRequestRaw(options);
 });
 
-app.use(koaBetterBody());
+app.use(koaBody({multipart: true}));
 app.use(api.middleware());
 app.use(mount('/domodev', serve(path.resolve(__dirname + '/../server/domodev'))));
 app.use(mount(serve('.')));
