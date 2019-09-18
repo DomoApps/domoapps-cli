@@ -1,13 +1,13 @@
-var fs = require('fs-extra');
-var path = require('path');
-var Domo = require('ryuu-client');
-var home = Domo.getHomeDir();
-var log = require('./log');
-var keytar = require('keytar');
-var Manifest = require('./manifest');
-var Promise = require('bluebird');
-var request = require('request');
-var opn = require('opn');
+const fs = require('fs-extra');
+const path = require('path');
+const Domo = require('ryuu-client');
+const home = Domo.getHomeDir();
+const keytar = require('keytar');
+const Manifest = require('./manifest');
+const Promise = require('bluebird');
+const request = require('request');
+const opn = require('opn');
+const chalk = require('chalk');
 
 module.exports = {
   isOAuthEnabled: function() {
@@ -94,13 +94,13 @@ module.exports = {
           resolve(result);
         })
         .catch(error => {
-          log.fail('Unable to retrieve access token');
-        });
+          console.log(chalk.grey('Trying to retrieve oauth tokens...'));
+        })
       }, 1000);
   
       setTimeout(() => {
         clearInterval(checkRegistration);
-        reject();
+        reject('Unable to retrieve oauth tokens.');
       }, 10000);
     });
   },
