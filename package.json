@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "3.2.1",
+  "version": "3.2.3",
   "bin": {
     "domo": "./bin/runner"
   },
