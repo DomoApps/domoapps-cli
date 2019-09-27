@@ -2,45 +2,60 @@
  * domo dev server
  */
 
-var fs = require('fs-extra');
 var path = require('path');
 var _ = require('lodash');
-var koa = require('koa');
-var Router = require('koa-router');
+var fs = require('fs-extra');
 var bs = require('browser-sync').create();
 var request = require('request');
-var Domo = require('ryuu-client');
-var inquirer = require("inquirer");
 var Promise = require('bluebird');
-const koaBody = require('koa-body');
-var app = koa();
-var api = new Router();
 var portfinder = require('portfinder');
-var serve = require('koa-static');
-var mount = require('koa-mount');
-var proxyaddr = require('proxy-addr');
-var session = require('../util/session');
-var appStructure = require('../util/appStructure');
+var proxyaddr = require('proxy-addr'); //redundant with ryuu-proxy?
 var Manifest = require('../util/manifest');
 
-portfinder.basePort = 3000;
-var manifest;
+var Domo = require('ryuu-client');
 
-api.get('/', function *(){
+
+
+const express = require('express');
+const app = express();
+const api = express.Router();
+const { Proxy } = require('@domoinc/ryuu-proxy');
+const config = { manifest: Manifest.get() };
+const proxy = new Proxy(config);
+
+
+//app.use(koaBody({multipart: true}));
+//app.use(api.middleware());
+
+//app.use(mount('/domodev', serve(path.resolve(__dirname + '/../server/domodev'))));
+//app.use(mount(serve('.')));
+
+
+
+
+var session = require('../util/session');
+var appStructure = require('../util/appStructure');
+
+
+
+portfinder.basePort = 3000;
+var manifest = Manifest.get();
+
+api.get('/', function *(req, res){
+  //app.get('/', function *(req, res){
   var isValidSession = yield session.check(app.domo);
   var isValidContext = true;
   var hasThumbnail = appStructure.hasThumbnail();
 
   // TODO: figure out why this is being called twice
-  // console.log("=========here why twice?");
+  console.log("=========here why twice?");
   var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html')));
 
   manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
   var sizeMultiplier = {
     width: 235,
     height: 290
-  }
-
+  };
   // sizes consistent with Domo Web
   var width = 235 * manifest.size.width - 10 + 'px';
   var height = 290 * manifest.size.height - 40 + 'px';
@@ -61,7 +76,7 @@ api.get('/', function *(){
 
   var url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
 
-  this.body = template({
+  res.send = template({
     manifest,
     width,
     height,
@@ -75,6 +90,7 @@ api.get('/', function *(){
 
 // Proxy requests to the correct domoapps service for the environment they're logged into.
 api.all('/data/*', function *(){
+  //app.all('/data/*', function *(){
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
   var appData = yield getDomoappsData();
   var j = request.jar();
@@ -117,6 +133,7 @@ api.all('/data/*', function *(){
 
 // Proxy sql queries for the environment they're logged into.
 api.post('/sql/*', function *(){
+  //app.post('/sql/*', function *(){
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
   var appData = yield getDomoappsData();
   var j = request.jar();
@@ -139,6 +156,7 @@ api.post('/sql/*', function *(){
 });
 
 api.all('/domo/*', function *(){
+  //app.all('/domo/*', function *(){
   var appData = yield getDomoappsData();
   var j = request.jar();
   var url = appData.url + this.request.url;
@@ -177,10 +195,12 @@ api.all('/domo/*', function *(){
   this.body = yield app.domo.processRequestRaw(options);
 });
 
-app.use(koaBody({multipart: true}));
-app.use(api.middleware());
-app.use(mount('/domodev', serve(path.resolve(__dirname + '/../server/domodev'))));
-app.use(mount(serve('.')));
+app.use('/domodev', express.static(path.resolve(__dirname + '/../server/domodev')));
+app.use(express.static('.'));
+app.use('/', api);
+app.use(proxy.express());
+
+
 
 module.exports = {
   start: function(domo, options){
@@ -196,8 +216,7 @@ module.exports = {
           .then(function() {
             var external = Boolean(app.options.external);
             var middleware = external ? [] : getMiddleware();
-
-            app.listen(dataPort)
+            app.listen(dataPort);
 
             bs.init({
               proxy: "localhost:" + dataPort,
