@@ -1,6 +1,7 @@
 var fs = require('fs-extra');
 var path = require('path');
 var semver = require('semver');
+var glob = require('glob');
 var log = require('../util/log');
 var isValidJSName = require('../util/isValidJSName');
 
@@ -8,7 +9,7 @@ module.exports = {
   /**
   * Get the local manifest.json file, ensuring it's valid.
   */
-  get: function(manifestPath = 'manifest.json', verify = true){
+  get: function(manifestPath = findManifest('manifest.json'), verify = true){
     var manifest;
     try {
       manifest = fs.readFileSync(path.resolve(manifestPath));
@@ -96,4 +97,16 @@ function ensureValidAlias(name){
   if (!isValidJSName(name)){
     log.fail('Alias names must be valid JavaScript properties', 'Please rename the ' + JSON.stringify(name) + ' alias and update any /data/v1/<alias> calls with the new alias name');
   }
+}
+
+/**
+ * Finds the manifest file in the current directory, or sub files
+ */
+function findManifest(name) {
+  const matches = glob.sync(`**/${name}`);
+  if (matches.length > 0) {
+    return matches[0];
+  }
+
+  return name;
 }
