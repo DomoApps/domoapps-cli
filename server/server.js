@@ -2,224 +2,90 @@
  * domo dev server
  */
 
-var path = require('path');
-var _ = require('lodash');
-var fs = require('fs-extra');
-var bs = require('browser-sync').create();
-var request = require('request');
-var Promise = require('bluebird');
-var portfinder = require('portfinder');
-var proxyaddr = require('proxy-addr'); //redundant with ryuu-proxy?
-var Manifest = require('../util/manifest');
+const path = require('path');
+const _ = require('lodash');
+const fs = require('fs-extra');
+const Promise = require('bluebird');
+let bs = require('browser-sync').create();
+let portfinder = require('portfinder');
+portfinder.basePort = 3000;
 
-var Domo = require('ryuu-client');
+const session = require('../util/session');
+const appStructure = require('../util/appStructure');
+const Manifest = require('../util/manifest');
 
-
-
+const Domo = require('ryuu-client');
 const express = require('express');
 const app = express();
-const api = express.Router();
 const { Proxy } = require('@domoinc/ryuu-proxy');
 const config = { manifest: Manifest.get() };
 const proxy = new Proxy(config);
 
+let manifest = Manifest.get();
+let context;
 
-//app.use(koaBody({multipart: true}));
-//app.use(api.middleware());
-
-//app.use(mount('/domodev', serve(path.resolve(__dirname + '/../server/domodev'))));
-//app.use(mount(serve('.')));
-
-
-
-
-var session = require('../util/session');
-var appStructure = require('../util/appStructure');
-
-
-
-portfinder.basePort = 3000;
-var manifest = Manifest.get();
-
-api.get('/', function *(req, res){
-  //app.get('/', function *(req, res){
-  var isValidSession = yield session.check(app.domo);
-  var isValidContext = true;
-  var hasThumbnail = appStructure.hasThumbnail();
-
-  // TODO: figure out why this is being called twice
-  console.log("=========here why twice?");
-  var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html')));
-
-  manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
-  var sizeMultiplier = {
-    width: 235,
-    height: 290
-  };
-  // sizes consistent with Domo Web
-  var width = 235 * manifest.size.width - 10 + 'px';
-  var height = 290 * manifest.size.height - 40 + 'px';
-  var fullpage = manifest.fullpage;
-
-  var context = yield createContext(manifest.id, manifest.mapping);
-
-  if (!context){
-    isValidContext = false;
-    context = {id: 0};
-  }
-  manifest.contextId = context.id;
-
-  var appData = yield getDomoappsData();
-
-  var userId = app.options.userId || appData.user.id;
-  var customerId = 1 || appData.customer;
-
-  var url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
-
-  res.send = template({
-    manifest,
-    width,
-    height,
-    url,
-    isValidSession,
-    isValidContext,
-    hasThumbnail,
-    fullpage
-  });
-});
-
-// Proxy requests to the correct domoapps service for the environment they're logged into.
-api.all('/data/*', function *(){
-  //app.all('/data/*', function *(){
-  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
-  var appData = yield getDomoappsData();
-  var j = request.jar();
-  var url = appData.url + this.request.url;
-  var method = this.request.method;
-
-  var headers = {
-    referer: this.request.headers.referer,
-    accept: this.request.headers.accept,
-    'Content-Type': this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json'
-  };
-
-
-  var body = JSON.stringify(this.request.body);
-
-  if (url.indexOf("dataversions") !== -1){
-    var getRawBody = require('raw-body')
-    body = yield getRawBody(this.req, {
-      length: this.length,
-      limit: '1mb',
-      encoding: this.charset
-    });
-    url = url.replace("/dataversions", "/dataversions/domodev");
-    url += "&designId=" + manifest.id;
-    var alias = url.match(/data\/(v1|v2|v3)\/(.*)\/dataversions/)[2];
-    url += "&datasetId=" + _.find(manifest.mapping, {alias: alias}).dataSetId;
-    url += "&context=" + manifest.contextId
-  }
-
-  //add the contextId
-  // url += "&context=" + manifest.contextId;
-  this.body = yield app.domo.processRequestRaw({
-    url: url,
-    method: method,
-    jar: j,
-    body: body,
-    headers: headers
-  });
-});
-
-// Proxy sql queries for the environment they're logged into.
-api.post('/sql/*', function *(){
-  //app.post('/sql/*', function *(){
-  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
-  var appData = yield getDomoappsData();
-  var j = request.jar();
- var url = appData.url + this.request.url;
-  var method = this.request.method;
-
-  var headers = {
-    referer: this.request.headers.referer,
-    accept: this.request.headers.accept,
-    'Content-Type': 'text/plain'
-  };
-
-  this.body = yield app.domo.processRequestRaw({
-    url: url,
-    method: method,
-    jar: j,
-    body: this.request.body,
-    headers: headers
-  });
-});
-
-api.all('/domo/*', function *(){
-  //app.all('/domo/*', function *(){
-  var appData = yield getDomoappsData();
-  var j = request.jar();
-  var url = appData.url + this.request.url;
-  var method = this.request.method;
-  var contentType = this.request.headers['content-type'] || this.request.headers['Content-Type'] || 'application/json';
-  var multipart = contentType.toLowerCase().includes('multipart');
-  var body = contentType.includes('application/json') ? JSON.stringify(this.request.body) : request.body;
-  
-  var headers = {
-    referer: this.request.headers.referer,
-    accept: this.request.headers.accept,
-    'Content-Type': contentType
-  };
-
-  var options = yield multipart 
-    ? { 
-      url: url,
-      method: method,
-      jar: j,
-      headers: headers,
-      formData: { 
-        file: {
-          value: fs.createReadStream(this.request.files.file.path),
-          options: { contentType: this.request.files.file.type }
-        }
+app.get('/', function (req, res){
+  const isValidSession = session.check(app.domo)
+    .then(() => {
+      manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
+      return createContext(manifest.id, manifest.mapping);
+    })
+    .then((appContext) => {
+      context = appContext;
+      if (!context) {
+        isValidContext = false;
+        context = {id: 0};
       }
-    }
-    : {
-      url: url,
-      method: method,
-      jar: j,
-      headers: headers,
-      body: body
-    }
+      manifest.contextId = context.id;
+      return getDomoappsData();
+    })
+    .then((appData) => {
+      // sizes consistent with Domo Web
+      const sizeMultiplier = {
+        width: 235,
+        height: 290
+      };
+      const width = sizeMultiplier.width * manifest.size.width - 10 + 'px';
+      const height = sizeMultiplier.height * manifest.size.height - 40 + 'px';
+      const userId = app.options.userId || appData.user.id;
+      const customerId = 1 || appData.customer;
+      const url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
+      const isValidContext = true;
+      const hasThumbnail = appStructure.hasThumbnail();
+      const template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html')));
+      const fullpage = manifest.fullpage;
 
-  this.body = yield app.domo.processRequestRaw(options);
+      res.send(template({
+        manifest,
+        width,
+        height,
+        url,
+        isValidSession,
+        isValidContext,
+        hasThumbnail,
+        fullpage
+      }));
+    });
 });
 
 app.use('/domodev', express.static(path.resolve(__dirname + '/../server/domodev')));
 app.use(express.static('.'));
-app.use('/', api);
 app.use(proxy.express());
-
-
 
 module.exports = {
   start: function(domo, options){
     return new Promise(function(resolve, reject){
-
-      portfinder.getPorts(2, function (err, ports) {
+      portfinder.getPorts(1, function (err, ports) {
         var assetsPort = ports[0];
-        var dataPort = ports[1];
         app.domo = domo;
         app.options = options;
 
         session.check(app.domo)
           .then(function() {
             var external = Boolean(app.options.external);
-            var middleware = external ? [] : getMiddleware();
-            app.listen(dataPort);
-
+            app.listen(assetsPort);
             bs.init({
-              proxy: "localhost:" + dataPort,
+              proxy: "localhost:" + assetsPort,
               port: assetsPort,
               notify: false,
               ui: false,
@@ -228,15 +94,13 @@ module.exports = {
               online: external,
               // TODO: add user's ignored files here too?
               files: ['**/*', '!node_modules/**/*'],
-              middleware: middleware,
             });
             bs.instance.logger.info('Instance: ' + app.domo.instance);
           })
           .catch(function(e){
             reject('Session expired. Please login again using domo login.');
-          })
+          });
       });
-
     });
   }
 };
@@ -251,17 +115,6 @@ function getEnv(){
   return app.domo.instance.match(regexp)[2];
 }
 
-function getMiddleware() {
-    return [ function(req, res, next) {
-      if (proxyaddr(req, '127.0.0.1') !== '::1') {
-        Error.stackTraceLimit = 0;
-        next(new Error('Access Denied'));
-      } else {
-        next();
-      }
-    }];
-}
-
 /**
  * Fetch domoapps environment data from maestro.
  * Fallback to inferring it by the instance URL.
@@ -269,15 +122,14 @@ function getMiddleware() {
 function getDomoappsData(){
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
   var uuid = (manifest['proxyId']) ? manifest.proxyId : Domo.createUUID();
-
   var options = {
     url: 'https://' + app.domo.instance + '/api/content/v1/mobile/environment'
   }
-
   return app.domo.processRequest(options)
     .then(function(res) {
       var data = JSON.parse(res);
       data.url = 'https://'+uuid+'.' + JSON.parse(res).domoappsDomain;
+      
       return data;
     }).catch(function() {
       var data = {url: 'https://'+uuid+'.domoapps.' + getEnv()};
