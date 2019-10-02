@@ -10,29 +10,38 @@ const opn = require('opn');
 const chalk = require('chalk');
 
 module.exports = {
-  isOAuthEnabled: function() {
-    const manifest = Manifest.get();
-    return !!manifest.oAuthEnabled;
+  isOAuthEnabled: function(manifestName) {
+    if (Manifest.hasManifest(manifestName)) {
+      const manifest = Manifest.get(manifestName);
+      return !!manifest.oAuthEnabled;
+    }
+
+    return false;
   },
 
-  hasAppProxyId: function() {
-    const manifest = Manifest.get();
-    return (!!Object.keys(manifest).includes('cardId') || !!(Object.keys(manifest).includes('proxyId')));
+  hasAppProxyId: function(manifestName) {
+    const manifest = Manifest.get(manifestName);
+    return !!Object.keys(manifest).includes('cardId')
+      || !!(Object.keys(manifest).includes('proxyId'))
+      || !!(Object.keys(manifest).includes('appContextId'));
   },
 
   /**
    * Requires there to be an appProxyId
    */
-  getAppProxyId: function() {
-    const manifest = Manifest.get();
+  getAppProxyId: function(manifestName) {
+    const manifest = Manifest.get(manifestName);
     if (!!Object.keys(manifest).includes('cardId')) {
       return manifest.cardId;
+    }
+    if (!!Object.keys(manifest).includes('appContextId')) {
+      return manifest.appContextId;
     }
     return manifest.proxyId;
   },
 
-  getScopes: function() {
-    const manifest = Manifest.get();
+  getScopes: function(manifestName) {
+    const manifest = Manifest.get(manifestName);
     if (!!Object.keys(manifest).includes('scopes')) {
       return [
         'domoapps',
@@ -43,13 +52,13 @@ module.exports = {
     return ['domoapps'];
   },
 
-  hasTokens: function({ instance, proxyId }) {
-    const scopes = JSON.stringify(this.getScopes());
+  hasTokens: function({ instance, manifestName, proxyId }) {
+    const scopes = JSON.stringify(this.getScopes(manifestName));
     const instanceData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
     return instanceData.proxyId === proxyId && instanceData.scopes === scopes;
   },
 
-  register: function({instance, proxyId}) {
+  register: function({instance, manifestName, proxyId}) {
     return new Promise((resolve, reject) => {
       request.post(
         {
@@ -59,7 +68,7 @@ module.exports = {
           },
           form: {
             client_id: `domo:ryuu:${proxyId}`,
-            scope: this.getScopes().join(' '),
+            scope: this.getScopes(manifestName).join(' '),
           }
         },
         (error, httpResponse, body) => {
@@ -70,12 +79,12 @@ module.exports = {
     });
   },
 
-  verifyRegistration: function({ instance, proxyId, verificationUri, userCode, deviceCode }) {
+  verifyRegistration: function({ instance, manifestName, proxyId, verificationUri, userCode, deviceCode }) {
     return new Promise((resolve, reject) => {
       opn(`${verificationUri}?user_code=${userCode}`);
 
       // scopes are space separated
-      const scopes = this.getScopes().join(' ');
+      const scopes = this.getScopes(manifestName).join(' ');
 
       const checkRegistration = setInterval(() => {
         new Promise((resolve, reject) => {
@@ -109,10 +118,10 @@ module.exports = {
    * persist login to user's domo home
    * TODO: REFACTOR w writeLogin
    */
-  persistTokens: function({ instance, proxyId, accessToken, refreshToken }) {
+  persistTokens: function({ instance, manifestName, proxyId, accessToken, refreshToken }) {
     const loginFile = path.resolve(home + '/login/' + instance + '.json');
     const loginData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
-    const scopes = this.getScopes();
+    const scopes = this.getScopes(manifestName);
 
     fs.ensureFileSync(loginFile);
 
@@ -129,8 +138,8 @@ module.exports = {
     return { accessToken, refreshToken };
   },
 
-  deleteTokens: function(instance) {
-    const scopes = this.getScopes();
+  deleteTokens: function({ instance, manifestName }) {
+    const scopes = this.getScopes(manifestName);
     const instanceData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
     return new Promise.all([
       keytar.deletePassword(`domoapps-oauth-access-${scopes.join('-')}`, `${instance}-${instanceData.proxyId}`),
@@ -138,8 +147,8 @@ module.exports = {
     ]);
   },
 
-  getTokens: function(instance) {
-    const scopes = this.getScopes();
+  getTokens: function({ instance, manifestName }) {
+    const scopes = this.getScopes(manifestName);
     const instanceData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
     return new Promise.all([
       keytar.getPassword(`domoapps-oauth-access-${scopes.join('-')}`, `${instance}-${instanceData.proxyId}`),
