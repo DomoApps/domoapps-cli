@@ -34,6 +34,10 @@ module.exports = {
     if (verify){
       validateManifest(manifest);
     }
+
+    // add the manifest name, so it's attached to the object
+    manifest.name = manifestName;
+
     return manifest;
   },
 
@@ -50,8 +54,8 @@ module.exports = {
     return design;
   },
 
-  updateManifest: function(manifestName, manifest){
-    const manifestPath = findManifest(manifestName);
+  updateManifest: function(manifest){
+    const manifestPath = findManifest(manifest.name);
     fs.writeJsonSync(manifestPath, manifest, {spaces: 2});
   }
 }
