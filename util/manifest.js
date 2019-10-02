@@ -38,9 +38,7 @@ module.exports = {
   },
 
   hasManifest: function(manifestName) {
-    return fs.existsSync(manifestName)
-      | fs.existsSync(`public/${manifestName}`)
-      | fs.existsSync(findManifest(manifestName));
+    return fs.existsSync(findManifest(manifestName));
   },
 
   /**
