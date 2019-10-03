@@ -38,7 +38,6 @@
     "slug": "^1.1.0",
     "source-map-support": "^0.5.13",
     "validator": "^11.1.0",
-    "webpack": "^4.41.0"
   },
   "devDependencies": {
     "@domoinc/domo-phoenix": "^0.11.0",
