@@ -39,7 +39,8 @@ module.exports = function(program){
             default: 'latest'
           });
         }
-        inquirer.prompt(prompts, function(answers){
+        inquirer.prompt(prompts)
+          .then(function(answers){
           answers.designId = args.designId || answers.designId;
           answers.version = args.designVersion || answers.version;
 

@@ -90,12 +90,13 @@ module.exports = function(program){
                         message: 'This design has been deleted. Would you like to publish a new design with these assets?',
                         name: 'askRecreate'
                       }
-                    ], function (answers) {
-                      if (answers.askRecreate){
-                        manifest.id = null;
-                        createDesign(domo, manifest, login);
-                      }
-                    });
+                    ])
+                      .then(function (answers) {
+                        if (answers.askRecreate){
+                          manifest.id = null;
+                          createDesign(domo, manifest, login);
+                        }
+                      });
 
                     break;
 

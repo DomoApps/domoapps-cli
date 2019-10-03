@@ -150,5 +150,5 @@ function createContext(designId, mapping){
     }).catch(function(err) {
       console.log("Error: ", err.message);
       return;
-    })
+    });
 }

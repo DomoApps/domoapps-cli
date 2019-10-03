@@ -67,7 +67,7 @@ module.exports = function(program){
           prompts.push(multichoice({
             type: "list",
             choices: function(){
-              var options = _.pluck(previousLogins, 'instance');
+              var options = _.map(previousLogins, 'instance');
               options.push('new instance');
               return options;
             },
@@ -91,7 +91,8 @@ module.exports = function(program){
         }
 
         // prompt user
-        inquirer.prompt(prompts, function(answers) {
+        inquirer.prompt(prompts)
+          .then(function(answers) {
 
           answers.instance = args.instance || answers.instance;
 
@@ -180,22 +181,23 @@ function promptUpgrade(latest){
         default: true
       }
 
-    ], function(answers) {
-      if (answers.upgrade){
-        log.info('Upgrading to latest version', 'Hang tight, this may take a moment...');
-        var output = shell.exec('npm install ryuu -g', {async: false, silent: true});
-        if (output.code === 0){
-          log.ok('Upgrade to version '+latest+' successful');
+    ])
+      .then(function(answers) {
+        if (answers.upgrade){
+          log.info('Upgrading to latest version', 'Hang tight, this may take a moment...');
+          var output = shell.exec('npm install ryuu -g', {async: false, silent: true});
+          if (output.code === 0){
+            log.ok('Upgrade to version '+latest+' successful');
+            resolve();
+          }
+          else {
+            log.warn('Upgrade unsuccessful', 'Please try upgrading manually with npm install -g ryuu');
+          }
+        }
+        else{
           resolve();
         }
-        else {
-          log.warn('Upgrade unsuccessful', 'Please try upgrading manually with npm install -g ryuu');
-        }
-      }
-      else{
-        resolve();
-      }
-    });
+      });
   });
 }
 
@@ -210,7 +212,8 @@ function promptAppProxyId() {
         message: 'Please enter the app instance id ' + chalk.grey('(oauth proxy) '),
         name: 'proxyId'
       }
-    ], (answer) => resolve(answer.proxyId.trim()));
+    ])
+      .then((answer) => resolve(answer.proxyId.trim()));
   });
 }
 

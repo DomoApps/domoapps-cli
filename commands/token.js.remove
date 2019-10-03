@@ -53,7 +53,7 @@ module.exports = function(program) {
             }));
           }
 
-          inquirer.prompt(prompts, function(answers){
+          inquirer.prompt(prompts).then(function(answers){
             answers.instance = options.instance || answers.instance;
             answers.days = options.days || answers.days;
 
@@ -99,7 +99,7 @@ module.exports = function(program) {
             }));
           }
 
-          inquirer.prompt(prompts, function(answers){
+          inquirer.prompt(prompts).then(function(answers){
             answers.instance = options.instance || answers.instance;
               if (answers.instance){
                 var selectedLogin = Login.getLogin(answers.instance);
@@ -142,7 +142,7 @@ module.exports = function(program) {
             });
           }
 
-          inquirer.prompt(prompts, function(answers){
+          inquirer.prompt(prompts).then(function(answers){
               answers.instance = options.instance || answers.instance;
               answers.devtoken = options.token || answers.devtoken;
               Login.writeLogin(answers);

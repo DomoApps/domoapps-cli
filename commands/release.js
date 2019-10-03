@@ -41,16 +41,16 @@ module.exports = function(program){
                 message: 'select a version to release',
                 name: 'version',
                 choices: versions
-              })], function(answers){
+              })])
+              .then(function(answers){
                 // release the kraken
                 domo.release(manifest.id, answers.version)
                   .tap(evoke(log.ok, 'Design version ('+answers.version+') released'))
                   .catch(log.fail)
                   .finally(process.exit)
-              })
+              });
           })
           .catch(evoke(log.clientRequestFailed, 'Error releasing app design'))
       }).catch(log.notAuthenticated);
-    })
-
-}
+    });
+};
