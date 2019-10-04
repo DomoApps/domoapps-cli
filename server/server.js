@@ -23,6 +23,7 @@ const proxy = new Proxy(config);
 
 let manifest = Manifest.get();
 let context;
+let isValidContext = true;
 
 app.get('/', function (req, res){
   const isValidSession = session.check(app.domo)
@@ -50,7 +51,6 @@ app.get('/', function (req, res){
       const userId = app.options.userId || appData.user.id;
       const customerId = 1 || appData.customer;
       const url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
-      const isValidContext = true;
       const hasThumbnail = appStructure.hasThumbnail();
       const template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html')));
       const fullpage = manifest.fullpage;
