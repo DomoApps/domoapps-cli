@@ -9,7 +9,6 @@ var $q = require('q');
 var constants = require('../util/constants');
 
 function verifyLoginLocal(login){
-  console.log("verifyLoginLocal");
   if (!login.refreshToken){
     log.fail('Not authenticated', 'Please login using "domo login"');
   }
@@ -51,7 +50,6 @@ module.exports = {
    * persist login to user's domo home
    */
   persistLogin: function(instance, refreshToken, devToken){
-    console.log('persistLogin', instance, refreshToken, devToken);
     var loginFile = path.resolve(home + '/login/' + instance + '.json');
     const loginData = fs.readJsonSync(loginFile, {throws: false});
     fs.ensureFileSync(loginFile);
@@ -89,7 +87,6 @@ module.exports = {
       try{
         var loginData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
         loginData.refreshToken = refreshToken;
-        console.log('getLogin, verified', loginData);
         verifyLoginLocal(loginData);
         return new Domo(loginData.instance, loginData.refreshToken, constants.CLIENT_ID, loginData.devToken);
       }
