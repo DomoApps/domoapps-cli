@@ -126,7 +126,7 @@ function findManifest(name) {
   const matches = glob.sync(
     `*/${name}`,
     {
-      ignore: ['.dist/*', 'build/*'],
+      ignore: ['dist/*', 'build/*'],
     },
   );
   if (matches.length > 0) {
