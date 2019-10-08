@@ -5,7 +5,9 @@
 const path = require('path');
 const _ = require('lodash');
 const fs = require('fs-extra');
-const Promise = require('bluebird');
+import * as Promise from 'bluebird';
+import { IncomingMessage, ServerResponse } from 'http';
+//const Promise = require('bluebird');
 let bs = require('browser-sync').create();
 let portfinder = require('portfinder');
 portfinder.basePort = 3000;
@@ -25,7 +27,7 @@ let manifest = Manifest.get();
 let context;
 let isValidContext = true;
 
-app.get('/', function (req, res){
+app.get('/', function (req: IncomingMessage, res: ServerResponse){
   const isValidSession = session.check(app.domo)
     .then(() => {
       manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
@@ -150,5 +152,5 @@ function createContext(designId, mapping){
     }).catch(function(err) {
       console.log("Error: ", err.message);
       return;
-    });
+    })
 }
