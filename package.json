@@ -38,7 +38,7 @@
     "q": "^1.4.1",
     "raw-body": "^2.1.6",
     "request": "^2.88.0",
-    "ryuu-client": "^3.0.1",
+    "ryuu-client": "^3.0.2",
     "ryuu.js": "^2.6.8",
     "semver": "~4.1.0",
     "shelljs": "^0.5.1",
