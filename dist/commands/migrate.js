@@ -33,7 +33,8 @@ module.exports = function (program) {
                     name: "id"
                 });
             }
-            inquirer.prompt(prompts, function (answers) {
+            inquirer.prompt(prompts)
+                .then(function (answers) {
                 answers.instance = args.instance || answers.instance;
                 answers.id = args.appId || answers.id;
                 Login.getLogin(answers.instance).then(function (login) {

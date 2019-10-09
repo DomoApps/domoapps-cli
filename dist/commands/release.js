@@ -37,7 +37,8 @@ module.exports = function (program) {
                         name: 'version',
                         choices: versions
                     })
-                ], function (answers) {
+                ])
+                    .then(function (answers) {
                     // release the kraken
                     domo.release(manifest.id, answers.version)
                         .tap(evoke(log.ok, 'Design version (' + answers.version + ') released'))

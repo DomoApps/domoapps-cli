@@ -11,7 +11,7 @@ var isValidJSName = require('../util/isValidJSName');
 var slug = require('slug');
 var chalk = require('chalk');
 var shell = require('shelljs');
-var async = require('async');
+var async = require('async/reduce');
 var fs = require('fs-extra');
 var path = require('path');
 var log = require('../util/log');
@@ -33,7 +33,8 @@ module.exports = function (program) {
                 name: 'starter',
                 choices: ['hello world', 'manifest only', 'basic chart', 'map chart']
             })
-        ], function (answers) {
+        ])
+            .then(function (answers) {
             // answers.list = multichoice.answer(answers.list);
             answers.datasources = [];
             askDatasource(answers, function (allAnswers) {
@@ -104,7 +105,7 @@ function askDatasource(currentAnswers, callback) {
             message: currentAnswers.datasources.length > 0 ? 'add another dataset?' : 'would you like to connect to any datasets?',
             name: 'askDatasource'
         }
-    ], function (answers) {
+    ]).then(function (answers) {
         if (answers.askDatasource) {
             addDatasource(_.merge(currentAnswers, answers), function (combinedAnswers) {
                 // ask for more datasources
@@ -134,7 +135,7 @@ function addDatasource(currentAnswers, callback) {
                 return true;
             }
         }
-    ], function (datasource) {
+    ]).then(function (datasource) {
         currentAnswers.datasources.push(datasource);
         callback(currentAnswers);
     });

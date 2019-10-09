@@ -18,7 +18,8 @@ module.exports = function (program) {
                 message: 'Are you sure you want to delete design with id: ' + designId + '?',
                 name: 'delete',
                 default: false
-            }], handleUserResponse);
+            }])
+            .then(handleUserResponse);
         function handleUserResponse(answer) {
             if (answer.delete) {
                 var force = false;

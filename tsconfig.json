@@ -2,17 +2,18 @@
     "compilerOptions": {
       "outDir": "dist",
       "sourceMap": true,
-      "noImplicitAny": true,
+      "noImplicitAny": false,
       "module": "commonjs",
       "target": "es5",
       "lib": ["es6", "es2017", "dom"],
       "jsx": "react",
-      "allowJs": true
+      "allowJs": true,
+      "suppressImplicitAnyIndexErrors": true
     },
     "exclude": [
       "node_modules",
       "dist",
-      "**/*.spec.ts"
+      "**/*.spec.ts",
       "templates"
     ]
   }

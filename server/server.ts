@@ -27,7 +27,7 @@ let manifest = Manifest.get();
 let context;
 let isValidContext = true;
 
-app.get('/', function (req: IncomingMessage, res: ServerResponse){
+app.get('/', function (req, res){
   const isValidSession = session.check(app.domo)
     .then(() => {
       manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));

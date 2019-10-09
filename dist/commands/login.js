@@ -31,7 +31,7 @@ module.exports = function (program) {
                 prompts.push(multichoice({
                     type: "list",
                     choices: function () {
-                        var options = _.pluck(previousLogins, 'instance');
+                        var options = _.map(previousLogins, 'instance');
                         options.push('new instance');
                         return options;
                     },
@@ -53,7 +53,8 @@ module.exports = function (program) {
                 });
             }
             // prompt user
-            inquirer.prompt(prompts, function (answers) {
+            inquirer.prompt(prompts)
+                .then(function (answers) {
                 answers.instance = args.instance || answers.instance;
                 if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')) {
                     log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
@@ -131,7 +132,8 @@ function promptUpgrade(latest) {
                 name: "upgrade",
                 default: true
             }
-        ], function (answers) {
+        ])
+            .then(function (answers) {
             if (answers.upgrade) {
                 log.info('Upgrading to latest version', 'Hang tight, this may take a moment...');
                 var output = shell.exec('npm install ryuu -g', { async: false, silent: true });
@@ -160,7 +162,8 @@ function promptAppProxyId() {
                 message: 'Please enter the app instance id ' + chalk.grey('(oauth proxy) '),
                 name: 'proxyId'
             }
-        ], function (answer) { return resolve(answer.proxyId.trim()); });
+        ])
+            .then(function (answer) { return resolve(answer.proxyId.trim()); });
     });
 }
 function setupOauth(instance, proxyId) {

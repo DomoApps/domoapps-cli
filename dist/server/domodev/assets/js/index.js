@@ -31,7 +31,7 @@ function isHostSafe(name) {
         'nytimes.com', 'thenextweb.com', 'medium.com', 'mashable.com', 'springboard.com', 'theverge.com',
         'sciencebulletin.org', 'buzzfeed.com', 'huffingtonpost.com', 'bloomberg.com'
     ];
-    return _.contains(whitelist, name);
+    return _.includes(whitelist, name);
 }
 function getHost(url) {
     var tmp = document.createElement('a');
