@@ -40,17 +40,13 @@ module.exports = function(program){
         inquirer.prompt(prompts)
           .then(function(answers) {
             answers.instance = args.instance || answers.instance;
-            answers.id = args.appId || answers.id;
-            Login.getLogin(answers.instance).then(function(login) {
-              Login.verifyLogin(login);
-
-              var domo = new Domo(answers.instance, login.refreshToken, constants.CLIENT_ID);
-
-              migrateApp(domo, answers.id, manifest)
-                .tap(evoke(log.ok, 'Migration successful'))
-                .catch(evoke(log.fail, 'Migration unsuccessful'))
-                .finally(process.exit)
-            }).catch(log.notAuthenticated);
+          answers.id = args.appId || answers.id;
+          Login.getLogin(answers.instance).then(function(domo) {
+            migrateApp(domo, answers.id, manifest)
+              .tap(evoke(log.ok, 'Migration successful'))
+              .catch(evoke(log.fail, 'Migration unsuccessful'))
+              .finally(process.exit)
+          }).catch(log.notAuthenticated);
           });
       }).catch(log.notAuthenticated);
     });

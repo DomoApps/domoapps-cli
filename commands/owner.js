@@ -24,11 +24,7 @@ module.exports = function(program){
         designId = manifest.id;
       }
 
-      Login.getMostRecentLogin().then(function(login) {
-        Login.verifyLogin(login);
-
-        var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
-
+      Login.getMostRecentLogin().then(function(domo) {
         switch(action) {
           case 'add':
             if (users) {
