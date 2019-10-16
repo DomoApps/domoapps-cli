@@ -20,9 +20,7 @@ module.exports = function (program) {
             .then(handleUserResponse);
         function handleUserResponse(answer) {
             if (answer.undelete) {
-                Login.getMostRecentLogin().then(function (login) {
-                    Login.verifyLogin(login);
-                    var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
+                Login.getMostRecentLogin().then(function (domo) {
                     domo.unDeleteDesign(designId)
                         .tap(evoke(log.ok, 'Undeleted design ' + designId))
                         .catch(evoke(log.clientRequestFailed, 'Unable to undelete design ' + designId))

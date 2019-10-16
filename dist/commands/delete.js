@@ -23,11 +23,9 @@ module.exports = function (program) {
         function handleUserResponse(answer) {
             if (answer.delete) {
                 var force = false;
-                Login.getMostRecentLogin().then(function (login) {
+                Login.getMostRecentLogin().then(function (domo) {
                     if (options.force)
                         force = true;
-                    Login.verifyLogin(login);
-                    var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
                     domo.deleteDesign(designId, force)
                         .tap(evoke(log.ok, 'Deleted design ' + designId))
                         .catch(evoke(log.clientRequestFailed, 'Unable to delete design ' + designId))

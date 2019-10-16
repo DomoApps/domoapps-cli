@@ -9,9 +9,7 @@ module.exports = function (program) {
         .command('ls')
         .description('get a list of all your Custom App designs')
         .action(function () {
-        Login.getMostRecentLogin().then(function (login) {
-            Login.verifyLogin(login);
-            var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
+        Login.getMostRecentLogin().then(function (domo) {
             session.check(domo)
                 .then(function () {
                 domo.getSimpleDesigns().then(function (designs) {

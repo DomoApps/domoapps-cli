@@ -15,9 +15,7 @@ module.exports = function (program) {
         .option('-i, --design-id <id>', 'design id')
         .option('-d, --design-version <design-version>', 'design version')
         .action(function (args) {
-        Login.getMostRecentLogin().then(function (login) {
-            Login.verifyLogin(login);
-            var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
+        Login.getMostRecentLogin().then(function (domo) {
             var prompts = [];
             if (!args.designId) {
                 prompts.push({

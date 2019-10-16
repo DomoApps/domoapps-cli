@@ -1,14 +1,3 @@
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var glob = require("glob");
 var fs = require('fs-extra');
 var path = require('path');
@@ -17,6 +6,12 @@ var home = Domo.getHomeDir();
 var log = require('./log');
 var keytar = require('keytar');
 var $q = require('q');
+var constants = require('../util/constants');
+function verifyLoginLocal(login) {
+    if (!login.refreshToken) {
+        log.fail('Not authenticated', 'Please login using "domo login"');
+    }
+}
 module.exports = {
     getMostRecentLogin: function () {
         var logins = glob.sync(home + "/login/*.json");
@@ -31,7 +26,10 @@ module.exports = {
         var loginData = fs.readJsonSync(recent);
         return keytar.getPassword('domoapps-cli', loginData.instance).then(function (refreshToken) {
             loginData.refreshToken = refreshToken;
+            verifyLoginLocal(loginData);
             return loginData;
+        }).then(function (loginData) {
+            return new Domo(loginData.instance, loginData.refreshToken, constants.CLIENT_ID, loginData.devToken);
         });
     },
     getPreviousLogins: function () {
@@ -43,26 +41,22 @@ module.exports = {
     },
     /**
      * persist login to user's domo home
-     * TODO: REFACTOR w writeLogin
      */
-    persistLogin: function (instance) {
-        return function (login) {
-            var loginFile = path.resolve(home + '/login/' + instance + '.json');
-            var loginData = fs.readJsonSync(loginFile, { throws: false });
-            fs.ensureFileSync(loginFile);
-            var data = __assign(__assign({}, loginData), { instance: instance });
-            if (login.refreshToken) {
-                keytar.setPassword('domoapps-cli', instance, login.refreshToken); //runs async to writing, not concerned about waiting
-            }
-            fs.writeJsonSync(loginFile, data);
-            return login;
-        };
-    },
-    verifyLogin: function (login) {
-        if (!login.refreshToken) {
-            log.fail('Not authenticated', 'Please login using "domo login"');
+    persistLogin: function (instance, refreshToken, devToken) {
+        var loginFile = path.resolve(home + '/login/' + instance + '.json');
+        var loginData = fs.readJsonSync(loginFile, { throws: false });
+        fs.ensureFileSync(loginFile);
+        if (refreshToken) {
+            keytar.setPassword('domoapps-cli', instance, refreshToken); //runs async to writing, not concerned about waiting
         }
+        var data = {
+            instance: instance,
+            devToken: !!devToken
+        };
+        fs.writeJsonSync(loginFile, data);
+        return { instance: instance, refreshToken: refreshToken, devToken: devToken };
     },
+    verifyLogin: verifyLoginLocal,
     verifyLogout: function (login, instance) {
         return keytar.findPassword('domoapps-cli').then(function (refreshToken) {
             if (!login.refreshToken && !refreshToken) {
@@ -81,7 +75,8 @@ module.exports = {
             try {
                 var loginData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), { throws: false });
                 loginData.refreshToken = refreshToken;
-                return loginData;
+                verifyLoginLocal(loginData);
+                return new Domo(loginData.instance, loginData.refreshToken, constants.CLIENT_ID, loginData.devToken);
             }
             catch (ex) {
                 return {};

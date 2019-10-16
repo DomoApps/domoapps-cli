@@ -2,22 +2,26 @@
  * domo dev server
  */
 
-const path = require('path');
-const _ = require('lodash');
-const fs = require('fs-extra');
+import {
+  constant
+} from '../models';
+
+import path = require('path');
+import _ = require('lodash');
+import fs = require('fs-extra');
 import * as Promise from 'bluebird';
 import { IncomingMessage, ServerResponse } from 'http';
 //const Promise = require('bluebird');
 let bs = require('browser-sync').create();
-let portfinder = require('portfinder');
+import portfinder = require('portfinder');
 portfinder.basePort = 3000;
 
-const session = require('../util/session');
-const appStructure = require('../util/appStructure');
-const Manifest = require('../util/manifest');
+import session = require('../util/session');
+import appStructure = require('../util/appStructure');
+import Manifest = require('../util/manifest');
 
-const Domo = require('ryuu-client');
-const express = require('express');
+import Domo = require('ryuu-client');
+import express = require('express');
 const app = express();
 const { Proxy } = require('@domoinc/ryuu-proxy');
 const config = { manifest: Manifest.get() };
@@ -26,11 +30,22 @@ const proxy = new Proxy(config);
 let manifest = Manifest.get();
 let context;
 let isValidContext = true;
+let domoApp : {
+  clientId: string,
+  instance: string,
+  refreshToken: string,
+  server: string
+};
+let options: { 
+  userId: number,
+  external: boolean,
+  manifest: string
+};
 
 app.get('/', function (req, res){
-  const isValidSession = session.check(app.domo)
+  const isValidSession = session.check(domoApp)
     .then(() => {
-      manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
+      manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (options.manifest || 'manifest.json')));
       return createContext(manifest.id, manifest.mapping);
     })
     .then((appContext) => {
@@ -50,7 +65,7 @@ app.get('/', function (req, res){
       };
       const width = sizeMultiplier.width * manifest.size.width - 10 + 'px';
       const height = sizeMultiplier.height * manifest.size.height - 40 + 'px';
-      const userId = app.options.userId || appData.user.id;
+      const userId = options.userId || appData.user.id;
       const customerId = 1 || appData.customer;
       const url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
       const hasThumbnail = appStructure.hasThumbnail();
@@ -77,17 +92,18 @@ app.use(proxy.express());
 module.exports = {
   start: function(domo, options){
     return new Promise(function(resolve, reject){
-      portfinder.getPorts(1, function (err, ports) {
-        var assetsPort = ports[0];
-        app.domo = domo;
-        app.options = options;
+      portfinder.getPorts(2, {}, function (err, ports) {
+        let assetsPort = ports[0];
+        let dataPort = ports[1];
+        domoApp = domo;
+        options = options;
 
-        session.check(app.domo)
+        session.check(domoApp)
           .then(function() {
-            var external = Boolean(app.options.external);
-            app.listen(assetsPort);
+            var external = Boolean(options.external);
+            app.listen(dataPort);
             bs.init({
-              proxy: "localhost:" + assetsPort,
+              proxy: "localhost:" + dataPort,
               port: assetsPort,
               notify: false,
               ui: false,
@@ -97,7 +113,7 @@ module.exports = {
               // TODO: add user's ignored files here too?
               files: ['**/*', '!node_modules/**/*'],
             });
-            bs.instance.logger.info('Instance: ' + app.domo.instance);
+            bs.instance.logger.info('Instance: ' + domoApp.instance);
           })
           .catch(function(e){
             reject('Session expired. Please login again using domo login.');
@@ -109,12 +125,12 @@ module.exports = {
 
 function getCustomer(){
   var regexp = /([\w]+)[\.|-]/;
-  return app.domo.instance.match(regexp)[1];
+  return (<string>domoApp.instance).match(regexp)[1];
 }
 
 function getEnv(){
   var regexp = /([-_\w]+)\.(.*)/;
-  return app.domo.instance.match(regexp)[2];
+  return (domoApp.instance as string).match(regexp)[2];
 }
 
 /**
@@ -122,12 +138,14 @@ function getEnv(){
  * Fallback to inferring it by the instance URL.
  */
 function getDomoappsData(){
-  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (app.options.manifest || 'manifest.json')));
+  // @ts-ignore
+  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (options.manifest || 'manifest.json')));
   var uuid = (manifest['proxyId']) ? manifest.proxyId : Domo.createUUID();
   var options = {
-    url: 'https://' + app.domo.instance + '/api/content/v1/mobile/environment'
+    url: 'https://' + domoApp.instance + '/api/content/v1/mobile/environment'
   }
-  return app.domo.processRequest(options)
+  // @ts-ignore
+  return domoApp.processRequest(options)
     .then(function(res) {
       var data = JSON.parse(res);
       data.url = 'https://'+uuid+'.' + JSON.parse(res).domoappsDomain;
@@ -141,12 +159,12 @@ function getDomoappsData(){
 
 function createContext(designId, mapping){
   var options = {
-    url: 'https://' + app.domo.instance + '/domoapps/apps/v2/contexts',
+    url: 'https://' + domoApp.instance + '/domoapps/apps/v2/contexts',
     method: 'POST',
     json: {designId: designId, mapping: mapping}
   };                     
-
-  return app.domo.processRequest(options)
+// @ts-ignore
+  return domoApp.processRequest(options)
     .then(function(res) {
       return res[0];
     }).catch(function(err) {
