@@ -36,7 +36,7 @@ let domoApp : {
   refreshToken: string,
   server: string
 };
-let options: { 
+let domoOptions: { 
   userId: number,
   external: boolean,
   manifest: string
@@ -45,7 +45,7 @@ let options: {
 app.get('/', function (req, res){
   const isValidSession = session.check(domoApp)
     .then(() => {
-      manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (options.manifest || 'manifest.json')));
+      manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
       return createContext(manifest.id, manifest.mapping);
     })
     .then((appContext) => {
@@ -65,7 +65,7 @@ app.get('/', function (req, res){
       };
       const width = sizeMultiplier.width * manifest.size.width - 10 + 'px';
       const height = sizeMultiplier.height * manifest.size.height - 40 + 'px';
-      const userId = options.userId || appData.user.id;
+      const userId = domoOptions.userId || appData.user.id;
       const customerId = 1 || appData.customer;
       const url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
       const hasThumbnail = appStructure.hasThumbnail();
@@ -96,11 +96,11 @@ module.exports = {
         let assetsPort = ports[0];
         let dataPort = ports[1];
         domoApp = domo;
-        options = options;
+        domoOptions = options;
 
         session.check(domoApp)
           .then(function() {
-            var external = Boolean(options.external);
+            var external = Boolean(domoOptions.external);
             app.listen(dataPort);
             bs.init({
               proxy: "localhost:" + dataPort,
@@ -139,7 +139,7 @@ function getEnv(){
  */
 function getDomoappsData(){
   // @ts-ignore
-  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (options.manifest || 'manifest.json')));
+  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
   var uuid = (manifest['proxyId']) ? manifest.proxyId : Domo.createUUID();
   var options = {
     url: 'https://' + domoApp.instance + '/api/content/v1/mobile/environment'
