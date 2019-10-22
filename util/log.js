@@ -59,11 +59,11 @@ module.exports = {
     process.exit(1);
   },
 
-  notAuthenticated: function(login){
-    if (!login.refreshToken){
+  notAuthenticated: function(refreshToken){
+    if (!refreshToken){
       module.exports.fail('Not authenticated', 'Please login using "domo login"');
     }
-    else if (login.refreshToken){
+    else if (refreshToken){
       module.exports.fail('Not authenticated', 'Your refresh token may have been revoked. Please login again with "domo login".');
     }
     else{
