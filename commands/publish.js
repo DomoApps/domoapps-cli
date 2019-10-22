@@ -67,7 +67,7 @@ module.exports = function(program){
             }
 
             domo.uploadAllAssets(manifest)
-            .tap(evoke(log.ok, 'Publishing ' + manifest.name + ' to ' + login.instance + ' on ' + new Date()))
+            .tap(evoke(log.ok, 'Publishing ' + manifest.name + ' to ' + domo.instance + ' on ' + new Date()))
             .then(logUploadSuccess)
             .catch(function(e){
               if(e.statusCode === 401) {
