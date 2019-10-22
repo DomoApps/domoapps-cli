@@ -57,7 +57,8 @@ module.exports = function(program){
     .action(function(args){
 
       var previousLogins = Login.getPreviousLogins();
-      Login.getMostRecentLogin().then(function(mostRecent) {
+      var mayNotBeAuthenticated = true;
+      Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(mostRecent) {
         var prompts = [];
 
         var versionCheckFn = !args.upgradeCheck ?
