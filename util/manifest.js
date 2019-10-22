@@ -9,14 +9,16 @@ module.exports = {
   /**
   * Get the local manifest.json file, ensuring it's valid.
   */
-  get: function(manifestPath = findManifest('manifest.json'), verify = true){
+  get: function(manifestName = 'manifest.json', verify = true){
+    const manifestPath = findManifest(manifestName);
+
     var manifest;
     try {
       manifest = fs.readFileSync(path.resolve(manifestPath));
     }
     catch (e){
       if (verify){
-        return log.fail('No manifest.json file in this directory', 'Please publish from a directory containing a Custom App design manifest.json file');
+        return log.fail(`No ${manifestName} file in this directory`, `Please publish from a directory containing a Custom App design ${manifestName} file`);
       }
       else{
         return;
@@ -27,12 +29,20 @@ module.exports = {
       manifest = JSON.parse(manifest);
     }
     catch (e){
-      return log.fail('Your manifest.json file is not valid JSON', e.message);
+      return log.fail(`Your ${manifestName} file is not valid JSON`, e.message);
     }
     if (verify){
       validateManifest(manifest);
     }
+
+    // add the manifest name, so it's attached to the object
+    manifest.name = manifestName;
+
     return manifest;
+  },
+
+  hasManifest: function(manifestName) {
+    return fs.existsSync(findManifest(manifestName));
   },
 
   /**
@@ -45,11 +55,10 @@ module.exports = {
   },
 
   updateManifest: function(manifest){
-    fs.writeJsonSync('manifest.json', manifest, {spaces: 2});
+    const manifestPath = findManifest(manifest.name);
+    fs.writeJsonSync(manifestPath, manifest, {spaces: 2});
   }
 }
-
-
 
 /**
 * Validate the manifest file.
@@ -103,7 +112,23 @@ function ensureValidAlias(name){
  * Finds the manifest file in the current directory, or sub files
  */
 function findManifest(name) {
-  const matches = glob.sync(`**/${name}`);
+  if (fs.existsSync(name)) {
+    return name;
+  }
+  if (fs.existsSync(`public/${name}`)) {
+    return `public/${name}`;
+  }
+  if (fs.existsSync(`src/${name}`)) {
+    return `src/${name}`;
+  }
+
+  // find any matching files (one layer deep while ignoring .dist and build folders)
+  const matches = glob.sync(
+    `*/${name}`,
+    {
+      ignore: ['dist/*', 'build/*'],
+    },
+  );
   if (matches.length > 0) {
     return matches[0];
   }

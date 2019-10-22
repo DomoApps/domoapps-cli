@@ -16,7 +16,7 @@ function verifyLoginLocal(login){
 
 
 module.exports = {
-  getMostRecentLogin: function(){
+  getMostRecentLogin: function(mayNotBeAuthenticated){
     var logins = glob.sync(home + "/login/*.json");
 
     if (logins.length === 0) {
@@ -31,7 +31,9 @@ module.exports = {
     var loginData = fs.readJsonSync(recent);
     return keytar.getPassword('domoapps-cli', loginData.instance).then(function(refreshToken) {
       loginData.refreshToken = refreshToken;
-      verifyLoginLocal(loginData);
+      if(!mayNotBeAuthenticated) {
+        verifyLoginLocal(loginData);
+      }
       return loginData;
     }).then(function(loginData) {
       return new Domo(loginData.instance, loginData.refreshToken, constants.CLIENT_ID, loginData.devToken);
@@ -87,7 +89,6 @@ module.exports = {
       try{
         var loginData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
         loginData.refreshToken = refreshToken;
-        verifyLoginLocal(loginData);
         return new Domo(loginData.instance, loginData.refreshToken, constants.CLIENT_ID, loginData.devToken);
       }
       catch (ex){
