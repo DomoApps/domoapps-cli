@@ -2,7 +2,7 @@
 /**
  * domo dev server
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var path = require("path");
 var _ = require("lodash");
 var fs = require("fs-extra");
@@ -90,11 +90,10 @@ module.exports = {
                         logPrefix: 'Domo Dev',
                         online: external,
                         // TODO: add user's ignored files here too?
-                        files: ['**/*', '!node_modules/**/*'],
+                        files: ['**/*', '!node_modules/**/*']
                     });
                     bs.instance.logger.info('Instance: ' + domoApp.instance);
-                })
-                    .catch(function (e) {
+                })["catch"](function (e) {
                     reject('Session expired. Please login again using domo login.');
                 });
             });
@@ -126,7 +125,7 @@ function getDomoappsData() {
         var data = JSON.parse(res);
         data.url = 'https://' + uuid + '.' + JSON.parse(res).domoappsDomain;
         return data;
-    }).catch(function () {
+    })["catch"](function () {
         var data = { url: 'https://' + uuid + '.domoapps.' + getEnv() };
         return data;
     });
@@ -141,9 +140,8 @@ function createContext(designId, mapping) {
     return domoApp.processRequest(options)
         .then(function (res) {
         return res[0];
-    }).catch(function (err) {
+    })["catch"](function (err) {
         console.log("Error: ", err.message);
         return;
     });
 }
-//# sourceMappingURL=server.js.map

@@ -2,7 +2,7 @@
 /**
  * domo dev server
  */
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var path = require("path");
 var _ = require("lodash");
 var fs = require("fs-extra");
@@ -14,7 +14,7 @@ portfinder.basePort = 3000;
 var session = require("../util/session");
 var appStructure = require("../util/appStructure");
 var Manifest = require("../util/manifest");
-var Domo = require("ryuu-client");
+var Domo = require("../../domoapps-client/lib/domoapps-client");
 var express = require("express");
 var app = express();
 var Proxy = require('@domoinc/ryuu-proxy').Proxy;
@@ -23,11 +23,12 @@ var proxy = new Proxy(config);
 var manifest = Manifest.get();
 var context;
 var isValidContext = true;
-var domoApp = { domo: {}, options: {} };
+var domoApp;
+var domoOptions;
 app.get('/', function (req, res) {
-    var isValidSession = session.check(domoApp.domo)
+    var isValidSession = session.check(domoApp)
         .then(function () {
-        manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoApp.options.manifest || 'manifest.json')));
+        manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
         return createContext(manifest.id, manifest.mapping);
     })
         .then(function (appContext) {
@@ -47,7 +48,7 @@ app.get('/', function (req, res) {
         };
         var width = sizeMultiplier.width * manifest.size.width - 10 + 'px';
         var height = sizeMultiplier.height * manifest.size.height - 40 + 'px';
-        var userId = domoApp.options.userId || appData.user.id;
+        var userId = domoOptions.userId || appData.user.id;
         var customerId = 1 || appData.customer;
         var url = "index.html?userId=" + userId + "&customer=" + customerId + "&locale=en-US&platform=desktop&context=" + context.id;
         var hasThumbnail = appStructure.hasThumbnail();
@@ -74,11 +75,11 @@ module.exports = {
             portfinder.getPorts(2, {}, function (err, ports) {
                 var assetsPort = ports[0];
                 var dataPort = ports[1];
-                domoApp.domo = domo;
-                domoApp.options = options;
-                session.check(domoApp.domo)
+                domoApp = domo;
+                domoOptions = options;
+                session.check(domoApp)
                     .then(function () {
-                    var external = Boolean(domoApp.options.external);
+                    var external = Boolean(domoOptions.external);
                     app.listen(dataPort);
                     bs.init({
                         proxy: "localhost:" + dataPort,
@@ -89,11 +90,10 @@ module.exports = {
                         logPrefix: 'Domo Dev',
                         online: external,
                         // TODO: add user's ignored files here too?
-                        files: ['**/*', '!node_modules/**/*'],
+                        files: ['**/*', '!node_modules/**/*']
                     });
-                    bs.instance.logger.info('Instance: ' + domoApp.domo.instance);
-                })
-                    .catch(function (e) {
+                    bs.instance.logger.info('Instance: ' + domoApp.instance);
+                })["catch"](function (e) {
                     reject('Session expired. Please login again using domo login.');
                 });
             });
@@ -102,44 +102,46 @@ module.exports = {
 };
 function getCustomer() {
     var regexp = /([\w]+)[\.|-]/;
-    return domoApp.domo.instance.match(regexp)[1];
+    return domoApp.instance.match(regexp)[1];
 }
 function getEnv() {
     var regexp = /([-_\w]+)\.(.*)/;
-    return domoApp.domo.instance.match(regexp)[2];
+    return domoApp.instance.match(regexp)[2];
 }
 /**
  * Fetch domoapps environment data from maestro.
  * Fallback to inferring it by the instance URL.
  */
 function getDomoappsData() {
-    var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoApp.options.manifest || 'manifest.json')));
+    // @ts-ignore
+    var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
     var uuid = (manifest['proxyId']) ? manifest.proxyId : Domo.createUUID();
     var options = {
-        url: 'https://' + domoApp.domo.instance + '/api/content/v1/mobile/environment'
+        url: 'https://' + domoApp.instance + '/api/content/v1/mobile/environment'
     };
-    return domoApp.domo.processRequest(options)
+    // @ts-ignore
+    return domoApp.processRequest(options)
         .then(function (res) {
         var data = JSON.parse(res);
         data.url = 'https://' + uuid + '.' + JSON.parse(res).domoappsDomain;
         return data;
-    }).catch(function () {
+    })["catch"](function () {
         var data = { url: 'https://' + uuid + '.domoapps.' + getEnv() };
         return data;
     });
 }
 function createContext(designId, mapping) {
     var options = {
-        url: 'https://' + domoApp.domo.instance + '/domoapps/apps/v2/contexts',
+        url: 'https://' + domoApp.instance + '/domoapps/apps/v2/contexts',
         method: 'POST',
         json: { designId: designId, mapping: mapping }
     };
-    return domoApp.domo.processRequest(options)
+    // @ts-ignore
+    return domoApp.processRequest(options)
         .then(function (res) {
         return res[0];
-    }).catch(function (err) {
+    })["catch"](function (err) {
         console.log("Error: ", err.message);
         return;
     });
 }
-//# sourceMappingURL=server.js.map

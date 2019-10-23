@@ -1,12 +1,13 @@
 var glob = require("glob");
 var fs = require('fs-extra');
 var path = require('path');
-var Domo = require('ryuu-client');
+var Domo = require("../../../domoapps-client/lib/domoapps-client");
 var home = Domo.getHomeDir();
 var log = require('./log');
 var keytar = require('keytar');
 var $q = require('q');
 var constants = require('../util/constants');
+//test
 function verifyLoginLocal(login) {
     if (!login.refreshToken) {
         log.fail('Not authenticated', 'Please login using "domo login"');

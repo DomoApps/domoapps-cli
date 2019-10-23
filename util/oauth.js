@@ -6,7 +6,7 @@ const keytar = require('keytar');
 const Manifest = require('./manifest');
 const Promise = require('bluebird');
 const request = require('request');
-const opn = require('opn');
+const open = require('open');
 const chalk = require('chalk');
 
 module.exports = {
@@ -81,7 +81,8 @@ module.exports = {
 
   verifyRegistration: function({ instance, manifestName, proxyId, verificationUri, userCode, deviceCode }) {
     return new Promise((resolve, reject) => {
-      opn(`${verificationUri}?user_code=${userCode}`);
+      //possible url issue?
+      open(`${verificationUri}?user_code=${userCode}`);
 
       // scopes are space separated
       const scopes = this.getScopes(manifestName).join(' ');

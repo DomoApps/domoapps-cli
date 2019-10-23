@@ -24,7 +24,7 @@ var keytar = require('keytar');
 var Manifest = require('./manifest');
 var Promise = require('bluebird');
 var request = require('request');
-var opn = require('opn');
+var open = require('open');
 var chalk = require('chalk');
 module.exports = {
     isOAuthEnabled: function () {
@@ -84,7 +84,8 @@ module.exports = {
         var _this = this;
         var instance = _a.instance, proxyId = _a.proxyId, verificationUri = _a.verificationUri, userCode = _a.userCode, deviceCode = _a.deviceCode;
         return new Promise(function (resolve, reject) {
-            opn(verificationUri + "?user_code=" + userCode);
+            //possible url issue?
+            open(verificationUri + "?user_code=" + userCode);
             // scopes are space separated
             var scopes = _this.getScopes().join(' ');
             var checkRegistration = setInterval(function () {

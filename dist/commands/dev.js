@@ -1,4 +1,4 @@
-var Domo = require('ryuu-client');
+var Domo = require("../../../domoapps-client/lib/domoapps-client");
 var Login = require('../util/login');
 var log = require('../util/log');
 var constants = require('../util/constants');

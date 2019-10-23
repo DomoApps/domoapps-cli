@@ -20,7 +20,7 @@ import session = require('../util/session');
 import appStructure = require('../util/appStructure');
 import Manifest = require('../util/manifest');
 
-import Domo = require('ryuu-client');
+import Domo = require('../../domoapps-client/lib/domoapps-client');
 import express = require('express');
 const app = express();
 const { Proxy } = require('@domoinc/ryuu-proxy');

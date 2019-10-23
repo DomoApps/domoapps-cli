@@ -1,7 +1,7 @@
 var Domo = require('ryuu-client');
 var inquirer = require('inquirer');
 var _ = require('lodash');
-var opn = require('opn');
+var open = require('open');
 var Manifest = require('../util/manifest');
 var Login = require('../util/login');
 var glob = require('glob');
@@ -171,6 +171,6 @@ function logUploadSuccess(files){
 function goToDomo(options, domo, manifest) {
   console.log('Design can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
   if (options && options.go) {
-   opn('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
+   open('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id, {url: true});
   }
 }
