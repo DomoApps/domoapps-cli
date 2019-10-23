@@ -14,7 +14,8 @@ module.exports = function(program) {
     .option('-i, --instance <value>', 'Domo instance')
     .option('-t, --token <value>', 'dev token value used with token add')
     .action(function(cmd, options) {
-      var login = Login.getMostRecentLogin();
+      var mayNotBeAuthenticated = true;
+      var login = Login.getMostRecentLogin(mayNotBeAuthenticated);
       var previousLogins = Login.getPreviousLogins();
 
       var prompts = [];

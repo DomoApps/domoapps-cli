@@ -1,6 +1,10 @@
 {
   "name": "ryuu",
+<<<<<<< HEAD
   "version": "3.3.0",
+=======
+  "version": "3.2.6",
+>>>>>>> master
   "bin": {
     "domo": "./bin/runner"
   },

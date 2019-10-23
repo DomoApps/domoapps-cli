@@ -47,7 +47,7 @@ module.exports = function(program){
         }
 
         if (!manifest.id){
-          createDesign(domo, manifest, login, options);
+          createDesign(domo, manifest, options);
         }
         else{
           domo.getDesign(manifest.id).then(function(result) {
@@ -67,14 +67,14 @@ module.exports = function(program){
             }
 
             domo.uploadAllAssets(manifest)
-            .tap(evoke(log.ok, 'Publishing ' + manifest.name + ' to ' + login.instance + ' on ' + new Date()))
+            .tap(evoke(log.ok, 'Publishing ' + manifest.name + ' to ' + domo.instance + ' on ' + new Date()))
             .then(logUploadSuccess)
             .catch(function(e){
               if(e.statusCode === 401) {
-                log.notAuthenticated(login);
+                log.notAuthenticated(domo.refreshToken);
               }
               else if(e.statusCode === 403) {
-                log.fail('You do not have access to the design with id ' + manifest.id + ' on ' + login.instance
+                log.fail('You do not have access to the design with id ' + manifest.id + ' on ' + domo.instance
                   + '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.'
                   + '\nAlternatively, you may have inadvertently changed the design id.');
               }
@@ -88,6 +88,7 @@ module.exports = function(program){
                         message: 'This design has been deleted. Would you like to publish a new design with these assets?',
                         name: 'askRecreate'
                       }
+<<<<<<< HEAD
                     ])
                       .then(function (answers) {
                         if (answers.askRecreate){
@@ -95,6 +96,14 @@ module.exports = function(program){
                           createDesign(domo, manifest, login);
                         }
                       });
+=======
+                    ], function (answers) {
+                      if (answers.askRecreate){
+                        manifest.id = null;
+                        createDesign(domo, manifest);
+                      }
+                    });
+>>>>>>> master
 
                     break;
 
@@ -133,7 +142,7 @@ module.exports = function(program){
  * @param {Object} options
  * @return {Promise}
  */
-function createDesign(domo, manifest, login, options) {
+function createDesign(domo, manifest, options) {
   return domo.createDesign(manifest)
     .then(function(designResult){
       var design = designResult[0];
@@ -141,7 +150,7 @@ function createDesign(domo, manifest, login, options) {
       design.version = designResult[1].version;
       return Manifest.persistDesignId(design, manifest);
     })
-    .tap(evoke(log.ok, 'New design created on ' + login.instance))
+    .tap(evoke(log.ok, 'New design created on ' + domo.instance))
     .catch(evoke(log.fail, 'Error creating new design'))
     .then(domo.uploadAllAssets.bind(domo, manifest))
     .then(logUploadSuccess)
