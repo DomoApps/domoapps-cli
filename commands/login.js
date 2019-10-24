@@ -111,7 +111,7 @@ module.exports = function(program){
 
                 if (Oauth.isOAuthEnabled(manifest)) {
                   if (Oauth.hasAppProxyId(manifest)) {
-                    return setupOauth(answers.instance, manfiest, Oauth.getAppProxyId(manifest));
+                    return setupOauth(answers.instance, manifest, Oauth.getAppProxyId(manifest));
                   }
                   else {
                     return promptAppProxyId().then(proxyId => {
@@ -234,7 +234,7 @@ function setupOauth(instance, manifestName, proxyId) {
         log.ok('Retrieved Oauth Tokens');
         Oauth.persistTokens({
           instance,
-          manifestname,
+          manifestName,
           proxyId,
           accessToken: result.access_token,
           refreshToken: result.refresh_token
