@@ -117,7 +117,8 @@ function getDomoappsData() {
     var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
     var uuid = (manifest['proxyId']) ? manifest.proxyId : Domo.createUUID();
     var options = {
-        url: 'https://' + domoApp.instance + '/api/content/v1/mobile/environment'
+        url: 'https://' + domoApp.instance + '/api/content/v1/mobile/environment',
+        resolveWithFullResponse: true
     };
     // @ts-ignore
     return domoApp.processRequest(options)
@@ -134,7 +135,8 @@ function createContext(designId, mapping) {
     var options = {
         url: 'https://' + domoApp.instance + '/domoapps/apps/v2/contexts',
         method: 'POST',
-        json: { designId: designId, mapping: mapping }
+        json: { designId: designId, mapping: mapping },
+        resolveWithFullResponse: true
     };
     // @ts-ignore
     return domoApp.processRequest(options)

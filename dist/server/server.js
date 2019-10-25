@@ -14,7 +14,7 @@ portfinder.basePort = 3000;
 var session = require("../util/session");
 var appStructure = require("../util/appStructure");
 var Manifest = require("../util/manifest");
-var Domo = require("ryuu-client");
+var Domo = require("../../../domoapps-client/lib/domoapps-client");
 var express = require("express");
 var app = express();
 var Proxy = require('@domoinc/ryuu-proxy').Proxy;
@@ -117,7 +117,8 @@ function getDomoappsData() {
     var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
     var uuid = (manifest['proxyId']) ? manifest.proxyId : Domo.createUUID();
     var options = {
-        url: 'https://' + domoApp.instance + '/api/content/v1/mobile/environment'
+        url: 'https://' + domoApp.instance + '/api/content/v1/mobile/environment',
+        resolveWithFullResponse: true
     };
     // @ts-ignore
     return domoApp.processRequest(options)
@@ -134,7 +135,8 @@ function createContext(designId, mapping) {
     var options = {
         url: 'https://' + domoApp.instance + '/domoapps/apps/v2/contexts',
         method: 'POST',
-        json: { designId: designId, mapping: mapping }
+        json: { designId: designId, mapping: mapping },
+        resolveWithFullResponse: true
     };
     // @ts-ignore
     return domoApp.processRequest(options)

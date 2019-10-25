@@ -7,7 +7,8 @@ module.exports = {
         return new Promise(function (resolve, reject) {
             var options = {
                 url: 'https://' + domo.instance + '/auth/validate',
-                method: 'GET'
+                method: 'GET',
+                resolveWithFullResponse: true
             };
             domo.processRequest(options)
                 .then(function (res) {
