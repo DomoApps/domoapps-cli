@@ -21,7 +21,6 @@ module.exports = function(program){
       let prompts = []
       if(!options.design_name){
         prompts.push({
-
           type: 'input',
           message: 'design name',
           name: 'name'
