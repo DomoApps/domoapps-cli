@@ -13,26 +13,39 @@ var multichoice = require('../util/multichoice');
 module.exports = function(program){
   program
     .command('init')
+    .option('-dn, --design_name <value>', 'Name of the design')
+    .option('-s, --starter <value>', 'Name of the starter kit')
+    .option('-d, --dataset <value>', 'Connect a dataset (y/n)')
     .description('initialize a new Custom App design')
-    .action(function(){
+    .action(function(options){
+      let prompts = []
+      if(!options.design_name){
+        prompts.push({
 
-        inquirer.prompt([
-          {
-            type: 'input',
-            message: 'design name',
-            name: 'name'
-          },
-          multichoice({
-            type: 'list',
-            message: 'select a starter',
-            name: 'starter',
-            choices: ['hello world', 'manifest only', 'basic chart', 'map chart']
-          })
-
-          ], function(answers){
+          type: 'input',
+          message: 'design name',
+          name: 'name'
+        })
+      } else {}
+      if(!options.starter){
+        prompts.push(multichoice({
+          type: 'list',
+          message: 'select a starter',
+          name: 'starter',
+          choices: ['hello world', 'manifest only', 'basic chart', 'map chart']
+        }))
+      }
+        inquirer.prompt(prompts, function(answers){
+          if(options.design_name){
+            answers.name = options.design_name
+          }
+          if(options.starter){
+            answers.starter = options.starter
+          }
             // answers.list = multichoice.answer(answers.list);
             answers.datasources = [];
-            askDatasource(answers, function(allAnswers){
+            askDatasource(answers, options, function(allAnswers){initiate(allAnswers)});
+            function initiate (allAnswers){
               var files;
               var dirs;
               var step = 0;
@@ -101,8 +114,7 @@ module.exports = function(program){
                 return `${step}.`;
               }
 
-
-            });
+            }
           });
 
 
@@ -115,8 +127,9 @@ module.exports = function(program){
 
 
 // recursively ask user to enter all their datasources
-function askDatasource(currentAnswers, callback){
-  inquirer.prompt([
+function askDatasource(currentAnswers, options, callback){
+  if(!options.dataset){
+    inquirer.prompt([
     {
       type: 'confirm',
       message: currentAnswers.datasources.length > 0 ? 'add another dataset?' : 'would you like to connect to any datasets?',
@@ -133,7 +146,8 @@ function askDatasource(currentAnswers, callback){
       // all done with datasources, continue on.
       callback(_.merge(currentAnswers, answers));
     }
-  });
+  });}
+  else { let answers = {askDatasource : false}; callback(_.merge(currentAnswers, answers))}
 }
 
 
@@ -170,6 +184,7 @@ function writeFilesIfNonexistent(files, dirs, allAnswers, callback) {
       reduceCallback(null, filesThatExist);
     });
   }, function(err, filesThatExist) {
+    console.log('made')
     if(filesThatExist.length > 0) {
       callback(filesThatExist, null);
     }
