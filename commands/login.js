@@ -103,10 +103,10 @@ module.exports = function(program){
           Login.getLogin(answers.instance).then(function(domo) {
             domo
               .login()
-              .then(function(l){
+              .then(function(l) {
                 return login = l;
               })
-              .then(function(){
+              .then(function() {
                 const manifest = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
 
                 if (Oauth.isOAuthEnabled(manifest)) {
