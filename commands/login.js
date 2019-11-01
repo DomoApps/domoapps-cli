@@ -100,13 +100,14 @@ module.exports = function(program){
           if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
             log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
           }
-          Login.getLogin(answers.instance).then(function(domo) {
+          Login.getLogin(answers.instance).then(function(instanceLogin) {
+            const domo = new Domo(answers.instance, instanceLogin.refreshToken, constants.CLIENT_ID);
             domo
               .login()
-              .then(function(l){
+              .then(function(l) {
                 return login = l;
               })
-              .then(function(){
+              .then(function() {
                 const manifest = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
 
                 if (Oauth.isOAuthEnabled(manifest)) {
@@ -234,7 +235,7 @@ function setupOauth(instance, manifestName, proxyId) {
         log.ok('Retrieved Oauth Tokens');
         Oauth.persistTokens({
           instance,
-          manifestname,
+          manifestName,
           proxyId,
           accessToken: result.access_token,
           refreshToken: result.refresh_token
