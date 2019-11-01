@@ -111,7 +111,7 @@ module.exports = function(program){
 
                 if (Oauth.isOAuthEnabled(manifest)) {
                   if (Oauth.hasAppProxyId(manifest)) {
-                    return setupOauth(answers.instance, manfiest, Oauth.getAppProxyId(manifest));
+                    return setupOauth(answers.instance, manifest, Oauth.getAppProxyId(manifest));
                   }
                   else {
                     return promptAppProxyId().then(proxyId => {
