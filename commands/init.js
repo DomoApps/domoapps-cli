@@ -43,7 +43,7 @@ module.exports = function(program){
           }
             // answers.list = multichoice.answer(answers.list);
             answers.datasources = [];
-            askDatasource(answers, options, function(allAnswers){initiate(allAnswers)});
+            askDatasource(answers, options, initiate);
             function initiate (allAnswers){
               var files;
               var dirs;
@@ -115,13 +115,7 @@ module.exports = function(program){
 
             }
           });
-
-
-
-
-
     });
-
 }
 
 
@@ -145,8 +139,14 @@ function askDatasource(currentAnswers, options, callback){
       // all done with datasources, continue on.
       callback(_.merge(currentAnswers, answers));
     }
-  });}
-  else { let answers = {askDatasource : false}; callback(_.merge(currentAnswers, answers))}
+  });
+}
+  else { 
+    let answers = {
+      askDatasource : false
+     }; 
+    callback(_.merge(currentAnswers, answers))
+  }
 }
 
 
@@ -183,7 +183,6 @@ function writeFilesIfNonexistent(files, dirs, allAnswers, callback) {
       reduceCallback(null, filesThatExist);
     });
   }, function(err, filesThatExist) {
-    console.log('made')
     if(filesThatExist.length > 0) {
       callback(filesThatExist, null);
     }
