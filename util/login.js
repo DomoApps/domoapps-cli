@@ -92,7 +92,7 @@ module.exports = {
         return new Domo(loginData.instance, loginData.refreshToken, constants.CLIENT_ID, loginData.devToken);
       }
       catch (ex){
-        return {};
+        return new Domo(instance, refreshToken, constants.CLIENT_ID);
       }
     });
   }
