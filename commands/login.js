@@ -99,16 +99,14 @@ module.exports = function(program){
 
           if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
             log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
-            
           }
           Login.getLogin(answers.instance).then(function(domo) {
-            console.log(answers.instance)
             domo
               .login()
-              .then(function(l){
+              .then(function(l) {
                 return login = l;
               })
-              .then(function(){
+              .then(function() {
                 const manifest = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
 
                 if (Oauth.isOAuthEnabled(manifest)) {
