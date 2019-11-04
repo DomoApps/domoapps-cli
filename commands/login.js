@@ -59,7 +59,6 @@ module.exports = function(program){
       var previousLogins = Login.getPreviousLogins();
       var mayNotBeAuthenticated = true;
       Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(mostRecent) {
-        console.log('11')
         var prompts = [];
 
         var versionCheckFn = !args.upgradeCheck ?
@@ -106,31 +105,18 @@ module.exports = function(program){
             console.log(answers.instance)
             domo
               .login()
-<<<<<<< Updated upstream
-              .then(function(l) {
-                return login = l;
-              })
-              .then(function() {
-=======
               .then(function(l){
-                console.log('1')
                 return login = l;
               })
               .then(function(){
-                console.log('2')
->>>>>>> Stashed changes
                 const manifest = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
 
                 if (Oauth.isOAuthEnabled(manifest)) {
-                  console.log('3')
                   if (Oauth.hasAppProxyId(manifest)) {
-                    console.log('4')
                     return setupOauth(answers.instance, manifest, Oauth.getAppProxyId(manifest));
                   }
                   else {
-                    console.log('5')
                     return promptAppProxyId().then(proxyId => {
-                      console.log('6')
                       return setupOauth(answers.instance, manifest, proxyId);
                     });
                   }
@@ -138,12 +124,12 @@ module.exports = function(program){
               })
               .then(checkVersion.bind(null, answers.instance))
               .then(versionCheckFn)
-              .then(function(){console.log('7')
+              .then(function(){
                 console.log(chalk.grey(logo));
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
                 return Login.persistLogin(answers.instance, login.refreshToken);
               })
-              .catch(e => {evoke(log.fail, 'Login unsuccessful');console.log(log.fail); })
+              .catch(evoke(log.fail, 'Login unsuccessful'))
               .finally(process.exit)
           }).catch(log.notAuthenticated);
         });
