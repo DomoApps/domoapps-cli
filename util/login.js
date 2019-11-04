@@ -88,6 +88,8 @@ module.exports = {
   getLogin: function(instance){
     return keytar.getPassword('domoapps-cli', instance).then(function(refreshToken) {
       try{
+        var loginFile = path.resolve(home + '/login/' + instance + '.json');
+        fs.writeJsonSync(loginFile, { instance: instance });
         var loginData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
         loginData.refreshToken = refreshToken;
         return new Domo(loginData.instance, loginData.refreshToken, constants.CLIENT_ID, loginData.devToken);

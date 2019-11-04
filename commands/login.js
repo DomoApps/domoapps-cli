@@ -59,6 +59,7 @@ module.exports = function(program){
       var previousLogins = Login.getPreviousLogins();
       var mayNotBeAuthenticated = true;
       Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(mostRecent) {
+        console.log('11')
         var prompts = [];
 
         var versionCheckFn = !args.upgradeCheck ?
@@ -99,22 +100,37 @@ module.exports = function(program){
 
           if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
             log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
+            
           }
           Login.getLogin(answers.instance).then(function(domo) {
+            console.log(answers.instance)
             domo
               .login()
+<<<<<<< Updated upstream
               .then(function(l) {
                 return login = l;
               })
               .then(function() {
+=======
+              .then(function(l){
+                console.log('1')
+                return login = l;
+              })
+              .then(function(){
+                console.log('2')
+>>>>>>> Stashed changes
                 const manifest = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
 
                 if (Oauth.isOAuthEnabled(manifest)) {
+                  console.log('3')
                   if (Oauth.hasAppProxyId(manifest)) {
+                    console.log('4')
                     return setupOauth(answers.instance, manifest, Oauth.getAppProxyId(manifest));
                   }
                   else {
+                    console.log('5')
                     return promptAppProxyId().then(proxyId => {
+                      console.log('6')
                       return setupOauth(answers.instance, manifest, proxyId);
                     });
                   }
@@ -122,12 +138,12 @@ module.exports = function(program){
               })
               .then(checkVersion.bind(null, answers.instance))
               .then(versionCheckFn)
-              .then(function(){
+              .then(function(){console.log('7')
                 console.log(chalk.grey(logo));
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
                 return Login.persistLogin(answers.instance, login.refreshToken);
               })
-              .catch(evoke(log.fail, 'Login unsuccessful'))
+              .catch(e => {evoke(log.fail, 'Login unsuccessful');console.log(log.fail); })
               .finally(process.exit)
           }).catch(log.notAuthenticated);
         });
