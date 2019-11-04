@@ -14,9 +14,7 @@ module.exports = function(program){
     .command('release')
     .description('prepare a design for app store release')
     .action(function(){
-      Login.getMostRecentLogin().then(function(login) {
-        Login.verifyLogin(login);
-        var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
+      Login.getMostRecentLogin().then(function(domo) {
         var manifest = Manifest.get(program.manifest);
 
         // make sure app has been published first

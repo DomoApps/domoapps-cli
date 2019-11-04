@@ -52,11 +52,13 @@ module.exports = function(program){
     .description('login to Domo')
     .option('-i, --instance <value>', 'Domo instance')
     .option('-u, --user-email <value>', 'user email')
+    .option('-f, --manifest-file <file>', 'use a specific manifest file')
     .option('--no-upgrade-check', 'do not check for new versions')
     .action(function(args){
 
       var previousLogins = Login.getPreviousLogins();
-      Login.getMostRecentLogin().then(function(mostRecent) {
+      var mayNotBeAuthenticated = true;
+      Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(mostRecent) {
         var prompts = [];
 
         var versionCheckFn = !args.upgradeCheck ?
@@ -99,22 +101,22 @@ module.exports = function(program){
           if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
             log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
           }
-          Login.getLogin(answers.instance).then(function(instanceLogin) {
-            var login;
-            var domo = new Domo(answers.instance, instanceLogin.refreshToken, constants.CLIENT_ID);
+          Login.getLogin(answers.instance).then(function(domo) {
             domo
               .login()
-              .then(function(l){
+              .then(function(l) {
                 return login = l;
               })
-              .then(function(){
-                if (Oauth.isOAuthEnabled()) {
-                  if (Oauth.hasAppProxyId()) {
-                    return setupOauth(answers.instance, Oauth.getAppProxyId());
+              .then(function() {
+                const manifest = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
+
+                if (Oauth.isOAuthEnabled(manifest)) {
+                  if (Oauth.hasAppProxyId(manifest)) {
+                    return setupOauth(answers.instance, manifest, Oauth.getAppProxyId(manifest));
                   }
                   else {
                     return promptAppProxyId().then(proxyId => {
-                      return setupOauth(answers.instance, proxyId);
+                      return setupOauth(answers.instance, manifest, proxyId);
                     });
                   }
                 }
@@ -124,7 +126,7 @@ module.exports = function(program){
               .then(function(){
                 console.log(chalk.grey(logo));
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
-                return Login.persistLogin(answers.instance)(login);
+                return Login.persistLogin(answers.instance, login.refreshToken);
               })
               .catch(evoke(log.fail, 'Login unsuccessful'))
               .finally(process.exit)
@@ -217,13 +219,14 @@ function promptAppProxyId() {
   });
 }
 
-function setupOauth(instance, proxyId) {
-  if (!Oauth.hasTokens({ instance, proxyId })) {
-    return Oauth.register({instance, proxyId})
+function setupOauth(instance, manifestName, proxyId) {
+  if (!Oauth.hasTokens({ instance, manifestName, proxyId })) {
+    return Oauth.register({instance, manifestName, proxyId})
       .then(result => {
         log.ok('Valid Device Id');
         return Oauth.verifyRegistration({
           instance,
+          manifestName,
           proxyId,
           verificationUri: result.verification_uri,
           userCode: result.user_code,
@@ -234,6 +237,7 @@ function setupOauth(instance, proxyId) {
         log.ok('Retrieved Oauth Tokens');
         Oauth.persistTokens({
           instance,
+          manifestName,
           proxyId,
           accessToken: result.access_token,
           refreshToken: result.refresh_token
