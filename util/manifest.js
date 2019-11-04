@@ -36,7 +36,7 @@ module.exports = {
     }
 
     // add the manifest name, so it's attached to the object
-    manifest.name = manifestName;
+    manifest.fileName = manifestName;
 
     return manifest;
   },
@@ -55,7 +55,7 @@ module.exports = {
   },
 
   updateManifest: function(manifest){
-    const manifestPath = findManifest(manifest.name);
+    const manifestPath = findManifest(manifest.fileName);
     fs.writeJsonSync(manifestPath, manifest, {spaces: 2});
   }
 }
