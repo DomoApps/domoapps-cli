@@ -1,4 +1,4 @@
-var Domo = require('../../domoapps-client/lib/domoapps-client');
+var Domo = require('ryuu-client');
 var inquirer = require('inquirer');
 var _ = require('lodash');
 var open = require('open');

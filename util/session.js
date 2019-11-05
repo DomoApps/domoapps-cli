@@ -2,6 +2,7 @@ var request = require('request');
 var Promise = require('bluebird');
 var evoke = require('./evoke');
 var log = require('./log');
+var Domo = require('ryuu-client');
 
 module.exports = {
   check: function(domo){
@@ -14,7 +15,6 @@ module.exports = {
 
       domo.processRequest(options)
         .then(function(res) {
-          //console.log(res);
           try{
             var isValid = JSON.parse(res.body).isValid;
             if(isValid){
@@ -30,7 +30,9 @@ module.exports = {
             resolve(true);
           }
         })
-        .catch(evoke(log.clientRequestFailed, 'Not authenticated'));
+        .catch(function(err){ 
+          log.clientRequestFailed(err.statusCode + ' - ' + err.message, err.failureMessage);
+        });
     });
   }
-}
+};

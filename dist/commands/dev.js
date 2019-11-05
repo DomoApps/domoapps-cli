@@ -1,7 +1,7 @@
-var Domo = require("../../../domoapps-client/lib/domoapps-client");
-var Login = require('../util/login');
-var log = require('../util/log');
-var constants = require('../util/constants');
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var login_1 = require("../util/login");
+var log = require("../util/log");
 module.exports = function (program) {
     program
         .command('dev')
@@ -14,7 +14,7 @@ module.exports = function (program) {
             external: opts.external,
             manifest: opts.manifest,
         };
-        Login.getMostRecentLogin().then(function (domo) {
+        login_1.Login.getMostRecentLogin().then(function (domo) {
             //session will stop authenticated users
             var server = require('../server/server');
             server.start(domo, options).catch(log.fail);
@@ -23,7 +23,7 @@ module.exports = function (program) {
                 log.fail(log.handleErrorMessage(err, err.message));
             }
             else {
-                log.notAuthenticated;
+                log.notAuthenticated();
             }
         });
     });

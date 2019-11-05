@@ -17,7 +17,8 @@ module.exports = function (program) {
             });
         }
         else {
-            Login.getMostRecentLogin().then(function (login) {
+            var mayNotBeAuthenticated = true;
+            Login.getMostRecentLogin(mayNotBeAuthenticated).then(function (login) {
                 instance = login.instance;
                 verifyLogout(login, instance);
             }).catch(log.notAuthenticated);

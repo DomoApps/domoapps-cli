@@ -2,7 +2,7 @@
 /**
  * domo dev server
  */
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var path = require("path");
 var _ = require("lodash");
 var fs = require("fs-extra");
@@ -14,7 +14,7 @@ portfinder.basePort = 3000;
 var session = require("../util/session");
 var appStructure = require("../util/appStructure");
 var Manifest = require("../util/manifest");
-var Domo = require("../../../domoapps-client/lib/domoapps-client");
+var Domo = require("ryuu-client");
 var express = require("express");
 var app = express();
 var Proxy = require('@domoinc/ryuu-proxy').Proxy;
@@ -90,10 +90,11 @@ module.exports = {
                         logPrefix: 'Domo Dev',
                         online: external,
                         // TODO: add user's ignored files here too?
-                        files: ['**/*', '!node_modules/**/*']
+                        files: ['**/*', '!node_modules/**/*'],
                     });
                     bs.instance.logger.info('Instance: ' + domoApp.instance);
-                })["catch"](function (e) {
+                })
+                    .catch(function (e) {
                     reject('Session expired. Please login again using domo login.');
                 });
             });
@@ -126,7 +127,7 @@ function getDomoappsData() {
         var data = JSON.parse(res);
         data.url = 'https://' + uuid + '.' + JSON.parse(res).domoappsDomain;
         return data;
-    })["catch"](function () {
+    }).catch(function () {
         var data = { url: 'https://' + uuid + '.domoapps.' + getEnv() };
         return data;
     });
@@ -142,8 +143,9 @@ function createContext(designId, mapping) {
     return domoApp.processRequest(options)
         .then(function (res) {
         return res[0];
-    })["catch"](function (err) {
+    }).catch(function (err) {
         console.log("Error: ", err.message);
         return;
     });
 }
+//# sourceMappingURL=server.js.map

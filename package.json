@@ -11,9 +11,12 @@
     "push": "git push && git push --tags",
     "preversion": "npm run build",
     "version": "npm run changelog && git add CHANGELOG.md templates/**/domoPhoenix*.js",
-    "typescript": ""
+    "remove": "rimraf \"node_modules/ryuu-client/*\"",
+    "copy": "ncp \"package.json\" \"dist/\" && ncp \"../domoapps-client/\" \"node_modules/ryuu-client/\"",
+    "typescript": "npm run remove && npm run copy && tsc"
   },
   "dependencies": {
+    "@domoinc/ryuu-proxy": "^3.1.0",
     "async": "^3.1.0",
     "bluebird": "^3.7.0",
     "browser-sync": "^2.26.7",
@@ -33,6 +36,7 @@
     "q": "^1.4.1",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
+    "rimraf": "^3.0.0",
     "ryuu-client": "^3.0.2",
     "ryuu.js": "^2.6.8",
     "semver": "^6.3.0",
@@ -43,7 +47,6 @@
   },
   "devDependencies": {
     "@domoinc/domo-phoenix": "^0.11.0",
-    "@domoinc/ryuu-proxy": "^3.1.0",
     "@types/bluebird-global": "^3.5.12",
     "@types/express": "^4.17.1",
     "@types/node": "^12.7.11",

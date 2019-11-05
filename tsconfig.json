@@ -10,10 +10,10 @@
       "allowJs": true,
       "suppressImplicitAnyIndexErrors": true
     },
-    "include": ["**/*"],
     "exclude": [
       "node_modules",
       "dist",
+      "distcopy",
       "**/*.spec.ts",
       "templates"
     ]
