@@ -93,8 +93,7 @@ module.exports = function(program){
         }
 
         // prompt user
-        inquirer.prompt(prompts)
-          .then(function(answers) {
+        inquirer.prompt(prompts).then(function(answers) {
 
           answers.instance = args.instance || answers.instance;
 
@@ -156,8 +155,10 @@ function checkVersion(instance){
  * if action is 'block' then 'fail' will get called and end the process early
  */
 function verifyVersion(res){
+  const body = (Array.isArray(res))
+    ? (res[0].body)
+    : (res.body);
 
-  var body = res[0].body;
   if (body.action === 'block'){
     log.fail(body.message);
   }
