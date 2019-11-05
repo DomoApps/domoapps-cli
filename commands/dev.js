@@ -16,10 +16,7 @@ module.exports = function(program) {
         manifest: opts.manifest,
       };
 
-      Login.getMostRecentLogin().then(function(login) {
-        Login.verifyLogin(login);
-        var domo = new Domo(login.instance, login.refreshToken, constants.CLIENT_ID);
-
+      Login.getMostRecentLogin().then(function(domo) {
         //session will stop authenticated users
         const server = require('../server/server');
         server.start(domo, options).catch(log.fail);
