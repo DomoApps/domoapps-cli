@@ -13,9 +13,9 @@ var multichoice = require('../util/multichoice');
 module.exports = function(program){
   program
     .command('init')
-    .option('-dn, --design_name <value>', 'Name of the design')
-    .option('-s, --starter <value>', 'Name of the starter kit')
-    .option('-d, --dataset <value>', 'Connect a dataset (y/n)')
+    .option('--design_name <value>', 'Name of the design')
+    .option('--starter <value>', 'Name of the starter kit')
+    .option('--dataset <value>', 'Connect a dataset (y/n)')
     .description('initialize a new Custom App design')
     .action(function(options){
       let prompts = []
