@@ -19,7 +19,8 @@ module.exports = function(program) {
         message: 'Are you sure you want to undelete design with id: ' + designId + '?',
         name: 'undelete',
         default: true
-      }], handleUserResponse);
+      }])
+        .then(handleUserResponse);
 
       function handleUserResponse(answer) {
         if (answer.undelete) {

@@ -32,12 +32,13 @@ module.exports = function(program){
           });
         }
 
-        inquirer.prompt(prompts, function(answers) {
-          answers.instance = args.instance || answers.instance;
-          answers.id = args.appId || answers.id;
+        inquirer.prompt(prompts)
+          .then(function(answers) {
+            answers.instance = args.instance || answers.instance;
+            answers.id = args.appId || answers.id;
 
-          Login.getLogin(answers.instance).then(function(domo) {
-            domo.getKpi(answers.id)
+            Login.getLogin(answers.instance).then(function(domo) {
+              domo.getKpi(answers.id)
                 .then(function(kpi){
                   kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'mason';
                   return kpi;
@@ -52,5 +53,4 @@ module.exports = function(program){
         });
       }).catch(log.notAuthenticated);
     });
-
-}
+};
