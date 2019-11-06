@@ -36,7 +36,7 @@ module.exports = {
     }
 
     // add the manifest name, so it's attached to the object
-    manifest.name = manifestName;
+    manifest.fileName = manifestName;
 
     return manifest;
   },
@@ -55,7 +55,7 @@ module.exports = {
   },
 
   updateManifest: function(manifest){
-    const manifestPath = findManifest(manifest.name);
+    const manifestPath = findManifest(manifest.fileName);
     fs.writeJsonSync(manifestPath, manifest, {spaces: 2});
   }
 }
@@ -122,7 +122,7 @@ function findManifest(name) {
     return `src/${name}`;
   }
 
-  // find any matching files (one layer deep while ignoring .dist and build folders)
+  // find any matching files (one layer deep while ignoring dist and build folders)
   const matches = glob.sync(
     `*/${name}`,
     {

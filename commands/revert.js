@@ -37,8 +37,8 @@ module.exports = function(program){
             answers.instance = args.instance || answers.instance;
             answers.id = args.appId || answers.id;
 
-          Login.getLogin(answers.instance).then(function(domo) {
-            domo.getKpi(answers.id)
+            Login.getLogin(answers.instance).then(function(domo) {
+              domo.getKpi(answers.id)
                 .then(function(kpi){
                   kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'mason';
                   return kpi;

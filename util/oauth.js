@@ -54,8 +54,13 @@ module.exports = {
 
   hasTokens: function({ instance, manifestName, proxyId }) {
     const scopes = JSON.stringify(this.getScopes(manifestName));
-    const instanceData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
-    return instanceData.proxyId === proxyId && instanceData.scopes === scopes;
+    const instanceFilePath = path.resolve(home + '/login/' + instance + '.json');
+    if (fs.existsSync(instanceFilePath)) {
+      const instanceData = fs.readJsonSync(instanceFilePath);
+      return instanceData.proxyId === proxyId && instanceData.scopes === scopes;
+    }
+    
+    return false;
   },
 
   register: function({instance, manifestName, proxyId}) {
@@ -115,13 +120,19 @@ module.exports = {
     });
   },
 
+  getLoginData: function({ loginFile }) {
+    return (fs.existsSync(loginFile))
+      ? (fs.readJsonSync(loginFile))
+      : ({});
+  },
+
   /**
    * persist login to user's domo home
    * TODO: REFACTOR w writeLogin
    */
   persistTokens: function({ instance, manifestName, proxyId, accessToken, refreshToken }) {
     const loginFile = path.resolve(home + '/login/' + instance + '.json');
-    const loginData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
+    const loginData = this.getLoginData(loginFile);
     const scopes = this.getScopes(manifestName);
 
     fs.ensureFileSync(loginFile);

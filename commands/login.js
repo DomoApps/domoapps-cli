@@ -94,8 +94,7 @@ module.exports = function(program){
         }
 
         // prompt user
-        inquirer.prompt(prompts)
-          .then(function(answers) {
+        inquirer.prompt(prompts).then(function(answers) {
 
           answers.instance = args.instance || answers.instance;
 
@@ -105,15 +104,15 @@ module.exports = function(program){
           Login.getLogin(answers.instance).then(function(domo) {
             domo
               .login()
-              .then(function(l){
+              .then(function(l) {
                 return login = l;
               })
-              .then(function(){
+              .then(function() {
                 const manifest = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
 
                 if (Oauth.isOAuthEnabled(manifest)) {
                   if (Oauth.hasAppProxyId(manifest)) {
-                    return setupOauth(answers.instance, manfiest, Oauth.getAppProxyId(manifest));
+                    return setupOauth(answers.instance, manifest, Oauth.getAppProxyId(manifest));
                   }
                   else {
                     return promptAppProxyId().then(proxyId => {
@@ -158,8 +157,17 @@ function checkVersion(instance){
  * if action is 'block' then 'fail' will get called and end the process early
  */
 function verifyVersion(res){
+<<<<<<< HEAD
   if (res.action === 'block'){
     log.fail(res.message);
+=======
+  const body = (Array.isArray(res))
+    ? (res[0].body)
+    : (res.body);
+
+  if (body.action === 'block'){
+    log.fail(body.message);
+>>>>>>> master
   }
 
   if (res.action === 'warn'){
@@ -237,7 +245,7 @@ function setupOauth(instance, manifestName, proxyId) {
         log.ok('Retrieved Oauth Tokens');
         Oauth.persistTokens({
           instance,
-          manifestname,
+          manifestName,
           proxyId,
           accessToken: result.access_token,
           refreshToken: result.refresh_token
