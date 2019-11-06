@@ -21,12 +21,14 @@ module.exports = function(program) {
           handleUserResponse(answer)
       }
       else {
-          inquirer.prompt([{
+          inquirer
+            .prompt([{
               type: 'confirm',
               message: 'Are you sure you want to delete design with id: ' + designId + '?',
               name: 'delete',
               default: false
-          }], handleUserResponse);
+            }])
+            .then(handleUserResponse);
       }
 
       function handleUserResponse(answer) {

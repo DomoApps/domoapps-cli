@@ -14,7 +14,6 @@ function verifyLoginLocal(login){
   }
 }
 
-
 module.exports = {
   getMostRecentLogin: function(mayNotBeAuthenticated){
     var logins = glob.sync(home + "/login/*.json");
