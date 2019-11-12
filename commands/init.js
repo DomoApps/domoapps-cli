@@ -121,7 +121,7 @@ module.exports = function(program){
 
 // recursively ask user to enter all their datasources
 function askDatasource(currentAnswers, options, callback){
-  if(!options.dataset){
+  if(!options.dataset || options.dataset == 'y' || options.dataset == 'Y'){
     inquirer.prompt([
     {
       type: 'confirm',
