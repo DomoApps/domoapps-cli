@@ -4,7 +4,7 @@ var isValidJSName = require('../util/isValidJSName');
 var slug = require('slug');
 var chalk = require('chalk');
 var shell = require('shelljs');
-var async = require('async/reduce');
+var reduce = require('async/reduce');
 var fs = require('fs-extra');
 var path = require('path');
 var log = require('../util/log');
@@ -34,7 +34,7 @@ module.exports = function(program){
           choices: ['hello world', 'manifest only', 'basic chart', 'map chart']
         }))
       }
-        inquirer.prompt(prompts, function(answers){
+        inquirer.prompt(prompts).then(function(answers){
           if(options.design_name){
             answers.name = options.design_name
           }
@@ -123,23 +123,23 @@ module.exports = function(program){
 function askDatasource(currentAnswers, options, callback){
   if(!options.dataset || options.dataset == 'y' || options.dataset == 'Y'){
     inquirer.prompt([
-    {
-      type: 'confirm',
-      message: currentAnswers.datasources.length > 0 ? 'add another dataset?' : 'would you like to connect to any datasets?',
-      name: 'askDatasource'
-    }
-  ]).then(function(answers){
-    if (answers.askDatasource){
-      addDatasource(_.merge(currentAnswers, answers), function(combinedAnswers){
-        // ask for more datasources
-        askDatasource(combinedAnswers, callback);
-      });
-    }
-    else {
-      // all done with datasources, continue on.
-      callback(_.merge(currentAnswers, answers));
-    }
-  });
+      {
+        type: 'confirm',
+        message: currentAnswers.datasources.length > 0 ? 'add another dataset?' : 'would you like to connect to any datasets?',
+        name: 'askDatasource'
+      }
+    ]).then(function(answers){
+      if (answers.askDatasource){
+        addDatasource(_.merge(currentAnswers, answers), function(combinedAnswers){
+          // ask for more datasources
+          askDatasource(combinedAnswers, callback);
+        });
+      }
+      else {
+        // all done with datasources, continue on.
+        callback(_.merge(currentAnswers, answers));
+      }
+    });
 }
   else { 
     let answers = {
@@ -173,7 +173,7 @@ function addDatasource(currentAnswers, callback){
 }
 
 function writeFilesIfNonexistent(files, dirs, allAnswers, callback) {
-  async.reduce(files, [], function(filesThatExist, file, reduceCallback) {
+  reduce(files, [], function(filesThatExist, file, reduceCallback) {
     fs.open(file,'r',function(err, fd) {
       var fileExists = !err;
       if(fileExists) {
