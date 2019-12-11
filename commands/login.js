@@ -12,7 +12,7 @@ var path = require('path');
 var request = Promise.promisify(require('request'));
 var constants = require('../util/constants');
 var Oauth = require('../util/oauth');
-
+var autoUpdate=false;
 var logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃                                                            ┃
@@ -54,13 +54,15 @@ module.exports = function(program){
     .option('-u, --user-email <value>', 'user email')
     .option('-f, --manifest-file <file>', 'use a specific manifest file')
     .option('--no-upgrade-check', 'do not check for new versions')
+    .option('--upgrade-download', 'Automatically download newer version if available. ')
     .action(function(args){
-
+      if(args.upgradeDownload){
+        autoUpdate = true
+      }
       var previousLogins = Login.getPreviousLogins();
       var mayNotBeAuthenticated = true;
       Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(mostRecent) {
         var prompts = [];
-
         var versionCheckFn = !args.upgradeCheck ?
           function (x) { return x; } :
           verifyVersion;
@@ -176,16 +178,20 @@ function verifyVersion(res){
 
 function promptUpgrade(latest){
   return new Promise(function(resolve, reject){
-    inquirer.prompt([
-      {
+    var prompts = []
+    if(!autoUpdate){
+      prompts.push( {
         type: "confirm",
         message: "Would you like to upgrade now?",
         name: "upgrade",
         default: true
-      }
-
-    ])
+      })
+    }
+    inquirer.prompt(prompts)
       .then(function(answers) {
+        if(autoUpdate === true){
+          answers.upgrade = autoUpdate;
+        }
         if (answers.upgrade){
           log.info('Upgrading to latest version', 'Hang tight, this may take a moment...');
           var output = shell.exec('npm install ryuu -g', {async: false, silent: true});
