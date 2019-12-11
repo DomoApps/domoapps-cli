@@ -179,7 +179,7 @@ function verifyVersion(res){
 function promptUpgrade(latest){
   return new Promise(function(resolve, reject){
     var prompts = []
-    if(autoUpdate === false){
+    if(!autoUpdate){
       prompts.push( {
         type: "confirm",
         message: "Would you like to upgrade now?",
