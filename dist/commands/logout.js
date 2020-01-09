@@ -1,7 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var login_1 = require("../util/login");
-var log = require("../util/log");
+var Login = require('../util/login');
+var log = require('../util/log');
 module.exports = function (program) {
     program
         .command('logout')
@@ -12,35 +10,33 @@ module.exports = function (program) {
         var login;
         if (args.instance) {
             instance = args.instance;
-            login_1.Login.getLogin(instance)
-                .then(function (login) {
+            Login.getLogin(instance).then(function (login) {
                 verifyLogout(login, instance);
-            })
-                .catch(function () {
+            }).catch(function () {
                 log.fail('No current login with instance ' + instance);
             });
         }
         else {
             var mayNotBeAuthenticated = true;
-            login_1.Login.getMostRecentLogin(mayNotBeAuthenticated).then(function (login) {
-                instance = login.getInstance();
+            Login.getMostRecentLogin(mayNotBeAuthenticated).then(function (login) {
+                instance = login.instance;
                 verifyLogout(login, instance);
             }).catch(log.notAuthenticated);
         }
+        function verifyLogout(login, instance) {
+            Login.verifyLogout(login, instance).then(function (logout) {
+                if (logout) {
+                    process.exit();
+                }
+                Login.deleteRefreshToken(login).then(function () {
+                    Login.verifyLogout(login, instance);
+                }).then(function (logout) {
+                    process.exit();
+                }).catch(function () {
+                    log.fail('Failed to logout');
+                });
+            });
+        }
     });
 };
-function verifyLogout(login, instance) {
-    login_1.Login.verifyLogout(login, instance).then(function (logout) {
-        if (logout) {
-            process.exit();
-        }
-        login_1.Login.deleteRefreshToken(login).then(function () {
-            login_1.Login.verifyLogout(login, instance);
-        }).then(function (logout) {
-            process.exit();
-        }).catch(function () {
-            log.fail('Failed to logout');
-        });
-    });
-}
 //# sourceMappingURL=logout.js.map

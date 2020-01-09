@@ -2,6 +2,7 @@ var Domo = require('ryuu-client');
 var Login = require('../util/login');
 var design = require('../util/design');
 var log = require('../util/log');
+var evoke = require('../util/evoke');
 var inquirer = require('inquirer');
 var constants = require('../util/constants');
 
@@ -37,8 +38,8 @@ module.exports = function(program) {
             
             if (options.force) force = true;
             domo.deleteDesign(designId, force)
-              .tap(log.ok('Deleted design ' + designId))
-              .catch(log.clientRequestFailed('Unable to delete design ' + designId))
+              .tap(evoke(log.ok, 'Deleted design ' + designId))
+              .catch(evoke(log.clientRequestFailed, 'Unable to delete design ' + designId))
               .finally(process.exit);
           }).catch(log.notAuthenticated);
         } else {

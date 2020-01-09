@@ -2,6 +2,7 @@ var inquirer = require('inquirer');
 var Login = require('../util/login');
 var Domo = require('ryuu-client');
 var log = require('../util/log');
+var evoke = require('../util/evoke');
 var constants = require('../util/constants');
 
 module.exports = function(program){
@@ -45,9 +46,9 @@ module.exports = function(program){
                 .then(function(kpi){
                   return domo.updateKpi(kpi);
                 })
-                .tap(log.ok('Card reverted back to a mason app'))
-                .catch(log.clientRequestFailed('Error attempting to revert card'))
-                .finally(process.exit);
+                .tap(evoke(log.ok, 'Card reverted back to a mason app'))
+                .catch(evoke(log.clientRequestFailed, 'Error attempting to revert card'))
+                .finally(process.exit)
           }).catch(log.notAuthenticated);
         });
       }).catch(log.notAuthenticated);
