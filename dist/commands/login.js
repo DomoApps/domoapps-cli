@@ -56,8 +56,7 @@ module.exports = function (program) {
                 });
             }
             // prompt user
-            inquirer.prompt(prompts)
-                .then(function (answers) {
+            inquirer.prompt(prompts).then(function (answers) {
                 answers.instance = args.instance || answers.instance;
                 if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')) {
                     log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
@@ -72,7 +71,7 @@ module.exports = function (program) {
                         var manifest = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
                         if (Oauth.isOAuthEnabled(manifest)) {
                             if (Oauth.hasAppProxyId(manifest)) {
-                                return setupOauth(answers.instance, manfiest, Oauth.getAppProxyId(manifest));
+                                return setupOauth(answers.instance, manifest, Oauth.getAppProxyId(manifest));
                             }
                             else {
                                 return promptAppProxyId().then(function (proxyId) {
@@ -186,7 +185,7 @@ function setupOauth(instance, manifestName, proxyId) {
             log.ok('Retrieved Oauth Tokens');
             Oauth.persistTokens({
                 instance: instance,
-                manifestname: manifestname,
+                manifestName: manifestName,
                 proxyId: proxyId,
                 accessToken: result.access_token,
                 refreshToken: result.refresh_token

@@ -11,15 +11,23 @@ module.exports = function (program) {
         .description('delete a published design')
         .option('-i, --design_id <id>', '[DEPRECATED] Specify design ID, otherwise it is retrieved from a manifest file')
         .option('-f, --force', 'Delete the design even if it is referenced by Custom Apps')
+        .option('-c, --confirm', 'Confirm deleting the app')
         .action(function (arg, options) {
         var designId = design.getDesignId(arg, options.design_id, program.manifest);
-        inquirer.prompt([{
-                type: 'confirm',
-                message: 'Are you sure you want to delete design with id: ' + designId + '?',
-                name: 'delete',
-                default: false
-            }])
-            .then(handleUserResponse);
+        if (options.confirm) {
+            var answer = { delete: true };
+            handleUserResponse(answer);
+        }
+        else {
+            inquirer
+                .prompt([{
+                    type: 'confirm',
+                    message: 'Are you sure you want to delete design with id: ' + designId + '?',
+                    name: 'delete',
+                    default: false
+                }])
+                .then(handleUserResponse);
+        }
         function handleUserResponse(answer) {
             if (answer.delete) {
                 var force = false;

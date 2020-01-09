@@ -34,7 +34,7 @@ module.exports = {
             validateManifest(manifest);
         }
         // add the manifest name, so it's attached to the object
-        manifest.name = manifestName;
+        manifest.fileName = manifestName;
         return manifest;
     },
     hasManifest: function (manifestName) {
@@ -49,7 +49,7 @@ module.exports = {
         return design;
     },
     updateManifest: function (manifest) {
-        var manifestPath = findManifest(manifest.name);
+        var manifestPath = findManifest(manifest.fileName);
         fs.writeJsonSync(manifestPath, manifest, { spaces: 2 });
     }
 };
@@ -105,7 +105,7 @@ function findManifest(name) {
     if (fs.existsSync("src/" + name)) {
         return "src/" + name;
     }
-    // find any matching files (one layer deep while ignoring .dist and build folders)
+    // find any matching files (one layer deep while ignoring dist and build folders)
     var matches = glob.sync("*/" + name, {
         ignore: ['dist/*', 'build/*'],
     });

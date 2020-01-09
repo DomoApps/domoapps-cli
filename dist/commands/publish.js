@@ -76,7 +76,8 @@ module.exports = function (program) {
                             switch (e.message.substr(0, 6)) {
                                 case 'DA0086':
                                     log.warn(e.message);
-                                    inquirer.prompt([
+                                    inquirer
+                                        .prompt([
                                         {
                                             type: 'confirm',
                                             message: 'This design has been deleted. Would you like to publish a new design with these assets?',
