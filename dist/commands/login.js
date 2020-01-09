@@ -112,8 +112,11 @@ function checkVersion(instance) {
  * if action is 'block' then 'fail' will get called and end the process early
  */
 function verifyVersion(res) {
-    if (res.action === 'block') {
-        log.fail(res.message);
+    var body = (Array.isArray(res))
+        ? (res[0].body)
+        : (res.body);
+    if (body.action === 'block') {
+        log.fail(body.message);
     }
     if (res.action === 'warn') {
         log.warn(res.message);
