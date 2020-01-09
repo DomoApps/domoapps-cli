@@ -1,4 +1,7 @@
 var chalk = require('chalk');
+/*import * as yourFuncs from './pathToYourFile';
+yourFuncs.foo();
+yourFuncs.foo2();*/
 module.exports = {
     /**
      * log a success

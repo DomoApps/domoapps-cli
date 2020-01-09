@@ -1,16 +1,15 @@
-var Domo = require('ryuu-client');
-var inquirer = require('inquirer');
-var _ = require('lodash');
-var open = require('open');
-var Manifest = require('../util/manifest');
-var Login = require('../util/login');
-var glob = require('glob');
-var fs = require('fs-extra');
-var log = require('../util/log');
-var appStructure = require('../util/appStructure');
-var messages = require('../util/messages');
-var evoke = require('../util/evoke');
-var constants = require('../util/constants');
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var inquirer = require("inquirer");
+var _ = require("lodash");
+var open = require("open");
+var Manifest = require("../util/manifest");
+var login_1 = require("../util/login");
+var glob = require("glob");
+var fs = require("fs-extra");
+var log = require("../util/log");
+var appStructure = require("../util/appStructure");
+var models_1 = require("../models");
 module.exports = function (program) {
     program
         .command('publish')
@@ -20,7 +19,7 @@ module.exports = function (program) {
         var manifest = Manifest.get(program.manifest);
         if (!manifest)
             return;
-        Login.getMostRecentLogin().then(function (domo) {
+        login_1.Login.getMostRecentLogin().then(function (domo) {
             var ignore = ['**/*/node_modules/**/*', 'node_modules/**/*'];
             var userIgnore = manifest.ignore;
             if (userIgnore) {
@@ -41,7 +40,7 @@ module.exports = function (program) {
                 return;
             }
             if (!appStructure.hasThumbnail()) {
-                log.warn(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
+                log.warn(models_1.constant.THUMBNAIL_CREATE_WARNING, models_1.constant.CREATE_THUMBNAIL);
             }
             if (!manifest.id) {
                 createDesign(domo, manifest, options);
@@ -61,14 +60,14 @@ module.exports = function (program) {
                         log.warn('Mapping has changed. Check current cards for potential miss-mappings.');
                     }
                     domo.uploadAllAssets(manifest)
-                        .tap(evoke(log.ok, 'Publishing ' + manifest.name + ' to ' + domo.instance + ' on ' + new Date()))
+                        .tap(log.ok('Publishing ' + manifest.name + ' to ' + domo.getInstance() + ' on ' + new Date()))
                         .then(logUploadSuccess)
                         .catch(function (e) {
                         if (e.statusCode === 401) {
-                            log.notAuthenticated(domo.refreshToken);
+                            log.notAuthenticated(domo.getRefreshToken());
                         }
                         else if (e.statusCode === 403) {
-                            log.fail('You do not have access to the design with id ' + manifest.id + ' on ' + domo.instance
+                            log.fail('You do not have access to the design with id ' + manifest.id + ' on ' + domo.getInstance()
                                 + '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.'
                                 + '\nAlternatively, you may have inadvertently changed the design id.');
                         }
@@ -76,7 +75,8 @@ module.exports = function (program) {
                             switch (e.message.substr(0, 6)) {
                                 case 'DA0086':
                                     log.warn(e.message);
-                                    inquirer.prompt([
+                                    inquirer
+                                        .prompt([
                                         {
                                             type: 'confirm',
                                             message: 'This design has been deleted. Would you like to publish a new design with these assets?',
@@ -131,8 +131,8 @@ function createDesign(domo, manifest, options) {
         design.version = designResult[1].version;
         return Manifest.persistDesignId(design, manifest);
     })
-        .tap(evoke(log.ok, 'New design created on ' + domo.instance))
-        .catch(evoke(log.fail, 'Error creating new design'))
+        .tap(log.ok('New design created on ' + domo.instance))
+        .catch(log.fail('Error creating new design'))
         .then(domo.uploadAllAssets.bind(domo, manifest))
         .then(logUploadSuccess)
         .catch(function (e) {

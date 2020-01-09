@@ -10,15 +10,15 @@ import path = require('path');
 import _ = require('lodash');
 import fs = require('fs-extra');
 import * as Promise from 'bluebird';
-import { IncomingMessage, ServerResponse } from 'http';
-//const Promise = require('bluebird');
 let bs = require('browser-sync').create();
 import portfinder = require('portfinder');
 portfinder.basePort = 3000;
 
 import session = require('../util/session');
 import appStructure = require('../util/appStructure');
-import Manifest = require('../util/manifest');
+import * as Manifest from '../util/manifest';
+import { DataPoint } from '../models/interfaces/manifest';
+
 
 import Domo = require('ryuu-client');
 import express = require('express');
@@ -43,6 +43,8 @@ let domoOptions: {
 };
 
 app.get('/', function (req, res){
+  //This line doesn't make any sense, I gotta figure out how to make domoApp something real/valid
+  //@ts-ignore
   const isValidSession = session.check(domoApp)
     .then(() => {
       manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
@@ -69,7 +71,7 @@ app.get('/', function (req, res){
       const customerId = 1 || appData.customer;
       const url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
       const hasThumbnail = appStructure.hasThumbnail();
-      const template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html')));
+      const template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html'), "utf8"));
       const fullpage = manifest.fullpage;
 
       res.send(template({
@@ -97,7 +99,7 @@ module.exports = {
         let dataPort = ports[1];
         domoApp = domo;
         domoOptions = options;
-
+        //@ts-ignore
         session.check(domoApp)
           .then(function() {
             var external = Boolean(domoOptions.external);
@@ -158,7 +160,7 @@ function getDomoappsData(){
     });
 }
 
-function createContext(designId, mapping){
+function createContext(designId: string, mapping: DataPoint[]) {
   var options = {
     url: 'https://' + domoApp.instance + '/domoapps/apps/v2/contexts',
     method: 'POST',

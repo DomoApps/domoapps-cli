@@ -7,7 +7,6 @@ var path = require("path");
 var _ = require("lodash");
 var fs = require("fs-extra");
 var Promise = require("bluebird");
-//const Promise = require('bluebird');
 var bs = require('browser-sync').create();
 var portfinder = require("portfinder");
 portfinder.basePort = 3000;
@@ -26,6 +25,8 @@ var isValidContext = true;
 var domoApp;
 var domoOptions;
 app.get('/', function (req, res) {
+    //This line doesn't make any sense, I gotta figure out how to make domoApp something real/valid
+    //@ts-ignore
     var isValidSession = session.check(domoApp)
         .then(function () {
         manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
@@ -52,7 +53,7 @@ app.get('/', function (req, res) {
         var customerId = 1 || appData.customer;
         var url = "index.html?userId=" + userId + "&customer=" + customerId + "&locale=en-US&platform=desktop&context=" + context.id;
         var hasThumbnail = appStructure.hasThumbnail();
-        var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html')));
+        var template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html'), "utf8"));
         var fullpage = manifest.fullpage;
         res.send(template({
             manifest: manifest,
@@ -77,6 +78,7 @@ module.exports = {
                 var dataPort = ports[1];
                 domoApp = domo;
                 domoOptions = options;
+                //@ts-ignore
                 session.check(domoApp)
                     .then(function () {
                     var external = Boolean(domoOptions.external);

@@ -4,8 +4,7 @@ var chalk = require('chalk');
 var shell = require('shelljs');
 var multichoice = require('../util/multichoice');
 var log = require('../util/log');
-var Login = require('../../util/login');
-var evoke = require('../util/evoke');
+var Login = require('../util/login').Login;
 var Domo = require('ryuu-client');
 var Promise = require('bluebird');
 var path = require('path');
@@ -46,7 +45,7 @@ var logo = `
 ┃                                                            ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
 
-
+//TODO: Figure out how to adjust catch so that if they have no login, it still works
 module.exports = function(program){
   program
     .command('login')
@@ -59,7 +58,7 @@ module.exports = function(program){
 
       var previousLogins = Login.getPreviousLogins();
       var mayNotBeAuthenticated = true;
-      Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(mostRecent) {
+      Login.getMostRecentLogin(mayNotBeAuthenticated).catch().then(function(mostRecent) {
         var prompts = [];
 
         var versionCheckFn = !args.upgradeCheck ?
@@ -67,7 +66,7 @@ module.exports = function(program){
           verifyVersion;
 
         if (!args.instance) {
-          prompts.push(multichoice({
+          prompts.push({
             type: "list",
             choices: function(){
               var options = _.map(previousLogins, 'instance');
@@ -81,7 +80,7 @@ module.exports = function(program){
             when: function(answers){
               return previousLogins.length > 0;
             }
-          }),
+          },
           {
             type: "input",
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
@@ -104,6 +103,7 @@ module.exports = function(program){
           Login.getLogin(answers.instance).then(function(domo) {
             domo
               .login()
+              .catch(function(err) {console.log(error)})
               .then(function(l) {
                 return login = l;
               })
@@ -128,8 +128,8 @@ module.exports = function(program){
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
                 return Login.persistLogin(answers.instance, login.refreshToken);
               })
-              .catch(evoke(log.fail, 'Login unsuccessful'))
-              .finally(process.exit)
+              .catch(log.fail('Login unsuccessful'))
+              .finally(process.exit);
           }).catch(log.notAuthenticated);
         });
       }).catch(log.notAuthenticated);
@@ -157,17 +157,12 @@ function checkVersion(instance){
  * if action is 'block' then 'fail' will get called and end the process early
  */
 function verifyVersion(res){
-<<<<<<< HEAD
-  if (res.action === 'block'){
-    log.fail(res.message);
-=======
   const body = (Array.isArray(res))
     ? (res[0].body)
     : (res.body);
 
   if (body.action === 'block'){
     log.fail(body.message);
->>>>>>> master
   }
 
   if (res.action === 'warn'){

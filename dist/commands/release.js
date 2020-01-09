@@ -1,9 +1,9 @@
 var inquirer = require('inquirer');
 var Domo = require('ryuu-client');
 var Manifest = require('../util/manifest');
+//import * as Manifest from '../util/manifest';
 var Login = require('../util/login');
 var log = require('../util/log');
-var evoke = require('../util/evoke');
 var multichoice = require('../util/multichoice');
 var appStructure = require('../util/appStructure');
 var messages = require('../util/messages');
@@ -39,12 +39,12 @@ module.exports = function (program) {
                     .then(function (answers) {
                     // release the kraken
                     domo.release(manifest.id, answers.version)
-                        .tap(evoke(log.ok, 'Design version (' + answers.version + ') released'))
+                        .tap(log.ok('Design version (' + answers.version + ') released'))
                         .catch(log.fail)
                         .finally(process.exit);
                 });
             })
-                .catch(evoke(log.clientRequestFailed, 'Error releasing app design'));
+                .catch(log.clientRequestFailed('Error releasing app design'));
         }).catch(log.notAuthenticated);
     });
 };

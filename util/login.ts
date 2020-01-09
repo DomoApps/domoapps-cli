@@ -1,100 +1,101 @@
-var glob = require("glob");
-var fs = require('fs-extra');
-var path = require('path');
-var Domo = require('ryuu-client');
-var home = Domo.getHomeDir();
-var log = require('./log');
-var keytar = require('keytar');
-var $q = require('q');
-import { login, domo, constant } from '../models';
+import glob = require("glob");
+import fs = require('fs-extra');
+import path = require('path');
+import keytar = require('keytar');
+import { login, constant } from '../models';
+import Domo = require('ryuu-client');
+import log = require('./log');
+const home = Domo.getHomeDir();
 
-//export = Login;
 
 export class Login {
-    static getMostRecentLogin(mayNotBeAuthenticated?: boolean): Promise<domo> {
-        var logins = glob.sync(home + "/login/*.json");
-        if (logins.length === 0) {
-          var d = $q.defer();
-          d.resolve({});
-          return d.promise;
-        }
-        var recent = logins.reduce(function(prev, next){
-          return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
-        });
-        var loginData = fs.readJsonSync(recent);
-        return keytar.getPassword('domoapps-cli', loginData.instance).then(function(refreshToken) {
-          loginData.refreshToken = refreshToken;
-          if(!mayNotBeAuthenticated) {
-            verifyLoginLocal(loginData);
-          }
-          return loginData;
-        }).then(function(loginData) {
-          return new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken);
-        });
+  //This needs more accurate typing
+  static getMostRecentLogin(mayNotBeAuthenticated?: boolean): Promise<Domo> {
+    var logins = glob.sync(home + "/login/*.json");
+    //If there are no logins, return a rejection as the user is unauthenticated.
+    if (logins.length === 0) {
+      return Promise.reject();
+    }
+    var recent = logins.reduce(function(prev, next) {
+      return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
+    });
+    //loginData is of type domo as well?
+    var loginData: login = fs.readJsonSync(recent);
+    return keytar.getPassword('domoapps-cli', loginData.instance).then(function(refreshToken: string) {
+      loginData.refreshToken = refreshToken;
+      if(!mayNotBeAuthenticated) {
+        verifyLoginLocal(loginData);
       }
+      return loginData;
+    }).then(function(loginData) {
+      return new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken);
+    });
+  }
 
-    //[object{instance:string}, ...]
-    static getPreviousLogins(): Array<Object> {
-      var logins = (glob.sync(home + "/login/*.json") || [])
-        .map(function(file){
-          return fs.readJsonSync(file);
-        });
-      return logins;
+  //[object{instance:string}, ...]
+  static getPreviousLogins(): Array<Object> {
+    var logins = (glob.sync(home + "/login/*.json") || [])
+      .map(function(file: string) {
+        return fs.readJsonSync(file);
+      });
+    return logins;
+  }
+
+  /**
+   * persist login to user's domo home
+   */
+  static persistLogin(instance: string, refreshToken: string, devToken: boolean|undefined): login {
+    const loginFile = path.resolve(home + '/login/' + instance + '.json');
+    // const loginData = fs.readJsonSync(loginFile, {throws: false});
+    fs.ensureFileSync(loginFile);
+    if (refreshToken) {
+      keytar.setPassword('domoapps-cli', instance, refreshToken); //runs async to writing, not concerned about waiting
     }
+    const data = {
+      instance: instance,
+      devToken: !!devToken
+    };
+    fs.writeJsonSync(loginFile, data);
+    return { instance, refreshToken, devToken };
+  }
 
-    /**
-     * persist login to user's domo home
-     */
-    static persistLogin(instance: string, refreshToken: string, devToken: boolean|undefined): login {
-      const loginFile = path.resolve(home + '/login/' + instance + '.json');
-      const loginData = fs.readJsonSync(loginFile, {throws: false});
-      fs.ensureFileSync(loginFile);
-      if (refreshToken){
-        keytar.setPassword('domoapps-cli', instance, refreshToken); //runs async to writing, not concerned about waiting
+  static verifyLogin(login: login): void {
+    verifyLoginLocal(login);
+  }
+
+  static verifyLogout(login: Domo, instance: string): Promise<boolean> {
+    return keytar.findPassword('domoapps-cli').then(function(refreshToken) {
+      if (!login.getRefreshToken() && !refreshToken){
+        log.ok('Successful logout from ' + instance);
+        return true;
       }
-      const data = {
-        instance: instance,
-        devToken: !!devToken
-      };
-      fs.writeJsonSync(loginFile, data);
-      return { instance, refreshToken, devToken };
-    }
+      return false;
+    });
+  }
 
-    static verifyLogin(login: domo): void {
-      verifyLoginLocal(login);
-    }
+  static deleteRefreshToken(login: Domo): Promise<boolean> {
+    // var loginFile = path.resolve(home + '/login/' + login.getInstance() + '.json');
+    return keytar.deletePassword('domoapps-cli', login.getInstance()); //runs async to delete, not concerned about waiting
+  }
 
-    static verifyLogout(login: domo, instance: string): boolean {
-      return keytar.findPassword('domoapps-cli').then(function(refreshToken) {
-        if (!login.refreshToken && !refreshToken){
-          log.ok('Successful logout from ' + instance);
-          return true;
-        }
-        return false;
-      });
-    }
+  //fix this
+  static getLogin(instance: string): Promise<Domo> {
+    return keytar.getPassword('domoapps-cli', instance).then(function(refreshToken) {
+      try {
+        let loginData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
+        loginData.refreshToken = refreshToken;
+        return new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken);
+      }
+      catch (ex) {
 
-    static deleteRefreshToken(login: domo): Promise<boolean> {
-      var loginFile = path.resolve(home + '/login/' + login.instance + '.json');
-      return keytar.deletePassword('domoapps-cli', login.instance); //runs async to delete, not concerned about waiting
-    }
-
-    static getLogin(instance: string): domo {
-      return keytar.getPassword('domoapps-cli', instance).then(function(refreshToken) {
-        try{
-          let loginData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
-          loginData.refreshToken = refreshToken;
-          return new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken);
-        }
-        catch (ex){
-          return {};
-        }
-      });
-    }  
+        //REVISIT THIS
+        //return {};
+      }
+    });
+  }  
 };
 
-function verifyLoginLocal(login: domo): void {
-  if (!login.refreshToken){
+function verifyLoginLocal(login: login): void {
+  if (!login.refreshToken)
     log.fail('Not authenticated', 'Please login using "domo login"');
-  }
 };

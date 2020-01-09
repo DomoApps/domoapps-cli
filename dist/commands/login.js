@@ -4,8 +4,7 @@ var chalk = require('chalk');
 var shell = require('shelljs');
 var multichoice = require('../util/multichoice');
 var log = require('../util/log');
-var Login = require('../../util/login');
-var evoke = require('../util/evoke');
+var Login = require('../util/login').Login;
 var Domo = require('ryuu-client');
 var Promise = require('bluebird');
 var path = require('path');
@@ -14,6 +13,7 @@ var request = require('request-promise');
 var constants = require('../util/constants');
 var Oauth = require('../util/oauth');
 var logo = "\n\u250F\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2513\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588            \u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2503\n\u2503\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2503\n\u2503\u2588\u2588\u2588     \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588    \u2588\u2588\u2588\u2588\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588          \u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2517\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u251B";
+//TODO: Figure out how to adjust catch so that if they have no login, it still works
 module.exports = function (program) {
     program
         .command('login')
@@ -25,13 +25,13 @@ module.exports = function (program) {
         .action(function (args) {
         var previousLogins = Login.getPreviousLogins();
         var mayNotBeAuthenticated = true;
-        Login.getMostRecentLogin(mayNotBeAuthenticated).then(function (mostRecent) {
+        Login.getMostRecentLogin(mayNotBeAuthenticated).catch().then(function (mostRecent) {
             var prompts = [];
             var versionCheckFn = !args.upgradeCheck ?
                 function (x) { return x; } :
                 verifyVersion;
             if (!args.instance) {
-                prompts.push(multichoice({
+                prompts.push({
                     type: "list",
                     choices: function () {
                         var options = _.map(previousLogins, 'instance');
@@ -45,7 +45,7 @@ module.exports = function (program) {
                     when: function (answers) {
                         return previousLogins.length > 0;
                     }
-                }), {
+                }, {
                     type: "input",
                     message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
                     name: "instance",
@@ -56,8 +56,7 @@ module.exports = function (program) {
                 });
             }
             // prompt user
-            inquirer.prompt(prompts)
-                .then(function (answers) {
+            inquirer.prompt(prompts).then(function (answers) {
                 answers.instance = args.instance || answers.instance;
                 if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')) {
                     log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
@@ -65,6 +64,7 @@ module.exports = function (program) {
                 Login.getLogin(answers.instance).then(function (domo) {
                     domo
                         .login()
+                        .catch(function (err) { console.log(error); })
                         .then(function (l) {
                         return login = l;
                     })
@@ -72,7 +72,7 @@ module.exports = function (program) {
                         var manifest = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
                         if (Oauth.isOAuthEnabled(manifest)) {
                             if (Oauth.hasAppProxyId(manifest)) {
-                                return setupOauth(answers.instance, manfiest, Oauth.getAppProxyId(manifest));
+                                return setupOauth(answers.instance, manifest, Oauth.getAppProxyId(manifest));
                             }
                             else {
                                 return promptAppProxyId().then(function (proxyId) {
@@ -88,7 +88,7 @@ module.exports = function (program) {
                         log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
                         return Login.persistLogin(answers.instance, login.refreshToken);
                     })
-                        .catch(evoke(log.fail, 'Login unsuccessful'))
+                        .catch(log.fail('Login unsuccessful'))
                         .finally(process.exit);
                 }).catch(log.notAuthenticated);
             });
@@ -113,8 +113,11 @@ function checkVersion(instance) {
  * if action is 'block' then 'fail' will get called and end the process early
  */
 function verifyVersion(res) {
-    if (res.action === 'block') {
-        log.fail(res.message);
+    var body = (Array.isArray(res))
+        ? (res[0].body)
+        : (res.body);
+    if (body.action === 'block') {
+        log.fail(body.message);
     }
     if (res.action === 'warn') {
         log.warn(res.message);
@@ -186,7 +189,7 @@ function setupOauth(instance, manifestName, proxyId) {
             log.ok('Retrieved Oauth Tokens');
             Oauth.persistTokens({
                 instance: instance,
-                manifestname: manifestname,
+                manifestName: manifestName,
                 proxyId: proxyId,
                 accessToken: result.access_token,
                 refreshToken: result.refresh_token

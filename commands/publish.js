@@ -3,14 +3,17 @@ var inquirer = require('inquirer');
 var _ = require('lodash');
 var open = require('open');
 var Manifest = require('../util/manifest');
-var Login = require('../util/login');
+//import * as Manifest from '../util/manifest';
+var Login = require('../util/login').Login;
 var glob = require('glob');
 var fs = require('fs-extra');
 var log = require('../util/log');
 var appStructure = require('../util/appStructure');
-var messages = require('../util/messages');
-var evoke = require('../util/evoke');
-var constants = require('../util/constants');
+var constant = require('../models/constant');
+/*
+import {
+  constant
+} from '../models';*/
 
 module.exports = function(program){
   program
@@ -43,7 +46,7 @@ module.exports = function(program){
         }
 
         if (!appStructure.hasThumbnail()) {
-          log.warn(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
+          log.warn(constant.THUMBNAIL_CREATE_WARNING, constant.CREATE_THUMBNAIL);
         }
 
         if (!manifest.id){
@@ -67,7 +70,7 @@ module.exports = function(program){
             }
 
             domo.uploadAllAssets(manifest)
-            .tap(evoke(log.ok, 'Publishing ' + manifest.name + ' to ' + domo.instance + ' on ' + new Date()))
+            .tap(log.ok('Publishing ' + manifest.name + ' to ' + domo.instance + ' on ' + new Date()))
             .then(logUploadSuccess)
             .catch(function(e){
               if(e.statusCode === 401) {
@@ -142,8 +145,8 @@ function createDesign(domo, manifest, options) {
       design.version = designResult[1].version;
       return Manifest.persistDesignId(design, manifest);
     })
-    .tap(evoke(log.ok, 'New design created on ' + domo.instance))
-    .catch(evoke(log.fail, 'Error creating new design'))
+    .tap(log.ok('New design created on ' + domo.instance))
+    .catch(log.fail('Error creating new design'))
     .then(domo.uploadAllAssets.bind(domo, manifest))
     .then(logUploadSuccess)
     .catch(function(e){

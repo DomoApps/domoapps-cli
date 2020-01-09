@@ -2,7 +2,6 @@ var Domo = require('ryuu-client');
 var Login = require('../util/login');
 var design = require('../util/design');
 var log = require('../util/log');
-var evoke = require('../util/evoke');
 var inquirer = require('inquirer');
 var constants = require('../util/constants');
 module.exports = function (program) {
@@ -22,8 +21,8 @@ module.exports = function (program) {
             if (answer.undelete) {
                 Login.getMostRecentLogin().then(function (domo) {
                     domo.unDeleteDesign(designId)
-                        .tap(evoke(log.ok, 'Undeleted design ' + designId))
-                        .catch(evoke(log.clientRequestFailed, 'Unable to undelete design ' + designId))
+                        .tap(log.ok('Undeleted design ' + designId))
+                        .catch(log.clientRequestFailed('Unable to undelete design ' + designId))
                         .finally(process.exit);
                 }).catch(log.notAuthenticated);
             }

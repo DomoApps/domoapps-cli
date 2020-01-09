@@ -1,58 +1,63 @@
-var fs = require('fs-extra');
-var path = require('path');
-var semver = require('semver');
-var glob = require('glob');
-var log = require('../util/log');
-var isValidJSName = require('../util/isValidJSName');
-module.exports = {
-    /**
-    * Get the local manifest.json file, ensuring it's valid.
-    */
-    get: function (manifestName, verify) {
-        if (manifestName === void 0) { manifestName = 'manifest.json'; }
-        if (verify === void 0) { verify = true; }
-        var manifestPath = findManifest(manifestName);
-        var manifest;
-        try {
-            manifest = fs.readFileSync(path.resolve(manifestPath));
-        }
-        catch (e) {
-            if (verify) {
-                return log.fail("No " + manifestName + " file in this directory", "Please publish from a directory containing a Custom App design " + manifestName + " file");
-            }
-            else {
-                return;
-            }
-        }
-        try {
-            manifest = JSON.parse(manifest);
-        }
-        catch (e) {
-            return log.fail("Your " + manifestName + " file is not valid JSON", e.message);
-        }
-        if (verify) {
-            validateManifest(manifest);
-        }
-        // add the manifest name, so it's attached to the object
-        manifest.name = manifestName;
-        return manifest;
-    },
-    hasManifest: function (manifestName) {
-        return fs.existsSync(findManifest(manifestName));
-    },
-    /**
-     * update the manifest (in memory and on disk)
-     */
-    persistDesignId: function (design, manifest) {
-        manifest.id = design.id;
-        this.updateManifest(manifest);
-        return design;
-    },
-    updateManifest: function (manifest) {
-        var manifestPath = findManifest(manifest.name);
-        fs.writeJsonSync(manifestPath, manifest, { spaces: 2 });
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var fs = require("fs-extra");
+var path = require("path");
+var glob = require("glob");
+var log = require("../util/log");
+var isValidJSName_1 = require("../util/isValidJSName");
+var semver = require("semver");
+/**
+* Get the local manifest.json file, ensuring it's valid.
+*/
+function get(manifestName, verify) {
+    if (manifestName === void 0) { manifestName = 'manifest.json'; }
+    if (verify === void 0) { verify = true; }
+    var manifestPath = findManifest(manifestName);
+    var manifest;
+    var rawManifest;
+    try {
+        rawManifest = fs.readFileSync(path.resolve(manifestPath), "utf-8");
     }
-};
+    catch (e) {
+        if (verify) {
+            log.fail("No " + manifestName + " file in this directory", "Please publish from a directory containing a Custom App design " + manifestName + " file");
+        }
+        else {
+            return;
+        }
+    }
+    try {
+        manifest = JSON.parse(rawManifest);
+    }
+    catch (e) {
+        log.fail("Your " + manifestName + " file is not valid JSON", e.message);
+    }
+    if (verify) {
+        validateManifest(manifest);
+    }
+    // add the manifest name, so it's attached to the object
+    manifest.fileName = manifestName;
+    return manifest;
+}
+exports.get = get;
+function hasManifest(manifestName) {
+    return fs.existsSync(findManifest(manifestName));
+}
+exports.hasManifest = hasManifest;
+/**
+ * update the manifest (in memory and on disk)
+ */
+function persistDesignId(design, manifest) {
+    manifest.id = design.id;
+    this.updateManifest(manifest);
+    return design;
+}
+exports.persistDesignId = persistDesignId;
+function updateManifest(manifest) {
+    var manifestPath = findManifest(manifest.fileName);
+    fs.writeJsonSync(manifestPath, manifest, { spaces: 2 });
+}
+exports.updateManifest = updateManifest;
 /**
 * Validate the manifest file.
 */
@@ -88,7 +93,7 @@ function validateManifest(manifest) {
  * Alias must be a valid JS property
  */
 function ensureValidAlias(name) {
-    if (!isValidJSName(name)) {
+    if (!isValidJSName_1.isValidJSName(name)) {
         log.fail('Alias names must be valid JavaScript properties', 'Please rename the ' + JSON.stringify(name) + ' alias and update any /data/v1/<alias> calls with the new alias name');
     }
 }
@@ -105,7 +110,7 @@ function findManifest(name) {
     if (fs.existsSync("src/" + name)) {
         return "src/" + name;
     }
-    // find any matching files (one layer deep while ignoring .dist and build folders)
+    // find any matching files (one layer deep while ignoring dist and build folders)
     var matches = glob.sync("*/" + name, {
         ignore: ['dist/*', 'build/*'],
     });
