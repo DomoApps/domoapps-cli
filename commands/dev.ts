@@ -1,7 +1,9 @@
 import { Login } from '../util/login';
 import log = require('../util/log');
+import { Command } from 'commander';
+import Domo = require('ryuu-client');
 
-module.exports = function(program) {
+module.exports = function(program: Command) {
   program
     .command('dev')
     .description('work locally on a Custom App')
@@ -14,11 +16,11 @@ module.exports = function(program) {
         manifest: opts.manifest,
       };
 
-      Login.getMostRecentLogin().then(function(domo) {
+      Login.getMostRecentLogin().then(function(domo: Domo) {
         //session will stop authenticated users
         const server = require('../server/server');
         server.start(domo, options).catch(log.fail);
-      }).catch((err) => {
+      }).catch((err: Error) => {
         if(err.message){
           log.fail(log.handleErrorMessage(err, err.message));
         }

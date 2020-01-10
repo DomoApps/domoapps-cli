@@ -1,14 +1,13 @@
-var request = require('request');
-var Promise = require('bluebird');
-var evoke = require('./evoke');
-var log = require('./log');
-var Domo = require('ryuu-client');
+import { OptionsWithUrl } from 'request-promise';
+import * as Promise from 'bluebird';
+import log = require('./log');
+import Domo = require('ryuu-client');
 
 module.exports = {
-  check: function(domo){
+  check: function(domo: Domo){
     return new Promise(function(resolve, reject){
-      var options = {
-        url: 'https://' + domo.instance + '/auth/validate',
+      var options: OptionsWithUrl = {
+        url: 'https://' + domo.getInstance() + '/auth/validate',
         method: 'GET',
         resolveWithFullResponse: true
       };
@@ -16,6 +15,7 @@ module.exports = {
       domo.processRequest(options)
         .then(function(res) {
           try{
+            //@ts-ignore
             var isValid = JSON.parse(res.body).isValid;
             if(isValid){
               resolve(true);
@@ -35,4 +35,4 @@ module.exports = {
         });
     });
   }
-};
+}

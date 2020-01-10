@@ -6,8 +6,7 @@
 var inquirer = require("inquirer");
 var isWindows = /^win/.test(process.platform);
 
-
-module.exports = function(questions) {
+export default function(questions) {
   if (!isWindows) {
     return questions;
   }

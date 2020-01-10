@@ -3,10 +3,3 @@ export interface login {
     refreshToken: string,
     devToken: boolean|undefined
 }
-export interface domo {
-    instance: string,
-    server: string,
-    refreshToken: string,
-    clientId: string,
-    devToken: boolean
-}

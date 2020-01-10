@@ -1,8 +1,8 @@
 var validator = require('validator');
 var Domo = require('ryuu-client');
 var Manifest = require('../util/manifest');
+//import * as Manifest from '../util/manifest';
 var Login = require('../util/login');
-var evoke = require('../util/evoke');
 var log = require('../util/log');
 var constants = require('../util/constants');
 module.exports = function (program) {
@@ -30,16 +30,16 @@ module.exports = function (program) {
                 case 'add':
                     if (users) {
                         domo.addOwners(designId, users)
-                            .tap(evoke(log.ok, 'Owners added ' + users))
-                            .catch(evoke(log.fail, 'Error adding owners'))
+                            .tap(log.ok('Owners added ' + users))
+                            .catch(log.fail('Error adding owners'))
                             .finally(process.exit);
                     }
                     break;
                 case 'rm':
                     if (users) {
                         domo.removeOwners(designId, users)
-                            .tap(evoke(log.ok, 'Owners removed ' + users))
-                            .catch(evoke(log.fail, 'Error removing owners'))
+                            .tap(log.ok('Owners removed ' + users))
+                            .catch(log.fail('Error removing owners'))
                             .finally(process.exit);
                     }
                     break;
@@ -52,7 +52,7 @@ module.exports = function (program) {
                             console.log("\t" + element);
                         });
                     })
-                        .catch(evoke(log.fail, 'Error retrieving owners'))
+                        .catch(log.fail('Error retrieving owners'))
                         .finally(process.exit);
                     break;
             }

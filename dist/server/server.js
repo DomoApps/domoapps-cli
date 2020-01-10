@@ -13,6 +13,7 @@ portfinder.basePort = 3000;
 var session = require("../util/session");
 var appStructure = require("../util/appStructure");
 var Manifest = require("../util/manifest");
+//import { DataPoint } from '../models/interfaces/manifest';
 var Domo = require("ryuu-client");
 var express = require("express");
 var app = express();
@@ -134,6 +135,7 @@ function getDomoappsData() {
         return data;
     });
 }
+//: DataPoint[]
 function createContext(designId, mapping) {
     var options = {
         url: 'https://' + domoApp.instance + '/domoapps/apps/v2/contexts',

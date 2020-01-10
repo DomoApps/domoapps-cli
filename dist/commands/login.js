@@ -4,16 +4,17 @@ var chalk = require('chalk');
 var shell = require('shelljs');
 var multichoice = require('../util/multichoice');
 var log = require('../util/log');
-var Login = require('../../util/login');
-var evoke = require('../util/evoke');
+var Login = require('../util/login').Login;
 var Domo = require('ryuu-client');
 var Promise = require('bluebird');
 var path = require('path');
+var evoke = require('../util/evoke');
 var request1 = Promise.promisify(require('request'));
 var request = require('request-promise');
 var constants = require('../util/constants');
 var Oauth = require('../util/oauth');
 var logo = "\n\u250F\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2513\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588            \u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2503\n\u2503\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2503\n\u2503\u2588\u2588\u2588     \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588    \u2588\u2588\u2588\u2588\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588          \u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2517\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u251B";
+//TODO: Figure out how to adjust catch so that if they have no login, it still works
 module.exports = function (program) {
     program
         .command('login')
@@ -25,7 +26,7 @@ module.exports = function (program) {
         .action(function (args) {
         var previousLogins = Login.getPreviousLogins();
         var mayNotBeAuthenticated = true;
-        Login.getMostRecentLogin(mayNotBeAuthenticated).then(function (mostRecent) {
+        Login.getMostRecentLogin(mayNotBeAuthenticated).catch().then(function (mostRecent) {
             var prompts = [];
             var versionCheckFn = !args.upgradeCheck ?
                 function (x) { return x; } :
@@ -64,6 +65,7 @@ module.exports = function (program) {
                 Login.getLogin(answers.instance).then(function (domo) {
                     domo
                         .login()
+                        .catch(function (err) { console.log(error); })
                         .then(function (l) {
                         return login = l;
                     })
@@ -84,14 +86,14 @@ module.exports = function (program) {
                         .then(versionCheckFn)
                         .then(function () {
                         console.log(chalk.grey(logo));
-                        log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
+                        evoke(log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.'));
                         return Login.persistLogin(answers.instance, login.refreshToken);
                     })
-                        .catch(evoke(log.fail, 'Login unsuccessful'))
+                        .catch(evoke(log.fail('Login unsuccessful')))
                         .finally(process.exit);
-                }).catch(log.notAuthenticated);
+                }).catch(evoke(log.notAuthenticated));
             });
-        }).catch(log.notAuthenticated);
+        }).catch(evoke(log.notAuthenticated));
     });
 };
 /**

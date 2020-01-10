@@ -1,18 +1,17 @@
-var Domo = require('ryuu-client');
-var inquirer = require('inquirer');
-var _ = require('lodash');
-var open = require('open');
-var Manifest = require('../util/manifest');
-var Login = require('../util/login');
-var glob = require('glob');
-var fs = require('fs-extra');
-var log = require('../util/log');
-var appStructure = require('../util/appStructure');
-var messages = require('../util/messages');
-var evoke = require('../util/evoke');
-var constants = require('../util/constants');
+import inquirer = require('inquirer');
+import _ = require('lodash');
+import open = require('open');
+import * as Manifest from '../util/manifest';
+import { Login } from '../util/login';
+import glob = require('glob');
+import fs = require('fs-extra');
+import log = require('../util/log');
+import appStructure = require('../util/appStructure');
+import {constant} from '../models';
+import Domo = require('ryuu-client');
+import { Command } from 'commander';
 
-module.exports = function(program){
+module.exports = function(program: Command){
   program
     .command('publish')
     .description('publish a new or existing Custom App design')
@@ -21,7 +20,7 @@ module.exports = function(program){
       var manifest = Manifest.get(program.manifest);
       if (!manifest) return;
 
-      Login.getMostRecentLogin().then(function(domo) {
+      Login.getMostRecentLogin().then(function(domo: Domo) {
         var ignore = ['**/*/node_modules/**/*', 'node_modules/**/*'];
         var userIgnore = manifest.ignore;
         if (userIgnore){
@@ -43,7 +42,7 @@ module.exports = function(program){
         }
 
         if (!appStructure.hasThumbnail()) {
-          log.warn(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
+          log.warn(constant.THUMBNAIL_CREATE_WARNING, constant.CREATE_THUMBNAIL);
         }
 
         if (!manifest.id){
@@ -67,14 +66,14 @@ module.exports = function(program){
             }
 
             domo.uploadAllAssets(manifest)
-            .tap(evoke(log.ok, 'Publishing ' + manifest.name + ' to ' + domo.instance + ' on ' + new Date()))
+            .tap(log.ok('Publishing ' + manifest.name + ' to ' + domo.getInstance() + ' on ' + new Date()))
             .then(logUploadSuccess)
             .catch(function(e){
               if(e.statusCode === 401) {
-                log.notAuthenticated(domo.refreshToken);
+                log.notAuthenticated(domo.getRefreshToken());
               }
               else if(e.statusCode === 403) {
-                log.fail('You do not have access to the design with id ' + manifest.id + ' on ' + domo.instance
+                log.fail('You do not have access to the design with id ' + manifest.id + ' on ' + domo.getInstance()
                   + '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.'
                   + '\nAlternatively, you may have inadvertently changed the design id.');
               }
@@ -134,7 +133,7 @@ module.exports = function(program){
  * @param {Object} options
  * @return {Promise}
  */
-function createDesign(domo, manifest, options) {
+function createDesign(domo, manifest, options?) {
   return domo.createDesign(manifest)
     .then(function(designResult){
       var design = designResult[0];
@@ -142,8 +141,8 @@ function createDesign(domo, manifest, options) {
       design.version = designResult[1].version;
       return Manifest.persistDesignId(design, manifest);
     })
-    .tap(evoke(log.ok, 'New design created on ' + domo.instance))
-    .catch(evoke(log.fail, 'Error creating new design'))
+    .tap(log.ok( 'New design created on ' + domo.instance))
+    .catch(log.fail('Error creating new design'))
     .then(domo.uploadAllAssets.bind(domo, manifest))
     .then(logUploadSuccess)
     .catch(function(e){

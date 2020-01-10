@@ -17,7 +17,7 @@ portfinder.basePort = 3000;
 import session = require('../util/session');
 import appStructure = require('../util/appStructure');
 import * as Manifest from '../util/manifest';
-import { DataPoint } from '../models/interfaces/manifest';
+//import { DataPoint } from '../models/interfaces/manifest';
 
 
 import Domo = require('ryuu-client');
@@ -159,8 +159,8 @@ function getDomoappsData(){
       return data;
     });
 }
-
-function createContext(designId: string, mapping: DataPoint[]) {
+//: DataPoint[]
+function createContext(designId: string, mapping) {
   var options = {
     url: 'https://' + domoApp.instance + '/domoapps/apps/v2/contexts',
     method: 'POST',
