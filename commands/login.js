@@ -105,7 +105,6 @@ module.exports = function(program){
           Login.getLogin(answers.instance).then(function(domo) {
             domo
               .login()
-              .catch(function(err) {console.log(error)})
               .then(function(l) {
                 return login = l;
               })
@@ -130,7 +129,7 @@ module.exports = function(program){
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
                 return Login.persistLogin(answers.instance, login.refreshToken);
               })
-              .catch(log.fail('Login unsuccessful'))
+              .catch((err) => log.fail(`Login unsuccessful: ${err}`))
               .finally(process.exit);
           }).catch(log.notAuthenticated);
         });

@@ -8,11 +8,11 @@ var Login = require('../util/login').Login;
 var Domo = require('ryuu-client');
 var Promise = require('bluebird');
 var path = require('path');
-var evoke = require('../util/evoke');
 var request1 = Promise.promisify(require('request'));
 var request = require('request-promise');
 var constants = require('../util/constants');
 var Oauth = require('../util/oauth');
+var autoUpdate = false;
 var logo = "\n\u250F\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2513\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588            \u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2503\n\u2503\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2503\n\u2503\u2588\u2588\u2588     \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588    \u2588\u2588\u2588\u2588\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588          \u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2517\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u251B";
 //TODO: Figure out how to adjust catch so that if they have no login, it still works
 module.exports = function (program) {
@@ -23,7 +23,11 @@ module.exports = function (program) {
         .option('-u, --user-email <value>', 'user email')
         .option('-f, --manifest-file <file>', 'use a specific manifest file')
         .option('--no-upgrade-check', 'do not check for new versions')
+        .option('--upgrade-download', 'Automatically download newer version if available. ')
         .action(function (args) {
+        if (args.upgradeDownload) {
+            autoUpdate = true;
+        }
         var previousLogins = Login.getPreviousLogins();
         var mayNotBeAuthenticated = true;
         Login.getMostRecentLogin(mayNotBeAuthenticated).catch().then(function (mostRecent) {
@@ -32,7 +36,7 @@ module.exports = function (program) {
                 function (x) { return x; } :
                 verifyVersion;
             if (!args.instance) {
-                prompts.push(multichoice({
+                prompts.push({
                     type: "list",
                     choices: function () {
                         var options = _.map(previousLogins, 'instance');
@@ -46,7 +50,7 @@ module.exports = function (program) {
                     when: function (answers) {
                         return previousLogins.length > 0;
                     }
-                }), {
+                }, {
                     type: "input",
                     message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
                     name: "instance",
@@ -65,7 +69,6 @@ module.exports = function (program) {
                 Login.getLogin(answers.instance).then(function (domo) {
                     domo
                         .login()
-                        .catch(function (err) { console.log(error); })
                         .then(function (l) {
                         return login = l;
                     })
@@ -86,14 +89,14 @@ module.exports = function (program) {
                         .then(versionCheckFn)
                         .then(function () {
                         console.log(chalk.grey(logo));
-                        evoke(log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.'));
+                        log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
                         return Login.persistLogin(answers.instance, login.refreshToken);
                     })
-                        .catch(evoke(log.fail('Login unsuccessful')))
+                        .catch(function (err) { return log.fail("Login unsuccessful: " + err); })
                         .finally(process.exit);
-                }).catch(evoke(log.notAuthenticated));
+                }).catch(log.notAuthenticated);
             });
-        }).catch(evoke(log.notAuthenticated));
+        }).catch(log.notAuthenticated);
     });
 };
 /**
@@ -131,15 +134,20 @@ function verifyVersion(res) {
 }
 function promptUpgrade(latest) {
     return new Promise(function (resolve, reject) {
-        inquirer.prompt([
-            {
+        var prompts = [];
+        if (!autoUpdate) {
+            prompts.push({
                 type: "confirm",
                 message: "Would you like to upgrade now?",
                 name: "upgrade",
                 default: true
-            }
-        ])
+            });
+        }
+        inquirer.prompt(prompts)
             .then(function (answers) {
+            if (autoUpdate === true) {
+                answers.upgrade = autoUpdate;
+            }
             if (answers.upgrade) {
                 log.info('Upgrading to latest version', 'Hang tight, this may take a moment...');
                 var output = shell.exec('npm install ryuu -g', { async: false, silent: true });

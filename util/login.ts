@@ -82,6 +82,8 @@ export class Login {
   static getLogin(instance: string): Promise<Domo> {
     return keytar.getPassword('domoapps-cli', instance).then(function(refreshToken) {
       try {
+        var loginFile = path.resolve(home + '/login/' + instance + '.json');
+        fs.writeJsonSync(loginFile, { instance: instance });
         let loginData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
         loginData.refreshToken = refreshToken;
         return new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken);

@@ -43,8 +43,8 @@ module.exports = function(program){
             answers.id = args.appId || answers.id;
             Login.getLogin(answers.instance).then(function(domo) {
               migrateApp(domo, answers.id, manifest)
-                .tap(log.ok('Migration successful'))
-                .catch(log.fail('Migration unsuccessful'))
+                .tap((message) => log.ok(`Migration successful ${message}`))
+                .catch((err) => log.fail(`Migration unsuccessful ${err}`))
                 .finally(process.exit);
             }).catch(log.notAuthenticated);
           });
@@ -66,7 +66,7 @@ function migrateApp(domo, appId, manifest){
     domo.getKpi(appId),
     // publish new design (and persist id) if not already published
     domo.createDesign(manifest)
-      .tap(log.ok('Design published'))
+      .tap((message) => log.ok(`Design published ${message}`))
       .then(function(designResult){
         var design = designResult[0];
         return Manifest.persistDesignId(design, manifest);
@@ -78,8 +78,8 @@ function migrateApp(domo, appId, manifest){
   .spread(function(kpi, design){
     return domo
         .createApp(design.id)
-        .tap(log.ok('New Custom App created'))
-        .catch(log.fail('Error creating new Custom App'))
+        .tap((message) => log.ok(`New Custom App created ${message}`))
+        .catch((err) => log.fail(`Error creating new Custom App ${err}`))
         .then(function(domoapp){
           kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'domoapp';
           kpi.domoapp.id = domoapp.id;
