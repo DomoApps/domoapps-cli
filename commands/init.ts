@@ -7,10 +7,10 @@ import { mkdir } from 'shelljs';
 import { reduce } from 'async';
 import fs = require('fs-extra');
 import path = require('path');
-import log = require('../util/log');
+import { log } from '../util/log';
 import multichoice from '../util/multichoice';
 //import { init, initOptions } from '../models';
-import { Command } from 'commander';
+import { Command, CommandOptions } from 'commander';
 
 module.exports = function(program: Command){
   program
@@ -29,14 +29,14 @@ module.exports = function(program: Command){
         });
       }
       if(!options.starter){
-        prompts.push(multichoice({
+        prompts.push({
           type: 'list',
           message: 'select a starter',
           name: 'starter',
           choices: ['hello world', 'manifest only', 'basic chart', 'map chart']
-        }));
+        });
       }
-      inquirer.prompt(prompts).then((answers: any) => {
+      inquirer.prompt(prompts).then((answers: inquirer.Answers) => {
           if(options.design_name){
           answers.name = options.design_name;
           }
@@ -52,8 +52,8 @@ module.exports = function(program: Command){
 
 
 // recursively ask user to enter all their datasources
-let askDatasource = (currentAnswers, options) => {
-  if(!options.dataset){
+let askDatasource = (currentAnswers: inquirer.Answers, options: CommandOptions) => {
+  if(!options['dataset']){
     inquirer.prompt([{
       type: 'confirm',
       message: currentAnswers.datasources.length > 0 ? 'add another dataset?' : 'would you like to connect to any datasets?',
@@ -82,7 +82,7 @@ let askDatasource = (currentAnswers, options) => {
 }
 
 
-let addDatasource = (currentAnswers) => {
+let addDatasource = (currentAnswers: inquirer.Answers) => {
     return inquirer.prompt([{
         type: 'input',
         message: 'dataset id',
@@ -106,7 +106,7 @@ let addDatasource = (currentAnswers) => {
     });
 }
 
-let writeFilesIfNonexistent = (files: string[], dirs: string[]| null[], allAnswers, callback: Function) => {
+let writeFilesIfNonexistent = (files: string[], dirs: string[]| null[], allAnswers: inquirer.Answers, callback: Function) => {
   reduce(files, [], function(filesThatExist, file, reduceCallback) {
     fs.open(file,'r',function(err, fd) {
       let fileExists = !err;
@@ -127,7 +127,7 @@ let writeFilesIfNonexistent = (files: string[], dirs: string[]| null[], allAnswe
   });
 }
 
-let writeTemplateFile = (allAnswers, filedir: string) => {
+let writeTemplateFile = (allAnswers: inquirer.Answers, filedir: string) => {
   const file = filedir[0];
   let dir = filedir[1];
   dir = dir || (__dirname + '/../templates/');
@@ -135,7 +135,7 @@ let writeTemplateFile = (allAnswers, filedir: string) => {
   fs.writeFileSync(process.cwd() + '/' + file, contents);
 }
 
-let initiate = (allAnswers) => {
+let initiate = (allAnswers: inquirer.Answers) => {
   let files: string[];
   let dirs: string[] | null[];
   let step = 0;

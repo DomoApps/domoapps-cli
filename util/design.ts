@@ -1,5 +1,5 @@
-import * as Manifest from '../util/manifest';
-import log = require('../util/log');
+import { Manifest } from '../util/manifest';
+import { log } from '../util/log';
 import validator from 'validator';
 
 /**

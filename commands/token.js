@@ -3,7 +3,6 @@ var chalk = require('chalk');
 var Login = require('../util/login');
 var log = require('../util/log');
 var Domo = require('ryuu-client');
-var constants = require('../util/constants');
 var multichoice = require('../util/multichoice');
 
 module.exports = function(program) {

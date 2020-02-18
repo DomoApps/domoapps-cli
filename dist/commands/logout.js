@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var login_1 = require("../util/login");
-var log = require("../util/log");
+var log_1 = require("../util/log");
 module.exports = function (program) {
     program
         .command('logout')
@@ -17,7 +17,7 @@ module.exports = function (program) {
                 verifyLogout(login, instance);
             })
                 .catch(function () {
-                log.fail('No current login with instance ' + instance);
+                log_1.log.fail('No current login with instance ' + instance);
             });
         }
         else {
@@ -25,7 +25,7 @@ module.exports = function (program) {
             login_1.Login.getMostRecentLogin(mayNotBeAuthenticated).then(function (login) {
                 instance = login.getInstance();
                 verifyLogout(login, instance);
-            }).catch(log.notAuthenticated);
+            }).catch(log_1.log.notAuthenticated);
         }
     });
 };
@@ -39,7 +39,7 @@ function verifyLogout(login, instance) {
         }).then(function (logout) {
             process.exit();
         }).catch(function () {
-            log.fail('Failed to logout');
+            log_1.log.fail('Failed to logout');
         });
     });
 }

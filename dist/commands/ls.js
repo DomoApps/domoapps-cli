@@ -1,24 +1,32 @@
-var Login = require('../util/login');
-var Domo = require('ryuu-client');
-var log = require('../util/log');
-var session = require('../util/session');
-var chalk = require('chalk');
-var constants = require('../util/constants');
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var login_1 = require("../util/login");
+var log_1 = require("../util/log");
+var session_1 = require("../util/session");
+var chalk_1 = require("chalk");
 module.exports = function (program) {
     program
         .command('ls')
         .description('get a list of all your Custom App designs')
-        .action(function () {
-        Login.getMostRecentLogin().then(function (domo) {
-            session.check(domo)
+        .option('-a, --all', 'List all custom apps on instance (admin role required)')
+        .action(function (options) {
+        login_1.Login.getMostRecentLogin().then(function (domo) {
+            session_1.Session.check(domo)
                 .then(function () {
                 domo.getSimpleDesigns().then(function (designs) {
+                    //if(options.all){}
+                    //else {
+                    //domo.getLoginUser().then(function(user) {
+                    //@ts-ignore
+                    //designs.filter(design => design.id == user.id);
+                    //});
+                    //}
                     var windowWidth = process.stdout.columns;
                     if (windowWidth >= 130) {
                         var Table = require('cli-table');
                         // instantiate
                         var table = new Table({
-                            head: [chalk.cyan('Design Name'), chalk.cyan('Design Id'), chalk.cyan('Date Created'), chalk.cyan('Last Updated')],
+                            head: [chalk_1.default.cyan('Design Name'), chalk_1.default.cyan('Design Id'), chalk_1.default.cyan('Date Created'), chalk_1.default.cyan('Last Updated')],
                             colWidths: [(windowWidth - 105), 38, 31, 31]
                         });
                         designs.forEach(function (design) {
@@ -35,15 +43,15 @@ module.exports = function (program) {
                         });
                     }
                     if (designs.length === 0) {
-                        log.fail('No Designs Published', "`domo ls` will list designs once they're published to Domo");
+                        log_1.log.fail('No Designs Published', "`domo ls` will list designs once they're published to Domo");
                     }
                 })
                     .catch(function (e) {
-                    log.fail('Unable to fetch designs', 'You may not have any designs published yet.');
+                    log_1.log.fail('Unable to fetch designs', 'You may not have any designs published yet.');
                 })
                     .finally(process.exit);
             });
-        }).catch(log.notAuthenticated);
+        }).catch(log_1.log.notAuthenticated);
     });
 };
 //# sourceMappingURL=ls.js.map

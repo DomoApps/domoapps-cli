@@ -2,7 +2,6 @@ var inquirer = require('inquirer');
 var Login = require('../util/login');
 var Domo = require('ryuu-client');
 var log = require('../util/log');
-var constants = require('../util/constants');
 module.exports = function (program) {
     program
         .command('revert')

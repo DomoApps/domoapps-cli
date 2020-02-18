@@ -1,5 +1,5 @@
 import { Login } from '../util/login';
-import log = require('../util/log');
+import { log } from '../util/log';
 import { Command } from 'commander';
 import Domo = require('ryuu-client');
 

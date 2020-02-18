@@ -2,10 +2,6 @@
  * domo dev server
  */
 
-import {
-  constant
-} from '../models';
-
 import path = require('path');
 import _ = require('lodash');
 import fs = require('fs-extra');
@@ -14,10 +10,10 @@ let bs = require('browser-sync').create();
 import portfinder = require('portfinder');
 portfinder.basePort = 3000;
 
-import session = require('../util/session');
+import { Session } from '../util/session';
 import appStructure = require('../util/appStructure');
-import * as Manifest from '../util/manifest';
-//import { DataPoint } from '../models/interfaces/manifest';
+import { Manifest } from '../util/manifest';
+import { DataPoint, DomoOptions, AppData, AppContext } from '../models/index';
 
 
 import Domo = require('ryuu-client');
@@ -28,25 +24,24 @@ const config = { manifest: Manifest.get() };
 const proxy = new Proxy(config);
 
 let manifest = Manifest.get();
-let context;
+let context: AppContext = {
+  accountMapping: null,
+  collections: null,
+  designId: null,
+  designVersion: null,
+  id: null,
+  isDisabled: null,
+  mapping: null
+};
 let isValidContext = true;
-let domoApp : {
-  clientId: string,
-  instance: string,
-  refreshToken: string,
-  server: string
-};
-let domoOptions: { 
-  userId: number,
-  external: boolean,
-  manifest: string
-};
+let domoApp: Domo;
+let domoOptions: DomoOptions;
 
 app.get('/', function (req, res){
   //This line doesn't make any sense, I gotta figure out how to make domoApp something real/valid
-  //@ts-ignore
-  const isValidSession = session.check(domoApp)
+  const isValidSession = Session.check(domoApp)
     .then(() => {
+      
       manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
       return createContext(manifest.id, manifest.mapping);
     })
@@ -54,7 +49,7 @@ app.get('/', function (req, res){
       context = appContext;
       if (!context) {
         isValidContext = false;
-        context = {id: 0};
+        context.id = 0;
       }
       manifest.contextId = context.id;
       return getDomoappsData();
@@ -92,15 +87,14 @@ app.use(express.static('.'));
 app.use(proxy.express());
 
 module.exports = {
-  start: function(domo, options){
+  start: function(domo: Domo, options: DomoOptions){
     return new Promise(function(resolve, reject){
       portfinder.getPorts(2, {}, function (err, ports) {
         let assetsPort = ports[0];
         let dataPort = ports[1];
         domoApp = domo;
         domoOptions = options;
-        //@ts-ignore
-        session.check(domoApp)
+        Session.check(domoApp)
           .then(function() {
             var external = Boolean(domoOptions.external);
             app.listen(dataPort);
@@ -115,7 +109,7 @@ module.exports = {
               // TODO: add user's ignored files here too?
               files: ['**/*', '!node_modules/**/*'],
             });
-            bs.instance.logger.info('Instance: ' + domoApp.instance);
+            bs.instance.logger.info('Instance: ' + domoApp.getInstance());
           })
           .catch(function(e){
             reject('Session expired. Please login again using domo login.');
@@ -127,31 +121,30 @@ module.exports = {
 
 function getCustomer(){
   var regexp = /([\w]+)[\.|-]/;
-  return (<string>domoApp.instance).match(regexp)[1];
+  return (<string>domoApp.getInstance()).match(regexp)[1];
 }
 
 function getEnv(){
   var regexp = /([-_\w]+)\.(.*)/;
-  return (domoApp.instance as string).match(regexp)[2];
+  return domoApp.getInstance().match(regexp)[2];
 }
 
 /**
  * Fetch domoapps environment data from maestro.
  * Fallback to inferring it by the instance URL.
  */
-function getDomoappsData(){
-  // @ts-ignore
+
+function getDomoappsData(): Promise<AppData>{
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
   var uuid = (manifest['proxyId']) ? manifest.proxyId : Domo.createUUID();
   var options = {
-    url: 'https://' + domoApp.instance + '/api/content/v1/mobile/environment',
+    url: 'https://' + domoApp.getInstance() + '/api/content/v1/mobile/environment',
     resolveWithFullResponse: true
   }
-  // @ts-ignore
   return domoApp.processRequest(options)
     .then(function(res) {
-      var data = JSON.parse(res);
-      data.url = 'https://'+uuid+'.' + JSON.parse(res).domoappsDomain;
+      var data = JSON.parse(res.toString());
+      data.url = 'https://'+uuid+'.' + JSON.parse(res.toString()).domoappsDomain;
       
       return data;
     }).catch(function() {
@@ -159,15 +152,13 @@ function getDomoappsData(){
       return data;
     });
 }
-//: DataPoint[]
-function createContext(designId: string, mapping) {
+function createContext(designId: string, mapping: DataPoint[]): Promise<AppContext> {
   var options = {
-    url: 'https://' + domoApp.instance + '/domoapps/apps/v2/contexts',
+    url: 'https://' + domoApp.getInstance() + '/domoapps/apps/v2/contexts',
     method: 'POST',
     json: {designId: designId, mapping: mapping},
     resolveWithFullResponse: true
   };                     
-// @ts-ignore
   return domoApp.processRequest(options)
     .then(function(res) {
       return res[0];

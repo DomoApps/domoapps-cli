@@ -1,20 +1,27 @@
-var Login = require('../util/login');
-var Domo = require('ryuu-client');
-var log = require('../util/log');
-var session = require('../util/session');
-var chalk = require('chalk');
-var constants = require('../util/constants');
+import { Login } from '../util/login';
+import { Command } from 'commander';
+import { log } from '../util/log';
+import { Session } from '../util/session';
+import chalk from 'chalk';
+import { DesignAggregate } from 'ryuu-client/models/interfaces/domoappstypes';
 
-module.exports = function(program){
+module.exports = function(program: Command){
   program
     .command('ls')
     .description('get a list of all your Custom App designs')
-    .action(function(){
+    .option('-a, --all', 'List all custom apps on instance (admin role required)')
+    .action(function(options){
       Login.getMostRecentLogin().then(function(domo) {
-        session.check(domo)
+        Session.check(domo)
           .then(function(){
-
-            domo.getSimpleDesigns().then(function(designs){
+            domo.getSimpleDesigns().then(function(designs: DesignAggregate[]) {
+              //if(options.all){}
+              //else {
+                //domo.getLoginUser().then(function(user) {
+                  //@ts-ignore
+                  //designs.filter(design => design.id == user.id);
+                //});
+              //}
               var windowWidth = process.stdout.columns;
               if (windowWidth >= 130) {
                 var Table = require('cli-table');
@@ -40,8 +47,6 @@ module.exports = function(program){
                   console.log('Last Updated: ' + new Date(design.design.lastModifiedDate).toUTCString() + '\n');
                 });
               }
-
-
               if (designs.length === 0){
                 log.fail('No Designs Published', "`domo ls` will list designs once they're published to Domo");
               }

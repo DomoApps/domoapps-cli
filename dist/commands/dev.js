@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var login_1 = require("../util/login");
-var log = require("../util/log");
+var log_1 = require("../util/log");
 module.exports = function (program) {
     program
         .command('dev')
@@ -17,13 +17,13 @@ module.exports = function (program) {
         login_1.Login.getMostRecentLogin().then(function (domo) {
             //session will stop authenticated users
             var server = require('../server/server');
-            server.start(domo, options).catch(log.fail);
+            server.start(domo, options).catch(log_1.log.fail);
         }).catch(function (err) {
             if (err.message) {
-                log.fail(log.handleErrorMessage(err, err.message));
+                log_1.log.fail(log_1.log.handleErrorMessage(err, err.message));
             }
             else {
-                log.notAuthenticated();
+                log_1.log.notAuthenticated();
             }
         });
     });

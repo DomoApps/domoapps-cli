@@ -1,45 +1,42 @@
-var chalk = require('chalk');
+import chalk from 'chalk';
+import { DomoRequestError } from 'ryuu-client/models';
 
-/*import * as yourFuncs from './pathToYourFile';
-yourFuncs.foo();
-yourFuncs.foo2();*/
-
-module.exports = {
+export class log {
   /**
    * log a success
    */
-  ok: function(msg, submessage){
+  static ok(msg: string, submessage?: string): void {
     console.log(chalk.green('\u2713'), msg);
     if(submessage){
       console.log(chalk.gray(submessage));
     }
-  },
+  }
 
   /**
    * log info
    */
-  info: function(msg, submessage){
+  static info(msg: string, submessage?: string) {
     console.log(chalk.cyan(msg));
     if(submessage){
       console.log(chalk.gray(submessage));
     }
-  },
+  }
 
   /**
    * log warning
    */
-   warn: function(msg, submessage){
+   static warn(msg: string, submessage?: string) {
      console.log(chalk.yellow(msg));
      if(submessage){
        console.log(chalk.gray(submessage));
      }
-   },
+   }
 
 
   /**
    * log an error and exit node
    */
-  fail: function(msg, submessage, result){
+  static fail(msg: string, submessage?: string, result?: DomoRequestError) {
     console.log(chalk.red('X'), msg);
 
     if(submessage){
@@ -52,18 +49,15 @@ module.exports = {
 
     if (process.argv.indexOf("verbose") !== -1){
       console.log(chalk.red("statusCode:"), result.statusCode);
-      if(result.details){
-        console.log(chalk.red("details:"), result.details);
-      }
       console.log(chalk.red("method:"), result.method);
-      console.log(chalk.red("path:"), result.path);
-      console.log(chalk.red("response:"), result.res);
+      console.log(chalk.red("path:"), result.url);
+      console.log(chalk.red("failureMessage:"), result.failureMessage);
     }
 
     process.exit(1);
-  },
+  }
 
-  notAuthenticated: function(refreshToken){
+  static notAuthenticated(refreshToken?: string) {
     if (!refreshToken){
       module.exports.fail('Not authenticated', 'Please login using "domo login"');
     }
@@ -73,20 +67,21 @@ module.exports = {
     else{
       module.exports.fail('Not authenticated');
     }
-  },
+  }
 
-  clientRequestFailed: function(err, failureMessage){
-    var message = "You are not authenticated or your refresh token may have been revoked. Please login again with \"domo login\"";
+// ERR SHOULD BE AN ERROR?
+  static clientRequestFailed(err: string, failureMessage?: string) {
+    let message = "You are not authenticated or your refresh token may have been revoked. Please login again with \"domo login\"";
     if (failureMessage) {
       message = failureMessage;
     }
     module.exports.fail(err, message);
-  },
+  }
 
-  handleErrorMessage: function(err, label){
+  static handleErrorMessage(err: Error, label: string): string {
     label = label || 'Error sending request'
-    var toe = err && err.res && err.res.body && err.res.body.toe ? '\nToe: ' + err.res.body.toe : '';
+    //const toe = err && err.res && err.res.body;
 
-    return label + toe;
+    return label; //+ toe
   }
 }

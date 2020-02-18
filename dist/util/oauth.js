@@ -1,3 +1,4 @@
+"use strict";
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -16,35 +17,38 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
             r[k] = a[j];
     return r;
 };
-var fs = require('fs-extra');
-var path = require('path');
-var Domo = require('ryuu-client');
+Object.defineProperty(exports, "__esModule", { value: true });
+var fs = require("fs-extra");
+var path = require("path");
+var Domo = require("ryuu-client");
+var keytar = require("keytar");
+var manifest_1 = require("./manifest");
+var Promise = require("bluebird");
+var request = require("request");
+var open = require("open");
+var chalk_1 = require("chalk");
 var home = Domo.getHomeDir();
-var keytar = require('keytar');
-var Manifest = require('./manifest');
-var Promise = require('bluebird');
-var request = require('request');
-var open = require('open');
-var chalk = require('chalk');
-module.exports = {
-    isOAuthEnabled: function (manifestName) {
-        if (Manifest.hasManifest(manifestName)) {
-            var manifest = Manifest.get(manifestName);
+var Oauth = /** @class */ (function () {
+    function Oauth() {
+    }
+    Oauth.isOAuthEnabled = function (manifestName) {
+        if (manifest_1.Manifest.hasManifest(manifestName)) {
+            var manifest = manifest_1.Manifest.get(manifestName);
             return !!manifest.oAuthEnabled;
         }
         return false;
-    },
-    hasAppProxyId: function (manifestName) {
-        var manifest = Manifest.get(manifestName);
+    };
+    Oauth.hasAppProxyId = function (manifestName) {
+        var manifest = manifest_1.Manifest.get(manifestName);
         return !!Object.keys(manifest).includes('cardId')
             || !!(Object.keys(manifest).includes('proxyId'))
             || !!(Object.keys(manifest).includes('appContextId'));
-    },
+    };
     /**
      * Requires there to be an appProxyId
      */
-    getAppProxyId: function (manifestName) {
-        var manifest = Manifest.get(manifestName);
+    Oauth.getAppProxyId = function (manifestName) {
+        var manifest = manifest_1.Manifest.get(manifestName);
         if (!!Object.keys(manifest).includes('cardId')) {
             return manifest.cardId;
         }
@@ -52,38 +56,36 @@ module.exports = {
             return manifest.appContextId;
         }
         return manifest.proxyId;
-    },
-    getScopes: function (manifestName) {
-        var manifest = Manifest.get(manifestName);
+    };
+    Oauth.getScopes = function (manifestName) {
+        var manifest = manifest_1.Manifest.get(manifestName);
         if (!!Object.keys(manifest).includes('scopes')) {
             return __spreadArrays([
                 'domoapps'
             ], manifest.scopes);
         }
         return ['domoapps'];
-    },
-    hasTokens: function (_a) {
-        var instance = _a.instance, manifestName = _a.manifestName, proxyId = _a.proxyId;
-        var scopes = JSON.stringify(this.getScopes(manifestName));
-        var instanceFilePath = path.resolve(home + '/login/' + instance + '.json');
+    };
+    Oauth.hasTokens = function (registration) {
+        var scopes = JSON.stringify(this.getScopes(registration.manifestName));
+        var instanceFilePath = path.resolve(home + '/login/' + registration.instance + '.json');
         if (fs.existsSync(instanceFilePath)) {
             var instanceData = fs.readJsonSync(instanceFilePath);
-            return instanceData.proxyId === proxyId && instanceData.scopes === scopes;
+            return instanceData.proxyId === registration.proxyId && instanceData.scopes === scopes;
         }
         return false;
-    },
-    register: function (_a) {
+    };
+    Oauth.register = function (registration) {
         var _this = this;
-        var instance = _a.instance, manifestName = _a.manifestName, proxyId = _a.proxyId;
         return new Promise(function (resolve, reject) {
             request.post({
-                url: "https://" + instance + "/api/oauth2/device_authorization",
+                url: "https://" + registration.instance + "/api/oauth2/device_authorization",
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 form: {
-                    client_id: "domo:ryuu:" + proxyId,
-                    scope: _this.getScopes(manifestName).join(' '),
+                    client_id: "domo:ryuu:" + registration.proxyId,
+                    scope: _this.getScopes(registration.manifestName).join(' '),
                 }
             }, function (error, httpResponse, body) {
                 if (httpResponse.statusCode !== 200)
@@ -91,19 +93,19 @@ module.exports = {
                 resolve(JSON.parse(body));
             });
         });
-    },
-    verifyRegistration: function (_a) {
+    };
+    //fix return type
+    Oauth.verifyRegistration = function (registration) {
         var _this = this;
-        var instance = _a.instance, manifestName = _a.manifestName, proxyId = _a.proxyId, verificationUri = _a.verificationUri, userCode = _a.userCode, deviceCode = _a.deviceCode;
         return new Promise(function (resolve, reject) {
             //possible url issue?
-            open(verificationUri + "?user_code=" + userCode);
+            open(registration.verification_uri + "?user_code=" + registration.user_code);
             // scopes are space separated
-            var scopes = _this.getScopes(manifestName).join(' ');
+            var scopes = _this.getScopes(registration.manifestName).join(' ');
             var checkRegistration = setInterval(function () {
                 new Promise(function (resolve, reject) {
                     request.get({
-                        url: "https://" + instance + "/domoapps/admin/device-registration/" + proxyId + "?scope=" + scopes + "&device_code=" + deviceCode
+                        url: "https://" + registration.instance + "/domoapps/admin/device-registration/" + registration.proxyId + "?scope=" + scopes + "&device_code=" + registration.device_code
                     }, function (error, httpResponse, body) {
                         if (httpResponse.statusCode !== 200)
                             reject(body.trim());
@@ -115,7 +117,7 @@ module.exports = {
                     resolve(result);
                 })
                     .catch(function (error) {
-                    console.log(chalk.grey('Waiting for browser oauth registration'));
+                    console.log(chalk_1.default.grey('Waiting for browser oauth registration'));
                 });
             }, 1000);
             setTimeout(function () {
@@ -123,47 +125,36 @@ module.exports = {
                 reject('Timed out for oauth registration verification.');
             }, 10000);
         });
-    },
-    getLoginData: function (_a) {
-        var loginFile = _a.loginFile;
+    };
+    Oauth.getLoginData = function (loginFile) {
         return (fs.existsSync(loginFile))
             ? (fs.readJsonSync(loginFile))
             : ({});
-    },
+    };
     /**
      * persist login to user's domo home
      * TODO: REFACTOR w writeLogin
      */
-    persistTokens: function (_a) {
-        var instance = _a.instance, manifestName = _a.manifestName, proxyId = _a.proxyId, accessToken = _a.accessToken, refreshToken = _a.refreshToken;
-        var loginFile = path.resolve(home + '/login/' + instance + '.json');
+    Oauth.persistTokens = function (registration) {
+        var loginFile = path.resolve(home + '/login/' + registration.instance + '.json');
         var loginData = this.getLoginData(loginFile);
-        var scopes = this.getScopes(manifestName);
+        var scopes = this.getScopes(registration.manifestName);
         fs.ensureFileSync(loginFile);
-        var data = __assign(__assign({}, loginData), { instance: instance, scopes: JSON.stringify(scopes), // save scopes to the login file
-            proxyId: proxyId });
-        keytar.setPassword("domoapps-oauth-access-" + scopes.join('-'), instance + "-" + proxyId, accessToken);
-        keytar.setPassword("domoapps-oauth-refresh-" + scopes.join('-'), instance + "-" + proxyId, refreshToken);
+        var data = __assign(__assign({}, loginData), { instance: registration.instance, scopes: JSON.stringify(scopes), proxyId: registration.proxyId });
+        keytar.setPassword("domoapps-oauth-access-" + scopes.join('-'), registration.instance + "-" + registration.proxyId, registration.accessToken);
+        keytar.setPassword("domoapps-oauth-refresh-" + scopes.join('-'), registration.instance + "-" + registration.proxyId, registration.refreshToken);
         fs.writeJsonSync(loginFile, data);
-        return { accessToken: accessToken, refreshToken: refreshToken };
-    },
-    deleteTokens: function (_a) {
-        var instance = _a.instance, manifestName = _a.manifestName;
-        var scopes = this.getScopes(manifestName);
-        var instanceData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), { throws: false });
-        return new Promise.all([
-            keytar.deletePassword("domoapps-oauth-access-" + scopes.join('-'), instance + "-" + instanceData.proxyId),
-            keytar.deletePassword("domoapps-oauth-refresh-" + scopes.join('-'), instance + "-" + instanceData.proxyId),
+        return { accessToken: registration.accessToken, refreshToken: registration.refreshToken };
+    };
+    Oauth.deleteTokens = function (registration) {
+        var scopes = this.getScopes(registration.manifestName);
+        var instanceData = fs.readJsonSync(path.resolve(home + '/login/' + registration.instance + '.json'), { throws: false });
+        return Promise.all([
+            keytar.deletePassword("domoapps-oauth-access-" + scopes.join('-'), registration.instance + "-" + instanceData.proxyId),
+            keytar.deletePassword("domoapps-oauth-refresh-" + scopes.join('-'), registration.instance + "-" + instanceData.proxyId),
         ]);
-    },
-    getTokens: function (_a) {
-        var instance = _a.instance, manifestName = _a.manifestName;
-        var scopes = this.getScopes(manifestName);
-        var instanceData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), { throws: false });
-        return new Promise.all([
-            keytar.getPassword("domoapps-oauth-access-" + scopes.join('-'), instance + "-" + instanceData.proxyId),
-            keytar.getPassword("domoapps-oauth-refresh-" + scopes.join('-'), instance + "-" + instanceData.proxyId),
-        ]).then(function (accessToken, refreshToken) { accessToken, refreshToken; });
-    }
-};
+    };
+    return Oauth;
+}());
+exports.Oauth = Oauth;
 //# sourceMappingURL=oauth.js.map

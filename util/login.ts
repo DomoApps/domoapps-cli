@@ -4,12 +4,11 @@ import path = require('path');
 import keytar = require('keytar');
 import { login, constant } from '../models';
 import Domo = require('ryuu-client');
-import log = require('./log');
+import { log } from './log';
 const home = Domo.getHomeDir();
 
 
 export class Login {
-  //This needs more accurate typing
   static getMostRecentLogin(mayNotBeAuthenticated?: boolean): Promise<Domo> {
     var logins = glob.sync(home + "/login/*.json");
     //If there are no logins, return a rejection as the user is unauthenticated.
@@ -19,7 +18,6 @@ export class Login {
     var recent = logins.reduce(function(prev, next) {
       return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
     });
-    //loginData is of type domo as well?
     var loginData: login = fs.readJsonSync(recent);
     return keytar.getPassword('domoapps-cli', loginData.instance).then(function(refreshToken: string) {
       loginData.refreshToken = refreshToken;
@@ -32,8 +30,7 @@ export class Login {
     });
   }
 
-  //[object{instance:string}, ...]
-  static getPreviousLogins(): Array<Object> {
+  static getPreviousLogins(): Array<login> {
     var logins = (glob.sync(home + "/login/*.json") || [])
       .map(function(file: string) {
         return fs.readJsonSync(file);
@@ -44,9 +41,8 @@ export class Login {
   /**
    * persist login to user's domo home
    */
-  static persistLogin(instance: string, refreshToken: string, devToken: boolean|undefined): login {
+  static persistLogin(instance: string, refreshToken: string, devToken?: boolean|undefined): login {
     const loginFile = path.resolve(home + '/login/' + instance + '.json');
-    // const loginData = fs.readJsonSync(loginFile, {throws: false});
     fs.ensureFileSync(loginFile);
     if (refreshToken) {
       keytar.setPassword('domoapps-cli', instance, refreshToken); //runs async to writing, not concerned about waiting
@@ -74,24 +70,21 @@ export class Login {
   }
 
   static deleteRefreshToken(login: Domo): Promise<boolean> {
-    // var loginFile = path.resolve(home + '/login/' + login.getInstance() + '.json');
     return keytar.deletePassword('domoapps-cli', login.getInstance()); //runs async to delete, not concerned about waiting
   }
 
   //fix this
-  static getLogin(instance: string): Promise<Domo> {
+  static getLogin(instance: string) {
     return keytar.getPassword('domoapps-cli', instance).then(function(refreshToken) {
       try {
         var loginFile = path.resolve(home + '/login/' + instance + '.json');
         fs.writeJsonSync(loginFile, { instance: instance });
-        let loginData = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
+        let loginData: login = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
         loginData.refreshToken = refreshToken;
         return new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken);
       }
       catch (ex) {
-
-        //REVISIT THIS
-        //return {};
+        return new Domo(instance, refreshToken, constant.CLIENT_ID);
       }
     });
   }  

@@ -1,19 +1,18 @@
-var validator = require('validator');
-var Domo = require('ryuu-client');
-var Manifest = require('../util/manifest');
-//import * as Manifest from '../util/manifest';
-var Login = require('../util/login');
-var log = require('../util/log');
-var constants = require('../util/constants');
+import validator from 'validator';
+import Domo = require('ryuu-client');
+import { Manifest } from  '../util/manifest';
+import { Login } from '../util/login';
+import { log } from'../util/log';
+import { Command } from 'commander';
 
-module.exports = function(program){
+module.exports = function(program: Command){
   program
     .command('owner <add|rm|ls> [user-emails]')
     .description('manage design owners')
     .option('-i, --design_id <id>', 'Specify design ID, otherwise it is retrieved from a manifest file')
-    .action(function(action, users, options) {
+    .action(function(action: string, users: string[], options) {
 
-      var designId;
+      let designId: string;
       if (options.design_id) {
         designId = options.design_id;
         if (!designId || !validator.isUUID(designId)) return log.fail('The value specified for option -i is not a valid design ID', designId);
@@ -29,29 +28,29 @@ module.exports = function(program){
           case 'add':
             if (users) {
               domo.addOwners(designId, users)
-                .tap(log.ok('Owners added ' + users))
-                .catch(log.fail('Error adding owners'))
+                .tap(() => log.ok('Owners added ' + users))
+                .catch(() => log.fail('Error adding owners'))
                 .finally(process.exit);
             }
             break;
           case 'rm':
             if (users) {
               domo.removeOwners(designId, users)
-                .tap(log.ok('Owners removed ' + users))
-                .catch(log.fail('Error removing owners'))
+                .tap(() => log.ok('Owners removed ' + users))
+                .catch(() => log.fail('Error removing owners'))
                 .finally(process.exit);
             }
             break;
           case 'ls':
             domo.getOwners(designId)
-              .tap(function listUsers(res) {
+              .tap(function listUsers(res: string[]) {
                 res.sort();
                 log.ok("Owners for design " + designId);
                 res.forEach(function(element, index, array) {
                   console.log("\t" + element);
                 });
               })
-              .catch(log.fail('Error retrieving owners'))
+              .catch(() => log.fail('Error retrieving owners'))
               .finally(process.exit);
             break;
         }

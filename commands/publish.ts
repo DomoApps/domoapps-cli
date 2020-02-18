@@ -1,15 +1,17 @@
 import inquirer = require('inquirer');
 import _ = require('lodash');
 import open = require('open');
-import * as Manifest from '../util/manifest';
+import { Manifest } from '../util/manifest';
 import { Login } from '../util/login';
 import glob = require('glob');
 import fs = require('fs-extra');
-import log = require('../util/log');
+import { log } from '../util/log' ;
 import appStructure = require('../util/appStructure');
-import {constant} from '../models';
+import { constant, manifest } from '../models';
 import Domo = require('ryuu-client');
-import { Command } from 'commander';
+import { Command, CommandOptions } from 'commander';
+import { DesignVersion } from 'ryuu-client/models/interfaces/domoappstypes';
+import { RequestError, StatusCodeError } from 'request-promise/errors';
 
 module.exports = function(program: Command){
   program
@@ -54,10 +56,12 @@ module.exports = function(program: Command){
             var latestVersion = result.versions.filter(function(obj) {
               return obj.version === latestVersionNumber;
             });
+            //@ts-ignore
             var oldMapping = latestVersion[0].mapping[0];
             var newMapping = manifest.mapping[0];
 
             if (oldMapping) {
+              //@ts-ignore
               delete oldMapping.dql;
             }
 
@@ -66,9 +70,9 @@ module.exports = function(program: Command){
             }
 
             domo.uploadAllAssets(manifest)
-            .tap(log.ok('Publishing ' + manifest.name + ' to ' + domo.getInstance() + ' on ' + new Date()))
+            .tap(()=>{log.ok('Publishing ' + manifest.name + ' to ' + domo.getInstance() + ' on ' + new Date())})
             .then(logUploadSuccess)
-            .catch(function(e){
+            .catch(function(e: StatusCodeError){
               if(e.statusCode === 401) {
                 log.notAuthenticated(domo.getRefreshToken());
               }
@@ -112,7 +116,7 @@ module.exports = function(program: Command){
           .then(function() {
             goToDomo(options, domo, manifest);
           })
-          .catch((err) => {
+          .catch((err: RequestError) => {
             if(err.message){
               log.fail(log.handleErrorMessage(err, err.message));
             }
@@ -133,19 +137,19 @@ module.exports = function(program: Command){
  * @param {Object} options
  * @return {Promise}
  */
-function createDesign(domo, manifest, options?) {
+function createDesign(domo: Domo, manifest: manifest, options?: CommandOptions) {
   return domo.createDesign(manifest)
-    .then(function(designResult){
+    .then(function(designResult: DesignVersion){
       var design = designResult[0];
       // add the version returned when design published
       design.version = designResult[1].version;
       return Manifest.persistDesignId(design, manifest);
     })
-    .tap(log.ok( 'New design created on ' + domo.instance))
-    .catch(log.fail('Error creating new design'))
+    .tap(()=>{(log.ok('New design created on ' + domo.getInstance()))})
+    .catch(()=>{log.fail('Error creating new design')})
     .then(domo.uploadAllAssets.bind(domo, manifest))
     .then(logUploadSuccess)
-    .catch(function(e){
+    .catch(function(e: string){
       log.fail(e || 'Error uploading assets');
     })
     .then(function() {
@@ -153,15 +157,18 @@ function createDesign(domo, manifest, options?) {
     });
 }
 
+
+//@ts-ignore
 function logUploadSuccess(files){
+  //@ts-ignore
   files.forEach(function(file){
     log.ok('Uploaded: ' + file.path);
   });
 }
 
-function goToDomo(options, domo, manifest) {
-  console.log('Design can be found at https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
-  if (options && options.go) {
-   open('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id, {url: true});
+function goToDomo(options: CommandOptions, domo: Domo, manifest: manifest) {
+  console.log('Design can be found at https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id);
+  if (options && options['go']) {
+   open('https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id, {url: true});
   }
 }

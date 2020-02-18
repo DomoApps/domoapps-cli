@@ -6,8 +6,7 @@ var Login = require('../util/login');
 var log = require('../util/log');
 var multichoice = require('../util/multichoice');
 var appStructure = require('../util/appStructure');
-var messages = require('../util/messages');
-var constants = require('../util/constants');
+var constant = '../models';
 module.exports = function (program) {
     program
         .command('release')
@@ -21,7 +20,7 @@ module.exports = function (program) {
             }
             // make sure there is a thumbnail.png when releasing
             if (!appStructure.hasThumbnail()) {
-                log.fail(messages.THUMBNAIL_CREATE_WARNING, messages.CREATE_THUMBNAIL);
+                log.fail(constant.THUMBNAIL_CREATE_WARNING, constant.CREATE_THUMBNAIL);
             }
             // prompt the user for which design version they want to release, defaulting to latest
             domo.getVersions(manifest.id)

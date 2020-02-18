@@ -3,7 +3,6 @@ var Login = require('../util/login');
 var design = require('../util/design');
 var log = require('../util/log');
 var inquirer = require('inquirer');
-var constants = require('../util/constants');
 
 module.exports = function(program) {
   program

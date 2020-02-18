@@ -1,19 +1,20 @@
-var inquirer = require("inquirer");
-var _ = require('lodash');
-var chalk = require('chalk');
-var shell = require('shelljs');
-var multichoice = require('../util/multichoice');
-var log = require('../util/log');
-var Login = require('../util/login').Login;
-var Domo = require('ryuu-client');
-var Promise = require('bluebird');
-var path = require('path');
-var request1 = Promise.promisify(require('request'));
-var request = require('request-promise');
-var constants = require('../util/constants');
-var Oauth = require('../util/oauth');
-var autoUpdate=false;
-var logo = `
+import inquirer = require("inquirer");
+import _ = require('lodash');
+import chalk from 'chalk';
+import shell = require('shelljs');
+import { log } from '../util/log';
+import { LoginData } from 'ryuu-client/models';
+import Domo = require('ryuu-client');
+import { Command } from 'commander';
+import { Login } from '../util/login';
+import Promise = require('bluebird');
+import path = require('path');
+import request = require('request-promise');
+import { Oauth } from '../util/oauth';
+import { IncomingMessage } from "http";
+import { ProcessedMessage } from "../models/index";
+let autoUpdate = false;
+const logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃                                                            ┃
 ┃                                                            ┃
@@ -45,8 +46,7 @@ var logo = `
 ┃                                                            ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
 
-//TODO: Figure out how to adjust catch so that if they have no login, it still works
-module.exports = function(program){
+module.exports = function(program: Command){
   program
     .command('login')
     .description('login to Domo')
@@ -59,27 +59,28 @@ module.exports = function(program){
       if(args.upgradeDownload){
         autoUpdate = true
       }
-      var previousLogins = Login.getPreviousLogins();
-      var mayNotBeAuthenticated = true;
-      Login.getMostRecentLogin(mayNotBeAuthenticated).catch().then(function(mostRecent) {
-        var prompts = [];
-        var versionCheckFn = !args.upgradeCheck ?
-          function (x) { return x; } :
+      const previousLogins = Login.getPreviousLogins();
+      const mayNotBeAuthenticated = true;
+      let login: LoginData;
+      Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(mostRecent) {
+        let prompts = [];
+        let versionCheckFn = !args.upgradeCheck ?
+          function (x: IncomingMessage) { return x; } :
           verifyVersion;
 
         if (!args.instance) {
           prompts.push({
             type: "list",
             choices: function(){
-              var options = _.map(previousLogins, 'instance');
+              let options = _.map(previousLogins, 'instance');
               options.push('new instance');
               return options;
             },
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
             name: 'instance',
-            default: mostRecent.instance,
+            default: mostRecent.getInstance,
             // only show up if they have previous logins
-            when: function(answers){
+            when: function(answers: inquirer.Answers){
               return previousLogins.length > 0;
             }
           },
@@ -87,7 +88,7 @@ module.exports = function(program){
             type: "input",
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
             name: "instance",
-            when: function(answers){
+            when: function(answers: inquirer.Answers){
               // only ask if the instance selector wasn't used or new one was selected
               return !answers.instance || answers.instance === 'new instance';
             }
@@ -95,21 +96,21 @@ module.exports = function(program){
         }
 
         // prompt user
-        inquirer.prompt(prompts).then(function(answers) {
+        inquirer.prompt(prompts).then(function(answers: inquirer.Answers) {
 
           answers.instance = args.instance || answers.instance;
 
           if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
             log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
           }
-          Login.getLogin(answers.instance).then(function(domo) {
+          Login.getLogin(answers.instance).then(function(domo: Domo) {
             domo
               .login()
-              .then(function(l) {
-                return login = l;
+              .then(function(l: LoginData) {
+                login = l;
               })
               .then(function() {
-                const manifest = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
+                const manifest: string = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
 
                 if (Oauth.isOAuthEnabled(manifest)) {
                   if (Oauth.hasAppProxyId(manifest)) {
@@ -140,15 +141,14 @@ module.exports = function(program){
 /**
  * E.T. phone home
  */
-function checkVersion(instance){
-  var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
-  var options = {
+function checkVersion(instance: string): request.RequestPromise {
+  const cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
+  const options = {
     url: 'https://' + instance + '/domoapps/admin/checkversion?version=' + cliVersion,
     method: 'GET',
     json: true,
     resolveWithFullResponse: true
   };
-
   return request(options);
 }
 
@@ -157,7 +157,7 @@ function checkVersion(instance){
  * log message based on the action
  * if action is 'block' then 'fail' will get called and end the process early
  */
-function verifyVersion(res){
+function verifyVersion(res: ProcessedMessage){
   const body = (Array.isArray(res))
     ? (res[0].body)
     : (res.body);
@@ -177,9 +177,9 @@ function verifyVersion(res){
   }
 }
 
-function promptUpgrade(latest){
+function promptUpgrade(latest: string) {
   return new Promise(function(resolve, reject){
-    var prompts = []
+    let prompts = []
     if(!autoUpdate){
       prompts.push( {
         type: "confirm",
@@ -189,13 +189,13 @@ function promptUpgrade(latest){
       })
     }
     inquirer.prompt(prompts)
-      .then(function(answers) {
+      .then(function(answers: inquirer.Answers) {
         if(autoUpdate === true){
           answers.upgrade = autoUpdate;
         }
         if (answers.upgrade){
           log.info('Upgrading to latest version', 'Hang tight, this may take a moment...');
-          var output = shell.exec('npm install ryuu -g', {async: false, silent: true});
+          const output = shell.exec('npm install ryuu -g', {async: false, silent: true});
           if (output.code === 0){
             log.ok('Upgrade to version '+latest+' successful');
             resolve();
@@ -214,7 +214,7 @@ function promptUpgrade(latest){
 /**
  * Oauth Code
  */
-function promptAppProxyId() {
+function promptAppProxyId(): Promise<string> {
   return new Promise(function(resolve, reject){
     inquirer.prompt([
       {
@@ -223,11 +223,11 @@ function promptAppProxyId() {
         name: 'proxyId'
       }
     ])
-      .then((answer) => resolve(answer.proxyId.trim()));
+      .then((answer: inquirer.Answers) => resolve(answer.proxyId.trim()));
   });
 }
 
-function setupOauth(instance, manifestName, proxyId) {
+function setupOauth(instance: string, manifestName: string, proxyId: string) {
   if (!Oauth.hasTokens({ instance, manifestName, proxyId })) {
     return Oauth.register({instance, manifestName, proxyId})
       .then(result => {
@@ -236,9 +236,9 @@ function setupOauth(instance, manifestName, proxyId) {
           instance,
           manifestName,
           proxyId,
-          verificationUri: result.verification_uri,
-          userCode: result.user_code,
-          deviceCode: result.device_code
+          verification_uri: result.verification_uri,
+          user_code: result.user_code,
+          device_code: result.device_code
         });
       })
       .then(result => {
@@ -247,8 +247,8 @@ function setupOauth(instance, manifestName, proxyId) {
           instance,
           manifestName,
           proxyId,
-          accessToken: result.access_token,
-          refreshToken: result.refresh_token
+          accessToken: result['access_token'],
+          refreshToken: result['refresh_token']
         });
       })
       .catch(error => {

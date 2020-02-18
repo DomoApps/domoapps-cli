@@ -16,8 +16,7 @@ var shelljs_1 = require("shelljs");
 var async_1 = require("async");
 var fs = require("fs-extra");
 var path = require("path");
-var log = require("../util/log");
-var multichoice_1 = require("../util/multichoice");
+var log_1 = require("../util/log");
 module.exports = function (program) {
     program
         .command('init')
@@ -35,12 +34,12 @@ module.exports = function (program) {
             });
         }
         if (!options.starter) {
-            prompts.push(multichoice_1.default({
+            prompts.push({
                 type: 'list',
                 message: 'select a starter',
                 name: 'starter',
                 choices: ['hello world', 'manifest only', 'basic chart', 'map chart']
-            }));
+            });
         }
         inquirer.prompt(prompts).then(function (answers) {
             if (options.design_name) {
@@ -57,7 +56,7 @@ module.exports = function (program) {
 };
 // recursively ask user to enter all their datasources
 var askDatasource = function (currentAnswers, options) {
-    if (!options.dataset) {
+    if (!options['dataset']) {
         inquirer.prompt([{
                 type: 'confirm',
                 message: currentAnswers.datasources.length > 0 ? 'add another dataset?' : 'would you like to connect to any datasets?',
@@ -173,11 +172,11 @@ var initiate = function (allAnswers) {
     // populate and write out the template files
     writeFilesIfNonexistent(files, dirs, allAnswers, function (err, res) {
         if (err) {
-            log.fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
+            log_1.log.fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
         }
         else {
             nextStepsMessage += stepNumber(step) + " Edit the files that were just generated. \n" + stepNumber(step) + " Run " + chalk_1.default.cyan('domo login') + " if you haven't already. \n" + stepNumber(step) + " Run " + chalk_1.default.cyan('domo publish') + " whenever you make changes. \n" + stepNumber(step) + " Add a Custom App card to any page in Domo. ";
-            log.ok("New design initialized in the " + chalk_1.default.green(__dirname || 'current') + " directory", nextStepsMessage);
+            log_1.log.ok("New design initialized in the " + chalk_1.default.green(__dirname || 'current') + " directory", nextStepsMessage);
         }
         if (allAnswers.starter === 'hello world') {
             fs.remove('node_modules');

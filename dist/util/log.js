@@ -1,58 +1,56 @@
-var chalk = require('chalk');
-/*import * as yourFuncs from './pathToYourFile';
-yourFuncs.foo();
-yourFuncs.foo2();*/
-module.exports = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var chalk_1 = require("chalk");
+var log = /** @class */ (function () {
+    function log() {
+    }
     /**
      * log a success
      */
-    ok: function (msg, submessage) {
-        console.log(chalk.green('\u2713'), msg);
+    log.ok = function (msg, submessage) {
+        console.log(chalk_1.default.green('\u2713'), msg);
         if (submessage) {
-            console.log(chalk.gray(submessage));
+            console.log(chalk_1.default.gray(submessage));
         }
-    },
+    };
     /**
      * log info
      */
-    info: function (msg, submessage) {
-        console.log(chalk.cyan(msg));
+    log.info = function (msg, submessage) {
+        console.log(chalk_1.default.cyan(msg));
         if (submessage) {
-            console.log(chalk.gray(submessage));
+            console.log(chalk_1.default.gray(submessage));
         }
-    },
+    };
     /**
      * log warning
      */
-    warn: function (msg, submessage) {
-        console.log(chalk.yellow(msg));
+    log.warn = function (msg, submessage) {
+        console.log(chalk_1.default.yellow(msg));
         if (submessage) {
-            console.log(chalk.gray(submessage));
+            console.log(chalk_1.default.gray(submessage));
         }
-    },
+    };
     /**
      * log an error and exit node
      */
-    fail: function (msg, submessage, result) {
-        console.log(chalk.red('X'), msg);
+    log.fail = function (msg, submessage, result) {
+        console.log(chalk_1.default.red('X'), msg);
         if (submessage) {
-            console.log(chalk.gray(submessage));
+            console.log(chalk_1.default.gray(submessage));
         }
         if (result && result.message) {
-            console.log(chalk.gray(result.message));
+            console.log(chalk_1.default.gray(result.message));
         }
         if (process.argv.indexOf("verbose") !== -1) {
-            console.log(chalk.red("statusCode:"), result.statusCode);
-            if (result.details) {
-                console.log(chalk.red("details:"), result.details);
-            }
-            console.log(chalk.red("method:"), result.method);
-            console.log(chalk.red("path:"), result.path);
-            console.log(chalk.red("response:"), result.res);
+            console.log(chalk_1.default.red("statusCode:"), result.statusCode);
+            console.log(chalk_1.default.red("method:"), result.method);
+            console.log(chalk_1.default.red("path:"), result.url);
+            console.log(chalk_1.default.red("failureMessage:"), result.failureMessage);
         }
         process.exit(1);
-    },
-    notAuthenticated: function (refreshToken) {
+    };
+    log.notAuthenticated = function (refreshToken) {
         if (!refreshToken) {
             module.exports.fail('Not authenticated', 'Please login using "domo login"');
         }
@@ -62,18 +60,21 @@ module.exports = {
         else {
             module.exports.fail('Not authenticated');
         }
-    },
-    clientRequestFailed: function (err, failureMessage) {
+    };
+    // ERR SHOULD BE AN ERROR?
+    log.clientRequestFailed = function (err, failureMessage) {
         var message = "You are not authenticated or your refresh token may have been revoked. Please login again with \"domo login\"";
         if (failureMessage) {
             message = failureMessage;
         }
         module.exports.fail(err, message);
-    },
-    handleErrorMessage: function (err, label) {
+    };
+    log.handleErrorMessage = function (err, label) {
         label = label || 'Error sending request';
-        var toe = err && err.res && err.res.body && err.res.body.toe ? '\nToe: ' + err.res.body.toe : '';
-        return label + toe;
-    }
-};
+        //const toe = err && err.res && err.res.body;
+        return label; //+ toe
+    };
+    return log;
+}());
+exports.log = log;
 //# sourceMappingURL=log.js.map

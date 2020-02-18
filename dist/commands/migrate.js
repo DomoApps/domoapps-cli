@@ -5,7 +5,6 @@ var Manifest = require('../util/manifest');
 //import * as Manifest from '../util/manifest';
 var Login = require('../util/login');
 var log = require('../util/log');
-var constants = require('../util/constants');
 module.exports = function (program) {
     program
         .command('migrate')

@@ -1,9 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var Promise = require("bluebird");
-var log = require("./log");
-module.exports = {
-    check: function (domo) {
+var log_1 = require("./log");
+var Session = /** @class */ (function () {
+    function Session() {
+    }
+    Session.check = function (domo) {
         return new Promise(function (resolve, reject) {
             var options = {
                 url: 'https://' + domo.getInstance() + '/auth/validate',
@@ -13,8 +15,7 @@ module.exports = {
             domo.processRequest(options)
                 .then(function (res) {
                 try {
-                    //@ts-ignore
-                    var isValid = JSON.parse(res.body).isValid;
+                    var isValid = JSON.parse(res.body.toString()).isValid;
                     if (isValid) {
                         resolve(true);
                     }
@@ -29,9 +30,11 @@ module.exports = {
                 }
             })
                 .catch(function (err) {
-                log.clientRequestFailed(err.statusCode + ' - ' + err.message, err.failureMessage);
+                log_1.log.clientRequestFailed(err.statusCode + ' - ' + err.message, err.failureMessage);
             });
         });
-    }
-};
+    };
+    return Session;
+}());
+exports.Session = Session;
 //# sourceMappingURL=session.js.map

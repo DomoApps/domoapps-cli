@@ -1,10 +1,9 @@
-var validator = require('validator');
-var Domo = require('ryuu-client');
-var Manifest = require('../util/manifest');
-//import * as Manifest from '../util/manifest';
-var Login = require('../util/login');
-var log = require('../util/log');
-var constants = require('../util/constants');
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var validator_1 = require("validator");
+var manifest_1 = require("../util/manifest");
+var login_1 = require("../util/login");
+var log_1 = require("../util/log");
 module.exports = function (program) {
     program
         .command('owner <add|rm|ls> [user-emails]')
@@ -14,32 +13,32 @@ module.exports = function (program) {
         var designId;
         if (options.design_id) {
             designId = options.design_id;
-            if (!designId || !validator.isUUID(designId))
-                return log.fail('The value specified for option -i is not a valid design ID', designId);
+            if (!designId || !validator_1.default.isUUID(designId))
+                return log_1.log.fail('The value specified for option -i is not a valid design ID', designId);
         }
         else {
-            var manifest = Manifest.get(program.manifest);
+            var manifest = manifest_1.Manifest.get(program.manifest);
             if (!manifest)
-                return log.fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
+                return log_1.log.fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
             if (!manifest.id)
-                return log.fail('No manifest id. Please publish your design before attempting to add owners to it.');
+                return log_1.log.fail('No manifest id. Please publish your design before attempting to add owners to it.');
             designId = manifest.id;
         }
-        Login.getMostRecentLogin().then(function (domo) {
+        login_1.Login.getMostRecentLogin().then(function (domo) {
             switch (action) {
                 case 'add':
                     if (users) {
                         domo.addOwners(designId, users)
-                            .tap(log.ok('Owners added ' + users))
-                            .catch(log.fail('Error adding owners'))
+                            .tap(function () { return log_1.log.ok('Owners added ' + users); })
+                            .catch(function () { return log_1.log.fail('Error adding owners'); })
                             .finally(process.exit);
                     }
                     break;
                 case 'rm':
                     if (users) {
                         domo.removeOwners(designId, users)
-                            .tap(log.ok('Owners removed ' + users))
-                            .catch(log.fail('Error removing owners'))
+                            .tap(function () { return log_1.log.ok('Owners removed ' + users); })
+                            .catch(function () { return log_1.log.fail('Error removing owners'); })
                             .finally(process.exit);
                     }
                     break;
@@ -47,16 +46,16 @@ module.exports = function (program) {
                     domo.getOwners(designId)
                         .tap(function listUsers(res) {
                         res.sort();
-                        log.ok("Owners for design " + designId);
+                        log_1.log.ok("Owners for design " + designId);
                         res.forEach(function (element, index, array) {
                             console.log("\t" + element);
                         });
                     })
-                        .catch(log.fail('Error retrieving owners'))
+                        .catch(function () { return log_1.log.fail('Error retrieving owners'); })
                         .finally(process.exit);
                     break;
             }
-        }).catch(log.notAuthenticated);
+        }).catch(log_1.log.notAuthenticated);
     });
 };
 //# sourceMappingURL=owner.js.map

@@ -1,10 +1,11 @@
 import { OptionsWithUrl } from 'request-promise';
 import * as Promise from 'bluebird';
-import log = require('./log');
+import { log } from './log';
 import Domo = require('ryuu-client');
+import { ProcessedMessage } from "../models/index";
 
-module.exports = {
-  check: function(domo: Domo){
+export class Session {
+  static check (domo: Domo) {
     return new Promise(function(resolve, reject){
       var options: OptionsWithUrl = {
         url: 'https://' + domo.getInstance() + '/auth/validate',
@@ -13,10 +14,9 @@ module.exports = {
       };
 
       domo.processRequest(options)
-        .then(function(res) {
+        .then(function(res: ProcessedMessage) {
           try{
-            //@ts-ignore
-            var isValid = JSON.parse(res.body).isValid;
+            var isValid = JSON.parse(res.body.toString()).isValid;
             if(isValid){
               resolve(true);
             }

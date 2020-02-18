@@ -1,34 +1,39 @@
-var fs = require('fs-extra');
-var path = require('path');
-var semver = require('semver');
-var glob = require('glob');
-var log = require('../util/log');
-var isValidJSName = require('../util/isValidJSName');
-module.exports = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var fs = require("fs-extra");
+var path = require("path");
+var semver = require("semver");
+var glob = require("glob");
+var log_1 = require("../util/log");
+var isValidJSName_1 = require("../util/isValidJSName");
+var Manifest = /** @class */ (function () {
+    function Manifest() {
+    }
     /**
     * Get the local manifest.json file, ensuring it's valid.
     */
-    get: function (manifestName, verify) {
+    Manifest.get = function (manifestName, verify) {
         if (manifestName === void 0) { manifestName = 'manifest.json'; }
         if (verify === void 0) { verify = true; }
         var manifestPath = findManifest(manifestName);
-        var manifest;
+        var rawmanifest;
         try {
-            manifest = fs.readFileSync(path.resolve(manifestPath));
+            rawmanifest = fs.readFileSync(path.resolve(manifestPath));
         }
         catch (e) {
             if (verify) {
-                return log.fail("No " + manifestName + " file in this directory", "Please publish from a directory containing a Custom App design " + manifestName + " file");
+                log_1.log.fail("No " + manifestName + " file in this directory", "Please publish from a directory containing a Custom App design " + manifestName + " file");
             }
             else {
                 return;
             }
         }
+        var manifest;
         try {
-            manifest = JSON.parse(manifest);
+            manifest = JSON.parse(rawmanifest.toString());
         }
         catch (e) {
-            return log.fail("Your " + manifestName + " file is not valid JSON", e.message);
+            log_1.log.fail("Your " + manifestName + " file is not valid JSON", e.message);
         }
         if (verify) {
             validateManifest(manifest);
@@ -36,23 +41,25 @@ module.exports = {
         // add the manifest name, so it's attached to the object
         manifest.fileName = manifestName;
         return manifest;
-    },
-    hasManifest: function (manifestName) {
+    };
+    Manifest.hasManifest = function (manifestName) {
         return fs.existsSync(findManifest(manifestName));
-    },
+    };
     /**
      * update the manifest (in memory and on disk)
      */
-    persistDesignId: function (design, manifest) {
+    Manifest.persistDesignId = function (design, manifest) {
         manifest.id = design.id;
         this.updateManifest(manifest);
         return design;
-    },
-    updateManifest: function (manifest) {
+    };
+    Manifest.updateManifest = function (manifest) {
         var manifestPath = findManifest(manifest.fileName);
         fs.writeJsonSync(manifestPath, manifest, { spaces: 2 });
-    }
-};
+    };
+    return Manifest;
+}());
+exports.Manifest = Manifest;
 /**
 * Validate the manifest file.
 */
@@ -75,11 +82,11 @@ function validateManifest(manifest) {
     });
     // validate semver
     if (!semver.valid(manifest.version)) {
-        log.fail('Invalid version', 'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/');
+        log_1.log.fail('Invalid version', 'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/');
     }
     function requireProperty(obj, prop) {
         if (!obj[prop]) {
-            log.fail('Missing required property: ' + prop, 'Please add the missing `' + prop + '` property to your manifest.json file.');
+            log_1.log.fail('Missing required property: ' + prop, 'Please add the missing `' + prop + '` property to your manifest.json file.');
         }
     }
     return manifest;
@@ -88,8 +95,8 @@ function validateManifest(manifest) {
  * Alias must be a valid JS property
  */
 function ensureValidAlias(name) {
-    if (!isValidJSName(name)) {
-        log.fail('Alias names must be valid JavaScript properties', 'Please rename the ' + JSON.stringify(name) + ' alias and update any /data/v1/<alias> calls with the new alias name');
+    if (!isValidJSName_1.default(name)) {
+        log_1.log.fail('Alias names must be valid JavaScript properties', 'Please rename the ' + JSON.stringify(name) + ' alias and update any /data/v1/<alias> calls with the new alias name');
     }
 }
 /**
