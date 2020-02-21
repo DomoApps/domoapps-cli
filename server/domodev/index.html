@@ -6,7 +6,7 @@
 
   <body>
   <div class="slideOne">
-      <input type="checkbox" value="None" id="slideOne" name="check" <%- fullpage ? 'checked="checked"' : '' %> onclick="fullscreen(this.checked, '<%- height %>', '<%- width %>')"/>
+      <input type="checkbox" value="None" id="slideOne" name="check" <%- fullpage ? 'checked="checked"' : '' %> <%- fullpage===false ? 'disabled' : '' %> onclick="fullscreen(this.checked, '<%- height %>', '<%- width %>')"/>
       <label for="slideOne"></label>
       <h2>Fullscreen</h2>
     </div>
