@@ -6,15 +6,15 @@
  *
  */
 
-var path = require('path');
-var program = require('commander');
-var _ = require('lodash');
-var glob = require('glob');
-var verifyNodeVersion = require('../util/verifyNodeVersion');
+import path = require('path');
+import program = require('commander');
+import _ = require('lodash');
+import glob = require('glob');
+const verifyNodeVersion = require('../util/verifyNodeVersion');
 verifyNodeVersion();
 require('../polyfills/endswith');
 
-var cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
+const cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
 
 program
   .version(cliVersion, '-v, --version')
@@ -41,6 +41,7 @@ if (!process.argv.slice(2).length) {
     }
 
     for (var i = 0, len = program.args.length; i < len; i++) {
+      //@ts-ignore
         if (program.args[i] instanceof program.Command) {
             has_command = true;
             break;

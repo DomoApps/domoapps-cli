@@ -1,14 +1,15 @@
 #!/usr/bin/env node --harmony
+"use strict";
 /**
  * This executable will take care of capturing user input,
  * passing data on to the domo lib and informing user of results.
  * First it will check for supported Node versions.
  *
  */
-var path = require('path');
-var program = require('commander');
-var _ = require('lodash');
-var glob = require('glob');
+Object.defineProperty(exports, "__esModule", { value: true });
+var path = require("path");
+var program = require("commander");
+var glob = require("glob");
 var verifyNodeVersion = require('../util/verifyNodeVersion');
 verifyNodeVersion();
 require('../polyfills/endswith');
@@ -34,6 +35,7 @@ else {
         program.args = [];
     }
     for (var i = 0, len = program.args.length; i < len; i++) {
+        //@ts-ignore
         if (program.args[i] instanceof program.Command) {
             has_command = true;
             break;

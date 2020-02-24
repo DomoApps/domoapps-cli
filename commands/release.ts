@@ -1,14 +1,12 @@
-var inquirer = require('inquirer');
-var Domo = require('ryuu-client');
-var Manifest = require('../util/manifest');
-//import * as Manifest from '../util/manifest';
-var Login = require('../util/login');
-var log = require('../util/log');
-var multichoice = require('../util/multichoice');
-var appStructure = require('../util/appStructure');
-var constant = '../models';
+import inquirer = require('inquirer');
+import { Manifest } from '../util/manifest';
+import { Login } from '../util/login';
+import { log } from '../util/log';
+import appStructure = require('../util/appStructure');
+import { constant } from '../models/index';
+import { Command } from 'commander';
 
-module.exports = function(program){
+module.exports = function(program: Command){
   program
     .command('release')
     .description('prepare a design for app store release')
@@ -32,22 +30,21 @@ module.exports = function(program){
             versions.reverse();
             versions.unshift('latest');
 
-            inquirer.prompt([
-              multichoice({
+            inquirer.prompt([{
                 type: 'list',
                 message: 'select a version to release',
                 name: 'version',
                 choices: versions
-              })])
+              }])
               .then(function(answers){
                 // release the kraken
                 domo.release(manifest.id, answers.version)
-                  .tap(log.ok('Design version ('+answers.version+') released'))
+                  .tap(() => log.ok('Design version ('+answers.version+') released'))
                   .catch(log.fail)
                   .finally(process.exit)
               });
           })
-          .catch(log.clientRequestFailed('Error releasing app design'));
+          .catch(() => log.clientRequestFailed('Error releasing app design'));
       }).catch(log.notAuthenticated);
     });
 };

@@ -1,7 +1,8 @@
-var inquirer = require('inquirer');
-var Login = require('../util/login');
-var Domo = require('ryuu-client');
-var log = require('../util/log');
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var inquirer = require("inquirer");
+var login_1 = require("../util/login");
+var log_1 = require("../util/log");
 module.exports = function (program) {
     program
         .command('revert')
@@ -9,14 +10,14 @@ module.exports = function (program) {
         .option('-i, --instance <value>', 'Domo instance')
         .option('-a, --app-id <id>', 'app id')
         .action(function (args) {
-        Login.getMostRecentLogin().then(function (mostRecent) {
+        login_1.Login.getMostRecentLogin().then(function (mostRecent) {
             var prompts = [];
             if (!args.instance) {
                 prompts.push({
                     type: "input",
                     message: "Domo instance",
                     name: "instance",
-                    default: mostRecent.instance
+                    default: mostRecent.getInstance()
                 });
             }
             if (!args.appId) {
@@ -30,21 +31,22 @@ module.exports = function (program) {
                 .then(function (answers) {
                 answers.instance = args.instance || answers.instance;
                 answers.id = args.appId || answers.id;
-                Login.getLogin(answers.instance).then(function (domo) {
+                login_1.Login.getLogin(answers.instance).then(function (domo) {
                     domo.getKpi(answers.id)
                         .then(function (kpi) {
+                        //@ts-ignore
                         kpi.type = kpi.metadata.chartType = kpi.metadata.kpiType = 'mason';
                         return kpi;
                     })
                         .then(function (kpi) {
                         return domo.updateKpi(kpi);
                     })
-                        .tap(log.ok('Card reverted back to a mason app'))
-                        .catch(log.clientRequestFailed('Error attempting to revert card'))
+                        .tap(function () { return log_1.log.ok('Card reverted back to a mason app'); })
+                        .catch(function () { return log_1.log.clientRequestFailed('Error attempting to revert card'); })
                         .finally(process.exit);
-                }).catch(log.notAuthenticated);
+                }).catch(log_1.log.notAuthenticated);
             });
-        }).catch(log.notAuthenticated);
+        }).catch(log_1.log.notAuthenticated);
     });
 };
 //# sourceMappingURL=revert.js.map

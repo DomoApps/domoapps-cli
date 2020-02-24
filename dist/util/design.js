@@ -19,13 +19,17 @@ var validator_1 = require("validator");
 function getDesignId(arg1, arg2, man) {
     var id = arg1 || arg2;
     if (id) {
-        if (!validator_1.default.isUUID(id))
-            return log_1.log.fail('The value specified for option -i is not a valid design ID', id);
+        if (!validator_1.default.isUUID(id)) {
+            log_1.log.fail('The value specified for option -i is not a valid design ID', id);
+            return;
+        }
     }
     else {
         var manifest = manifest_1.Manifest.get(man);
-        if (!manifest || !manifest.id)
-            return log_1.log.fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
+        if (!manifest || !manifest.id) {
+            log_1.log.fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
+            return;
+        }
         id = manifest.id;
     }
     return id;

@@ -1,8 +1,9 @@
-var Domo = require('ryuu-client');
-var Login = require('../util/login');
-var design = require('../util/design');
-var log = require('../util/log');
-var inquirer = require('inquirer');
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var login_1 = require("../util/login");
+var design = require("../util/design");
+var log_1 = require("../util/log");
+var inquirer = require("inquirer");
 module.exports = function (program) {
     program
         .command('undelete [id]')
@@ -18,15 +19,15 @@ module.exports = function (program) {
             .then(handleUserResponse);
         function handleUserResponse(answer) {
             if (answer.undelete) {
-                Login.getMostRecentLogin().then(function (domo) {
+                login_1.Login.getMostRecentLogin().then(function (domo) {
                     domo.unDeleteDesign(designId)
-                        .tap(log.ok('Undeleted design ' + designId))
-                        .catch(log.clientRequestFailed('Unable to undelete design ' + designId))
+                        .tap(function () { return log_1.log.ok('Undeleted design ' + designId); })
+                        .catch(function () { return log_1.log.clientRequestFailed('Unable to undelete design ' + designId); })
                         .finally(process.exit);
-                }).catch(log.notAuthenticated);
+                }).catch(log_1.log.notAuthenticated);
             }
             else {
-                log.fail('Undelete command aborted');
+                log_1.log.fail('Undelete command aborted');
             }
         }
     });

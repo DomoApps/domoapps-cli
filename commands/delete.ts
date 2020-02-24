@@ -1,20 +1,21 @@
-var Domo = require('ryuu-client');
-var Login = require('../util/login');
-var design = require('../util/design');
-var log = require('../util/log');
-var inquirer = require('inquirer');
+import Domo = require('ryuu-client');
+import { Login } from '../util/login';
+import design = require('../util/design');
+import { log } from '../util/log';
+import inquirer = require('inquirer');
+import { Command, CommandOptions } from 'commander';
 
-module.exports = function(program) {
+module.exports = function(program: Command) {
   program
     .command('delete [id]')
     .description('delete a published design')
     .option('-i, --design_id <id>', '[DEPRECATED] Specify design ID, otherwise it is retrieved from a manifest file')
     .option('-f, --force', 'Delete the design even if it is referenced by Custom Apps')
     .option('-c, --confirm', 'Confirm deleting the app')
-    .action(function(arg, options) {
+    .action(function(arg: string, options: CommandOptions) {
 
-      var designId = design.getDesignId(arg, options.design_id, program.manifest);
-      if(options.confirm) {
+      var designId = design.getDesignId(arg, options['design_id'], program.manifest);
+      if(options['confirm']) {
           let answer = {delete:true}
           handleUserResponse(answer)
       }
@@ -29,15 +30,15 @@ module.exports = function(program) {
             .then(handleUserResponse);
       }
 
-      function handleUserResponse(answer) {
+      function handleUserResponse(answer: {delete:boolean}) {
         if (answer.delete) {
           var force = false;
           Login.getMostRecentLogin().then(function(domo) {
             
-            if (options.force) force = true;
+            if (options['force']) force = true;
             domo.deleteDesign(designId, force)
-              .tap(log.ok('Deleted design ' + designId))
-              .catch(log.clientRequestFailed('Unable to delete design ' + designId))
+              .tap(() => log.ok('Deleted design ' + designId))
+              .catch(() => log.clientRequestFailed('Unable to delete design ' + designId))
               .finally(process.exit);
           }).catch(log.notAuthenticated);
         } else {

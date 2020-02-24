@@ -1,10 +1,10 @@
-var Domo = require('ryuu-client');
-var Login = require('../util/login');
-var design = require('../util/design');
-var log = require('../util/log');
-var inquirer = require('inquirer');
+import { Login } from '../util/login';
+import design = require('../util/design');
+import { log } from '../util/log';
+import inquirer = require('inquirer');
+import { Command } from 'commander';
 
-module.exports = function(program) {
+module.exports = function(program: Command) {
   program
     .command('undelete [id]')
     .description('undelete a soft-deleted design')
@@ -20,12 +20,12 @@ module.exports = function(program) {
       }])
         .then(handleUserResponse);
 
-      function handleUserResponse(answer) {
+      function handleUserResponse(answer: inquirer.Answers) {
         if (answer.undelete) {
           Login.getMostRecentLogin().then(function(domo) {
             domo.unDeleteDesign(designId)
-              .tap(log.ok('Undeleted design ' + designId))
-              .catch(log.clientRequestFailed('Unable to undelete design ' + designId))
+              .tap(() => log.ok('Undeleted design ' + designId))
+              .catch(() => log.clientRequestFailed('Unable to undelete design ' + designId))
               .finally(process.exit);
           }).catch(log.notAuthenticated);
         } else {

@@ -134,7 +134,7 @@ function getEnv(){
  * Fallback to inferring it by the instance URL.
  */
 
-function getDomoappsData(): Promise<AppData>{
+function getDomoappsData(){
   var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
   var uuid = (manifest['proxyId']) ? manifest.proxyId : Domo.createUUID();
   var options = {
@@ -152,7 +152,7 @@ function getDomoappsData(): Promise<AppData>{
       return data;
     });
 }
-function createContext(designId: string, mapping: DataPoint[]): Promise<AppContext> {
+function createContext(designId: string, mapping: DataPoint[]) {
   var options = {
     url: 'https://' + domoApp.getInstance() + '/domoapps/apps/v2/contexts',
     method: 'POST',

@@ -1,13 +1,14 @@
-var fs = require('fs-extra');
-var path = require('path');
-var extract = require('extract-zip');
-var inquirer = require('inquirer');
-var shell = require('shelljs');
-var Login = require('../util/login');
-var Domo = require('ryuu-client');
-var log = require('../util/log');
+import fs = require('fs-extra');
+import path = require('path');
+import extract = require('extract-zip');
+import inquirer = require('inquirer');
+import shell = require('shelljs');
+import { Login } from'../util/login';
+import Domo = require('ryuu-client');
+import { log } from '../util/log';
+import { Command } from 'commander';
 
-module.exports = function(program){
+module.exports = function(program: Command){
   program
     .command('download')
     .description('download a Custom App design')
@@ -34,11 +35,11 @@ module.exports = function(program){
           });
         }
         inquirer.prompt(prompts)
-          .then(function(answers){
+          .then(function(answers: inquirer.Answers){
           answers.designId = args.designId || answers.designId;
           answers.version = args.designVersion || answers.version;
 
-          domo.download(answers.designId, answers.version).then(function(req) {
+          domo.download(answers['designId'], answers['version']).then(function(req) {
             req.on('response', function(response){
               if (response.statusCode === 200) {
                 var regexp = /filename="(.*)"/;
@@ -54,7 +55,7 @@ module.exports = function(program){
                 var source = path.resolve('./'+name+'.zip');
                 var target = path.resolve('./'+name);
 
-                extract(source, {dir: target}, function(err, results) {
+                extract(source, {dir: target}, function(err) {
                   if (!err){
                     shell.chmod('-R', 'u+w', target);
                     fs.remove(source);
@@ -64,7 +65,7 @@ module.exports = function(program){
               });
             });
           })
-          .catch(log.clientRequestFailed('Unable to download design ' + answers.designId));
+          .catch(() => log.clientRequestFailed('Unable to download design ' + answers.designId));
         });
       }).catch(log.notAuthenticated);
     });

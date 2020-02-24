@@ -15,14 +15,21 @@ import validator from 'validator';
  * manifest.id, null
  * @return {void} Returns void with an error log.
  */
-export function getDesignId(arg1: string, arg2: string, man: string): string | void {
+export function getDesignId(arg1: string, arg2: string, man: string) {
   let id = arg1 || arg2;
 
   if (id) {
-    if (!validator.isUUID(id)) return log.fail('The value specified for option -i is not a valid design ID', id);
+    if (!validator.isUUID(id)) 
+      {
+        log.fail('The value specified for option -i is not a valid design ID', id);
+        return;
+      }
   } else {
     const manifest = Manifest.get(man);
-    if (!manifest || !manifest.id) return log.fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
+    if (!manifest || !manifest.id) {
+      log.fail('No manifest found. Please supply design id using -i or change to a directory with a valid manifest file');
+      return;
+    }
     id = manifest.id;
   }
 
