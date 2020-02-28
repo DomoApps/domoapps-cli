@@ -132,7 +132,7 @@ function askDatasource(currentAnswers, options, callback){
       if (answers.askDatasource){
         addDatasource(_.merge(currentAnswers, answers), function(combinedAnswers){
           // ask for more datasources
-          askDatasource(combinedAnswers, callback);
+          askDatasource(combinedAnswers, options, callback);
         });
       }
       else {
