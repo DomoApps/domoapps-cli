@@ -7,7 +7,7 @@ import glob = require('glob');
 import fs = require('fs-extra');
 import { log } from '../util/log' ;
 import appStructure = require('../util/appStructure');
-import { constant, manifest } from '../models';
+import { constant, manifest, File } from '../models';
 import Domo = require('ryuu-client');
 import { Command, CommandOptions } from 'commander';
 import { DesignVersion } from 'ryuu-client/models/interfaces/domoappstypes';
@@ -22,7 +22,7 @@ module.exports = function(program: Command){
       var manifest = Manifest.get(program.manifest);
       if (!manifest) return;
 
-      Login.getMostRecentLogin().then(function(domo: Domo) {
+      Login.getMostRecentLogin().then(function(domo) {
         var ignore = ['**/*/node_modules/**/*', 'node_modules/**/*'];
         var userIgnore = manifest.ignore;
         if (userIgnore){
@@ -56,12 +56,10 @@ module.exports = function(program: Command){
             var latestVersion = result.versions.filter(function(obj) {
               return obj.version === latestVersionNumber;
             });
-            //@ts-ignore
             var oldMapping = latestVersion[0].mapping[0];
             var newMapping = manifest.mapping[0];
 
             if (oldMapping) {
-              //@ts-ignore
               delete oldMapping.dql;
             }
 
@@ -157,10 +155,7 @@ function createDesign(domo: Domo, manifest: manifest, options?: CommandOptions) 
     });
 }
 
-
-//@ts-ignore
-function logUploadSuccess(files){
-  //@ts-ignore
+function logUploadSuccess(files: File[]){
   files.forEach(function(file){
     log.ok('Uploaded: ' + file.path);
   });

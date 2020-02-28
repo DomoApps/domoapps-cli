@@ -51,11 +51,9 @@ module.exports = function (program) {
                     var latestVersion = result.versions.filter(function (obj) {
                         return obj.version === latestVersionNumber;
                     });
-                    //@ts-ignore
                     var oldMapping = latestVersion[0].mapping[0];
                     var newMapping = manifest.mapping[0];
                     if (oldMapping) {
-                        //@ts-ignore
                         delete oldMapping.dql;
                     }
                     if (!_.isEqual(oldMapping, newMapping)) {
@@ -144,9 +142,7 @@ function createDesign(domo, manifest, options) {
         goToDomo(options, domo, manifest);
     });
 }
-//@ts-ignore
 function logUploadSuccess(files) {
-    //@ts-ignore
     files.forEach(function (file) {
         log_1.log.ok('Uploaded: ' + file.path);
     });

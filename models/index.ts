@@ -4,4 +4,5 @@ export { manifest, DataPoint } from './interfaces/manifest';
 export { Registration, ActiveRegistration, FullRegistration } from './interfaces/oauth';
 export { ProcessedMessage } from './interfaces/processedMessage';
 export { DomoOptions, AppData, AppContext } from './interfaces/server';
+export { File } from './interfaces/file'
 //export { init, dataSources, initOptions } from './interfaces/init'

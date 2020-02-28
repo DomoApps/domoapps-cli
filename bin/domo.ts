@@ -41,8 +41,8 @@ if (!process.argv.slice(2).length) {
     }
 
     for (var i = 0, len = program.args.length; i < len; i++) {
-      //@ts-ignore
-        if (program.args[i] instanceof program.Command) {
+      const x = program.args[i];
+        if (program.commands.includes(program.args[i])) {
             has_command = true;
             break;
         }
