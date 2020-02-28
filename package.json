@@ -1,18 +1,18 @@
 {
   "name": "ryuu",
-  "version": "3.3.3",
+  "version": "3.3.5",
   "bin": {
     "domo": "./bin/runner"
   },
   "scripts": {
     "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 --config ./changelog/changelog.js",
-    "build": "npm run build:phoenix -s",
+    "build": "npm run copy && tsc && npm run build:phoenix -s",
     "build:phoenix": "ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenix.js\" \"./templates/basic chart/domoPhoenix.js\" && ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenixWithMaps.js\" \"./templates/map chart/domoPhoenixWithMaps.js\"",
     "push": "git push && git push --tags",
     "preversion": "npm run build",
     "version": "npm run changelog && git add CHANGELOG.md templates/**/domoPhoenix*.js",
     "remove": "rimraf \"node_modules/ryuu-client/*\"",
-    "copy": "ncp \"package.json\" \"dist/\" && ncp \"../domoapps-client/\" \"node_modules/ryuu-client/\"",
+    "copy": "cp \"package.json\" \"./dist/\"",
     "typescript": "npm run remove && npm run copy && tsc"
   },
   "dependencies": {
@@ -37,7 +37,7 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "rimraf": "^3.0.0",
-    "ryuu-client": "^3.0.2",
+    "ryuu-client": "^4.0.1",
     "ryuu.js": "^2.6.8",
     "semver": "^6.3.0",
     "shelljs": "^0.8.3",
