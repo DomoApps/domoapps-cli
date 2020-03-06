@@ -31,7 +31,7 @@ module.exports = function(program){
           type: 'list',
           message: 'select a starter',
           name: 'starter',
-          choices: ['hello world', 'manifest only', 'basic chart', 'map chart']
+          choices: ['hello world', 'manifest only', 'basic chart', 'map chart', 'sugarforce']
         }))
       }
         inquirer.prompt(prompts).then(function(answers){
@@ -78,6 +78,29 @@ module.exports = function(program){
               else if (allAnswers.starter === 'map chart') {
                 files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js', 'domoPhoenixWithMaps.js'];
                 const customChartTemplateDir = path.join(__dirname, '/../templates/', 'map chart/');
+                dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
+
+                var dirname = slug(answers.name);
+                nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
+
+                shell.mkdir('-p', dirname);
+                process.chdir(path.resolve(dirname));
+              }
+              else if (allAnswers.starter === 'sugarforce') {
+                files = files = [
+                  'manifest.json',
+                  'index.html',
+                  path.join('js','app.js'),
+                  path.join('js','router.js'),
+                  path.join('styles','app.css'),
+                  path.join('js','domo.js'),
+                  path.join('js','domoPhoenixWithMaps.js'),
+                  'thumbnail.png',
+                  path.join('views', 'home.html'),
+                  path.join('views', 'leads.html'),
+                  path.join('views', 'opportunities.html'),
+                  path.join('views', 'reports.html')];
+                const customChartTemplateDir = path.join(__dirname, '/../templates/', 'sugarforce/');
                 dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
                 var dirname = slug(answers.name);
@@ -141,10 +164,10 @@ function askDatasource(currentAnswers, options, callback){
       }
     });
 }
-  else { 
+  else {
     let answers = {
       askDatasource : false
-     }; 
+     };
     callback(_.merge(currentAnswers, answers))
   }
 }
@@ -193,11 +216,21 @@ function writeFilesIfNonexistent(files, dirs, allAnswers, callback) {
   });
 
   function writeTemplateFile(filedir){
-    var file = filedir[0];
-    var dir = filedir[1];
-    dir = dir || (__dirname + '/../templates/');
-    var contents = _.template(fs.readFileSync(path.resolve(dir + file )))(allAnswers);
+    const templateFileExt = ['.js', '.css', '.html', '.json'];
+    const file = filedir[0];
+    const dir = filedir[1] || (__dirname + '/../templates/');
+    const filePath = path.resolve(dir + file);
+    let data = fs.readFileSync(filePath);
 
-    fs.writeFileSync(process.cwd() + '/' + file, contents);
+    if (templateFileExt.some(ext => file.endsWith(ext))){
+      data = _.template(data)(allAnswers);
+    }
+
+    var destPath = path.parse(path.resolve(process.cwd(), file));
+    if (!fs.existsSync(destPath.dir)) {
+      fs.mkdirSync(destPath.dir, {recursive: true});
+    }
+
+    fs.writeFileSync(path.resolve(destPath.dir, destPath.base), data);
   }
 }
