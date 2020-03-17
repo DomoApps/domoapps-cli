@@ -6,7 +6,7 @@
 //
 // For additional documentation on how you can query your data, please refer to
 // https://developer.domo.com/docs/dev-studio/dev-studio-data<% } %>
-domo.get('/data/v1/<%= datasource.alias %>?limit=100')
+domo.get('/data/v1/<%= datasource.alias %>?limit=10')
     .then(function(<%= datasource.alias %>){
       console.log("<%= datasource.alias %>", <%= datasource.alias %>);
     });

@@ -8,7 +8,7 @@ body {
   font-weight: 300;
 }
 
-header {
+#header {
     background-color: #99ccef;
     color: #fff;
     padding: .6em 1.2em;
@@ -79,6 +79,7 @@ table td {
   padding: 1em 0.1em;
   font-weight: 300;
   font-size: 0.85em;
+  cursor: hand;
 }
 
 div:empty, table:empty {
@@ -112,4 +113,141 @@ div:empty:after, table:empty:after {
   }
 }
 
+.overlay {
+  position: fixed;
+  overflow: hidden;
+  background-color: rgba(0, 0, 0, 0.1);
+  left : 0;
+  top: 0;
+  width: 100%;
+  height : 100%;
+}
 
+.modal {
+  filter: drop-shadow(0 0 0.5em #999);
+  border-radius: 5px;
+  border-top: 8px solid #99ccef;
+  width: 500px;
+  height: 650px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #ffffff;
+  position: fixed;
+  z-index: 999;
+  transition: all 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-content: stretch;
+  &:target {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+
+.modal-header {
+  width: 100%;
+  border-bottom: 1px solid #e5e5e5;
+  text-align: center;
+}
+
+.modal-header h2 {
+  font-weight: 500;
+  text-align: left;
+  padding: 1em;
+  margin: 0;
+}
+
+.modal-body {
+  width: calc(100% - 2.5em);
+  padding: 1.25em;
+  border-bottom: 1px solid #e5e5e5;
+  flex-grow:2 ;
+}
+
+.modal-body div {
+  margin-bottom: 15px;
+}
+
+.modal-body label {
+  text-align: left;
+  color: #666;
+  font-size: 0.75em;
+  font-weight: normal;
+  padding: 1em 0.1em;
+}
+
+.modal-body input, .modal-body select {
+  display: block;
+  width: 100%;
+  font-size: 1em;
+  font-weight: 300;
+  padding: 7px;
+}
+
+.modal-body input[type=hidden] {
+  display: block;
+}
+
+.modal-body select {
+  height: 36px;
+}
+
+.modal-body a {
+  display:block;
+}
+
+.modal-buttons {
+  width: calc(100% - 2.5em);
+  padding: 1.25em;
+  text-align: right;
+}
+
+.modal-buttons button {
+  cursor: pointer;
+  text-transform: uppercase;
+  padding: 0.5em 1em;
+  font-size: 0.8em;
+  letter-spacing: 0.5px;
+  border-radius: 3px;
+}
+
+.modal-buttons button.action {
+  background-color: #fc8f13;
+  border: #fc9927;
+  color: #fff;
+}
+
+.modal-buttons button.cancel {
+  background-color: #fff;
+  border: #fff;
+  color: #666;
+}
+
+.floating-action-button {
+   width: 60px;
+   height: 60px;
+   background-color: #99ceff;
+   border-radius: 50%;
+   opacity: 0.75;
+   box-shadow: 0 6px 14px 0 #666;
+   border: 0;
+   transition: all 0.1s ease-in-out;
+
+   font-size: 30px;
+   font-weight: 300;
+   color: #fff;
+   text-align: center;
+   line-height: 30px;
+
+   position: fixed;
+   right: 50px;
+   bottom: 50px;
+}
+
+.floating-action-button:hover {
+   box-shadow: 0 6px 14px 0 #666;
+   transform: scale(1.05);
+}
