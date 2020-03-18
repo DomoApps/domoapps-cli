@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "3.3.7",
+  "version": "3.3.14",
   "bin": {
     "domo": "./bin/runner"
   },
@@ -13,6 +13,7 @@
     "version": "npm run changelog && git add CHANGELOG.md templates/**/domoPhoenix*.js"
   },
   "dependencies": {
+    "@domoinc/ryuu-proxy": "^4.0.1",
     "async": "^3.1.0",
     "bluebird": "^3.7.0",
     "browser-sync": "^2.26.7",
@@ -41,7 +42,6 @@
   },
   "devDependencies": {
     "@domoinc/domo-phoenix": "^0.11.0",
-    "@domoinc/ryuu-proxy": "^3.1.0",
     "compare-func": "^1.3.1",
     "conventional-changelog-cli": "^2.0.23",
     "github-url-from-git": "^1.4.0"
