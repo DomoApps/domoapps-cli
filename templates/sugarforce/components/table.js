@@ -6,18 +6,17 @@ function drawTable(dataSet, targetElement, {idColumn='id', editable=false, actio
     return;
   }
 
-  var thead = document.createElement('thead');
-  var tbody = document.createElement('tbody');
-  const header = Object.keys(dataSet[0]);
-  addHeader(header, thead, idColumn);
-  addRows(dataSet, tbody, idColumn, editable, {action});
+  const header = Object.keys(dataSet[dataSet.length -1]);
+  const thead = addHeader(header, idColumn);
+  const tbody = addRows(dataSet, idColumn, editable, header, {action});
   tableEl.appendChild(thead);
   tableEl.appendChild(tbody);
 
   removeSpinner();
 }
 
-function addHeader(header, container, idColumn) {
+function addHeader(header, idColumn) {
+  const thead = document.createElement('thead');
   var headerRow = document.createElement('tr');
 
   header.forEach(function(column) {
@@ -31,10 +30,12 @@ function addHeader(header, container, idColumn) {
     headerRow.appendChild(headerCell);
   });
 
-  container.appendChild(headerRow);
+  thead.appendChild(headerRow);
+  return thead;
 }
 
-function addRows(dataSet, container, idColumn, editable, {action}) {
+function addRows(dataSet, idColumn, editable, header, {action}) {
+  const tbody = document.createElement('tbody');
   dataSet.forEach(function(row) {
     var tr = document.createElement('tr');
     const id = row[idColumn];
@@ -62,12 +63,18 @@ function addRows(dataSet, container, idColumn, editable, {action}) {
       td.appendChild(document.createTextNode(val));
       tr.appendChild(td);
     });
+    if (tr.children.length < header.length) {
+      tr.appendChild(document.createElement('td'));
+    }
+
     tr.addEventListener('click', function(e) {
       e.stopImmediatePropagation();
       drawModalWithTableData(e, id, editable, {action});
     });
-    container.appendChild(tr);
+    tbody.appendChild(tr);
+
   });
+  return tbody;
 }
 
 function drawModalWithTableData(e, id, editable, {action}) {
@@ -93,7 +100,9 @@ function getTableValues(path) {
 
   const values = {};
   for (const i in headers) {
-    values[headers[i].trim()] = colVals[i].trim();
+    console.log(colVals[i])
+    if (colVals.length == i) continue;
+    values[headers[i]] = colVals[i];
   }
 
   return values;
