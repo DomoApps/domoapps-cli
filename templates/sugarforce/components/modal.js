@@ -239,7 +239,7 @@ ModalAttribute.prototype = {
       const file = this.files[0];
       that.value.callback(file).then(function(data) {
         removeSpinner();
-        const value = `/domo/data-files/v1/${data.dataFileId}`;
+        const value = '/domo/data-files/v1/' + data.dataFileId;
         input.setAttribute('type', 'text');
         input.setAttribute('value', value);
         input.setAttribute('readonly', true);
