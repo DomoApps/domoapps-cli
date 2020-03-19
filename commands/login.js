@@ -44,6 +44,7 @@ var logo = `
 ┃                                                            ┃
 ┃                                                            ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
+const newInstanceStr = 'new instance';
 
 
 module.exports = function(program){
@@ -72,7 +73,7 @@ module.exports = function(program){
             type: "list",
             choices: function(){
               var options = _.map(previousLogins, 'instance');
-              options.push('new instance');
+              options.push(newInstanceStr);
               return options;
             },
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
@@ -89,7 +90,7 @@ module.exports = function(program){
             name: "newInstance",
             when: function(answers){
               // only ask if the instance selector wasn't used or new one was selected
-              return !answers.instance || answers.instance === 'new instance';
+              return !answers.instance || answers.instance === newInstanceStr;
             },
             validate: function(input) {
               const acceptedDomains = ['domo.com', 'domotech.io', 'domorig.io'];
@@ -106,7 +107,7 @@ module.exports = function(program){
         inquirer.prompt(prompts).then(function(answers) {
           if (args.instance) {
             answers.instance = args.instance;
-          } else if (answers.instance === 'new instance') {
+          } else if (answers.instance === newInstanceStr) {
             answers.instance = answers.newInstance;
           }
 
