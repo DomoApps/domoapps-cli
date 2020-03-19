@@ -68,7 +68,7 @@ module.exports = function(program){
           verifyVersion;
 
         if (!args.instance) {
-          prompts.push(multichoice({
+          prompts.push({
             type: "list",
             choices: function(){
               var options = _.map(previousLogins, 'instance');
@@ -82,26 +82,34 @@ module.exports = function(program){
             when: function(answers){
               return previousLogins.length > 0;
             }
-          }),
+          },
           {
             type: "input",
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
-            name: "instance",
+            name: "newInstance",
             when: function(answers){
               // only ask if the instance selector wasn't used or new one was selected
               return !answers.instance || answers.instance === 'new instance';
+            },
+            validate: function(input) {
+              const acceptedDomains = ['domo.com', 'domotech.io', 'domorig.io'];
+              if (acceptedDomains.some(domain => input.endsWith(domain))) {
+                return true;
+              }
+
+              return 'Please login using the full Domo instance. ' + chalk.grey('Example: "company.domo.com"');
             }
           });
         }
 
         // prompt user
         inquirer.prompt(prompts).then(function(answers) {
-
-          answers.instance = args.instance || answers.instance;
-
-          if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
-            log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
+          if (args.instance) {
+            answers.instance = args.instance;
+          } else if (answers.instance === 'new instance') {
+            answers.instance = answers.newInstance;
           }
+
           Login.getLogin(answers.instance).then(function(domo) {
             domo
               .login()
