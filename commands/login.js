@@ -69,7 +69,7 @@ module.exports = function(program){
           verifyVersion;
 
         if (!args.instance) {
-          prompts.push({
+          prompts.push(multichoice({
             type: "list",
             choices: function(){
               var options = _.map(previousLogins, 'instance');
@@ -83,7 +83,7 @@ module.exports = function(program){
             when: function(answers){
               return previousLogins.length > 0;
             }
-          },
+          }),
           {
             type: "input",
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
