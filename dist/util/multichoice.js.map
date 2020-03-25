@@ -1,1 +1,0 @@
-{"version":3,"file":"multichoice.js","sourceRoot":"","sources":["../../util/multichoice.ts"],"names":[],"mappings":";;AAEA;;;;;;GAMG;AAEH,IAAM,SAAS,GAAG,MAAM,CAAC,IAAI,CAAC,OAAO,CAAC,QAAQ,CAAC,CAAC;AAEhD,mBAAwB,SAA4B;IAClD,IAAI,CAAC,SAAS,EAAE;QACd,OAAO,SAAS,CAAC;KAClB;SACI;QACH,SAAS,CAAC,IAAI,GAAG,SAAS,CAAC;QAC3B,OAAO,SAAS,CAAC;KAClB;AACH,CAAC;AARD,4BAQC"}
