@@ -106,12 +106,12 @@ module.exports = function(program){
         // prompt user
         inquirer.prompt(prompts).then(function(answers) {
           if (args.instance) {
-            answers.instance = args.instance;
+            answers.instanceSelection = args.instance;
           } else {
-            answers.instance = answers.newInstance;
+            answers.instanceSelection = answers.newInstance;
           }
 
-          Login.getLogin(answers.instance).then(function(domo) {
+          Login.getLogin(answers.instanceSelection).then(function(domo) {
             domo
               .login()
               .then(function(l) {
