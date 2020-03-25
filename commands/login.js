@@ -69,7 +69,7 @@ module.exports = function(program){
           verifyVersion;
 
         if (!args.instance) {
-          prompts.push(multichoice({
+          prompts.push({
             type: "list",
             choices: function(){
               var options = _.map(previousLogins, 'instance');
@@ -83,14 +83,14 @@ module.exports = function(program){
             when: function(answers){
               return previousLogins.length > 0;
             }
-          }),
+          },
           {
             type: "input",
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
             name: "newInstance",
             when: function(answers){
               // only ask if the instance selector wasn't used or new one was selected
-              return !answers.instance || answers.instance === newInstanceStr;
+              return !args.instance && answers.instanceSelection === newInstanceStr;
             },
             validate: function(input) {
               const acceptedDomains = ['domo.com', 'domotech.io', 'domorig.io'];
@@ -107,7 +107,7 @@ module.exports = function(program){
         inquirer.prompt(prompts).then(function(answers) {
           if (args.instance) {
             answers.instanceSelection = args.instance;
-          } else {
+          } else if (answers.newInstance) {
             answers.instanceSelection = answers.newInstance;
           }
 
