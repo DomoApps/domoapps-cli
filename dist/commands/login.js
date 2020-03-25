@@ -9,9 +9,12 @@ var login_1 = require("../util/login");
 var Promise = require("bluebird");
 var path = require("path");
 var request = require("request-promise");
+var multichoice_1 = require("../util/multichoice");
 var oauth_1 = require("../util/oauth");
 var autoUpdate = false;
 var logo = "\n\u250F\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2513\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588            \u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588        \u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2503\n\u2503\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588 \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2503\n\u2503\u2588\u2588\u2588     \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588    \u2588\u2588\u2588\u2588\u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588          \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2503\n\u2503\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588          \u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2503                                                            \u2503\n\u2517\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u251B";
+var NEW_INSTANCE = 'new instance';
+var isWin = process.platform === 'win32';
 module.exports = function (program) {
     program
         .command('login')
@@ -34,35 +37,45 @@ module.exports = function (program) {
                 function (x) { return x; } :
                 verifyVersion;
             if (!args.instance) {
-                prompts.push({
+                prompts.push(multichoice_1.default({
                     type: "list",
+                    //@ts-ignore
                     choices: function () {
                         var options = _.map(previousLogins, 'instance');
-                        options.push('new instance');
+                        options.push(NEW_INSTANCE);
                         return options;
                     },
                     message: "Domo instance " + chalk_1.default.grey("e.g. company.domo.com "),
                     name: 'instance',
-                    default: mostRecent.getInstance,
+                    default: mostRecent.getInstance(),
                     // only show up if they have previous logins
                     when: function (answers) {
                         return previousLogins.length > 0;
                     }
-                }, {
+                }), {
                     type: "input",
                     message: "Domo instance " + chalk_1.default.grey("e.g. company.domo.com "),
-                    name: "instance",
+                    name: "newInstance",
                     when: function (answers) {
                         // only ask if the instance selector wasn't used or new one was selected
-                        return !answers.instance || answers.instance === 'new instance';
+                        return !answers.instance || answers.instance === NEW_INSTANCE;
+                    },
+                    validate: function (input) {
+                        var acceptedDomains = ['domo.com', 'domotech.io', 'domorig.io'];
+                        if (acceptedDomains.some(function (domain) { return input.endsWith(domain); })) {
+                            return true;
+                        }
+                        return 'Please login using the full Domo instance. ' + chalk_1.default.grey('Example: "company.domo.com"');
                     }
                 });
             }
             // prompt user
             inquirer.prompt(prompts).then(function (answers) {
-                answers.instance = args.instance || answers.instance;
-                if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')) {
-                    log_1.log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
+                if (args.instance) {
+                    answers.instance = args.instance;
+                }
+                else if (answers.instance === NEW_INSTANCE) {
+                    answers.instance = answers.newInstance;
                 }
                 login_1.Login.getLogin(answers.instance).then(function (domo) {
                     domo

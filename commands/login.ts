@@ -10,6 +10,7 @@ import { Login } from '../util/login';
 import Promise = require('bluebird');
 import path = require('path');
 import request = require('request-promise');
+import multichoice from '../util/multichoice';
 import { Oauth } from '../util/oauth';
 import { IncomingMessage } from "http";
 import { ProcessedMessage } from "../models/index";
@@ -45,6 +46,8 @@ const logo = `
 ┃                                                            ┃
 ┃                                                            ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
+const NEW_INSTANCE = 'new instance'
+const isWin = process.platform === 'win32';
 
 module.exports = function(program: Command){
   program
@@ -69,39 +72,48 @@ module.exports = function(program: Command){
           verifyVersion;
 
         if (!args.instance) {
-          prompts.push({
+          prompts.push(multichoice({
             type: "list",
+            //@ts-ignore
             choices: function(){
               let options = _.map(previousLogins, 'instance');
-              options.push('new instance');
+              options.push(NEW_INSTANCE);
               return options;
             },
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
             name: 'instance',
-            default: mostRecent.getInstance,
+
+            default: mostRecent.getInstance(),
             // only show up if they have previous logins
             when: function(answers: inquirer.Answers){
               return previousLogins.length > 0;
             }
-          },
+          }),
           {
             type: "input",
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
-            name: "instance",
+            name: "newInstance",
             when: function(answers: inquirer.Answers){
               // only ask if the instance selector wasn't used or new one was selected
-              return !answers.instance || answers.instance === 'new instance';
+              return !answers.instance || answers.instance === NEW_INSTANCE;
+            },
+            validate: function(input: string) {
+              const acceptedDomains = ['domo.com', 'domotech.io', 'domorig.io'];
+              if (acceptedDomains.some(domain => input.endsWith(domain))) {
+                return true;
+              }
+
+              return 'Please login using the full Domo instance. ' + chalk.grey('Example: "company.domo.com"');
             }
           });
         }
 
         // prompt user
         inquirer.prompt(prompts).then(function(answers: inquirer.Answers) {
-
-          answers.instance = args.instance || answers.instance;
-
-          if (!answers.instance.endsWith('domo.com') && !answers.instance.endsWith('domotech.io') && !answers.instance.endsWith('domorig.io')){
-            log.fail('Please login using the full Domo instance.', 'Example: "company.domo.com"');
+          if (args.instance) {
+            answers.instance = args.instance;
+          } else if (answers.instance === NEW_INSTANCE) {
+            answers.instance = answers.newInstance;
           }
           Login.getLogin(answers.instance).then(function(domo: Domo) {
             domo

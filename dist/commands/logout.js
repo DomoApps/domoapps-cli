@@ -25,7 +25,7 @@ module.exports = function (program) {
             login_1.Login.getMostRecentLogin(mayNotBeAuthenticated).then(function (login) {
                 instance = login.getInstance();
                 verifyLogout(login, instance);
-            }).catch(log_1.log.notAuthenticated);
+            });
         }
     });
 };
@@ -34,13 +34,9 @@ function verifyLogout(login, instance) {
         if (logout) {
             process.exit();
         }
-        login_1.Login.deleteRefreshToken(login).then(function () {
-            login_1.Login.verifyLogout(login, instance);
-        }).then(function (logout) {
-            process.exit();
-        }).catch(function () {
-            log_1.log.fail('Failed to logout');
-        });
+        return false;
     });
+    //process.exit();
 }
+;
 //# sourceMappingURL=logout.js.map

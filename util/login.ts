@@ -59,14 +59,18 @@ export class Login {
     verifyLoginLocal(login);
   }
 
-  static verifyLogout(login: Domo, instance: string): Promise<boolean> {
-    return keytar.findPassword('domoapps-cli').then(function(refreshToken) {
-      if (!login.getRefreshToken() && !refreshToken){
-        log.ok('Successful logout from ' + instance);
-        return true;
-      }
-      return false;
-    });
+  static verifyLogout(login: Domo, instance: string): Promise<boolean|void> {
+    if (login.getRefreshToken()) {
+      return Login.deleteRefreshToken(login)
+      .then(() => keytar.getPassword('domoapps-cli', instance))
+      .then(function(refreshToken: string) {
+        if (!refreshToken){
+          log.ok('Successful logout from ' + instance);
+          return true;
+        }
+        return false;
+      })
+    }
   }
 
   static deleteRefreshToken(login: Domo): Promise<boolean> {

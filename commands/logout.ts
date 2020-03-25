@@ -25,23 +25,17 @@ module.exports = function(program: Command) {
         Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(login) {
           instance = login.getInstance();
           verifyLogout(login, instance);
-        }).catch(log.notAuthenticated);
+        })
       }
     });
 }
 
-function verifyLogout(login: Domo, instance: string) {
+function verifyLogout(login: Domo, instance: string): any {
   Login.verifyLogout(login, instance).then(function(logout) {
     if (logout) {
       process.exit();
     }
-
-    Login.deleteRefreshToken(login).then(function() {
-      Login.verifyLogout(login, instance);
-    }).then(function(logout) {
-      process.exit();
-    }).catch(function(){
-      log.fail('Failed to logout');
-    });
-  });
-}
+    return false;
+  })
+  //process.exit();
+};

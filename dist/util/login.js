@@ -58,13 +58,17 @@ var Login = /** @class */ (function () {
         verifyLoginLocal(login);
     };
     Login.verifyLogout = function (login, instance) {
-        return keytar.findPassword('domoapps-cli').then(function (refreshToken) {
-            if (!login.getRefreshToken() && !refreshToken) {
-                log_1.log.ok('Successful logout from ' + instance);
-                return true;
-            }
-            return false;
-        });
+        if (login.getRefreshToken()) {
+            return Login.deleteRefreshToken(login)
+                .then(function () { return keytar.getPassword('domoapps-cli', instance); })
+                .then(function (refreshToken) {
+                if (!refreshToken) {
+                    log_1.log.ok('Successful logout from ' + instance);
+                    return true;
+                }
+                return false;
+            });
+        }
     };
     Login.deleteRefreshToken = function (login) {
         return keytar.deletePassword('domoapps-cli', login.getInstance()); //runs async to delete, not concerned about waiting
