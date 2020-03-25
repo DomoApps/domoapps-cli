@@ -107,7 +107,7 @@ module.exports = function(program){
         inquirer.prompt(prompts).then(function(answers) {
           if (args.instance) {
             answers.instance = args.instance;
-          } else if (answers.instance === newInstanceStr) {
+          } else if (answers.newInstance) {
             answers.instance = answers.newInstance;
           }
 
