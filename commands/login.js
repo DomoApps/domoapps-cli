@@ -69,7 +69,7 @@ module.exports = function(program){
           verifyVersion;
 
         if (!args.instance) {
-          prompts.push({
+          prompts.push(multichoice({
             type: "list",
             choices: function(){
               var options = _.map(previousLogins, 'instance');
@@ -77,20 +77,20 @@ module.exports = function(program){
               return options;
             },
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
-            name: 'instanceSelection',
+            name: 'instance',
             default: mostRecent.instance,
             // only show up if they have previous logins
             when: function(answers){
               return previousLogins.length > 0;
             }
-          },
+          }),
           {
             type: "input",
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
             name: "newInstance",
             when: function(answers){
               // only ask if the instance selector wasn't used or new one was selected
-              return !args.instance && answers.instanceSelection === newInstanceStr;
+              return answers.instance === newInstanceStr;
             },
             validate: function(input) {
               const acceptedDomains = ['domo.com', 'domotech.io', 'domorig.io'];
@@ -106,12 +106,12 @@ module.exports = function(program){
         // prompt user
         inquirer.prompt(prompts).then(function(answers) {
           if (args.instance) {
-            answers.instanceSelection = args.instance;
+            answers.instance = args.instance;
           } else if (answers.newInstance) {
-            answers.instanceSelection = answers.newInstance;
+            answers.instance = answers.newInstance;
           }
 
-          Login.getLogin(answers.instanceSelection).then(function(domo) {
+          Login.getLogin(answers.instance).then(function(domo) {
             domo
               .login()
               .then(function(l) {
