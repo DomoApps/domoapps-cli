@@ -90,7 +90,7 @@ module.exports = function(program){
             name: "newInstance",
             when: function(answers){
               // only ask if the instance selector wasn't used or new one was selected
-              return answers.instance === newInstanceStr;
+              return !answers.instance || answers.instance === newInstanceStr;
             },
             validate: function(input) {
               const acceptedDomains = ['domo.com', 'domotech.io', 'domorig.io'];
