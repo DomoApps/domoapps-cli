@@ -77,7 +77,7 @@ module.exports = function(program){
               return options;
             },
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
-            name: 'instance',
+            name: 'instanceSelection',
             default: mostRecent.instance,
             // only show up if they have previous logins
             when: function(answers){
@@ -107,7 +107,7 @@ module.exports = function(program){
         inquirer.prompt(prompts).then(function(answers) {
           if (args.instance) {
             answers.instance = args.instance;
-          } else if (answers.instance === newInstanceStr) {
+          } else {
             answers.instance = answers.newInstance;
           }
 
