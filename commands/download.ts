@@ -55,12 +55,10 @@ module.exports = function(program: Command){
                 var source = path.resolve('./'+name+'.zip');
                 var target = path.resolve('./'+name);
 
-                extract(source, {dir: target}, function(err) {
-                  if (!err){
+                extract(source, {dir: target}).catch(function() {
                     shell.chmod('-R', 'u+w', target);
                     fs.remove(source);
                     process.exit();
-                  }
                 });
               });
             });

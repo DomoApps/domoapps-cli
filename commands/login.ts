@@ -1,6 +1,6 @@
 import inquirer = require("inquirer");
 import _ = require('lodash');
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import shell = require('shelljs');
 import { log } from '../util/log';
 import { LoginData } from 'ryuu-client/models';

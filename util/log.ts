@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import { DomoRequestError } from 'ryuu-client/models';
 
 export class log {

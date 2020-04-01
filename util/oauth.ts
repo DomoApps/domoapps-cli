@@ -6,7 +6,7 @@ import { Manifest } from './manifest';
 import Promise = require('bluebird');
 import request = require('request');
 import open = require('open');
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import { Registration, ActiveRegistration, FullRegistration } from "../models/index";
 const home = Domo.getHomeDir();
 

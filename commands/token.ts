@@ -1,5 +1,5 @@
 import inquirer = require('inquirer');
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import { Login } from '../util/login';
 import { log } from '../util/log';
 import { CommandOptions, Command } from 'commander';

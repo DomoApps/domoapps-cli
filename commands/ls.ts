@@ -2,7 +2,7 @@ import { Login } from '../util/login';
 import { Command } from 'commander';
 import { log } from '../util/log';
 import { Session } from '../util/session';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import { DesignAggregate } from 'ryuu-client/models/interfaces/domoappstypes';
 
 module.exports = function(program: Command){

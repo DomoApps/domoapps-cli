@@ -2,7 +2,7 @@ import inquirer = require('inquirer');
 import _ = require('lodash');
 import isValidJSName from '../util/isValidJSName';
 import slug = require('slug');
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import { mkdir } from 'shelljs';
 import { reduce } from 'async';
 import fs = require('fs-extra');
@@ -29,14 +29,14 @@ module.exports = function(program: Command){
         });
       }
       if(!options.starter){
-        prompts.push({
+        prompts.push(multichoice({
           type: 'list',
           message: 'select a starter',
           name: 'starter',
-          choices: ['hello world', 'manifest only', 'basic chart', 'map chart']
-        });
+          choices: ['hello world', 'manifest only', 'basic chart', 'map chart', 'sugarforce']
+        }))
       }
-      inquirer.prompt(prompts).then((answers: inquirer.Answers) => {
+      inquirer.prompt(prompts).then((answers) => {
           if(options.design_name){
           answers.name = options.design_name;
           }
@@ -128,11 +128,21 @@ let writeFilesIfNonexistent = (files: string[], dirs: string[]| null[], allAnswe
 }
 
 let writeTemplateFile = (allAnswers: inquirer.Answers, filedir: string) => {
+  const templateFileExt = ['.js', '.css', '.html', '.json'];
   const file = filedir[0];
-  let dir = filedir[1];
-  dir = dir || (__dirname + '/../templates/');
-  const contents = _.template(fs.readFileSync(path.resolve(dir + file), "utf8"))(allAnswers);
-  fs.writeFileSync(process.cwd() + '/' + file, contents);
+  const dir = filedir[1] || (__dirname + '/../templates/');
+  const filePath = path.resolve(dir + file);
+  let data = fs.readFileSync(filePath, 'utf8');
+
+  if (templateFileExt.some(ext => file.endsWith(ext))){
+    data = _.template(data)(allAnswers);
+  }
+
+  var destPath = path.parse(path.resolve(process.cwd(), file));
+  if (!fs.existsSync(destPath.dir)) {
+    fs.mkdirSync(destPath.dir, {recursive: true});
+  }
+  fs.writeFileSync(path.resolve(destPath.dir, destPath.base), data);
 }
 
 let initiate = (allAnswers: inquirer.Answers) => {
@@ -155,6 +165,7 @@ let initiate = (allAnswers: inquirer.Answers) => {
     mkdir('-p', dirname);
     process.chdir(path.resolve(dirname));
   }
+  
   else if (allAnswers.starter === 'basic chart') {
     files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js', 'domoPhoenix.js'];
     const customChartTemplateDir = path.join(__dirname, '/../templates/', 'basic chart/');
@@ -172,6 +183,39 @@ let initiate = (allAnswers: inquirer.Answers) => {
     dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
     const dirname = slug(allAnswers.name);
+    nextStepsMessage += `${stepNumber(step)} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
+
+    mkdir('-p', dirname);
+    process.chdir(path.resolve(dirname));
+  }
+  else if (allAnswers.starter === 'sugarforce') {
+    files = files = [
+      'thumbnail.png',
+      'manifest.json',
+      'index.html',
+      path.join('styles','app.css'),
+      path.join('components','autocomplete.js'),
+      path.join('components','floatingactionbutton.js'),
+      path.join('components','modal.js'),
+      path.join('components','router.js'),
+      path.join('components','table.js'),
+      path.join('js','app.js'),
+      path.join('js','helpers.js'),
+      path.join('js','home.js'),
+      path.join('js','leads.js'),
+      path.join('js','opportunities.js'),
+      path.join('js','reports.js'),
+      path.join('js','domo.js'),
+      path.join('js','domoPhoenixWithMaps.js'),
+      path.join('views', 'home.html'),
+      path.join('views', 'leads.html'),
+      path.join('views', 'opportunities.html'),
+      path.join('views', 'reports.html')];
+    const customChartTemplateDir = path.join(__dirname, '/../templates/', 'sugarforce/');
+    dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
+
+    //may be wrong directory, test this still 4/1
+    var dirname = slug(allAnswers.name);
     nextStepsMessage += `${stepNumber(step)} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
 
     mkdir('-p', dirname);

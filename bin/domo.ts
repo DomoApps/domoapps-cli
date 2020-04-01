@@ -42,6 +42,7 @@ if (!process.argv.slice(2).length) {
 
     for (var i = 0, len = program.args.length; i < len; i++) {
       const x = program.args[i];
+      //@ts-ignore
         if (program.commands.includes(program.args[i])) {
             has_command = true;
             break;

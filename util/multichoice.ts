@@ -10,7 +10,7 @@ import inquirer = require("inquirer");
 
 const isWindows = /^win/.test(process.platform);
 
-export default function(questions: inquirer.Question) {
+export default function(questions: inquirer.ListQuestionOptions) {
   if (!isWindows) {
     return questions;
   }
