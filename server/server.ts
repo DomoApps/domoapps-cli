@@ -49,7 +49,14 @@ app.get('/', function (req, res){
       context = appContext;
       if (!context) {
         isValidContext = false;
-        context.id = 0;
+        context = { id: 0,
+                    accountMapping: null,
+                    collections: null,
+                    designId: null,
+                    designVersion: null,
+                    isDisabled: false,
+                    mapping: false
+                  };
       }
       manifest.contextId = context.id;
       return getDomoappsData();

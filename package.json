@@ -6,13 +6,14 @@
   },
   "scripts": {
     "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 --config ./changelog/changelog.js",
-    "build": "npm run copy && tsc && npm run build:phoenix -s",
+    "build": "npm run copyjson && npm run copydomodev && tsc && npm run build:phoenix -s",
     "build:phoenix": "ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenix.js\" \"./templates/basic chart/domoPhoenix.js\" && ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenixWithMaps.js\" \"./templates/map chart/domoPhoenixWithMaps.js\"",
     "push": "git push && git push --tags",
     "preversion": "npm run build",
     "version": "npm run changelog && git add CHANGELOG.md templates/**/domoPhoenix*.js",
     "remove": "rimraf \"node_modules/ryuu-client/*\"",
-    "copy": "cp \"package.json\" \"dist/\"",
+    "copyjson": "cp  \"package.json\" \"dist/\"",
+    "copydomodev": "cp -r \"server/domodev/\" \"dist/server/domodev\"",
     "typescript": "npm run remove && npm run copy && tsc"
   },
   "dependencies": {
@@ -22,7 +23,7 @@
     "browser-sync": "^2.26.7",
     "chalk": "^3.0.0",
     "cli-table": "^0.3.1",
-    "commander": "^5.0.0",
+    "commander": "^3.0.2",
     "express": "^4.17.1",
     "extract-zip": "^2.0.0",
     "fs-extra": "^9.0.0",
