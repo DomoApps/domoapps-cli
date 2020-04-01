@@ -74,7 +74,6 @@ module.exports = function(program: Command){
         if (!args.instance) {
           prompts.push(multichoice({
             type: "list",
-            //@ts-ignore
             choices: function(){
               let options = _.map(previousLogins, 'instance');
               options.push(NEW_INSTANCE);
@@ -112,7 +111,7 @@ module.exports = function(program: Command){
         inquirer.prompt(prompts).then(function(answers: inquirer.Answers) {
           if (args.instance) {
             answers.instance = args.instance;
-          } else if (answers.instance === NEW_INSTANCE) {
+          } else if (answers.newInstance) {
             answers.instance = answers.newInstance;
           }
           Login.getLogin(answers.instance).then(function(domo: Domo) {

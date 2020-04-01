@@ -1,3 +1,8 @@
+<a name="3.3.14"></a>
+## [3.3.14](https://github.com/DomoApps/domoapps-cli/compare/v3.2.8...v3.3.14) (2020-03-17)
+ * Express server with ryuu-proxy integration
+ * Sugarforce template
+
 <a name="3.1.1"></a>
 ## [3.1.1](https://github.com/DomoApps/domoapps-cli/compare/v2.23.1...v3.1.1) (2019-03-15)
 
