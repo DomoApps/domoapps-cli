@@ -18,13 +18,20 @@ module.exports = function(program: Command) {
           verifyLogout(login, instance);
         })
         .catch(function() {
-          log.fail('No current login with instance ' + instance);
+          log.fail('No current login of instance ' + instance);
         })
       } else {
         var mayNotBeAuthenticated = true;
         Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(login) {
-          instance = login.getInstance();
-          verifyLogout(login, instance);
+          if (!login.getRefreshToken)
+            log.ok('Not currently logged into' + instance);
+          else {
+            instance = login.getInstance();
+            verifyLogout(login, instance);
+          }
+        })
+        .catch(function() {
+          log.fail('Not currently logged into an instance')
         })
       }
     });

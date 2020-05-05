@@ -59,13 +59,13 @@ export class log {
 
   static notAuthenticated(refreshToken?: string) {
     if (!refreshToken){
-      module.exports.fail('Not authenticated', 'Please login using "domo login"');
+      log.fail('Not authenticated', 'Please login using "domo login"');
     }
     else if (refreshToken){
-      module.exports.fail('Not authenticated', 'Your refresh token may have been revoked. Please login again with "domo login".');
+      log.fail('Not authenticated', 'Your refresh token may have been revoked. Please login again with "domo login".');
     }
     else{
-      module.exports.fail('Not authenticated');
+      log.fail('Not authenticated');
     }
   }
 
@@ -75,7 +75,7 @@ export class log {
     if (failureMessage) {
       message = failureMessage;
     }
-    module.exports.fail(err, message);
+    log.fail(err, message);
   }
 
   static handleErrorMessage(err: Error, label: string): string {

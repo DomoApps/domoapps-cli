@@ -82,7 +82,12 @@ module.exports = function(program: Command){
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
             name: 'instance',
 
-            default: mostRecent.getInstance(),
+            default: function(){
+              if (mostRecent.getInstance())
+                return mostRecent.getInstance
+              else
+                return
+            },
             // only show up if they have previous logins
             when: function(answers: inquirer.Answers){
               return previousLogins.length > 0;

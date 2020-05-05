@@ -17,7 +17,7 @@
     "typescript": "npm run remove && npm run copy && tsc"
   },
   "dependencies": {
-    "@domoinc/ryuu-proxy": "^4.0.2",
+    "@domoinc/ryuu-proxy": "^4.0.1",
     "async": "^3.2.0",
     "bluebird": "^3.7.2",
     "browser-sync": "^2.26.7",

@@ -13,7 +13,8 @@ export class Login {
     var logins = glob.sync(home + "/login/*.json");
     //If there are no logins, return a rejection as the user is unauthenticated.
     if (logins.length === 0) {
-      return Promise.reject();
+      //@ts-ignore
+      return Promise.resolve({});
     }
     var recent = logins.reduce(function(prev, next) {
       return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
@@ -53,6 +54,12 @@ export class Login {
     };
     fs.writeJsonSync(loginFile, data);
     return { instance, refreshToken, devToken };
+  }
+
+  static removeLogin(instance: string) {
+    const loginFile = path.resolve(home + '/login/' + instance + '.json');
+    fs.ensureFileSync(loginFile);
+    return fs.unlink(loginFile);
   }
 
   static verifyLogin(login: login): void {
