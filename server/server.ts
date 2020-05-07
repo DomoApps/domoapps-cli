@@ -170,7 +170,7 @@ function createContext(designId: string, mapping: DataPoint[]) {
     .then(function(res) {
       return res[0];
     }).catch(function(err) {
-      console.log("Error: ", err.message);
+      console.log("Error: ", JSON.stringify(err));
       return;
     })
 }
