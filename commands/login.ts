@@ -146,7 +146,7 @@ module.exports = function(program: Command){
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
                 return Login.persistLogin(answers.instance, login.refreshToken);
               })
-              .catch((err) => log.fail(`Login unsuccessful: ${err}`))
+              .catch((err) => log.fail(`Login unsuccessful: ${JSON.stringify(err)}`))
               .finally(process.exit);
           }).catch(log.notAuthenticated);
         });
