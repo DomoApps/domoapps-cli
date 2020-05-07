@@ -25,7 +25,7 @@ module.exports = function(program: Command) {
           Login.getMostRecentLogin().then(function(domo) {
             domo.unDeleteDesign(designId)
               .tap(() => log.ok('Undeleted design ' + designId))
-              .catch(() => log.clientRequestFailed('Unable to undelete design ' + designId))
+              .catch(() => log.fail('Unable to undelete design ' + designId + ". That id does not exist or you are not authorized to undelete it."))
               .finally(process.exit);
           }).catch(log.notAuthenticated);
         } else {
