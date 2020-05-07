@@ -62,6 +62,10 @@ export class Login {
     return fs.unlink(loginFile);
   }
 
+  static removeAllLogins() {
+    fs.emptyDirSync(home + '/login');
+  }
+
   static verifyLogin(login: login): void {
     verifyLoginLocal(login);
   }

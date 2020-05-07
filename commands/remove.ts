@@ -5,7 +5,7 @@ import shell = require('shelljs');
 import { log } from '../util/log';
 import { LoginData } from 'ryuu-client/models';
 import Domo = require('ryuu-client');
-import { Command } from 'commander';
+import { Command, CommandOptions } from 'commander';
 import { Login } from '../util/login';
 import Promise = require('bluebird');
 import path = require('path');
@@ -18,40 +18,62 @@ import { ProcessedMessage } from "../models/index";
 module.exports = function(program: Command){
   program
     .command('remove')
-    .option('--instance<value>', 'Name of instance to remove')
-    .option('--all', "remove all instances")
+    .option('--instance <value>', 'Name of instance to remove')
+    .option('-a, --all', 'remove all instances')
     .description('remove a instance from the login list')
-    .action(function(args){
+    .action(function(options: CommandOptions){
         const previousLogins = Login.getPreviousLogins();
         const mayNotBeAuthenticated = true;
         let prompts = [];
-        if (!args.instance) {
+        if (!options['instance']) {
             if (previousLogins.length > 0) {
-                prompts.push(multichoice({
-                        type: "list",
-                        choices: function() {
-                            let options = _.map(previousLogins, 'instance');
-                            return options;
-                        },
-                        message: "Select the instance you desire to remove ",
-                        name: 'instance',
-                    }),
-                    multichoice({
+                if (options['all']) {
+                    prompts.push(multichoice({
                         type: "list",
                         choices: ['Yes', 'No'],
-                        message: "Are you sure you'd like to remove this instance?",
-                        name: "removeInstance",
-                        when: function(answers: inquirer.Answers){
-                        // only ask if an instance was selected
-                        return !!answers.instance;
-                        },
-                    })
-                );
+                        message: "Are you sure you'd like to delete all instances?",
+                        name: 'removeAll'
+                    }))
+                }
+                else {
+                    prompts.push(multichoice({
+                            type: "list",
+                            choices: function() {
+                                let options = _.map(previousLogins, 'instance');
+                                return options;
+                            },
+                            message: "Select the instance you desire to remove ",
+                            name: 'instance',
+                        }),
+                        multichoice({
+                            type: "list",
+                            choices: ['Yes', 'No'],
+                            message: "Are you sure you'd like to remove this instance?",
+                            name: "removeInstance",
+                            when: function(answers: inquirer.Answers){
+                            // only ask if an instance was selected
+                            return !!answers.instance;
+                            },
+                        })
+                    );
+                }
             }
             else {
-                console.log("There are no prior logins on this computer. Use domo login to log an instance before using this command");
+                log.fail("There are no prior logins on this computer. Use domo login to log an instance before using this command");
+                process.exit();
             }
-            inquirer.prompt(prompts).then((answers) => { Login.removeLogin(answers.instance)})
+            inquirer.prompt(prompts).then((answers) => { 
+                if (answers['removeAll'] === 'Yes') {
+                    Login.removeAllLogins();
+                    log.ok('All instances have been removed');
+                }
+                else if(answers['removeInstance']) {
+                    Login.removeLogin(answers.instance)
+                    log.ok('Instance removed successfully.')
+                }
+                else
+                    log.ok('You have chosen not to remove any instances');
+            })
         }
     });
 }
