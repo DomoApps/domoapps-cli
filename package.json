@@ -38,7 +38,7 @@
     "request": "^2.88.2",
     "request-promise": "^4.2.4",
     "rimraf": "^3.0.0",
-    "ryuu-client": "^4.0.2",
+    "ryuu-client": "^4.0.3",
     "ryuu.js": "^3.0.6",
     "semver": "^7.3.2",
     "shelljs": "^0.8.4",
