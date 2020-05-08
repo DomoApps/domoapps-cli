@@ -67,7 +67,7 @@ module.exports = function(program: Command){
                     Login.removeAllLogins();
                     log.ok('All instances have been removed');
                 }
-                else if(answers['removeInstance']) {
+                else if(answers['removeInstance']== 'Yes') {
                     Login.removeLogin(answers.instance)
                     log.ok('Instance removed successfully.')
                 }
