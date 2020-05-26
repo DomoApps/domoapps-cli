@@ -138,7 +138,7 @@ let writeTemplateFile = (allAnswers: inquirer.Answers, filedir: string) => {
     data = _.template(data)(allAnswers);
   }
 
-  var destPath = path.parse(path.resolve(process.cwd(), file));
+  const destPath = path.parse(path.resolve(process.cwd(), file));
   if (!fs.existsSync(destPath.dir)) {
     fs.mkdirSync(destPath.dir, {recursive: true});
   }
@@ -149,6 +149,10 @@ let initiate = (allAnswers: inquirer.Answers) => {
   let files: string[];
   let dirs: string[] | null[];
   let step = 0;
+  let stepNumber = () => {
+    step++;
+    return `${step}.`;
+  }
   let nextStepsMessage = 'Next steps: \n';
 
   if(allAnswers.starter === 'manifest only'){
@@ -160,7 +164,7 @@ let initiate = (allAnswers: inquirer.Answers) => {
     dirs = [null, null, null, null, null];
 
     const dirname = slug(allAnswers.name);
-    nextStepsMessage += `${stepNumber(step)} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
+    nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
 
     mkdir('-p', dirname);
     process.chdir(path.resolve(dirname));
@@ -172,7 +176,7 @@ let initiate = (allAnswers: inquirer.Answers) => {
     dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
     const dirname = slug(allAnswers.name);
-    nextStepsMessage += `${stepNumber(step)} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
+    nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
 
     mkdir('-p', dirname);
     process.chdir(path.resolve(dirname));
@@ -183,7 +187,7 @@ let initiate = (allAnswers: inquirer.Answers) => {
     dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
     const dirname = slug(allAnswers.name);
-    nextStepsMessage += `${stepNumber(step)} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
+    nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
 
     mkdir('-p', dirname);
     process.chdir(path.resolve(dirname));
@@ -215,8 +219,8 @@ let initiate = (allAnswers: inquirer.Answers) => {
     dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
     //may be wrong directory, test this still 4/1
-    var dirname = slug(allAnswers.name);
-    nextStepsMessage += `${stepNumber(step)} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
+    const dirname = slug(allAnswers.name);
+    nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
 
     mkdir('-p', dirname);
     process.chdir(path.resolve(dirname));
@@ -224,12 +228,13 @@ let initiate = (allAnswers: inquirer.Answers) => {
 
   // populate and write out the template files
   writeFilesIfNonexistent(files, dirs, allAnswers, function(err: Error, res: any[]) {
+    const dirname = slug(allAnswers.name);
     if(err) {
       log.fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
     }
     else {
-      nextStepsMessage += `${stepNumber(step)} Edit the files that were just generated. \n${stepNumber(step)} Run ${chalk.cyan('domo login')} if you haven't already. \n${stepNumber(step)} Run ${chalk.cyan('domo publish')} whenever you make changes. \n${stepNumber(step)} Add a Custom App card to any page in Domo. `;
-      log.ok(`New design initialized in the ${chalk.green(__dirname || 'current')} directory`, nextStepsMessage);
+      nextStepsMessage += `${stepNumber()} Edit the files that were just generated. \n${stepNumber()} Run ${chalk.cyan('domo login')} if you haven't already. \n${stepNumber()} Run ${chalk.cyan('domo publish')} whenever you make changes. \n${stepNumber()} Add a Custom App card to any page in Domo. `;
+      log.ok(`New design initialized in the ${chalk.green(dirname || 'current')} directory`, nextStepsMessage);
     }
     if (allAnswers.starter === 'hello world'){
       fs.remove('node_modules');
@@ -240,7 +245,3 @@ let initiate = (allAnswers: inquirer.Answers) => {
 /**
    * Add an incrementing step to the instructions message
    */
-let stepNumber = (step: number) => {
-  step++;
-  return `${step}.`;
-}
