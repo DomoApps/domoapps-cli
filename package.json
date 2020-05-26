@@ -6,16 +6,21 @@
   },
   "scripts": {
     "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 --config ./changelog/changelog.js",
-    "build": "npm run copyjson && npm run copydomodev && tsc && npm run build:phoenix -s",
+    "build": "tsc && npm run build:phoenix -s && npm run copyfiles ",
     "build:phoenix": "ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenix.js\" \"./templates/basic chart/domoPhoenix.js\" && ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenixWithMaps.js\" \"./templates/map chart/domoPhoenixWithMaps.js\"",
     "push": "git push && git push --tags",
     "preversion": "npm run build",
     "version": "npm run changelog && git add CHANGELOG.md templates/**/domoPhoenix*.js",
     "remove": "rimraf \"node_modules/ryuu-client/*\"",
+    "copyfiles": "npm run copyjson && npm run copyreadme && npm run copydomodev && npm run copytemplates && npm run copyexamples && npm run copyrunner",
+    "copytemplates": "cp -r \"server/domodev/\" \"dist/server/domodev\"  && cp -r \"templates/\" \"dist/templates\"",
+    "copyexamples": "cp -r \"examples/\" \"dist/examples\"",
+    "copyrunner": "cp \"bin/domo.txt\" \"dist/bin/\" && cp \"bin/runner\" \"dist/bin/\"",
+    "copyreadme": "cp  \"README.md\" \"dist/\"",
     "copyjson": "cp  \"package.json\" \"dist/\"",
     "copydomodev": "cp -r \"server/domodev/\" \"dist/server/domodev\"",
     "typescript": "npm run remove && npm run copy && tsc",
-    "release": "cd dist && npm publish && cd ..",
+    "release": "npm run build && cd dist && npm publish && cd ..",
     "releaseBeta": "npm run build && cd dist && npm publish --tag beta && cd .."
   },
   "dependencies": {
