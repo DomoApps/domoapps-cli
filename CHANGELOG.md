@@ -1,3 +1,12 @@
+<a name="3.3.24"></a>
+## [3.3.24](https://github.com/DomoApps/domoapps-cli/compare/v3.3.23...v3.3.24) (2020-06-10)
+
+
+### Technical Improvements
+
+* Update sugarforce template ([b07b8cc](https://github.com/DomoApps/domoapps-cli/commit/b07b8cc))
+
+
 <a name="3.3.23"></a>
 ## [3.3.23](https://github.com/DomoApps/domoapps-cli/compare/v3.3.22...v3.3.23) (2020-06-10)
 
