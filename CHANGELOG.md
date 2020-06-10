@@ -1,3 +1,12 @@
+<a name="3.3.23"></a>
+## [3.3.23](https://github.com/DomoApps/domoapps-cli/compare/v3.3.22...v3.3.23) (2020-06-10)
+
+
+### Technical Improvements
+
+* Update Phoenix version ([2d77875](https://github.com/DomoApps/domoapps-cli/commit/2d77875))
+
+
 <a name="3.3.22"></a>
 ## [3.3.22](https://github.com/DomoApps/domoapps-cli/compare/v3.1.1...v3.3.22) (2020-06-10)
 
