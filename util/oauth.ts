@@ -1,13 +1,13 @@
 import fs = require('fs-extra');
 import path = require('path');
 import Domo = require('ryuu-client');
-import keytar = require('keytar');
 import { Manifest } from './manifest';
 import Promise = require('bluebird');
 import request = require('request');
 import open = require('open');
 import * as chalk from 'chalk';
 import { Registration, ActiveRegistration, FullRegistration } from "../models/index";
+import { configstore } from './configstore';
 const home = Domo.getHomeDir();
 
 export class Oauth {
@@ -145,18 +145,17 @@ export class Oauth {
       proxyId: registration.proxyId, // save the proxyId to the login file
     };
 
-    keytar.setPassword(`domoapps-oauth-access-${scopes.join('-')}`, `${registration.instance}-${registration.proxyId}`, registration.accessToken);
-    keytar.setPassword(`domoapps-oauth-refresh-${scopes.join('-')}`, `${registration.instance}-${registration.proxyId}`, registration.refreshToken);
+    configstore.set(`${registration.instance}-${registration.proxyId}`, registration.accessToken);
+    configstore.set(`${registration.instance}-${registration.proxyId}`, registration.refreshToken);
     fs.writeJsonSync(loginFile, data);
     return { accessToken: registration.accessToken, refreshToken: registration.refreshToken };
   }
 
   static deleteTokens(registration: Registration) {
-    const scopes = this.getScopes(registration.manifestName);
     const instanceData = fs.readJsonSync(path.resolve(home + '/login/' + registration.instance + '.json'), {throws: false});
     return Promise.all([
-      keytar.deletePassword(`domoapps-oauth-access-${scopes.join('-')}`, `${registration.instance}-${instanceData.proxyId}`),
-      keytar.deletePassword(`domoapps-oauth-refresh-${scopes.join('-')}`, `${registration.instance}-${instanceData.proxyId}`),
+      configstore.delete(`${registration.instance}-${instanceData.proxyId}`),
+      configstore.delete(`${registration.instance}-${instanceData.proxyId}`),
     ]);
   }
 /* unused as of 2/13/2020

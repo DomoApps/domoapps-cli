@@ -1,10 +1,10 @@
 import glob = require("glob");
 import fs = require('fs-extra');
 import path = require('path');
-import keytar = require('keytar');
 import { login, constant } from '../models';
 import Domo = require('ryuu-client');
 import { log } from './log';
+import { configstore } from './configstore';
 const home = Domo.getHomeDir();
 
 
@@ -20,15 +20,12 @@ export class Login {
       return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
     });
     var loginData: login = fs.readJsonSync(recent);
-    return keytar.getPassword('domoapps-cli', loginData.instance).then(function(refreshToken: string) {
-      loginData.refreshToken = refreshToken;
-      if(!mayNotBeAuthenticated) {
-        verifyLoginLocal(loginData);
-      }
-      return loginData;
-    }).then(function(loginData) {
-      return new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken);
-    });
+    const refreshToken = configstore.get(loginData.instance);
+    loginData.refreshToken = refreshToken;
+    if(!mayNotBeAuthenticated) {
+      verifyLoginLocal(loginData);
+    }
+    return Promise.resolve(new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken));
   }
 
   static getPreviousLogins(): Array<login> {
@@ -46,7 +43,7 @@ export class Login {
     const loginFile = path.resolve(home + '/login/' + instance + '.json');
     fs.ensureFileSync(loginFile);
     if (refreshToken) {
-      keytar.setPassword('domoapps-cli', instance, refreshToken); //runs async to writing, not concerned about waiting
+      configstore.set(instance, refreshToken);
     }
     const data = {
       instance: instance,
@@ -70,38 +67,35 @@ export class Login {
     verifyLoginLocal(login);
   }
 
-  static verifyLogout(login: Domo, instance: string): Promise<boolean|void> {
+  static verifyLogout(login: Domo, instance: string) {
     if (login.getRefreshToken()) {
-      return Login.deleteRefreshToken(login)
-      .then(() => keytar.getPassword('domoapps-cli', instance))
-      .then(function(refreshToken: string) {
-        if (!refreshToken){
-          log.ok('Successful logout from ' + instance);
-          return true;
-        }
-        return false;
-      })
+      Login.deleteRefreshToken(login);
+      const refreshToken = configstore.get(instance);
+      if (!refreshToken){
+        log.ok('Successful logout from ' + instance);
+        return Promise.resolve(true);
+      }
+      return Promise.resolve(false);
     }
   }
 
-  static deleteRefreshToken(login: Domo): Promise<boolean> {
-    return keytar.deletePassword('domoapps-cli', login.getInstance()); //runs async to delete, not concerned about waiting
+  static deleteRefreshToken(login: Domo) {
+    configstore.delete(login.getInstance()); //runs async to delete, not concerned about waiting
   }
 
   //fix this
   static getLogin(instance: string) {
-    return keytar.getPassword('domoapps-cli', instance).then(function(refreshToken) {
-      try {
-        let loginFile = path.resolve(home + '/login/' + instance + '.json');
-        fs.writeJsonSync(loginFile, { instance: instance });
-        let loginData: login = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
-        loginData.refreshToken = refreshToken;
-        return new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken);
-      }
-      catch (ex) {
-        return new Domo(instance, refreshToken, constant.CLIENT_ID);
-      }
-    });
+    const refreshToken: string = configstore.get(instance);
+    try {
+      let loginFile = path.resolve(home + '/login/' + instance + '.json');
+      fs.writeJsonSync(loginFile, { instance: instance });
+      let loginData: login = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
+      loginData.refreshToken = refreshToken;
+      return Promise.resolve(new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken));
+    }
+    catch (ex) {
+      return Promise.resolve(new Domo(instance, refreshToken, constant.CLIENT_ID));
+    }
   }  
 };
 

@@ -16,6 +16,7 @@ export default function(questions: inquirer.ListQuestionOptions) {
   }
   else {
     questions.type = 'rawlist';
+    questions.pageSize = 20;
     return questions;
   }
 }

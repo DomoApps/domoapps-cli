@@ -1,9 +1,7 @@
 {
   "name": "ryuu",
-  "version": "3.3.20",
-  "bin": {
-    "domo": "./bin/runner"
-  },
+  "version": "3.3.21",
+  "bin": "./bin/domo.js",
   "scripts": {
     "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 --config ./changelog/changelog.js",
     "build": "tsc && npm run build:phoenix -s && npm run copyfiles ",
@@ -25,18 +23,19 @@
   },
   "dependencies": {
     "@domoinc/ryuu-proxy": "^4.0.3-beta.0",
+    "@types/configstore": "^4.0.0",
     "async": "^3.2.0",
     "bluebird": "^3.7.2",
     "browser-sync": "^2.26.7",
     "chalk": "^4.0.0",
     "cli-table": "^0.3.1",
     "commander": "^3.0.2",
+    "configstore": "^5.0.1",
     "express": "^4.17.1",
     "extract-zip": "^2.0.0",
     "fs-extra": "^9.0.0",
     "glob": "^7.1.6",
     "inquirer": "^7.1.0",
-    "keytar": "^6.0.0",
     "lodash": "^4.17.15",
     "ncp": "^2.0.0",
     "open": "^7.0.4",
