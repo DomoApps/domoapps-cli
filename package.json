@@ -13,7 +13,7 @@
     "copyfiles": "npm run copyjson && npm run copyreadme && npm run copydomodev && npm run copytemplates && npm run copyexamples && npm run copyrunner",
     "copytemplates": "cp -r \"server/domodev/\" \"dist/server/domodev\"  && cp -r \"templates/\" \"dist/templates\"",
     "copyexamples": "cp -r \"examples/\" \"dist/examples\"",
-    "copyrunner": "cp \"bin/domo.txt\" \"dist/bin/\" && cp \"bin/runner\" \"dist/bin/\"",
+    "copyrunner": "cp \"bin/runner\" \"dist/bin/\"",
     "copyreadme": "cp  \"README.md\" \"dist/\"",
     "copyjson": "cp  \"package.json\" \"dist/\"",
     "copydomodev": "cp -r \"server/domodev/\" \"dist/server/domodev\"",

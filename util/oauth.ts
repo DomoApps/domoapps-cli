@@ -79,7 +79,7 @@ export class Oauth {
         },
         (error, httpResponse, body) => {
           if (httpResponse.statusCode !== 200) reject(body.trim());
-          resolve(JSON.parse(body));
+          resolve(body);
         }
       );
     });
@@ -101,7 +101,7 @@ export class Oauth {
             },
             (error, httpResponse, body) => {
               if (httpResponse.statusCode !== 200) reject(body.trim());
-              resolve(JSON.parse(body));
+              resolve(body);
             }
           );
         })
