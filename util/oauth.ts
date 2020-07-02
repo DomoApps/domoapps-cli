@@ -145,17 +145,18 @@ export class Oauth {
       proxyId: registration.proxyId, // save the proxyId to the login file
     };
 
-    configstore.set(`${registration.instance}-${registration.proxyId}`, registration.accessToken);
-    configstore.set(`${registration.instance}-${registration.proxyId}`, registration.refreshToken);
+    configstore.set(`${registration.instance}-${registration.proxyId}-${scopes.join('-')}-accessToken`, registration.accessToken);
+    configstore.set(`${registration.instance}-${registration.proxyId}-${scopes.join('-')}-refreshToken`, registration.refreshToken);
     fs.writeJsonSync(loginFile, data);
     return { accessToken: registration.accessToken, refreshToken: registration.refreshToken };
   }
 
   static deleteTokens(registration: Registration) {
+    const scopes = this.getScopes(registration.manifestName);
     const instanceData = fs.readJsonSync(path.resolve(home + '/login/' + registration.instance + '.json'), {throws: false});
     return Promise.all([
-      configstore.delete(`${registration.instance}-${instanceData.proxyId}`),
-      configstore.delete(`${registration.instance}-${instanceData.proxyId}`),
+      configstore.delete(`${registration.instance}-${instanceData.proxyId}-${scopes.join('-')}-accessToken`),
+      configstore.delete(`${registration.instance}-${instanceData.proxyId}-${scopes.join('-')}-refreshToken`),
     ]);
   }
 /* unused as of 2/13/2020
