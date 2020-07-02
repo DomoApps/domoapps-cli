@@ -1,0 +1,96 @@
+import inquirer = require('inquirer');
+import * as chalk from 'chalk';
+import { Login } from '../util/login';
+import { log } from '../util/log';
+import { CommandOptions, Command } from 'commander';
+
+module.exports = function(program: Command) {
+  program
+    .command('token')
+    .description('add or remove a developer token')
+    .arguments('<cmd>')
+    .option('-i, --instance <value>', 'Domo instance')
+    .option('-t, --token <value>', 'dev token value used with token add')
+    .action(function(cmd: string, options: CommandOptions) {
+      var mayNotBeAuthenticated = true;
+      Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(login){
+      var previousLogins = Login.getPreviousLogins();
+
+      var prompts = [];
+
+      switch (cmd) {
+        case "remove":
+          if (!options['instance']) {
+            prompts.push({
+              type: "list",
+              choices: function(){
+                return previousLogins.map(item => item.instance);
+              },
+              message: "Domo instance on which to remove the token " + chalk.grey("e.g. company.domo.com "),
+              name: 'instance',
+              default: login.getInstance()
+            });
+          }
+
+          inquirer.prompt(prompts).then(function(answers: inquirer.Answers){
+            answers.instance = options['instance'] || answers.instance;
+              if (answers.instance){
+                Login.getLogin(answers.instance).then(function(selectedLogin) {
+                  //fix this with a function in client
+                selectedLogin.deleteDevToken();
+                Login.persistLogin(selectedLogin.getInstance(), selectedLogin.getRefreshToken(), selectedLogin.getDevToken());
+                log.ok(`Token removed for ${answers.instance}`, 'Future CLI commands to this instance will require username/password. \nUse the "domo token add" command to use another token.')
+                });
+              }
+          })
+          break;
+
+        case "add":
+          if (!options['instance']) {
+            prompts.push({
+                type: "list",
+                choices: function(){
+                  var options = previousLogins.map(item => item.instance);
+                  options.push('new instance');
+                  return options;
+                },
+                message: "Domo instance on which to set the token " + chalk.grey("e.g. company.domo.com "),
+                name: 'instance',
+                default: login.getInstance()
+              }),
+              {
+                type: "input",
+                message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
+                name: "instance",
+                when: function(answers: inquirer.Answers){
+                  // only ask if the instance selector wasn't used or new one was selected
+                  return !answers.instance || answers.instance === 'new instance';
+                }
+              };
+          }
+
+          if (!options['token']) {
+            prompts.push({
+              name: 'devtoken',
+              type: 'input',
+              message: 'Token (can be found in the Admin section of Domo and pasted here)'
+            });
+          }
+
+          inquirer.prompt(prompts).then(function(answers: inquirer.Answers){
+              answers.instance = options['instance'] || answers.instance;
+              answers.devtoken = options['token'] || answers.devtoken;
+              var devToken = true; 
+              Login.persistLogin(answers.instance, answers.devtoken, devToken);
+              log.ok(`Token set for ${answers.instance}`, 'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.')
+            })
+          break;
+
+          default:
+            log.fail('Invalid option "' + cmd + '"\nValid options are "remove", and "add"');
+      }
+
+    })
+  });
+  
+}
