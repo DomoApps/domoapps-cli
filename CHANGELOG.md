@@ -1,7 +1,79 @@
-<a name="3.3.14"></a>
-## [3.3.14](https://github.com/DomoApps/domoapps-cli/compare/v3.2.8...v3.3.14) (2020-03-17)
- * Express server with ryuu-proxy integration
- * Sugarforce template
+<a name="3.3.24"></a>
+## [3.3.24](https://github.com/DomoApps/domoapps-cli/compare/v3.3.23...v3.3.24) (2020-06-10)
+
+
+### Technical Improvements
+
+* Update sugarforce template ([b07b8cc](https://github.com/DomoApps/domoapps-cli/commit/b07b8cc))
+
+
+<a name="3.3.23"></a>
+## [3.3.23](https://github.com/DomoApps/domoapps-cli/compare/v3.3.22...v3.3.23) (2020-06-10)
+
+
+### Technical Improvements
+
+* Update Phoenix version ([2d77875](https://github.com/DomoApps/domoapps-cli/commit/2d77875))
+
+
+<a name="3.3.22"></a>
+## [3.3.22](https://github.com/DomoApps/domoapps-cli/compare/v3.1.1...v3.3.22) (2020-06-10)
+
+
+### Technical Improvements
+
+* Update phoenix version ([cdc0170](https://github.com/DomoApps/domoapps-cli/commit/cdc0170))
+* Update login.js (#123) ([0a1b227](https://github.com/DomoApps/domoapps-cli/commit/0a1b227))
+* multichoice put back in login.js to ensure Windows compatibility (#121) ([1a43df5](https://github.com/DomoApps/domoapps-cli/commit/1a43df5))
+* Fix for 'domo login' since inquirer 7.1.0 (#120) ([19510c4](https://github.com/DomoApps/domoapps-cli/commit/19510c4))
+* 3.3.14: Sugarforce template ([7d338ca](https://github.com/DomoApps/domoapps-cli/commit/7d338ca))
+* Fix for Step 5 (#119) ([ca38d01](https://github.com/DomoApps/domoapps-cli/commit/ca38d01))
+* Removed superfluous file; fixed problem with lodash parsing modal.js ([ae6eb65](https://github.com/DomoApps/domoapps-cli/commit/ae6eb65))
+* SugarForce Template to CLI (#117) ([c99d37a](https://github.com/DomoApps/domoapps-cli/commit/c99d37a))
+* Fixed issue with adding datasets... not sure how it made it this long ([b368e03](https://github.com/DomoApps/domoapps-cli/commit/b368e03))
+* Disable fullscreen option when manifest has fullpage false ([b6c18cc](https://github.com/DomoApps/domoapps-cli/commit/b6c18cc))
+* DOMO-245810 (#114) ([fbe02b4](https://github.com/DomoApps/domoapps-cli/commit/fbe02b4))
+* Bump version for release 3.3.2 (#113) ([73cfc28](https://github.com/DomoApps/domoapps-cli/commit/73cfc28))
+* DOMO-243571: Fixed issue with init not prompting for datasets and exiting out early ([19a1948](https://github.com/DomoApps/domoapps-cli/commit/19a1948))
+* Package updates that include new Phoenix version (#112) ([f52b1eb](https://github.com/DomoApps/domoapps-cli/commit/f52b1eb))
+* Domo 229133 2 (#111) ([4bf9c32](https://github.com/DomoApps/domoapps-cli/commit/4bf9c32))
+* Express migration dependencies update (#100) ([6930481](https://github.com/DomoApps/domoapps-cli/commit/6930481))
+* DOMO-233760: fixed naming issue of uploaded apps (#108) ([5092245](https://github.com/DomoApps/domoapps-cli/commit/5092245))
+* DOMO-229133-2 (#110) ([8fb6cc6](https://github.com/DomoApps/domoapps-cli/commit/8fb6cc6))
+* 3.2.12 version change (#107) ([19146a5](https://github.com/DomoApps/domoapps-cli/commit/19146a5))
+* Domo 233384 (#106) ([1da8888](https://github.com/DomoApps/domoapps-cli/commit/1da8888))
+* fixed login issues without instance.json file (#105) ([4ed97f2](https://github.com/DomoApps/domoapps-cli/commit/4ed97f2))
+* Bumped the version for release ([7e4b77e](https://github.com/DomoApps/domoapps-cli/commit/7e4b77e))
+* DOMO-229133 (#104) ([e5adc4c](https://github.com/DomoApps/domoapps-cli/commit/e5adc4c))
+* DOMO-229140 ([7ac70fa](https://github.com/DomoApps/domoapps-cli/commit/7ac70fa))
+* Fixed publish command and some typos in the oauth2 login flow ([3194a82](https://github.com/DomoApps/domoapps-cli/commit/3194a82))
+* 3.2.6 ([09a78b9](https://github.com/DomoApps/domoapps-cli/commit/09a78b9))
+* Missed an instance of not requiring authentication before performing a command (token) ([5c95109](https://github.com/DomoApps/domoapps-cli/commit/5c95109))
+* Bumped the version ([73b457d](https://github.com/DomoApps/domoapps-cli/commit/73b457d))
+* Not forcing you to be logged in when logging in or logging out ([94a720c](https://github.com/DomoApps/domoapps-cli/commit/94a720c))
+* updated build directories to fix error ([56cf9bf](https://github.com/DomoApps/domoapps-cli/commit/56cf9bf))
+* simplified naming around manifest object ([707ede4](https://github.com/DomoApps/domoapps-cli/commit/707ede4))
+* reduced logic in determining if manifest exists: ([1e37ffa](https://github.com/DomoApps/domoapps-cli/commit/1e37ffa))
+* made manifest search only go one level deep, ignore build folders, and allow passing the manifest name ([2eb1a56](https://github.com/DomoApps/domoapps-cli/commit/2eb1a56))
+* Bumped dependency for ryuu-client and removed console logs ([0801774](https://github.com/DomoApps/domoapps-cli/commit/0801774))
+* Added support for dev access tokens (domo token add/remove) ([85d3bc7](https://github.com/DomoApps/domoapps-cli/commit/85d3bc7))
+* bumped the version ([8a9eb9a](https://github.com/DomoApps/domoapps-cli/commit/8a9eb9a))
+* intelligently search for manifest during login ([9524db3](https://github.com/DomoApps/domoapps-cli/commit/9524db3))
+* fix: remove koa-better-body ([fa8dc2b](https://github.com/DomoApps/domoapps-cli/commit/fa8dc2b))
+* reworded verification messages to be more verbose ([e776a9b](https://github.com/DomoApps/domoapps-cli/commit/e776a9b))
+* fixed oauth check loop logic: ([6092e1a](https://github.com/DomoApps/domoapps-cli/commit/6092e1a))
+* update request to use all scopes ([0351b90](https://github.com/DomoApps/domoapps-cli/commit/0351b90))
+* removed redundant code ([7a11109](https://github.com/DomoApps/domoapps-cli/commit/7a11109))
+* retrieves and saves oauth tokens ([7b5620a](https://github.com/DomoApps/domoapps-cli/commit/7b5620a))
+* Bumped to 3.2.0, fixed vulnerabilities and released. ([8efcd96](https://github.com/DomoApps/domoapps-cli/commit/8efcd96))
+* DOMO-113421: DomoApp: Publishing different manifests does not display error on domo dev window. ([3a26263](https://github.com/DomoApps/domoapps-cli/commit/3a26263))
+* Allowing application/json + as a content type. Updated the version of ryuu.js. ([798e8f4](https://github.com/DomoApps/domoapps-cli/commit/798e8f4))
+* DOMO-216840: CustomApps: Domo Publish Gives Error Publishing Deleted Design ([e9595fc](https://github.com/DomoApps/domoapps-cli/commit/e9595fc))
+* DOMO-131213: Custom App should not be published with Spaces in file name ([203b6a0](https://github.com/DomoApps/domoapps-cli/commit/203b6a0))
+* DOMO-215865 - Fix url variable and log errors when creating a context ([9491c3a](https://github.com/DomoApps/domoapps-cli/commit/9491c3a))
+* Bumped version of ryuu.js and adding a context parameter by default on data requests ([acd0b9d](https://github.com/DomoApps/domoapps-cli/commit/acd0b9d))
+* Add yield to domo proxy ([222b684](https://github.com/DomoApps/domoapps-cli/commit/222b684))
+
 
 <a name="3.1.1"></a>
 ## [3.1.1](https://github.com/DomoApps/domoapps-cli/compare/v2.23.1...v3.1.1) (2019-03-15)
@@ -9,8 +81,8 @@
 
 ### Technical Improvements
 
-* refactor(login): use OAuth instead of dev tokens and current login practices ([2b015a5](https://github.com/DomoApps/domoapps-cli/commit/2b015a5))
 * Update package-lock.json ([d7cbcb1](https://github.com/DomoApps/domoapps-cli/commit/d7cbcb1))
+* Don't auto-push version ([f773e18](https://github.com/DomoApps/domoapps-cli/commit/f773e18))
 * Bumped version in prep for publish release of package ([1caae05](https://github.com/DomoApps/domoapps-cli/commit/1caae05))
 * Re-ran npm install with node 10 so that we can retrigger a check on the pull request ([b7f7170](https://github.com/DomoApps/domoapps-cli/commit/b7f7170))
 * check error message exists ([c121d41](https://github.com/DomoApps/domoapps-cli/commit/c121d41))
@@ -48,7 +120,7 @@
 * fix(commands): update the domo object creation with client Id ([16a724e](https://github.com/DomoApps/domoapps-cli/commit/16a724e))
 * fix(download): download works with oauth ([4fea431](https://github.com/DomoApps/domoapps-cli/commit/4fea431))
 * fix(dev): only users with a refreshToken should be able to start the dev server ([270b143](https://github.com/DomoApps/domoapps-cli/commit/270b143))
-* Don't auto-push version ([f773e18](https://github.com/DomoApps/domoapps-cli/commit/f773e18))
+* refactor(login): use OAuth instead of dev tokens and current login practices ([2b015a5](https://github.com/DomoApps/domoapps-cli/commit/2b015a5))
 * fix request version to before breaking change ([d81c924](https://github.com/DomoApps/domoapps-cli/commit/d81c924))
 * bump version ([f7bf1db](https://github.com/DomoApps/domoapps-cli/commit/f7bf1db))
 * add domorig.io to accepted logins ([a8f7325](https://github.com/DomoApps/domoapps-cli/commit/a8f7325))
@@ -229,14 +301,14 @@
 
 ### Technical Improvements
 
-* move dev to own command ([d52fad8](https://github.com/DomoApps/domoapps-cli/commit/d52fad8))
 * bump client dep ([5a5af3c](https://github.com/DomoApps/domoapps-cli/commit/5a5af3c))
+* auto import all commands ([206f7b8](https://github.com/DomoApps/domoapps-cli/commit/206f7b8))
 * bump node version support message to 5.0.0 ([369f687](https://github.com/DomoApps/domoapps-cli/commit/369f687))
 * move verifyNodeVersion into util ([28b1f9c](https://github.com/DomoApps/domoapps-cli/commit/28b1f9c))
 * cleanup main script ([94d993e](https://github.com/DomoApps/domoapps-cli/commit/94d993e))
 * group manifest related utils ([b25471d](https://github.com/DomoApps/domoapps-cli/commit/b25471d))
 * move release to own command ([d5b1ec3](https://github.com/DomoApps/domoapps-cli/commit/d5b1ec3))
-* auto import all commands ([206f7b8](https://github.com/DomoApps/domoapps-cli/commit/206f7b8))
+* move dev to own command ([d52fad8](https://github.com/DomoApps/domoapps-cli/commit/d52fad8))
 * move revert to own command ([2bc6e15](https://github.com/DomoApps/domoapps-cli/commit/2bc6e15))
 * move migrate to own command ([a06fe7c](https://github.com/DomoApps/domoapps-cli/commit/a06fe7c))
 * move delete to own command ([61aa162](https://github.com/DomoApps/domoapps-cli/commit/61aa162))
@@ -410,8 +482,8 @@
 
 ### Technical Improvements
 
-* v2.17.6 ([9537f05](https://github.com/DomoApps/domoapps-cli/commit/9537f05))
 *  include ticket link in changelog ([63b3d38](https://github.com/DomoApps/domoapps-cli/commit/63b3d38))  (<a href="https://trello.com/c/1QzUvqHY/1017-update-changelog-to-include-trello-card-links">ticket</a>)
+* v2.17.6 ([9537f05](https://github.com/DomoApps/domoapps-cli/commit/9537f05))
 
 
 <a name="2.17.5"></a>
@@ -471,19 +543,19 @@
 
 ### Technical Improvements
 
-* update commander.js ([7036ccd](https://github.com/DomoApps/domoapps-cli/commit/7036ccd))
 * update latest client ([cb59e5f](https://github.com/DomoApps/domoapps-cli/commit/cb59e5f))
-* restoring change log ([e6a91b5](https://github.com/DomoApps/domoapps-cli/commit/e6a91b5))
-* changelog command ([e2b71d8](https://github.com/DomoApps/domoapps-cli/commit/e2b71d8))
-* running changelog before release ([6d8284e](https://github.com/DomoApps/domoapps-cli/commit/6d8284e))
-* update latest client ([165bbcb](https://github.com/DomoApps/domoapps-cli/commit/165bbcb))
 * respect dev tokens when set ([f4533ed](https://github.com/DomoApps/domoapps-cli/commit/f4533ed))
-* clearing change log ([fd9d32e](https://github.com/DomoApps/domoapps-cli/commit/fd9d32e))
 *  adding grunt shell:changelog command ([f1fe264](https://github.com/DomoApps/domoapps-cli/commit/f1fe264))
 *  move evoke into own function ([a45aaca](https://github.com/DomoApps/domoapps-cli/commit/a45aaca))
 *  move login into own command ([843131c](https://github.com/DomoApps/domoapps-cli/commit/843131c))
 *  move login to own util ([9999bd4](https://github.com/DomoApps/domoapps-cli/commit/9999bd4))
 *  move sid parsing to own util ([25c3b3c](https://github.com/DomoApps/domoapps-cli/commit/25c3b3c))
+* update commander.js ([7036ccd](https://github.com/DomoApps/domoapps-cli/commit/7036ccd))
+* update latest client ([165bbcb](https://github.com/DomoApps/domoapps-cli/commit/165bbcb))
+* running changelog before release ([6d8284e](https://github.com/DomoApps/domoapps-cli/commit/6d8284e))
+* changelog command ([e2b71d8](https://github.com/DomoApps/domoapps-cli/commit/e2b71d8))
+* restoring change log ([e6a91b5](https://github.com/DomoApps/domoapps-cli/commit/e6a91b5))
+* clearing change log ([fd9d32e](https://github.com/DomoApps/domoapps-cli/commit/fd9d32e))
 
 
 ### User Experience Polish
@@ -1268,10 +1340,10 @@
 
 ### Technical Improvements
 
+*  enable local development with domo dev command ([5fc064f](https://github.com/DomoApps/domoapps-cli/commit/5fc064f))
 * consolidate authentication check ([a01c396](https://github.com/DomoApps/domoapps-cli/commit/a01c396))
 * enable harmony and check for supported Node version ([0908f8a](https://github.com/DomoApps/domoapps-cli/commit/0908f8a))
 * remove old domo.js template ([76d4667](https://github.com/DomoApps/domoapps-cli/commit/76d4667))
-*  enable local development with domo dev command ([5fc064f](https://github.com/DomoApps/domoapps-cli/commit/5fc064f))
 
 
 <a name="1.9.0"></a>
@@ -1280,10 +1352,10 @@
 
 ### Technical Improvements
 
+*  instance selection list with populating email ([d7a1e39](https://github.com/DomoApps/domoapps-cli/commit/d7a1e39))
 * v1.8.1 ([8c3a35f](https://github.com/DomoApps/domoapps-cli/commit/8c3a35f))
 * include domoapp design name in publish log ([352a249](https://github.com/DomoApps/domoapps-cli/commit/352a249))
 * update changelog ([2531e5c](https://github.com/DomoApps/domoapps-cli/commit/2531e5c))
-*  instance selection list with populating email ([d7a1e39](https://github.com/DomoApps/domoapps-cli/commit/d7a1e39))
 
 
 <a name="1.8.0"></a>
@@ -1292,10 +1364,10 @@
 
 ### Technical Improvements
 
-*  require full Domo instance ([e2dbbc0](https://github.com/DomoApps/domoapps-cli/commit/e2dbbc0))
 * inform user of publish location ([7764ced](https://github.com/DomoApps/domoapps-cli/commit/7764ced))
 * let user know which env was logged into ([9151f31](https://github.com/DomoApps/domoapps-cli/commit/9151f31))
 * use consistent capitalization ([4b49b9c](https://github.com/DomoApps/domoapps-cli/commit/4b49b9c))
+*  require full Domo instance ([e2dbbc0](https://github.com/DomoApps/domoapps-cli/commit/e2dbbc0))
 * exit process on fail ([b7f0108](https://github.com/DomoApps/domoapps-cli/commit/b7f0108))
 
 
@@ -1319,13 +1391,13 @@
 
 ### Technical Improvements
 
+*  better install instructions ([6b01ce7](https://github.com/DomoApps/domoapps-cli/commit/6b01ce7))
 * use full syntax for domo.js dependency ([47ef390](https://github.com/DomoApps/domoapps-cli/commit/47ef390))
 * update domoapps-client to 1.4.1 ([dc44742](https://github.com/DomoApps/domoapps-cli/commit/dc44742))
 * automatically pull in the latest domo.js lib ([ec07cda](https://github.com/DomoApps/domoapps-cli/commit/ec07cda))
-* update install location ([28f9a05](https://github.com/DomoApps/domoapps-cli/commit/28f9a05))
-*  better install instructions ([6b01ce7](https://github.com/DomoApps/domoapps-cli/commit/6b01ce7))
 *  remove legacy apps stuff ([1b56197](https://github.com/DomoApps/domoapps-cli/commit/1b56197))
 *  update note about node version ([a182394](https://github.com/DomoApps/domoapps-cli/commit/a182394))
+* update install location ([28f9a05](https://github.com/DomoApps/domoapps-cli/commit/28f9a05))
 
 
 <a name="1.7.2"></a>
@@ -1334,8 +1406,8 @@
 
 ### Technical Improvements
 
-* Add docs for datetimeintervaloffset, or "last" ([2cfd239](https://github.com/DomoApps/domoapps-cli/commit/2cfd239))
 * start using grunt-release ([037e930](https://github.com/DomoApps/domoapps-cli/commit/037e930))
+* point to github dep ([056dea4](https://github.com/DomoApps/domoapps-cli/commit/056dea4))
 * v1.7.1 ([71ee0b1](https://github.com/DomoApps/domoapps-cli/commit/71ee0b1))
 * make linting happy ([fb7ad01](https://github.com/DomoApps/domoapps-cli/commit/fb7ad01))
 * improved --watch reliability ([23870c8](https://github.com/DomoApps/domoapps-cli/commit/23870c8))
@@ -1359,10 +1431,10 @@
 * v1.4.0 ([5b956bf](https://github.com/DomoApps/domoapps-cli/commit/5b956bf))
 * pull CLI version from package.json ([3a0fee2](https://github.com/DomoApps/domoapps-cli/commit/3a0fee2))
 * validate manifest.json format before publishing ([3490dd0](https://github.com/DomoApps/domoapps-cli/commit/3490dd0))
-* add link to node.org ([9c6bc44](https://github.com/DomoApps/domoapps-cli/commit/9c6bc44))
+*  default version at 1.0.0 ([dfa822c](https://github.com/DomoApps/domoapps-cli/commit/dfa822c))
 * refactor ok and fail messages to allow submessages ([7f02e45](https://github.com/DomoApps/domoapps-cli/commit/7f02e45))
 * inform user of next step after domo init ([c6cfa30](https://github.com/DomoApps/domoapps-cli/commit/c6cfa30))
-* add auth headers ([cc0b4ad](https://github.com/DomoApps/domoapps-cli/commit/cc0b4ad))
+*  add instructions for adding a domoapp to the page ([9a54195](https://github.com/DomoApps/domoapps-cli/commit/9a54195))
 * catch error when invalid login ([199a689](https://github.com/DomoApps/domoapps-cli/commit/199a689))
 * ensure manifest.json is valid JSON ([bf321df](https://github.com/DomoApps/domoapps-cli/commit/bf321df))
 * fix broken links to examples ([14d0dce](https://github.com/DomoApps/domoapps-cli/commit/14d0dce))
@@ -1374,16 +1446,16 @@
 * Redirect documentation to Wiki ([f839dd3](https://github.com/DomoApps/domoapps-cli/commit/f839dd3))
 * Add documentation on sizing in manifest file ([e32db0b](https://github.com/DomoApps/domoapps-cli/commit/e32db0b))
 * add note about updating the CLI ([a3de5ec](https://github.com/DomoApps/domoapps-cli/commit/a3de5ec))
-* instructions for publish and migrate commands ([5b1649f](https://github.com/DomoApps/domoapps-cli/commit/5b1649f))
+*  upload all assets when the design version or id changes ([25b5d8f](https://github.com/DomoApps/domoapps-cli/commit/25b5d8f))
 * v1.3.1 ([e51e242](https://github.com/DomoApps/domoapps-cli/commit/e51e242))
 * fix for design service result ([86dafc3](https://github.com/DomoApps/domoapps-cli/commit/86dafc3))
-* add auth to tests ([a051655](https://github.com/DomoApps/domoapps-cli/commit/a051655))
+*  add domo.env containing any query params ([a357730](https://github.com/DomoApps/domoapps-cli/commit/a357730))
 * update to use latest design service api ([ad0f0ed](https://github.com/DomoApps/domoapps-cli/commit/ad0f0ed))
 * Add rolling period documentation ([a4fd284](https://github.com/DomoApps/domoapps-cli/commit/a4fd284))
-* point to github dep ([056dea4](https://github.com/DomoApps/domoapps-cli/commit/056dea4))
+* Add docs for datetimeintervaloffset, or "last" ([2cfd239](https://github.com/DomoApps/domoapps-cli/commit/2cfd239))
 * v1.3.0 ([5419a88](https://github.com/DomoApps/domoapps-cli/commit/5419a88))
 * add domo publish command ([770b3ed](https://github.com/DomoApps/domoapps-cli/commit/770b3ed))
-* allow domo login from any directory, no longer needs a manifest.json present ([e117b47](https://github.com/DomoApps/domoapps-cli/commit/e117b47))
+*  add domo init command ([2e7210e](https://github.com/DomoApps/domoapps-cli/commit/2e7210e))
 * Add documentation on period-to-date ([36464de](https://github.com/DomoApps/domoapps-cli/commit/36464de))
 * Remove obsolete operators from docs ([344ff69](https://github.com/DomoApps/domoapps-cli/commit/344ff69))
 * Add docs about in and !in ([4421167](https://github.com/DomoApps/domoapps-cli/commit/4421167))
@@ -1391,7 +1463,7 @@
 * v1.2.0 ([f799edc](https://github.com/DomoApps/domoapps-cli/commit/f799edc))
 * better error handling ([d6bc477](https://github.com/DomoApps/domoapps-cli/commit/d6bc477))
 * Add docs about Date filtering ([d0b30a6](https://github.com/DomoApps/domoapps-cli/commit/d0b30a6))
-* fix apiContent urls ([686ead7](https://github.com/DomoApps/domoapps-cli/commit/686ead7))
+*  add note about the domo revert command ([5b8dd8b](https://github.com/DomoApps/domoapps-cli/commit/5b8dd8b))
 * v1.1.0 ([e9374d9](https://github.com/DomoApps/domoapps-cli/commit/e9374d9))
 * add domo revert command ([d035be9](https://github.com/DomoApps/domoapps-cli/commit/d035be9))
 * Fix capitalization ([d555def](https://github.com/DomoApps/domoapps-cli/commit/d555def))
@@ -1402,7 +1474,7 @@
 * Fix formatting of documentation index ([a3783f9](https://github.com/DomoApps/domoapps-cli/commit/a3783f9))
 * Update documentation ([cf5a9b0](https://github.com/DomoApps/domoapps-cli/commit/cf5a9b0))
 * Various improvements to migration document ([f195728](https://github.com/DomoApps/domoapps-cli/commit/f195728))
-* add migration docs ([3a59393](https://github.com/DomoApps/domoapps-cli/commit/3a59393))
+*  better readme ([c1c8d5b](https://github.com/DomoApps/domoapps-cli/commit/c1c8d5b))
 * Add in more specific information ([2118316](https://github.com/DomoApps/domoapps-cli/commit/2118316))
 * Overhaul migration doc ([307c5c5](https://github.com/DomoApps/domoapps-cli/commit/307c5c5))
 * display correct error message on a failed upload ([dad91ea](https://github.com/DomoApps/domoapps-cli/commit/dad91ea))
@@ -1416,16 +1488,16 @@
 * Fix typos ([1684a99](https://github.com/DomoApps/domoapps-cli/commit/1684a99))
 * Add documentation for updating js data ([d11399a](https://github.com/DomoApps/domoapps-cli/commit/d11399a))
 * Update docs with migration steps ([1c17e33](https://github.com/DomoApps/domoapps-cli/commit/1c17e33))
-* add instructions for installing ([031b38d](https://github.com/DomoApps/domoapps-cli/commit/031b38d))
-*  add domo init command ([2e7210e](https://github.com/DomoApps/domoapps-cli/commit/2e7210e))
-*  add domo.env containing any query params ([a357730](https://github.com/DomoApps/domoapps-cli/commit/a357730))
-*  add instructions for adding a domoapp to the page ([9a54195](https://github.com/DomoApps/domoapps-cli/commit/9a54195))
-*  add note about the domo revert command ([5b8dd8b](https://github.com/DomoApps/domoapps-cli/commit/5b8dd8b))
-*  better readme ([c1c8d5b](https://github.com/DomoApps/domoapps-cli/commit/c1c8d5b))
-*  default version at 1.0.0 ([dfa822c](https://github.com/DomoApps/domoapps-cli/commit/dfa822c))
+* add migration docs ([3a59393](https://github.com/DomoApps/domoapps-cli/commit/3a59393))
 *  move migrating section to the wiki ([18ded7c](https://github.com/DomoApps/domoapps-cli/commit/18ded7c))
 *  update watch command to work with new lib ([6bd3719](https://github.com/DomoApps/domoapps-cli/commit/6bd3719))
-*  upload all assets when the design version or id changes ([25b5d8f](https://github.com/DomoApps/domoapps-cli/commit/25b5d8f))
+* fix apiContent urls ([686ead7](https://github.com/DomoApps/domoapps-cli/commit/686ead7))
+* allow domo login from any directory, no longer needs a manifest.json present ([e117b47](https://github.com/DomoApps/domoapps-cli/commit/e117b47))
+* add auth to tests ([a051655](https://github.com/DomoApps/domoapps-cli/commit/a051655))
+* instructions for publish and migrate commands ([5b1649f](https://github.com/DomoApps/domoapps-cli/commit/5b1649f))
+* add auth headers ([cc0b4ad](https://github.com/DomoApps/domoapps-cli/commit/cc0b4ad))
+* add link to node.org ([9c6bc44](https://github.com/DomoApps/domoapps-cli/commit/9c6bc44))
+* add instructions for installing ([031b38d](https://github.com/DomoApps/domoapps-cli/commit/031b38d))
 
 
 ### Tests
@@ -1439,26 +1511,26 @@
 
 ### Technical Improvements
 
-*  add domo.uploadAsset function ([a745bec](https://github.com/DomoApps/domoapps-cli/commit/a745bec))
-*  cleanup ([25dc07e](https://github.com/DomoApps/domoapps-cli/commit/25dc07e))
-*  create design ([cdc034e](https://github.com/DomoApps/domoapps-cli/commit/cdc034e))
-*  domo.getAsset function ([cda83a3](https://github.com/DomoApps/domoapps-cli/commit/cda83a3))
-*  fix autopopulate most recent login ([9b608ba](https://github.com/DomoApps/domoapps-cli/commit/9b608ba))
-*  initial migration script ([d3e21b7](https://github.com/DomoApps/domoapps-cli/commit/d3e21b7))
-*  make test setup even more awesome ([2d31582](https://github.com/DomoApps/domoapps-cli/commit/2d31582))
-* login ([5931e9a](https://github.com/DomoApps/domoapps-cli/commit/5931e9a))
-*  move functionality into domo.js ([f589ecd](https://github.com/DomoApps/domoapps-cli/commit/f589ecd))
+* domo migrate command ([4231c09](https://github.com/DomoApps/domoapps-cli/commit/4231c09))
+* domo.updateKpi ([5ff6403](https://github.com/DomoApps/domoapps-cli/commit/5ff6403))
+* domo.getKpi method ([5259f74](https://github.com/DomoApps/domoapps-cli/commit/5259f74))
+* domo.createApp method ([cfb8223](https://github.com/DomoApps/domoapps-cli/commit/cfb8223))
+* refactor lib ([e416890](https://github.com/DomoApps/domoapps-cli/commit/e416890))
 * domo.uploadAllAssets ([f631b84](https://github.com/DomoApps/domoapps-cli/commit/f631b84))
+* update CLI to use new lib functions ([7dc9e3b](https://github.com/DomoApps/domoapps-cli/commit/7dc9e3b))
+*  domo.getAsset function ([cda83a3](https://github.com/DomoApps/domoapps-cli/commit/cda83a3))
 * update deps ([d7ec932](https://github.com/DomoApps/domoapps-cli/commit/d7ec932))
+*  add domo.uploadAsset function ([a745bec](https://github.com/DomoApps/domoapps-cli/commit/a745bec))
+* login ([5931e9a](https://github.com/DomoApps/domoapps-cli/commit/5931e9a))
 * cleanup ([65f4f4f](https://github.com/DomoApps/domoapps-cli/commit/65f4f4f))
 * cleanup design test ([94af9b1](https://github.com/DomoApps/domoapps-cli/commit/94af9b1))
 * even better test setup ([03e5089](https://github.com/DomoApps/domoapps-cli/commit/03e5089))
-* update CLI to use new lib functions ([7dc9e3b](https://github.com/DomoApps/domoapps-cli/commit/7dc9e3b))
-* domo.updateKpi ([5ff6403](https://github.com/DomoApps/domoapps-cli/commit/5ff6403))
-* domo.getKpi method ([5259f74](https://github.com/DomoApps/domoapps-cli/commit/5259f74))
-* refactor lib ([e416890](https://github.com/DomoApps/domoapps-cli/commit/e416890))
-* domo.createApp method ([cfb8223](https://github.com/DomoApps/domoapps-cli/commit/cfb8223))
-* domo migrate command ([4231c09](https://github.com/DomoApps/domoapps-cli/commit/4231c09))
+*  cleanup ([25dc07e](https://github.com/DomoApps/domoapps-cli/commit/25dc07e))
+*  create design ([cdc034e](https://github.com/DomoApps/domoapps-cli/commit/cdc034e))
+*  fix autopopulate most recent login ([9b608ba](https://github.com/DomoApps/domoapps-cli/commit/9b608ba))
+*  initial migration script ([d3e21b7](https://github.com/DomoApps/domoapps-cli/commit/d3e21b7))
+*  make test setup even more awesome ([2d31582](https://github.com/DomoApps/domoapps-cli/commit/2d31582))
+*  move functionality into domo.js ([f589ecd](https://github.com/DomoApps/domoapps-cli/commit/f589ecd))
 *  test setup ([adfeead](https://github.com/DomoApps/domoapps-cli/commit/adfeead))
 
 
