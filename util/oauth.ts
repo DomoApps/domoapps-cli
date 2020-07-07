@@ -64,7 +64,7 @@ export class Oauth {
     return false;
   }
 
-  static register(registration: Registration): Promise<FullRegistration> {
+  static register(registration: Registration): Promise<string> {
     return new Promise((resolve, reject) => {
       request.post(
         {
