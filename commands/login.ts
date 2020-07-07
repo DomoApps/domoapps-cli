@@ -13,7 +13,7 @@ import request = require('request-promise');
 import multichoice from '../util/multichoice';
 import { Oauth } from '../util/oauth';
 import { IncomingMessage } from "http";
-import { ProcessedMessage } from "../models/index";
+import { ProcessedMessage, FullRegistration } from "../models/index";
 let autoUpdate = false;
 const logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -247,14 +247,15 @@ function setupOauth(instance: string, manifestName: string, proxyId: string) {
   if (!Oauth.hasTokens({ instance, manifestName, proxyId })) {
     return Oauth.register({instance, manifestName, proxyId})
       .then(result => {
+        const parsedResult: FullRegistration = JSON.parse(result);
         log.ok('Valid Device Id');
         return Oauth.verifyRegistration({
           instance,
           manifestName,
           proxyId,
-          verification_uri: result.verification_uri,
-          user_code: result.user_code,
-          device_code: result.device_code
+          verification_uri: parsedResult.verification_uri,
+          user_code: parsedResult.user_code,
+          device_code: parsedResult.device_code
         });
       })
       .then(result => {
