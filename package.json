@@ -1,7 +1,9 @@
 {
   "name": "ryuu",
-  "version": "3.4.0",
-  "bin": "./bin/runner",
+  "version": "3.4.3",
+  "bin": {
+    "domo": "./bin/runner"
+  },
   "scripts": {
     "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 --config ./changelog/changelog.js",
     "build": "tsc && npm run build:phoenix -s && npm run copyfiles ",
