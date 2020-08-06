@@ -147,6 +147,7 @@ export class Oauth {
     return Promise.all<string, string>([
       configstore.get(`${registration.proxyId}-${scopes.join('-')}-accessToken`),
       configstore.get(`${registration.proxyId}-${scopes.join('-')}-refreshToken`)
+      //@ts-ignore
     ]).then(([accessToken, refreshToken]: [string, string]) => { accessToken, refreshToken });
   }
 }
