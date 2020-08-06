@@ -258,7 +258,7 @@ function setupOauth(instance: string, manifestName: string, proxyId: string) {
         });
       })
       .then(result => {
-        log.ok(`Retrieved Oauth Tokens`);
+        log.ok('Retrieved Oauth Tokens');
         Oauth.persistTokens({
           instance,
           manifestName,
