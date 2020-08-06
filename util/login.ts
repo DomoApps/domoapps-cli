@@ -1,16 +1,16 @@
-import glob = require("glob");
+import glob = require('glob');
 import fs = require('fs-extra');
 import path = require('path');
 import { login, constant } from '../models';
 import Domo = require('ryuu-client');
 import { log } from './log';
-import { configstore } from './configstore';
+import Configstore = require('configStore');
 const home = Domo.getHomeDir();
 
 
 export class Login {
   static getMostRecentLogin(mayNotBeAuthenticated?: boolean): Promise<Domo> {
-    var logins = glob.sync(home + "/login/*.json");
+    var logins = glob.sync(home + '/ryuu/*.json');
     //If there are no logins, return a rejection as the user is unauthenticated.
     if (logins.length === 0) {
       //@ts-ignore
@@ -20,7 +20,8 @@ export class Login {
       return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
     });
     var loginData: login = fs.readJsonSync(recent);
-    const refreshToken = configstore.get(loginData.instance);
+    const configstore = new Configstore('/ryuu/' + loginData.instance);
+    const refreshToken = configstore.get('refreshToken');
     loginData.refreshToken = refreshToken;
     if(!mayNotBeAuthenticated) {
       verifyLoginLocal(loginData);
@@ -29,7 +30,7 @@ export class Login {
   }
 
   static getPreviousLogins(): Array<login> {
-    var logins = (glob.sync(home + "/login/*.json") || [])
+    var logins = (glob.sync(home + '/ryuu/*.json') || [])
       .map(function(file: string) {
         return fs.readJsonSync(file);
       });
@@ -38,29 +39,31 @@ export class Login {
 
   /**
    * persist login to user's domo home
+   * 8/5/20 may have broken dev token
    */
   static persistLogin(instance: string, refreshToken: string, devToken?: boolean|undefined): login {
-    const loginFile = path.resolve(home + '/login/' + instance + '.json');
-    fs.ensureFileSync(loginFile);
-    if (refreshToken) {
-      configstore.set(instance, refreshToken);
-    }
-    const data = {
+    const configstore = new Configstore('/ryuu/' + instance)
+    //const loginFile = path.resolve(home + '/' + instance + '.json');
+    //fs.ensureFileSync(loginFile);
+    //if (refreshToken) {
+      configstore.set('refreshToken', refreshToken);
+    //}
+    /*const data = {
       instance: instance,
       devToken: !!devToken
     };
-    fs.writeJsonSync(loginFile, data);
+    fs.writeJsonSync(loginFile, data);*/
     return { instance, refreshToken, devToken };
   }
 
   static removeLogin(instance: string) {
-    const loginFile = path.resolve(home + '/login/' + instance + '.json');
+    const loginFile = path.resolve(home + '/ryuu/' + instance + '.json');
     fs.ensureFileSync(loginFile);
     return fs.unlink(loginFile);
   }
 
   static removeAllLogins() {
-    fs.emptyDirSync(home + '/login');
+    fs.emptyDirSync(home + '/ryuu/');
   }
 
   static verifyLogin(login: login): void {
@@ -70,7 +73,8 @@ export class Login {
   static verifyLogout(login: Domo, instance: string) {
     if (login.getRefreshToken()) {
       Login.deleteRefreshToken(login);
-      const refreshToken = configstore.get(instance);
+      const configstore = new Configstore('/ryuu/' + instance)
+      const refreshToken = configstore.get('refreshToken');
       if (!refreshToken){
         log.ok('Successful logout from ' + instance);
         return Promise.resolve(true);
@@ -80,16 +84,18 @@ export class Login {
   }
 
   static deleteRefreshToken(login: Domo) {
-    configstore.delete(login.getInstance()); //runs async to delete, not concerned about waiting
+    const configstore = new Configstore('/ryuu' + login.getInstance)
+    configstore.delete('refreshToken'); //runs async to delete, not concerned about waiting
   }
 
   //fix this
   static getLogin(instance: string) {
-    const refreshToken: string = configstore.get(instance);
+    const configstore = new Configstore('/ryuu' + instance)
+    const refreshToken: string = configstore.get('refreshToken');
     try {
-      let loginFile = path.resolve(home + '/login/' + instance + '.json');
+      let loginFile = path.resolve(home + '/ryuu/' + instance + '.json');
       fs.writeJsonSync(loginFile, { instance: instance });
-      let loginData: login = fs.readJsonSync(path.resolve(home + '/login/' + instance + '.json'), {throws: false});
+      let loginData: login = fs.readJsonSync(path.resolve(home + '/ryuu/' + instance + '.json'), {throws: false});
       loginData.refreshToken = refreshToken;
       return Promise.resolve(new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken));
     }

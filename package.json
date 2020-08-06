@@ -1,6 +1,15 @@
 {
   "name": "ryuu",
-  "version": "3.4.3",
+  "version": "3.4.4",
+  "description": "Domo App Dev Studio CLI, The main tool used to create, edit, and publish app designs to Domo",
+  "keywords": [
+    "CLI",
+    "Domo",
+    "Ryuu",
+    "App"
+  ],
+  "homepage": "https://developer.domo.com/docs/dev-studio/dev-studio-overview",
+  "license": "SEE LICENSE IN LICENSE.doc",
   "bin": {
     "domo": "./bin/runner"
   },
@@ -24,11 +33,11 @@
     "releaseBeta": "npm run build && cd dist && npm publish --tag beta && cd .."
   },
   "dependencies": {
-    "@domoinc/ryuu-proxy": "^4.0.3",
+    "@domoinc/ryuu-proxy": "^4.0.5",
     "@types/configstore": "^4.0.0",
     "async": "^3.2.0",
     "bluebird": "^3.7.2",
-    "browser-sync": "^2.26.7",
+    "browser-sync": "^2.26.12",
     "chalk": "^4.0.0",
     "cli-table": "^0.3.1",
     "commander": "^3.0.2",
@@ -37,33 +46,33 @@
     "extract-zip": "^2.0.0",
     "fs-extra": "^9.0.0",
     "glob": "^7.1.6",
-    "inquirer": "^7.1.0",
-    "lodash": "^4.17.15",
+    "inquirer": "^7.3.3",
+    "lodash": "^4.17.19",
     "ncp": "^2.0.0",
-    "open": "^7.0.4",
-    "portfinder": "^1.0.26",
+    "open": "^7.1.0",
+    "portfinder": "^1.0.28",
     "q": "^1.4.1",
     "request": "^2.88.2",
-    "request-promise": "^4.2.4",
+    "request-promise": "^4.2.6",
     "rimraf": "^3.0.0",
-    "ryuu-client": "^4.0.3",
+    "ryuu-client": "^4.0.5",
     "ryuu.js": "^3.0.6",
     "semver": "^7.3.2",
     "shelljs": "^0.8.4",
-    "slug": "^3.0.1",
+    "slug": "^3.3.4",
     "source-map-support": "^0.5.19",
     "validator": "^13.0.0"
   },
   "devDependencies": {
-    "@domoinc/domo-phoenix": "^0.14.1",
+    "@domoinc/domo-phoenix": "^0.14.2",
     "@types/async": "^3.2.3",
     "@types/bluebird-global": "^3.5.12",
-    "@types/express": "^4.17.6",
+    "@types/express": "^4.17.7",
     "@types/extract-zip": "^1.6.2",
     "@types/fs-extra": "^9.0.1",
-    "@types/inquirer": "^6.5.0",
-    "@types/lodash": "^4.14.157",
-    "@types/node": "^14.0.14",
+    "@types/inquirer": "^7.3.0",
+    "@types/lodash": "^4.14.159",
+    "@types/node": "^14.0.27",
     "@types/q": "^1.5.4",
     "@types/request-promise": "^4.1.46",
     "@types/semver": "^7.3.1",
@@ -73,7 +82,7 @@
     "compare-func": "^2.0.0",
     "conventional-changelog-cli": "^2.0.34",
     "github-url-from-git": "^1.4.0",
-    "typescript": "^3.9.6"
+    "typescript": "^3.9.7"
   },
   "pkg": {
     "scripts": [
