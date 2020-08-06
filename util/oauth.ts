@@ -56,7 +56,6 @@ export class Oauth {
 
   static hasTokens(registration: Registration) {
     const scopes = this.getScopes(registration.manifestName);
-    const filePath = path.resolve(home + '/' + registration.instance + '.json');
     const configstore = new Configstore('/ryuu/' + registration.instance);
     if (configstore.get(`${registration.proxyId}-${scopes.join('-')}-refreshToken`))
       return true;
