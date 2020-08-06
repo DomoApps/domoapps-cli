@@ -39,20 +39,12 @@ export class Login {
 
   /**
    * persist login to user's domo home
-   * 8/5/20 may have broken dev token
    */
   static persistLogin(instance: string, refreshToken: string, devToken?: boolean|undefined): login {
     const configstore = new Configstore('/ryuu/' + instance)
-    //const loginFile = path.resolve(home + '/' + instance + '.json');
-    //fs.ensureFileSync(loginFile);
-    //if (refreshToken) {
-      configstore.set('refreshToken', refreshToken);
-    //}
-    /*const data = {
-      instance: instance,
-      devToken: !!devToken
-    };
-    fs.writeJsonSync(loginFile, data);*/
+    configstore.set('instance', instance);
+    configstore.set('refreshToken', refreshToken);
+    configstore.set('devToken', !!devToken);
     return { instance, refreshToken, devToken };
   }
 
@@ -85,22 +77,16 @@ export class Login {
 
   static deleteRefreshToken(login: Domo) {
     const configstore = new Configstore('/ryuu' + login.getInstance)
-    configstore.delete('refreshToken'); //runs async to delete, not concerned about waiting
+    configstore.delete('refreshToken');
   }
 
-  //fix this
   static getLogin(instance: string) {
     const configstore = new Configstore('/ryuu' + instance)
-    const refreshToken: string = configstore.get('refreshToken');
     try {
-      let loginFile = path.resolve(home + '/ryuu/' + instance + '.json');
-      fs.writeJsonSync(loginFile, { instance: instance });
-      let loginData: login = fs.readJsonSync(path.resolve(home + '/ryuu/' + instance + '.json'), {throws: false});
-      loginData.refreshToken = refreshToken;
-      return Promise.resolve(new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken));
+      return Promise.resolve(new Domo(configstore.get('instance'), configstore.get('refreshToken'), constant.CLIENT_ID, configstore.get('devToken')));
     }
     catch (ex) {
-      return Promise.resolve(new Domo(instance, refreshToken, constant.CLIENT_ID));
+      return Promise.resolve(new Domo(configstore.get('instance'), configstore.get('refreshToken'), constant.CLIENT_ID));
     }
   }  
 };

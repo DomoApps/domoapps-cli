@@ -56,21 +56,20 @@ module.exports = function(program: Command){
     .option('-i, --instance <value>', 'Domo instance')
     .option('-u, --user-email <value>', 'user email')
     .option('-f, --manifest-file <file>', 'use a specific manifest file')
-    //.option('--no-upgrade-check', 'do not check for new versions')
-    //.option('--upgrade-download', 'Automatically download newer version if available. ')
+    .option('--no-upgrade-check', 'do not check for new versions')
+    .option('--upgrade-download', 'Automatically download newer version if available. ')
     .action(function(args){
-      /*if(args.upgradeDownload){
+      if(args.upgradeDownload){
         autoUpdate = true
-      }*/
+      }
       const previousLogins = Login.getPreviousLogins();
       const mayNotBeAuthenticated = true;
       let login: LoginData;
       Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(mostRecent) {
         let prompts = [];
-        /*let versionCheckFn = !args.upgradeCheck ?
+        let versionCheckFn = !args.upgradeCheck ?
           function (x: IncomingMessage) { return x; } :
           verifyVersion;
-        */
 
         if (!args.instance) {
           prompts.push(multichoice({
@@ -140,8 +139,8 @@ module.exports = function(program: Command){
                   }
                 }
               })
-              //.then(checkVersion.bind(null, answers.instance))
-              //.then(versionCheckFn)
+              .then(checkVersion.bind(null, answers.instance))
+              .then(versionCheckFn)
               .then(function(){
                 console.log(chalk.grey(logo));
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
@@ -259,7 +258,7 @@ function setupOauth(instance: string, manifestName: string, proxyId: string) {
         });
       })
       .then(result => {
-        log.ok(`Retrieved Oauth Tokens: test`);
+        log.ok(`Retrieved Oauth Tokens`);
         Oauth.persistTokens({
           instance,
           manifestName,
