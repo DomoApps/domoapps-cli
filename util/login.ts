@@ -83,10 +83,10 @@ export class Login {
   static getLogin(instance: string) {
     const configstore = new Configstore('/ryuu/' + instance)
     try {
-      return Promise.resolve(new Domo(configstore.get('instance'), configstore.get('refreshToken'), constant.CLIENT_ID, configstore.get('devToken')));
+      return Promise.resolve(new Domo(instance, configstore.get('refreshToken'), constant.CLIENT_ID, configstore.get('devToken')));
     }
     catch (ex) {
-      return Promise.resolve(new Domo(configstore.get('instance'), configstore.get('refreshToken'), constant.CLIENT_ID));
+      return Promise.resolve(new Domo(instance, configstore.get('refreshToken'), constant.CLIENT_ID));
     }
   }  
 };
