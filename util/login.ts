@@ -76,12 +76,12 @@ export class Login {
   }
 
   static deleteRefreshToken(login: Domo) {
-    const configstore = new Configstore('/ryuu' + login.getInstance)
+    const configstore = new Configstore('/ryuu/' + login.getInstance)
     configstore.delete('refreshToken');
   }
 
   static getLogin(instance: string) {
-    const configstore = new Configstore('/ryuu' + instance)
+    const configstore = new Configstore('/ryuu/' + instance)
     try {
       return Promise.resolve(new Domo(configstore.get('instance'), configstore.get('refreshToken'), constant.CLIENT_ID, configstore.get('devToken')));
     }
