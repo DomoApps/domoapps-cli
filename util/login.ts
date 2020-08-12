@@ -4,7 +4,7 @@ import path = require('path');
 import { login, constant } from '../models';
 import Domo = require('ryuu-client');
 import { log } from './log';
-import Configstore = require('configStore');
+import Configstore = require('configstore');
 const home = Domo.getHomeDir();
 
 
