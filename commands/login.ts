@@ -58,12 +58,12 @@ module.exports = function(program: Command){
     .option('-u, --user-email <value>', 'user email')
     .option('-f, --manifest-file <file>', 'use a specific manifest file')
     .option('-t, --transfer', 'transfer login files from ryuu 3.x')
-    //.option('--no-upgrade-check', 'do not check for new versions')
-    //.option('--upgrade-download', 'Automatically download newer version if available. ')
-    .action(function(args){/*
+    .option('--no-upgrade-check', 'do not check for new versions')
+    .option('--upgrade-download', 'Automatically download newer version if available. ')
+    .action(function(args){
       if(args.upgradeDownload) {
         autoUpdate = true
-      }*/
+      }
       if(args.transfer) {
         fs.copySync(
           `${(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'])}/.domo/login/`, 
@@ -75,11 +75,11 @@ module.exports = function(program: Command){
       const mayNotBeAuthenticated = true;
       let login: LoginData;
       Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(mostRecent) {
-        let prompts = [];/*
+        let prompts = [];
         let versionCheckFn = !args.upgradeCheck ?
           function (x: IncomingMessage) { return x; } :
           verifyVersion;
-        */
+        
         if (!args.instance) {
           prompts.push(multichoice({
             type: "list",
@@ -148,8 +148,8 @@ module.exports = function(program: Command){
                   }
                 }
               })
-              //.then(checkVersion.bind(null, answers.instance))
-              //.then(versionCheckFn)
+              .then(checkVersion.bind(null, answers.instance))
+              .then(versionCheckFn)
               .then(function(){
                 console.log(chalk.grey(logo));
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
