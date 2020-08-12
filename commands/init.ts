@@ -163,7 +163,7 @@ let initiate = (allAnswers: inquirer.Answers) => {
     files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
     dirs = [null, null, null, null, null];
 
-    const dirname = slug(allAnswers.name);
+    const dirname = slug(allAnswers.name, { lower: false });
     nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
 
     mkdir('-p', dirname);

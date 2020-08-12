@@ -124,11 +124,11 @@ function findManifest(name: string) {
     return `src/${name}`;
   }
 
-  // find any matching files (one layer deep while ignoring dist and build folders)
+  // find any matching files (one layer deep while ignoring dist, templates and build folders)
   const matches = glob.sync(
     `*/${name}`,
     {
-      ignore: ['dist/*', 'build/*'],
+      ignore: ['dist/*', 'build/*', 'templates/*'],
     },
   );
   if (matches.length > 0) {
