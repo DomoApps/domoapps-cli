@@ -1,6 +1,7 @@
 import inquirer = require("inquirer");
 import _ = require('lodash');
 import * as chalk from 'chalk';
+import * as fs from 'fs-extra';
 import shell = require('shelljs');
 import { log } from '../util/log';
 import { LoginData } from 'ryuu-client/models';
@@ -56,11 +57,19 @@ module.exports = function(program: Command){
     .option('-i, --instance <value>', 'Domo instance')
     .option('-u, --user-email <value>', 'user email')
     .option('-f, --manifest-file <file>', 'use a specific manifest file')
+    .option('-t, --transfer', 'transfer login files from ryuu 3.x')
     .option('--no-upgrade-check', 'do not check for new versions')
     .option('--upgrade-download', 'Automatically download newer version if available. ')
     .action(function(args){
-      if(args.upgradeDownload){
+      if(args.upgradeDownload) {
         autoUpdate = true
+      }
+      if(args.transfer) {
+        fs.copySync(
+          `${(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'])}/.domo/login/`, 
+          `${Domo.getHomeDir()}/ryuu/`,
+          {overwrite: false}
+        )
       }
       const previousLogins = Login.getPreviousLogins();
       const mayNotBeAuthenticated = true;
@@ -70,7 +79,7 @@ module.exports = function(program: Command){
         let versionCheckFn = !args.upgradeCheck ?
           function (x: IncomingMessage) { return x; } :
           verifyVersion;
-
+        
         if (!args.instance) {
           prompts.push(multichoice({
             type: "list",
@@ -245,17 +254,16 @@ function promptAppProxyId(): Promise<string> {
 
 function setupOauth(instance: string, manifestName: string, proxyId: string) {
   if (!Oauth.hasTokens({ instance, manifestName, proxyId })) {
-    return Oauth.register({instance, manifestName, proxyId})
+    return Oauth.register({ instance, manifestName, proxyId })
       .then(result => {
-        const parsedResult: FullRegistration = JSON.parse(result);
         log.ok('Valid Device Id');
         return Oauth.verifyRegistration({
           instance,
           manifestName,
           proxyId,
-          verification_uri: parsedResult.verification_uri,
-          user_code: parsedResult.user_code,
-          device_code: parsedResult.device_code
+          verification_uri: result.verification_uri,
+          user_code: result.user_code,
+          device_code: result.device_code
         });
       })
       .then(result => {
