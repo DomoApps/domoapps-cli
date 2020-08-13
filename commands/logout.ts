@@ -9,40 +9,29 @@ module.exports = function(program: Command) {
     .description('logout of Domo')
     .option('-i, --instance <value>', 'Domo instance')
     .action(function(args){
-      var instance: string;
-      var login: Domo;
       if(args.instance) {
-        instance = args.instance;
-        Login.getLogin(instance)
+        log.info(`Attempting to log out from ${args.instance}`)
+        Login.getLogin(args.instance)
         .then(function(login) {
-          verifyLogout(login, instance);
+          if (login.getRefreshToken())
+            Login.logout(login);
+          else
+            log.ok(`Not currently logged into ${args.instance}`);
         })
-        .catch(function() {
-          log.fail('No current login of instance ' + instance);
-        })
-      } else {
+      } 
+      else {
         var mayNotBeAuthenticated = true;
         Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(login) {
-          if (!login.getRefreshToken)
-            log.ok('Not currently logged into' + instance);
+          log.info(`Attempting to log out from your most recent login, ${login.getInstance()}`)
+          if (!login.getRefreshToken())
+            log.ok(`Not currently logged into ${login.getInstance()}`);
           else {
-            instance = login.getInstance();
-            verifyLogout(login, instance);
+            Login.logout(login);
           }
         })
         .catch(function() {
-          log.fail('Not currently logged into an instance')
+          log.fail('Logout Failure')
         })
       }
     });
-}
-
-function verifyLogout(login: Domo, instance: string): any {
-  Login.verifyLogout(login, instance).then(function(logout) {
-    if (logout) {
-      process.exit();
-    }
-    return false;
-  })
-  //process.exit();
 };

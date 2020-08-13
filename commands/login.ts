@@ -158,7 +158,7 @@ module.exports = function(program: Command){
               .catch((err) => log.fail(`Login unsuccessful: ${JSON.stringify(err)}`))
               .finally(process.exit);
           }).catch(log.notAuthenticated);
-        });
+        }).catch((err) => log.fail(`Login failed, likely an issue with inquirer data: ${err}`));
       }).catch(log.notAuthenticated);
     });
 }
