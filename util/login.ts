@@ -62,22 +62,16 @@ export class Login {
     verifyLoginLocal(login);
   }
 
-  static verifyLogout(login: Domo, instance: string) {
-    if (login.getRefreshToken()) {
-      Login.deleteRefreshToken(login);
-      const configstore = new Configstore('/ryuu/' + instance)
-      const refreshToken = configstore.get('refreshToken');
-      if (!refreshToken){
-        log.ok('Successful logout from ' + instance);
-        return Promise.resolve(true);
-      }
-      return Promise.resolve(false);
+  static logout(login: Domo) {
+    const instance = login.getInstance();
+    deleteRefreshToken(instance);
+    const configstore = new Configstore('/ryuu/' + instance)
+    if (!configstore.get('refreshToken')){
+      log.ok('Successful logout from ' + instance);
+      return Promise.resolve(true);
     }
-  }
-
-  static deleteRefreshToken(login: Domo) {
-    const configstore = new Configstore('/ryuu/' + login.getInstance)
-    configstore.delete('refreshToken');
+    log.fail(`Failed logout from ${instance}`)
+    return Promise.resolve(false);
   }
 
   static getLogin(instance: string) {
@@ -95,3 +89,8 @@ function verifyLoginLocal(login: login): void {
   if (!login.refreshToken)
     log.fail('Not authenticated', 'Please login using "domo login"');
 };
+
+function deleteRefreshToken(instance: string) {
+  const configstore = new Configstore('/ryuu/' + instance)
+  configstore.delete('refreshToken');
+}
