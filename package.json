@@ -30,7 +30,8 @@
     "copydomodev": "cp -r \"server/domodev/\" \"dist/server/domodev\"",
     "typescript": "npm run remove && npm run copy && tsc",
     "release": "npm run build && cd dist && npm publish && cd ..",
-    "releaseBeta": "npm run build && cd dist && npm publish --tag beta && cd .."
+    "releaseBeta": "npm run build && cd dist && npm publish --tag beta && cd ..",
+    "test": "TS_NODE_FILES=true NODE_ENV=test mocha -r ts-node/register -r mocha-clean '**/*.spec.ts' --exit"
   },
   "dependencies": {
     "@domoinc/ryuu-proxy": "^4.0.5",
@@ -67,11 +68,13 @@
     "@domoinc/domo-phoenix": "^0.14.2",
     "@types/async": "^3.2.3",
     "@types/bluebird-global": "^3.5.12",
+    "@types/chai": "^4.2.12",
     "@types/express": "^4.17.7",
     "@types/extract-zip": "^1.6.2",
     "@types/fs-extra": "^9.0.1",
     "@types/inquirer": "^7.3.0",
     "@types/lodash": "^4.14.159",
+    "@types/mocha": "^8.0.2",
     "@types/node": "^14.0.27",
     "@types/q": "^1.5.4",
     "@types/request-promise": "^4.1.46",
@@ -79,9 +82,19 @@
     "@types/shelljs": "^0.8.8",
     "@types/slug": "^0.9.1",
     "@types/validator": "^13.0.0",
+    "@typescript-eslint/eslint-plugin": "^3.9.0",
+    "@typescript-eslint/parser": "^3.9.0",
+    "chai": "^4.2.0",
     "compare-func": "^2.0.0",
     "conventional-changelog-cli": "^2.0.34",
+    "eslint": "^7.6.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.4",
     "github-url-from-git": "^1.4.0",
+    "mocha": "^8.1.1",
+    "mocha-clean": "^1.0.0",
+    "prettier": "^2.0.5",
+    "ts-node": "^8.10.2",
     "typescript": "^3.9.7"
   },
   "pkg": {
