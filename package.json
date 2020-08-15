@@ -31,7 +31,8 @@
     "typescript": "npm run remove && npm run copy && tsc",
     "release": "npm run build && cd dist && npm publish && cd ..",
     "releaseBeta": "npm run build && cd dist && npm publish --tag beta && cd ..",
-    "test": "TS_NODE_FILES=true NODE_ENV=test mocha -r ts-node/register -r mocha-clean '**/*.spec.ts' --exit"
+    "test": "TS_NODE_FILES=true NODE_ENV=test mocha -r ts-node/register -r mocha-clean '**/*.spec.ts' --exclude 'cypress/**/*' --exit",
+    "test:it": "./node_modules/.bin/cypress open"
   },
   "dependencies": {
     "@domoinc/ryuu-proxy": "^4.0.5",
@@ -87,6 +88,7 @@
     "chai": "^4.2.0",
     "compare-func": "^2.0.0",
     "conventional-changelog-cli": "^2.0.34",
+    "cypress": "^4.12.1",
     "eslint": "^7.6.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
