@@ -32,7 +32,8 @@
     "release": "npm run build && cd dist && npm publish && cd ..",
     "releaseBeta": "npm run build && cd dist && npm publish --tag beta && cd ..",
     "test": "TS_NODE_FILES=true NODE_ENV=test mocha -r ts-node/register -r mocha-clean '**/*.spec.ts' --exclude 'cypress/**/*' --exit",
-    "test:it": "./node_modules/.bin/cypress open"
+    "test:browser": "./node_modules/.bin/cypress open",
+    "test:it": "./node_modules/.bin/cypress run"
   },
   "dependencies": {
     "@domoinc/ryuu-proxy": "^4.0.5",
