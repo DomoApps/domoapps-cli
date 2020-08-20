@@ -25,33 +25,30 @@ program
 // import all commands
 glob
   .sync(path.resolve(__dirname + "/../commands/*.js"))
-  .forEach(function(command){
+  .forEach(function (command) {
     require(command)(program);
   });
 
 if (!process.argv.slice(2).length) {
-    program.help();
+  program.help();
 } else {
-    program.parse(process.argv);
+  program.parse(process.argv);
 
-    var has_command = false;
+  var has_command = false;
 
-    if (!program.args) {
-        program.args = [];
+  if (!program.args) {
+    program.args = [];
+  }
+
+  for (var i = 0, len = program.args.length; i < len; i++) {
+    if (program.commands.map(c => c.name()).includes(program.args[i])) {
+      has_command = true;
+      break;
     }
+  }
 
-    for (var i = 0, len = program.args.length; i < len; i++) {
-      //const x = program.args[i];
-        //if (program.commands.includes(x)) {
-          //@ts-ignore
-          if (program.args[i] instanceof program.Command) {
-            has_command = true;
-            break;
-        }
-    }
-
-    if (!has_command) {
-        console.log('  Invalid option "%s"', program.args.join(' '));
-        program.help();
-    }
+  if (!has_command) {
+    console.log('  Invalid option "%s"', program.args.join(' '));
+    program.help();
+  }
 }
