@@ -64,7 +64,7 @@
     "validator": "^13.0.0"
   },
   "devDependencies": {
-    "@domoinc/domo-phoenix": "^0.14.2",
+    "@domoinc/domo-phoenix": "^0.15.0",
     "@types/async": "^3.2.3",
     "@types/bluebird-global": "^3.5.12",
     "@types/express": "^4.17.7",
