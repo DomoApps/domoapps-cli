@@ -5,7 +5,8 @@
 import path = require('path');
 import _ = require('lodash');
 import fs = require('fs-extra');
-import * as Promise from 'bluebird';
+import * as Bluebird from 'bluebird';
+global.Promise = <any>Bluebird;
 let bs = require('browser-sync').create();
 import portfinder = require('portfinder');
 portfinder.basePort = 3000;

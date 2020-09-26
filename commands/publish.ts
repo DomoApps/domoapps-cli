@@ -53,7 +53,7 @@ module.exports = function(program: Command){
         else{
           domo.getDesign(manifest.id).then(function(result) {
             var latestVersionNumber = result.latestVersion;
-            var latestVersion = result.versions.filter(function(obj) {
+            var latestVersion = result.versions.filter(function(obj:any) {
               return obj.version === latestVersionNumber;
             });
             var oldMapping = latestVersion[0].mapping[0];

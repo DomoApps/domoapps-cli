@@ -29,17 +29,16 @@ glob
     require(command)(program);
   });
 
-if (!process.argv.slice(2).length) {
-    program.help();
-} else {
-    program.parse(process.argv);
 
+program.parse(process.argv);
+
+    /*
     var has_command = false;
 
     if (!program.args) {
         program.args = [];
     }
-
+    
     for (var i = 0, len = program.args.length; i < len; i++) {
       //const x = program.args[i];
         //if (program.commands.includes(x)) {
@@ -49,9 +48,9 @@ if (!process.argv.slice(2).length) {
             break;
         }
     }
-
+    
     if (!has_command) {
         console.log('  Invalid option "%s"', program.args.join(' '));
         program.help();
     }
-}
+    */

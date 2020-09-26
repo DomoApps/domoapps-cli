@@ -149,6 +149,7 @@ module.exports = function(program: Command){
                 }
               })
               .then(checkVersion.bind(null, answers.instance))
+              //@ts-ignore
               .then(versionCheckFn)
               .then(function(){
                 console.log(chalk.grey(logo));
