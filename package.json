@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "4.0.1",
+  "version": "4.0.3-alpha-8",
   "description": "Domo App Dev Studio CLI, The main tool used to create, edit, and publish app designs to Domo",
   "keywords": [
     "CLI",
@@ -30,11 +30,14 @@
     "copydomodev": "cp -r \"server/domodev/\" \"dist/server/domodev\"",
     "typescript": "npm run remove && npm run copy && tsc",
     "release": "npm run build && cd dist && npm publish && cd ..",
+    "releaseAlpha": "npm run build && cd dist && npm publish --tag alpha && cd ..",
     "releaseBeta": "npm run build && cd dist && npm publish --tag beta && cd .."
   },
   "dependencies": {
     "@domoinc/ryuu-proxy": "^4.0.5",
+    "@inquirer/password": "0.0.12-alpha.0",
     "@types/configstore": "^4.0.0",
+    "argon2": "^0.27.0",
     "async": "^3.2.0",
     "bluebird": "^3.7.2",
     "browser-sync": "^2.26.12",
@@ -50,12 +53,13 @@
     "lodash": "^4.17.19",
     "ncp": "^2.0.0",
     "open": "^7.1.0",
+    "password-prompt": "^1.1.2",
     "portfinder": "^1.0.28",
     "q": "^1.4.1",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "rimraf": "^3.0.0",
-    "ryuu-client": "^4.0.5",
+    "ryuu-client": "4.0.5-alpha-7",
     "ryuu.js": "^3.0.6",
     "semver": "^7.3.2",
     "shelljs": "^0.8.4",
@@ -82,6 +86,7 @@
     "compare-func": "^2.0.0",
     "conventional-changelog-cli": "^2.0.34",
     "github-url-from-git": "^1.4.0",
+    "https-proxy-agent": "^5.0.0",
     "typescript": "^3.9.7"
   },
   "pkg": {

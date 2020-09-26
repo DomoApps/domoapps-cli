@@ -1,7 +1,7 @@
 import glob = require('glob');
 import fs = require('fs-extra');
 import path = require('path');
-import { login, constant } from '../models';
+import { login, constant, ProxyOptions } from '../models';
 import Domo = require('ryuu-client');
 import { log } from './log';
 import Configstore = require('configstore');
@@ -22,11 +22,16 @@ export class Login {
     var loginData: login = fs.readJsonSync(recent);
     const configstore = new Configstore('/ryuu/' + loginData.instance);
     const refreshToken = configstore.get('refreshToken');
+    const proxy = new Configstore('/proxy');
+    const host = proxy.get('host');
+    const port = proxy.get('port');
+    const username = proxy.get('username');
+    const password = proxy.get('password');
     loginData.refreshToken = refreshToken;
     if(!mayNotBeAuthenticated) {
       verifyLoginLocal(loginData);
     }
-    return Promise.resolve(new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken));
+    return Promise.resolve(new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, {host: host, port: port, username: username, password: password}, loginData.devToken));
   }
 
   static getPreviousLogins(): Array<login> {
@@ -76,8 +81,11 @@ export class Login {
 
   static getLogin(instance: string) {
     const configstore = new Configstore('/ryuu/' + instance)
+    const proxy = new Configstore('/proxy');
+    const host = proxy.get('host');
+    const port = proxy.get('port');
     try {
-      return Promise.resolve(new Domo(instance, configstore.get('refreshToken'), constant.CLIENT_ID, configstore.get('devToken')));
+      return Promise.resolve(new Domo(instance, configstore.get('refreshToken'), constant.CLIENT_ID, {host: proxy.get('host'), port: proxy.get('port'), username: proxy.get('username'), password: proxy.get('password')},configstore.get('devToken')));
     }
     catch (ex) {
       return Promise.resolve(new Domo(instance, configstore.get('refreshToken'), constant.CLIENT_ID));

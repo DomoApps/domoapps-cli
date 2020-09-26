@@ -1,5 +1,6 @@
 import { OptionsWithUrl } from 'request-promise';
-import * as Promise from 'bluebird';
+import * as Bluebird from 'bluebird';
+global.Promise = <any>Bluebird;
 import { log } from './log';
 import Domo = require('ryuu-client');
 import { ProcessedMessage } from "../models/index";
