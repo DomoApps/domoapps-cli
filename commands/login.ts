@@ -74,7 +74,7 @@ module.exports = function(program: Command){
       const previousLogins = Login.getPreviousLogins();
       const mayNotBeAuthenticated = true;
       let login: LoginData;
-      Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(mostRecent) {
+      Login.getMostRecent().then(function(mostRecent) {
         let prompts = [];
         let versionCheckFn = !args.upgradeCheck ?
           function (x: IncomingMessage) { return x; } :
@@ -92,8 +92,8 @@ module.exports = function(program: Command){
             name: 'instance',
 
             default: function(){
-              if (mostRecent.getInstance())
-                return mostRecent.getInstance
+              if (mostRecent)
+                return mostRecent
               else
                 return
             },
