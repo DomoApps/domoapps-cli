@@ -2,7 +2,6 @@ import { log } from '../util/log';
 import inquirer = require('inquirer');
 import { Command, CommandOptions } from 'commander';
 import Configstore = require('configstore');
-//import * as argon2 from "argon2";
 
 module.exports = function(program: Command) {
   program
@@ -11,14 +10,13 @@ module.exports = function(program: Command) {
    //.option('-u, --username <value>, Username for authentication based proxy')
     //.option('-p, --password <value>, Password for authentication based proxy')
     .option('-r, --remove-proxy', 'Remove current proxy settings')
-    .option('-a, --auth, Flag for if you wish to enter a username and password for your proxy')
+    .option('-a, --auth, Flag for if you wish to enter a username for your corporate proxy (password will be prompted on each command)')
     .action(function(host: string, port: string, options: CommandOptions) {
         if (options['removeProxy']) {
             const proxy = new Configstore('/proxy');
             proxy.delete('host');
             proxy.delete('port');
             proxy.delete('username');
-            proxy.delete('password');
             log.ok('Proxy Removed!');
         }
         else {
@@ -29,11 +27,6 @@ module.exports = function(program: Command) {
                 type: 'input',
                 message: "Please enter your username:",
                 name: 'username'
-              },
-              {
-                type: 'password',
-                message: "Please enter your password:",
-                name: 'password'
               }
             );
           }
@@ -58,7 +51,6 @@ module.exports = function(program: Command) {
             proxy.set('host', host);
             proxy.set('port', port);
             proxy.set('username', answer.username)
-            proxy.set('password', answer.password)
             log.ok('Proxy set for all future commands')
         } else {
             log.fail('Proxy command aborted');
