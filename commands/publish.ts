@@ -70,7 +70,7 @@ module.exports = function(program: Command){
             domo.uploadAllAssets(manifest)
             .tap(()=>{log.ok('Publishing ' + manifest.name + ' to ' + domo.getInstance() + ' on ' + new Date())})
             .then(logUploadSuccess)
-            .catch(function(e: StatusCodeError){
+            .catch(function(e){
               if(e.statusCode === 401) {
                 log.notAuthenticated(domo.getRefreshToken());
               }
@@ -107,7 +107,8 @@ module.exports = function(program: Command){
                 }
               }
               else {
-                log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
+                //Error uploading assets
+                log.fail(log.handleErrorMessage(e, 'Error uploading assets in the upload all assets'));
               }
             });
           })
@@ -119,7 +120,7 @@ module.exports = function(program: Command){
               log.fail(log.handleErrorMessage(err, err.message));
             }
             else {
-              log.clientRequestFailed('Error uploading assets');
+              log.clientRequestFailed('Error uploading assets in the getDesign');
             }
           });
         }
@@ -148,7 +149,7 @@ function createDesign(domo: Domo, manifest: manifest, options?: CommandOptions) 
     .then(domo.uploadAllAssets.bind(domo, manifest))
     .then(logUploadSuccess)
     .catch(function(e: string){
-      log.fail(e || 'Error uploading assets');
+      log.fail(e || 'Error uploading assets in the first time uploading');
     })
     .then(function() {
       goToDomo(options, domo, manifest);

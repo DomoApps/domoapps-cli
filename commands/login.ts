@@ -134,6 +134,7 @@ module.exports = function(program: Command){
               .then(function(l: LoginData) {
                 login = l;
               })
+              .catch(() => log.fail("Failure to get user from server"))
               .then(function() {
                 const manifest: string = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
 
@@ -148,6 +149,7 @@ module.exports = function(program: Command){
                   }
                 }
               })
+              .catch(() => log.fail("Failure to setup oauth"))
               .then(checkVersion.bind(null, answers.instance))
               //@ts-ignore
               .then(versionCheckFn)
@@ -156,10 +158,11 @@ module.exports = function(program: Command){
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
                 return Login.persistLogin(answers.instance, login.refreshToken);
               })
+              //@ts-ignore
               .catch((err) => log.fail(`Login unsuccessful: ${JSON.stringify(err)}`))
               .finally(process.exit);
           }).catch(log.notAuthenticated);
-        }).catch((err) => log.fail(`Login failed, likely an issue with inquirer data: ${err}`));
+        }).catch((err) => log.fail(`Login failed, likely an issue with data in ~/.config/configstore/ryuu: ${err}`));
       }).catch(log.notAuthenticated);
     });
 }

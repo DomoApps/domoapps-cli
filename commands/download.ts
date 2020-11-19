@@ -40,16 +40,19 @@ module.exports = function(program: Command){
           answers.version = args.designVersion || answers.version;
 
           domo.download(answers['designId'], answers['version']).then(function(req) {
-            req.on('response', function(response){
-              if (response.statusCode === 200) {
+            //@ts-ignore
+            
+              if (req.status === 200) {
                 var regexp = /filename="(.*)"/;
-                var name = response.headers['content-disposition'].match(regexp)[1] || 'domoapp';
+                var name = req.headers['content-disposition'].match(regexp)[1] || 'domoapp';
               } else {
                 log.fail('Design not found. Make sure you have the correct design id.');
               }
-
+              
+             //var name = "test2"
               var writeStream = fs.createWriteStream('./'+name+'.zip', {flags: 'w+', mode: 0o666});
-              req.pipe(writeStream);
+              //@ts-ignore
+              req.data.pipe(writeStream);
 
               writeStream.on('finish', function(){
                 var source = path.resolve('./'+name+'.zip');
@@ -61,7 +64,6 @@ module.exports = function(program: Command){
                     process.exit();
                 });
               });
-            });
           })
           .catch(() => log.clientRequestFailed('Unable to download design ' + answers.designId));
         });
