@@ -13,7 +13,7 @@ export class Session {
         method: 'GET',
         resolveWithFullResponse: true
       };
-
+      //@ts-ignore
       domo.processRequest(options)
         .then(function(res: ProcessedMessage) {
           try{
