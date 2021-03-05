@@ -10,7 +10,7 @@ import { Command } from 'commander';
 import { Login } from '../util/login';
 import Promise = require('bluebird');
 import path = require('path');
-import request = require('request-promise');
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import multichoice from '../util/multichoice';
 import { Oauth } from '../util/oauth';
 import { IncomingMessage } from "http";
@@ -134,7 +134,7 @@ module.exports = function(program: Command){
               .then(function(l: LoginData) {
                 login = l;
               })
-              .catch(() => log.fail("Failure to get user from server"))
+              .catch(() => log.fail("Failure to get user from server",  "Possible instance name issue, authorization issue, or timeout on given instance"))
               .then(function() {
                 const manifest: string = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
 
@@ -150,7 +150,9 @@ module.exports = function(program: Command){
                 }
               })
               .catch(() => log.fail("Failure to setup oauth"))
-              .then(checkVersion.bind(null, answers.instance))
+              .then(
+                checkVersion.bind(null, answers.instance)
+                )
               //@ts-ignore
               .then(versionCheckFn)
               .then(function(){
@@ -159,7 +161,8 @@ module.exports = function(program: Command){
                 return Login.persistLogin(answers.instance, login.refreshToken);
               })
               //@ts-ignore
-              .catch((err) => log.fail(`Login unsuccessful: ${JSON.stringify(err)}`))
+              .catch((err) => 
+              log.fail(`Login unsuccessful: ${JSON.stringify(err)}`))
               .finally(process.exit);
           }).catch(log.notAuthenticated);
         }).catch((err) => log.fail(`Login failed, likely an issue with data in ~/.config/configstore/ryuu: ${err}`));
@@ -170,15 +173,16 @@ module.exports = function(program: Command){
 /**
  * E.T. phone home
  */
-function checkVersion(instance: string): request.RequestPromise {
+function checkVersion(instance: string) {
   const cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
-  const options = {
+  const options: AxiosRequestConfig = {
     url: 'https://' + instance + '/domoapps/admin/checkversion?version=' + cliVersion,
     method: 'GET',
-    json: true,
-    resolveWithFullResponse: true
+    headers: {
+      'Accept': 'application/json',
+    }
   };
-  return request(options);
+  return axios(options);
 }
 
 
@@ -186,23 +190,23 @@ function checkVersion(instance: string): request.RequestPromise {
  * log message based on the action
  * if action is 'block' then 'fail' will get called and end the process early
  */
-function verifyVersion(res: ProcessedMessage){
-  const body = (Array.isArray(res))
-    ? (res[0].body)
-    : (res.body);
+function verifyVersion(res: AxiosResponse){
+  const body = (Array.isArray(res.data))
+    ? (res[0].data)
+    : (res.data);
 
   if (body.action === 'block'){
     log.fail(body.message);
   }
 
-  if (res.action === 'warn'){
-    log.warn(res.message);
-    return promptUpgrade(res.latest);
+  if (body.action === 'warn'){
+    log.warn(body.message);
+    return promptUpgrade(body.latest);
   }
 
-  if (res.action === 'info'){
-    log.info(res.message);
-    return promptUpgrade(res.latest);
+  if (body.action === 'info'){
+    log.info(body.message);
+    return promptUpgrade(body.latest);
   }
 }
 
@@ -259,18 +263,20 @@ function promptAppProxyId(): Promise<string> {
 function setupOauth(instance: string, manifestName: string, proxyId: string) {
   if (!Oauth.hasTokens({ instance, manifestName, proxyId })) {
     return Oauth.register({ instance, manifestName, proxyId })
-      .then(result => {
+      .then(response => {
+        const result = response.data;
         log.ok('Valid Device Id');
         return Oauth.verifyRegistration({
           instance,
           manifestName,
           proxyId,
-          verification_uri: result.verification_uri,
-          user_code: result.user_code,
-          device_code: result.device_code
+          verification_uri: result['verification_uri'],
+          user_code: result['user_code'],
+          device_code: result['device_code']
         });
       })
-      .then(result => {
+      .then(response => {
+        const result = response.data;
         log.ok('Retrieved Oauth Tokens');
         Oauth.persistTokens({
           instance,
