@@ -1,4 +1,6 @@
 import inquirer = require("inquirer");
+import autocompletePrompt = require('inquirer-autocomplete-prompt');
+inquirer.registerPrompt('autocomplete', autocompletePrompt);
 import _ = require('lodash');
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
@@ -82,11 +84,12 @@ module.exports = function(program: Command){
         
         if (!args.instance) {
           prompts.push(multichoice({
-            type: "list",
-            choices: function(){
+            type: "autocomplete",
+            source: (prevAnswers: inquirer.Answers, input: string) => {
               let options = _.map(previousLogins, 'instance');
-              options.push(NEW_INSTANCE);
-              return options;
+              const filtered = options.filter((c) => input === undefined ? true : c.indexOf(input) >= 0);
+              filtered.push(NEW_INSTANCE);
+              return Promise.resolve(filtered);
             },
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
             name: 'instance',

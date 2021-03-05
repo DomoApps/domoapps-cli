@@ -1,4 +1,9 @@
 import inquirer = require("inquirer");
+import Bluebird = require('bluebird');
+
+interface InquirerAutocompleteOptions extends inquirer.ListQuestionOptions {
+  source: (answers: inquirer.Answers, input: string) => Bluebird<Iterable<any>>;
+}
 
 /**
  * Abstraction around multichoice questions that works in Windows, despite https://github.com/nodejs/node/issues/5384
@@ -10,7 +15,7 @@ import inquirer = require("inquirer");
 
 const isWindows = /^win/.test(process.platform);
 
-export default function(questions: inquirer.ListQuestionOptions) {
+export default function(questions: InquirerAutocompleteOptions) {
   if (!isWindows) {
     return questions;
   }
