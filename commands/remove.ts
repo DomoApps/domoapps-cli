@@ -9,11 +9,7 @@ import { Command, CommandOptions } from 'commander';
 import { Login } from '../util/login';
 import Promise = require('bluebird');
 import path = require('path');
-import request = require('request-promise');
 import multichoice from '../util/multichoice';
-import { Oauth } from '../util/oauth';
-import { IncomingMessage } from "http";
-import { ProcessedMessage } from "../models/index";
 
 module.exports = function(program: Command){
   program

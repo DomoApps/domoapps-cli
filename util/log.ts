@@ -59,7 +59,7 @@ export class log {
 
   static notAuthenticated(refreshToken?: string) {
     if (!refreshToken){
-      log.fail('Not authenticated', 'Please login using "domo login"');
+      log.fail('Failure to authenticate', 'Mising refresh token, please login using "domo login"');
     }
     else if (refreshToken){
       log.fail('Not authenticated', 'Your refresh token may have been revoked. Please login again with "domo login".');
