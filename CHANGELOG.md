@@ -1,3 +1,27 @@
+<a name="4.0.2"></a>
+## [4.0.2](https://github.com/DomoApps/domoapps-cli/compare/v3.4.0...v4.0.2) (2020-09-23)
+
+
+### Technical Improvements
+
+* Update to Phoenix 1.15.0 ([24c8034](https://github.com/DomoApps/domoapps-cli/commit/24c8034))
+* fix for connor's type error ([0367517](https://github.com/DomoApps/domoapps-cli/commit/0367517))
+* Oauth config fix (#125) ([0591183](https://github.com/DomoApps/domoapps-cli/commit/0591183))
+* bin missing domo property thus causing ryuu to be name used in path ([a3bbafb](https://github.com/DomoApps/domoapps-cli/commit/a3bbafb))
+* Oauth fix, json wasn't parsed into an object in Typescript changes ([250ec40](https://github.com/DomoApps/domoapps-cli/commit/250ec40))
+* runner ([ecf7e6a](https://github.com/DomoApps/domoapps-cli/commit/ecf7e6a))
+* Typescript (#124) ([3ae080e](https://github.com/DomoApps/domoapps-cli/commit/3ae080e))
+
+
+<a name="3.4.0"></a>
+# [3.4.0](https://github.com/DomoApps/domoapps-cli/compare/v3.3.24...v3.4.0) (2020-06-10)
+
+
+### Technical Improvements
+
+* Update build script ([e3307b9](https://github.com/DomoApps/domoapps-cli/commit/e3307b9))
+
+
 <a name="3.3.24"></a>
 ## [3.3.24](https://github.com/DomoApps/domoapps-cli/compare/v3.3.23...v3.3.24) (2020-06-10)
 
@@ -572,6 +596,9 @@
 ### Technical Improvements
 
 * making sure to only warn once ([88c6281](https://github.com/DomoApps/domoapps-cli/commit/88c6281))
+* unhandledRejection handler with update message ([f8b9e80](https://github.com/DomoApps/domoapps-cli/commit/f8b9e80))
+* fixing wording ([5d6de9d](https://github.com/DomoApps/domoapps-cli/commit/5d6de9d))
+* uncaughtException handler with update message ([0f24802](https://github.com/DomoApps/domoapps-cli/commit/0f24802))
 
 
 <a name="2.16.1"></a>
@@ -581,9 +608,6 @@
 ### Technical Improvements
 
 * support data append in domo dev ([78e73e1](https://github.com/DomoApps/domoapps-cli/commit/78e73e1))
-* unhandledRejection handler with update message ([f8b9e80](https://github.com/DomoApps/domoapps-cli/commit/f8b9e80))
-* fixing wording ([5d6de9d](https://github.com/DomoApps/domoapps-cli/commit/5d6de9d))
-* uncaughtException handler with update message ([0f24802](https://github.com/DomoApps/domoapps-cli/commit/0f24802))
 
 
 <a name="2.16.0"></a>
