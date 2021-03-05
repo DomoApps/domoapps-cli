@@ -1,4 +1,4 @@
-import { OptionsWithUrl } from 'request-promise';
+import { AxiosRequestConfig } from 'axios';
 import * as Bluebird from 'bluebird';
 global.Promise = <any>Bluebird;
 import { log } from './log';
@@ -8,10 +8,9 @@ import { ProcessedMessage } from "../models/index";
 export class Session {
   static check (domo: Domo) {
     return new Promise(function(resolve, reject){
-      var options: OptionsWithUrl = {
+      var options: AxiosRequestConfig = {
         url: 'https://' + domo.getInstance() + '/auth/validate',
-        method: 'GET',
-        resolveWithFullResponse: true
+        method: 'GET'
       };
       //@ts-ignore
       domo.processRequest(options)

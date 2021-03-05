@@ -94,7 +94,8 @@ app.get('/', function (req, res){
 
 app.use('/domodev', express.static(path.resolve(__dirname + '/../server/domodev')));
 app.use(express.static('.'));
-app.use(proxy.express());
+app.use(
+  proxy.express());
 
 module.exports = {
   start: function(domo: Domo, options: DomoOptions){
