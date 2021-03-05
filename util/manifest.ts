@@ -70,6 +70,7 @@ function validateManifest(manifest: manifest) {
   // validate manifest file for required fields
   requireProperty(manifest, 'name');
   requireProperty(manifest, 'version');
+  requireProperty(manifest, 'mapping');
 
   // validate required mapping fields
   manifest.mapping.forEach(function(dataPoint) {
