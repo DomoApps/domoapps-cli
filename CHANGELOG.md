@@ -1,5 +1,20 @@
-<a name="4.0.2"></a>
-## [4.0.2](https://github.com/DomoApps/domoapps-cli/compare/v3.4.0...v4.0.2) (2020-09-23)
+<a name="4.1.0"></a>
+# [4.1.0](https://github.com/DomoApps/domoapps-cli/compare/v4.0.4...v4.1.0) (2021-03-06)
+
+
+### Technical Improvements
+
+* Request -> Axios, Refactoring, Fixing delete functionality, reworked publish code flow ([5a4377c](https://github.com/DomoApps/domoapps-cli/commit/5a4377c))
+* Added inquirer plugin for autocomplete on login command (Mac only) ([172240e](https://github.com/DomoApps/domoapps-cli/commit/172240e))
+* post publish proxy fix ([edffe75](https://github.com/DomoApps/domoapps-cli/commit/edffe75))
+* phoenix/domo.js update
+* New Command: proxy ([cfe199d](https://github.com/DomoApps/domoapps-cli/commit/cfe199d))
+* Update README ([9addccb](https://github.com/DomoApps/domoapps-cli/commit/9addccb))
+* Documenting releasing Phoenix ([693c4a5](https://github.com/DomoApps/domoapps-cli/commit/693c4a5))
+
+
+<a name="4.0.4"></a>
+## [4.0.4](https://github.com/DomoApps/domoapps-cli/compare/v3.4.0...v4.0.4) (2020-09-23)
 
 
 ### Technical Improvements

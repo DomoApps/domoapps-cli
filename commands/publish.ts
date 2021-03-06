@@ -19,7 +19,7 @@ module.exports = function(program: Command){
     .description('publish a new or existing Custom App design')
     .option('-g, --go', 'navigate to design in Asset Library after publishing')
     .action(function(options){
-      var manifest = Manifest.get(program.manifest);
+      var manifest = Manifest.get(program.opts().manifest);
       if (!manifest) return;
 
       Login.getMostRecentLogin().then(function(domo) {
@@ -188,7 +188,7 @@ function logUploadSuccess(files: File[]){
 function goToDomo(options: CommandOptions, domo: Domo, manifest: manifest) {
   console.log('Design can be found at https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id);
   if (options && options['go']) {
-   open('https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id, {url: true});
+   open('https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id);
   }
 }
 
