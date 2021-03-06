@@ -2,7 +2,7 @@ import inquirer = require("inquirer");
 import Bluebird = require('bluebird');
 
 interface InquirerAutocompleteOptions extends inquirer.ListQuestionOptions {
-  source: (answers: inquirer.Answers, input: string) => Bluebird<Iterable<any>>;
+  source?: (answers: inquirer.Answers, input: string) => Bluebird<Iterable<any>>;
 }
 
 /**
