@@ -14,7 +14,7 @@ module.exports = function(program: Command) {
     .option('-c, --confirm', 'Confirm deleting the app')
     .action(function(arg: string, options: CommandOptions) {
 
-      var designId = design.getDesignId(arg, options['design_id'], program.manifest);
+      var designId = design.getDesignId(arg, options['design_id'], program.opts().manifest);
       if(options['confirm']) {
           let answer = {delete:true}
           handleUserResponse(answer)
