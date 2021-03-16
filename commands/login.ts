@@ -1,22 +1,22 @@
+import Promise = require('bluebird');
 import inquirer = require("inquirer");
 import autocompletePrompt = require('inquirer-autocomplete-prompt');
-inquirer.registerPrompt('autocomplete', autocompletePrompt);
-import _ = require('lodash');
 import * as chalk from 'chalk';
+import _ = require('lodash');
+import path = require('path');
 import * as fs from 'fs-extra';
 import shell = require('shelljs');
-import { log } from '../util/log';
-import { LoginData } from 'ryuu-client/models';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import Domo = require('ryuu-client');
-import { Command } from 'commander';
+import { log } from '../util/log';
 import { Login } from '../util/login';
-import Promise = require('bluebird');
-import path = require('path');
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import multichoice from '../util/multichoice';
 import { Oauth } from '../util/oauth';
+
+import { Command } from 'commander';
+import { LoginData } from 'ryuu-client/models';
 import { IncomingMessage } from "http";
-import { ProcessedMessage, FullRegistration } from "../models/index";
+
 let autoUpdate = false;
 const logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -51,6 +51,7 @@ const logo = `
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
 const NEW_INSTANCE = 'new instance'
 const isWin = process.platform === 'win32';
+inquirer.registerPrompt('autocomplete', autocompletePrompt);
 
 module.exports = function(program: Command){
   program
