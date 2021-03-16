@@ -10,7 +10,7 @@ module.exports = function(program: Command) {
     .description('undelete a soft-deleted design')
     .action(function(arg, options) {
 
-      var designId = design.getDesignId(arg, null, program.manifest);
+      var designId = design.getDesignId(arg, null, program.opts().manifest);
 
       inquirer.prompt([{
         type: 'confirm',

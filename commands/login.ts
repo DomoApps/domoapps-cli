@@ -1,20 +1,22 @@
+import Promise = require('bluebird');
 import inquirer = require("inquirer");
-import _ = require('lodash');
+import autocompletePrompt = require('inquirer-autocomplete-prompt');
 import * as chalk from 'chalk';
+import _ = require('lodash');
+import path = require('path');
 import * as fs from 'fs-extra';
 import shell = require('shelljs');
-import { log } from '../util/log';
-import { LoginData } from 'ryuu-client/models';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import Domo = require('ryuu-client');
-import { Command } from 'commander';
+import { log } from '../util/log';
 import { Login } from '../util/login';
-import Promise = require('bluebird');
-import path = require('path');
-import request = require('request-promise');
 import multichoice from '../util/multichoice';
 import { Oauth } from '../util/oauth';
+
+import { Command } from 'commander';
+import { LoginData } from 'ryuu-client/models';
 import { IncomingMessage } from "http";
-import { ProcessedMessage, FullRegistration } from "../models/index";
+
 let autoUpdate = false;
 const logo = `
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -49,6 +51,7 @@ const logo = `
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
 const NEW_INSTANCE = 'new instance'
 const isWin = process.platform === 'win32';
+inquirer.registerPrompt('autocomplete', autocompletePrompt);
 
 module.exports = function(program: Command){
   program
@@ -65,16 +68,21 @@ module.exports = function(program: Command){
         autoUpdate = true
       }
       if(args.transfer) {
-        fs.copySync(
-          `${(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'])}/.domo/login/`, 
-          `${Domo.getHomeDir()}/ryuu/`,
-          {overwrite: false}
-        )
+        if(fs.existsSync(`${(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'])}/.domo/login/`)) {
+          fs.copySync(
+            `${(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'])}/.domo/login/`, 
+            `${Domo.getHomeDir()}/ryuu/`,
+            {overwrite: false}
+          )
+        }
+        else {
+          log.fail("You do not have any ryuu 3.x logins to transfer to ryuu 4.x, run this command without the -t command to login");
+        }
       }
       const previousLogins = Login.getPreviousLogins();
       const mayNotBeAuthenticated = true;
       let login: LoginData;
-      Login.getMostRecentLogin(mayNotBeAuthenticated).then(function(mostRecent) {
+      Login.getMostRecent().then(function(mostRecent) {
         let prompts = [];
         let versionCheckFn = !args.upgradeCheck ?
           function (x: IncomingMessage) { return x; } :
@@ -82,18 +90,19 @@ module.exports = function(program: Command){
         
         if (!args.instance) {
           prompts.push(multichoice({
-            type: "list",
-            choices: function(){
+            type: "autocomplete",
+            source: (prevAnswers: inquirer.Answers, input: string) => {
               let options = _.map(previousLogins, 'instance');
-              options.push(NEW_INSTANCE);
-              return options;
+              const filtered = options.filter((c) => input === undefined ? true : c.indexOf(input) >= 0);
+              filtered.push(NEW_INSTANCE);
+              return Promise.resolve(filtered);
             },
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
             name: 'instance',
 
             default: function(){
-              if (mostRecent.getInstance())
-                return mostRecent.getInstance
+              if (mostRecent)
+                return mostRecent
               else
                 return
             },
@@ -101,7 +110,7 @@ module.exports = function(program: Command){
             when: function(answers: inquirer.Answers){
               return previousLogins.length > 0;
             }
-          }),
+          }, previousLogins , NEW_INSTANCE),
           {
             type: "input",
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
@@ -134,6 +143,7 @@ module.exports = function(program: Command){
               .then(function(l: LoginData) {
                 login = l;
               })
+              .catch(() => log.fail("Failure to get user from server",  "Possible instance name issue, authorization issue, or timeout on given instance"))
               .then(function() {
                 const manifest: string = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
 
@@ -148,17 +158,23 @@ module.exports = function(program: Command){
                   }
                 }
               })
-              .then(checkVersion.bind(null, answers.instance))
+              .catch(() => log.fail("Failure to setup oauth"))
+              .then(
+                checkVersion.bind(null, answers.instance)
+                )
+              //@ts-ignore
               .then(versionCheckFn)
               .then(function(){
                 console.log(chalk.grey(logo));
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
                 return Login.persistLogin(answers.instance, login.refreshToken);
               })
-              .catch((err) => log.fail(`Login unsuccessful: ${JSON.stringify(err)}`))
+              //@ts-ignore
+              .catch((err) => 
+              log.fail(`Login unsuccessful: ${JSON.stringify(err)}`))
               .finally(process.exit);
           }).catch(log.notAuthenticated);
-        }).catch((err) => log.fail(`Login failed, likely an issue with inquirer data: ${err}`));
+        }).catch((err) => log.fail(`Login failed, likely an issue with data in ~/.config/configstore/ryuu: ${err}`));
       }).catch(log.notAuthenticated);
     });
 }
@@ -166,15 +182,16 @@ module.exports = function(program: Command){
 /**
  * E.T. phone home
  */
-function checkVersion(instance: string): request.RequestPromise {
+function checkVersion(instance: string) {
   const cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
-  const options = {
+  const options: AxiosRequestConfig = {
     url: 'https://' + instance + '/domoapps/admin/checkversion?version=' + cliVersion,
     method: 'GET',
-    json: true,
-    resolveWithFullResponse: true
+    headers: {
+      'Accept': 'application/json',
+    }
   };
-  return request(options);
+  return axios(options);
 }
 
 
@@ -182,23 +199,23 @@ function checkVersion(instance: string): request.RequestPromise {
  * log message based on the action
  * if action is 'block' then 'fail' will get called and end the process early
  */
-function verifyVersion(res: ProcessedMessage){
-  const body = (Array.isArray(res))
-    ? (res[0].body)
-    : (res.body);
+function verifyVersion(res: AxiosResponse){
+  const body = (Array.isArray(res.data))
+    ? (res[0].data)
+    : (res.data);
 
   if (body.action === 'block'){
     log.fail(body.message);
   }
 
-  if (res.action === 'warn'){
-    log.warn(res.message);
-    return promptUpgrade(res.latest);
+  if (body.action === 'warn'){
+    log.warn(body.message);
+    return promptUpgrade(body.latest);
   }
 
-  if (res.action === 'info'){
-    log.info(res.message);
-    return promptUpgrade(res.latest);
+  if (body.action === 'info'){
+    log.info(body.message);
+    return promptUpgrade(body.latest);
   }
 }
 
@@ -255,18 +272,20 @@ function promptAppProxyId(): Promise<string> {
 function setupOauth(instance: string, manifestName: string, proxyId: string) {
   if (!Oauth.hasTokens({ instance, manifestName, proxyId })) {
     return Oauth.register({ instance, manifestName, proxyId })
-      .then(result => {
+      .then(response => {
+        const result = response.data;
         log.ok('Valid Device Id');
         return Oauth.verifyRegistration({
           instance,
           manifestName,
           proxyId,
-          verification_uri: result.verification_uri,
-          user_code: result.user_code,
-          device_code: result.device_code
+          verification_uri: result['verification_uri'],
+          user_code: result['user_code'],
+          device_code: result['device_code']
         });
       })
-      .then(result => {
+      .then(response => {
+        const result = response.data;
         log.ok('Retrieved Oauth Tokens');
         Oauth.persistTokens({
           instance,

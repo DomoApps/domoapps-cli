@@ -12,7 +12,7 @@ module.exports = function(program: Command){
     .description('prepare a design for app store release')
     .action(function(){
       Login.getMostRecentLogin().then(function(domo) {
-        var manifest = Manifest.get(program.manifest);
+        var manifest = Manifest.get(program.opts().manifest);
 
         // make sure app has been published first
         if (!manifest.id){

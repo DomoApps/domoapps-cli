@@ -5,7 +5,8 @@
 import path = require('path');
 import _ = require('lodash');
 import fs = require('fs-extra');
-import * as Promise from 'bluebird';
+import * as Bluebird from 'bluebird';
+global.Promise = <any>Bluebird;
 let bs = require('browser-sync').create();
 import portfinder = require('portfinder');
 portfinder.basePort = 3000;
@@ -43,7 +44,7 @@ app.get('/', function (req, res){
     .then(() => {
       
       manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
-      return createContext(manifest.id, manifest.mapping);
+      return domoApp.createContext(manifest.id, manifest.mapping);
     })
     .then((appContext) => {
       context = appContext;
@@ -59,7 +60,7 @@ app.get('/', function (req, res){
                   };
       }
       manifest.contextId = context.id;
-      return getDomoappsData();
+      return domoApp.getDomoappsData(manifest);
     })
     .then((appData) => {
       // sizes consistent with Domo Web
@@ -69,7 +70,9 @@ app.get('/', function (req, res){
       };
       const width = sizeMultiplier.width * manifest.size.width - 10 + 'px';
       const height = sizeMultiplier.height * manifest.size.height - 40 + 'px';
+      //@ts-ignore
       const userId = domoOptions.userId || appData.user.id;
+      //@ts-ignore
       const customerId = 1 || appData.customer;
       const url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
       const hasThumbnail = appStructure.hasThumbnail();
@@ -131,46 +134,8 @@ function getCustomer(){
   return (<string>domoApp.getInstance()).match(regexp)[1];
 }
 
-function getEnv(){
-  var regexp = /([-_\w]+)\.(.*)/;
-  return domoApp.getInstance().match(regexp)[2];
-}
-
 /**
  * Fetch domoapps environment data from maestro.
  * Fallback to inferring it by the instance URL.
  */
 
-function getDomoappsData(){
-  var manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
-  var uuid = (manifest['proxyId']) ? manifest.proxyId : Domo.createUUID();
-  var options = {
-    url: 'https://' + domoApp.getInstance() + '/api/content/v1/mobile/environment',
-    resolveWithFullResponse: true
-  }
-  return domoApp.processRequest(options)
-    .then(function(res) {
-      var data = JSON.parse(res.toString());
-      data.url = 'https://'+uuid+'.' + JSON.parse(res.toString()).domoappsDomain;
-      
-      return data;
-    }).catch(function() {
-      var data = {url: 'https://'+uuid+'.domoapps.' + getEnv()};
-      return data;
-    });
-}
-function createContext(designId: string, mapping: DataPoint[]) {
-  var options = {
-    url: 'https://' + domoApp.getInstance() + '/domoapps/apps/v2/contexts',
-    method: 'POST',
-    json: {designId: designId, mapping: mapping},
-    resolveWithFullResponse: true
-  };                     
-  return domoApp.processRequest(options)
-    .then(function(res) {
-      return res[0];
-    }).catch(function(err) {
-      console.log("Error: ", JSON.stringify(err));
-      return;
-    })
-}

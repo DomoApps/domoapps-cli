@@ -3,12 +3,12 @@ import path = require('path');
 import Domo = require('ryuu-client');
 import { Manifest } from './manifest';
 import Promise = require('bluebird');
-import request = require('request');
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import qs = require('qs');
 import open = require('open');
 import * as chalk from 'chalk';
 import { Registration, ActiveRegistration, FullRegistration } from "../models/index";
 import Configstore = require('configstore');
-import { log } from '../util/log';
 const home = Domo.getHomeDir();
 
 export class Oauth {
@@ -62,47 +62,44 @@ export class Oauth {
     return false;
   }
 
-  static register(registration: Registration): Promise<FullRegistration> {
-    return new Promise((resolve, reject) => {
-      request.post(
-        {
-          url: `https://${registration.instance}/api/oauth2/device_authorization`,
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          form: {
-            client_id: `domo:ryuu:${registration.proxyId}`,
-            scope: this.getScopes(registration.manifestName).join(' '),
-          }
-        },
-        (error, httpResponse, body) => {
-          if (httpResponse.statusCode !== 200) reject(body.trim());
-          resolve(JSON.parse(body));
-        }
-      );
-    });
+  static register(registration: Registration) {
+    const options: AxiosRequestConfig = {
+      url: `https://${registration.instance}/api/oauth2/device_authorization`,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      data: qs.stringify({
+        client_id: `domo:ryuu:${registration.proxyId}`,
+        scope: this.getScopes(registration.manifestName).join(' '),
+      })
+    };
+
+    return axios(options).then((response) => {
+      return Promise.resolve(response)
+    })
+    .catch((error)=> {
+      return Promise.reject(error)
+    })
   }
 
-  static verifyRegistration(registration: FullRegistration) {
+  static verifyRegistration(registration: FullRegistration): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
       open(`${registration.verification_uri}?user_code=${registration.user_code}`);
       // scopes are space separated
       const scopes = this.getScopes(registration.manifestName).join(' ');
+      const options: AxiosRequestConfig = {
+        url: `https://${registration.instance}/domoapps/admin/device-registration/${registration.proxyId}?scope=${scopes}&device_code=${registration.device_code}`,
+        method: "GET"
+      }
 
       const checkRegistration = setInterval(() => {
         new Promise((resolve, reject) => {
-          request.get(
-            {
-              url: `https://${registration.instance}/domoapps/admin/device-registration/${registration.proxyId}?scope=${scopes}&device_code=${registration.device_code}`
-            },
-            (error, httpResponse, body) => {
-              if (httpResponse.statusCode !== 200) reject(body.trim());
-              resolve(JSON.parse(body));
-            }
-          );
+          axios(options).then(response => {resolve(response)}).catch(error => {reject(error)})
         })
         .then(result => {
           clearInterval(checkRegistration);
+          //@ts-ignore
           resolve(result);
         })
         .catch(error => {

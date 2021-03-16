@@ -1,5 +1,6 @@
-import { OptionsWithUrl } from 'request-promise';
-import * as Promise from 'bluebird';
+import { AxiosRequestConfig } from 'axios';
+import * as Bluebird from 'bluebird';
+global.Promise = <any>Bluebird;
 import { log } from './log';
 import Domo = require('ryuu-client');
 import { ProcessedMessage } from "../models/index";
@@ -7,12 +8,11 @@ import { ProcessedMessage } from "../models/index";
 export class Session {
   static check (domo: Domo) {
     return new Promise(function(resolve, reject){
-      var options: OptionsWithUrl = {
+      var options: AxiosRequestConfig = {
         url: 'https://' + domo.getInstance() + '/auth/validate',
-        method: 'GET',
-        resolveWithFullResponse: true
+        method: 'GET'
       };
-
+      //@ts-ignore
       domo.processRequest(options)
         .then(function(res: ProcessedMessage) {
           try{

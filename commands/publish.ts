@@ -11,7 +11,6 @@ import { constant, manifest, File } from '../models';
 import Domo = require('ryuu-client');
 import { Command, CommandOptions } from 'commander';
 import { DesignVersion } from 'ryuu-client/models/interfaces/domoappstypes';
-import { RequestError, StatusCodeError } from 'request-promise/errors';
 
 module.exports = function(program: Command){
   program
@@ -19,17 +18,17 @@ module.exports = function(program: Command){
     .description('publish a new or existing Custom App design')
     .option('-g, --go', 'navigate to design in Asset Library after publishing')
     .action(function(options){
-      var manifest = Manifest.get(program.manifest);
+      var manifest = Manifest.get(program.opts().manifest);
       if (!manifest) return;
 
       Login.getMostRecentLogin().then(function(domo) {
         var ignore = ['**/*/node_modules/**/*', 'node_modules/**/*'];
         var userIgnore = manifest.ignore;
-        if (userIgnore){
+        if (userIgnore) {
           if (userIgnore instanceof Array){
             ignore = ignore.concat(userIgnore);
           }
-          else{
+          else {
             log.fail('The manifest.json "ignore" property must be an Array');
             return;
           }
@@ -53,7 +52,7 @@ module.exports = function(program: Command){
         else{
           domo.getDesign(manifest.id).then(function(result) {
             var latestVersionNumber = result.latestVersion;
-            var latestVersion = result.versions.filter(function(obj) {
+            var latestVersion = result.versions.filter(function(obj:any) {
               return obj.version === latestVersionNumber;
             });
             var oldMapping = latestVersion[0].mapping[0];
@@ -69,9 +68,15 @@ module.exports = function(program: Command){
 
             domo.uploadAllAssets(manifest)
             .tap(()=>{log.ok('Publishing ' + manifest.name + ' to ' + domo.getInstance() + ' on ' + new Date())})
-            .then(logUploadSuccess)
-            .catch(function(e: StatusCodeError){
-              if(e.statusCode === 401) {
+            .then(
+              logUploadSuccess)
+            .catch(
+              function(e){
+              
+              if (e.statusCode === 400 && !(e.message.startsWith('DA'))) {
+                log.fail('Design failed to publish with error:', e.message)
+              }
+              else if(e.statusCode === 401) {
                 log.notAuthenticated(domo.getRefreshToken());
               }
               else if(e.statusCode === 403) {
@@ -107,19 +112,37 @@ module.exports = function(program: Command){
                 }
               }
               else {
-                log.fail(log.handleErrorMessage(e, 'Error uploading assets'));
+                //Error uploading assets
+                log.fail(log.handleErrorMessage(e, 'Error uploading assets in the upload all assets'));
               }
             });
           })
           .then(function() {
             goToDomo(options, domo, manifest);
           })
-          .catch((err: RequestError) => {
-            if(err.message){
+          .catch((err) => {
+            if (err.message.substr(0,23) == "Design has been deleted")
+              recreateDesign(domo, manifest);
+            else if (err.message.substr(0,15) == "No design found") {
+              inquirer
+              .prompt({
+                  type: "confirm",
+                  message: 'This design does not exist on ' + domo.getInstance() + '. Would you like to create a new design with these assets?',
+                  name: 'askCreate'
+                }
+              )
+              .then(function (answers) {
+                if (answers.askCreate){
+                  manifest.id = null;
+                  createDesign(domo, manifest);
+                }
+              })
+            }
+            else if(err.message){
               log.fail(log.handleErrorMessage(err, err.message));
             }
             else {
-              log.clientRequestFailed('Error uploading assets');
+              log.clientRequestFailed('Error uploading assets in the getDesign');
             }
           });
         }
@@ -144,11 +167,11 @@ function createDesign(domo: Domo, manifest: manifest, options?: CommandOptions) 
       return Manifest.persistDesignId(design, manifest);
     })
     .tap(()=>{(log.ok('New design created on ' + domo.getInstance()))})
-    .catch(()=>{log.fail('Error creating new design')})
+    .catch((e)=>{log.fail('Error when creating new design:', e.message)})
     .then(domo.uploadAllAssets.bind(domo, manifest))
     .then(logUploadSuccess)
     .catch(function(e: string){
-      log.fail(e || 'Error uploading assets');
+      log.fail(e || 'Error uploading assets in the first time uploading');
     })
     .then(function() {
       goToDomo(options, domo, manifest);
@@ -164,6 +187,85 @@ function logUploadSuccess(files: File[]){
 function goToDomo(options: CommandOptions, domo: Domo, manifest: manifest) {
   console.log('Design can be found at https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id);
   if (options && options['go']) {
-   open('https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id, {url: true});
+   open('https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id);
   }
+}
+
+function recreateDesign(domo: Domo, manifest: manifest) {
+  inquirer
+    .prompt({
+        type: "list",
+        message: 'This design has been deleted. Would you like to undelete this design and publish to it, or create a new design with these assets?',
+        name: 'askRecreate',
+        choices: ["Undelete", "Create New Design"]
+      }
+    )
+    .then(function (answers) {
+      if (answers.askRecreate){
+        if (answers.askRecreate == 'Create New Design') {
+          manifest.id = null;
+          createDesign(domo, manifest);
+        }
+        else if (answers.askRecreate == 'Undelete') {
+          domo.unDeleteDesign(manifest.id).then(() => {
+            publishAssets(domo, manifest);});
+          
+        }
+          
+        else { log.ok('Exited without republishing design')}
+      }
+    });
+}
+
+function publishAssets(domo: Domo, manifest: manifest) {
+  domo.uploadAllAssets(manifest)
+    .tap(()=>{log.ok('Publishing ' + manifest.name + ' to ' + domo.getInstance() + ' on ' + new Date())})
+    .then(
+      logUploadSuccess)
+    .catch(
+      function(e){
+      
+      if (e.statusCode === 400 && !(e.message.startsWith('DA'))) {
+        log.fail('Design failed to publish with error:', e.message)
+      }
+      else if(e.statusCode === 401) {
+        log.notAuthenticated(domo.getRefreshToken());
+      }
+      else if(e.statusCode === 403) {
+        log.fail('You do not have access to the design with id ' + manifest.id + ' on ' + domo.getInstance()
+          + '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.'
+          + '\nAlternatively, you may have inadvertently changed the design id.');
+      }
+      else if(e.message && e.message.startsWith('DA')) {
+        switch (e.message.substr(0, 6)) {
+          case 'DA0086':
+            log.warn(e.message);
+            inquirer
+              .prompt([
+                {
+                  type: 'confirm',
+                  message: 'This design has been deleted. Would you like to publish a new design with these assets?',
+                  name: 'askRecreate'
+                }
+              ])
+              .then(function (answers) {
+                if (answers.askRecreate){
+                  manifest.id = null;
+                  createDesign(domo, manifest);
+                }
+              });
+
+            break;
+
+          default:
+            // Pass on error messages that are in the set of documented errors.
+            log.fail(e.message);
+            break;
+        }
+      }
+      else {
+        //Error uploading assets
+        log.fail(log.handleErrorMessage(e, 'Error uploading assets in the upload all assets'));
+      }
+    })
 }
