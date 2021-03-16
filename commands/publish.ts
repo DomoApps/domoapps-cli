@@ -6,7 +6,6 @@ import { Login } from '../util/login';
 import glob = require('glob');
 import fs = require('fs-extra');
 import { log } from '../util/log' ;
-import multichoice from '../util/multichoice';
 import appStructure = require('../util/appStructure');
 import { constant, manifest, File } from '../models';
 import Domo = require('ryuu-client');

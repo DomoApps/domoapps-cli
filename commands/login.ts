@@ -67,11 +67,16 @@ module.exports = function(program: Command){
         autoUpdate = true
       }
       if(args.transfer) {
-        fs.copySync(
-          `${(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'])}/.domo/login/`, 
-          `${Domo.getHomeDir()}/ryuu/`,
-          {overwrite: false}
-        )
+        if(fs.existsSync(`${(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'])}/.domo/login/`)) {
+          fs.copySync(
+            `${(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'])}/.domo/login/`, 
+            `${Domo.getHomeDir()}/ryuu/`,
+            {overwrite: false}
+          )
+        }
+        else {
+          log.fail("You do not have any ryuu 3.x logins to transfer to ryuu 4.x, run this command without the -t command to login");
+        }
       }
       const previousLogins = Login.getPreviousLogins();
       const mayNotBeAuthenticated = true;
@@ -104,7 +109,7 @@ module.exports = function(program: Command){
             when: function(answers: inquirer.Answers){
               return previousLogins.length > 0;
             }
-          }),
+          }, previousLogins , NEW_INSTANCE),
           {
             type: "input",
             message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
