@@ -61,6 +61,7 @@ module.exports = function(program: Command){
     .option('-u, --user-email <value>', 'user email')
     .option('-f, --manifest-file <file>', 'use a specific manifest file')
     .option('-t, --transfer', 'transfer login files from ryuu 3.x')
+    .option('-o, --oauth', 'setup oauth')
     .option('--no-upgrade-check', 'do not check for new versions')
     .option('--upgrade-download', 'Automatically download newer version if available. ')
     .action(function(args){
@@ -145,23 +146,25 @@ module.exports = function(program: Command){
               })
               .catch(() => log.fail("Failure to get user from server",  "Possible instance name issue, authorization issue, or timeout on given instance"))
               .then(function() {
-                const manifest: string = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
-
-                if (Oauth.isOAuthEnabled(manifest)) {
-                  if (Oauth.hasAppProxyId(manifest)) {
-                    return setupOauth(answers.instance, manifest, Oauth.getAppProxyId(manifest));
-                  }
-                  else {
-                    return promptAppProxyId().then(proxyId => {
-                      return setupOauth(answers.instance, manifest, proxyId);
-                    });
+                if (args.oauth) {
+                  const manifest: string = (args.manifestFile !== undefined) ? (args.manifestFile) : ('manifest.json');
+                  if (Oauth.isOAuthEnabled(manifest)) {
+                    if (Oauth.hasAppProxyId(manifest)) {
+                      return setupOauth(answers.instance, manifest, Oauth.getAppProxyId(manifest));
+                    }
+                    else {
+                      return promptAppProxyId().then(proxyId => {
+                        return setupOauth(answers.instance, manifest, proxyId);
+                      });
+                    }
                   }
                 }
+                else return;
               })
               .catch(() => log.fail("Failure to setup oauth"))
               .then(
                 checkVersion.bind(null, answers.instance)
-                )
+              )
               //@ts-ignore
               .then(versionCheckFn)
               .then(function(){

@@ -39,7 +39,10 @@ export class Manifest {
 
     // add the manifest name, so it's attached to the object
     manifest.fileName = manifestName;
-
+    /*
+    waiting to deploy below line until I have time to refactor oauth
+    log.info(`Getting manifest located in ${ path.resolve(manifestPath) }`)
+    */
     return manifest;
   }
 
