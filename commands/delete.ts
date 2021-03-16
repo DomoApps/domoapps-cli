@@ -14,7 +14,7 @@ module.exports = function(program: Command) {
     .option('-c, --confirm', 'Confirm deleting the app')
     .action(function(arg: string, options: CommandOptions) {
 
-      var designId = design.getDesignId(arg, options['design_id'], program.manifest);
+      var designId = design.getDesignId(arg, options['design_id'], program.opts().manifest);
       if(options['confirm']) {
           let answer = {delete:true}
           handleUserResponse(answer)
@@ -37,10 +37,13 @@ module.exports = function(program: Command) {
             
             if (options['force']) force = true;
             domo.deleteDesign(designId, force)
-              .tap(() => log.ok('Deleted design ' + designId))
-              .catch(() => log.fail('Unable to delete design ' + designId + ". That id does not exist or you are not authorized to delete it."))
+              .tap(() => 
+              log.ok('Deleted design ' + designId))
+              .catch(() => 
+              log.fail('Unable to delete design ' + designId + ". That id does not exist or you are not authorized to delete it."))
               .finally(process.exit);
-          }).catch(log.notAuthenticated);
+          }).catch(
+            log.notAuthenticated);
         } else {
           log.fail('Delete command aborted');
         }

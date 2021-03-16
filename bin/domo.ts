@@ -18,7 +18,6 @@ const cliVersion = require(path.resolve(__dirname + '/../package.json')).version
 
 program
   .version(cliVersion, '-v, --version')
-  .option('-w, --watch', '[DEPRECATED] publish Custom App design every time a file changes')
   .option('-vb, --verbose', 'log more details including XHR responses, useful for troubleshooting')
   .option('-m, --manifest [type]', 'use a specific manifest file');
 
@@ -29,29 +28,4 @@ glob
     require(command)(program);
   });
 
-if (!process.argv.slice(2).length) {
-    program.help();
-} else {
-    program.parse(process.argv);
-
-    var has_command = false;
-
-    if (!program.args) {
-        program.args = [];
-    }
-
-    for (var i = 0, len = program.args.length; i < len; i++) {
-      //const x = program.args[i];
-        //if (program.commands.includes(x)) {
-          //@ts-ignore
-          if (program.args[i] instanceof program.Command) {
-            has_command = true;
-            break;
-        }
-    }
-
-    if (!has_command) {
-        console.log('  Invalid option "%s"', program.args.join(' '));
-        program.help();
-    }
-}
+program.parse(process.argv);

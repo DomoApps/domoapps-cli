@@ -1,15 +1,16 @@
 import glob = require('glob');
 import fs = require('fs-extra');
 import path = require('path');
-import { login, constant } from '../models';
+import { login, constant, ProxyOptions } from '../models';
 import Domo = require('ryuu-client');
 import { log } from './log';
 import Configstore = require('configstore');
+import inquirer = require("inquirer");
 const home = Domo.getHomeDir();
 
 
 export class Login {
-  static getMostRecentLogin(mayNotBeAuthenticated?: boolean): Promise<Domo> {
+  static getMostRecent(): Promise<string> {
     var logins = glob.sync(home + '/ryuu/*.json');
     //If there are no logins, return a rejection as the user is unauthenticated.
     if (logins.length === 0) {
@@ -20,13 +21,11 @@ export class Login {
       return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
     });
     var loginData: login = fs.readJsonSync(recent);
-    const configstore = new Configstore('/ryuu/' + loginData.instance);
-    const refreshToken = configstore.get('refreshToken');
-    loginData.refreshToken = refreshToken;
-    if(!mayNotBeAuthenticated) {
-      verifyLoginLocal(loginData);
-    }
-    return Promise.resolve(new Domo(loginData.instance, loginData.refreshToken, constant.CLIENT_ID, loginData.devToken));
+    return Promise.resolve(loginData.instance);
+  }
+  static getMostRecentLogin(mayNotBeAuthenticated?: boolean): Promise<Domo> {
+    return this.getMostRecent().then(instance => {
+      return this.getLogin(instance)})
   }
 
   static getPreviousLogins(): Array<login> {
@@ -76,14 +75,28 @@ export class Login {
 
   static getLogin(instance: string) {
     const configstore = new Configstore('/ryuu/' + instance)
-    try {
-      return Promise.resolve(new Domo(instance, configstore.get('refreshToken'), constant.CLIENT_ID, configstore.get('devToken')));
+    const proxy = new Configstore('/proxy');
+    const username = proxy.get('username');
+    if (username) {
+    return inquirer.prompt([{
+        type: 'password',
+        message: 'Please enter your password:',
+        name: 'pass'
+      }])
+      .then((answers)=> { 
+        return Promise.resolve(new Domo(instance, configstore.get('refreshToken'), constant.CLIENT_ID, {host: proxy.get('host'), port: proxy.get('port'), username: proxy.get('username'), password: answers.pass},configstore.get('devToken')));
+      })
     }
-    catch (ex) {
-      return Promise.resolve(new Domo(instance, configstore.get('refreshToken'), constant.CLIENT_ID));
+    else {
+      try {
+        return Promise.resolve(new Domo(instance, configstore.get('refreshToken'), constant.CLIENT_ID, {host: proxy.get('host'), port: proxy.get('port')}, configstore.get('devToken')));
+      }
+      catch (ex) {
+        return Promise.resolve(new Domo(instance, configstore.get('refreshToken'), constant.CLIENT_ID));
+      }
     }
-  }  
-};
+  };
+}
 
 function verifyLoginLocal(login: login): void {
   if (!login.refreshToken)
