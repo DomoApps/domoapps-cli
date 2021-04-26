@@ -24,10 +24,12 @@ export default function(questions: InquirerAutocompleteOptions, previousLogins?:
   else {
     questions.type = 'rawlist';
     questions.pageSize = 20;
-    questions.choices = function() {
-      let options = _.map(previousLogins, 'instance');
-      options.push(NEW_INSTANCE);
-      return options;
+    if (previousLogins) {
+      questions.choices = function() {
+        let options = _.map(previousLogins, 'instance');
+        options.push(NEW_INSTANCE);
+        return options;
+      }
     }
     return questions;
   }
