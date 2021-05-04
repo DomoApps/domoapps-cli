@@ -15,9 +15,11 @@ import { Command, CommandOptions } from 'commander';
 module.exports = function(program: Command){
   program
     .command('init')
-    .option('--design_name <value>', 'Name of the design')
-    .option('--starter <value>', 'Name of the starter kit')
-    .option('--dataset <value>', 'Connect a dataset (y/n)')
+    .option('-n, --design_name <value>', 'Name of the design')
+    .option('-s, --starter <value>', 'Name of the starter kit')
+    .option('-d, --dataset <value>', 'Connect a dataset (y/n)')
+    .option('-i, --dataset-id [value...]', 'Give dataset ids as multiple arguments after the flag instead of using the prompt')
+    .option('-a, --dataset-alias [value...]', 'Give dataset aliases as multiple arguments after the flag instead of using the prompt')
     .description('initialize a new Custom App design')
     .action(function(options){
       let prompts = [];
@@ -43,8 +45,7 @@ module.exports = function(program: Command){
           if(options.starter){
           answers.starter = options.starter;
           }
-          // answers.list = multichoice.answer(answers.list);
-          answers.datasources = [];
+          answers.datasources = (options.datasetId && options.datasetAlias)? options.datasetId.map((item: string, i: number) => {return {id: item, alias: options.datasetAlias[i]}}):[];
           askDatasource(answers, options);
           });
     });
