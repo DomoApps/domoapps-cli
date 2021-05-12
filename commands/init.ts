@@ -156,8 +156,9 @@ let initiate = (allAnswers: inquirer.Answers) => {
     return `${step}.`;
   }
   let nextStepsMessage = 'Next steps: \n';
+  const dirname = slug(allAnswers.name, { lower: false });
 
-  if(allAnswers.starter === 'manifest only'){
+  if (allAnswers.starter === 'manifest only'){
     files = ['manifest.json'];
     dirs = [null];
   }
@@ -165,9 +166,8 @@ let initiate = (allAnswers: inquirer.Answers) => {
     files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
     dirs = [null, null, null, null, null];
 
-    const dirname = slug(allAnswers.name, { lower: false });
+    
     nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
-
     mkdir('-p', dirname);
     process.chdir(path.resolve(dirname));
   }
@@ -177,7 +177,6 @@ let initiate = (allAnswers: inquirer.Answers) => {
     const customChartTemplateDir = path.join(__dirname, '/../templates/', 'basic chart/');
     dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
-    const dirname = slug(allAnswers.name);
     nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
 
     mkdir('-p', dirname);
@@ -188,7 +187,6 @@ let initiate = (allAnswers: inquirer.Answers) => {
     const customChartTemplateDir = path.join(__dirname, '/../templates/', 'map chart/');
     dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
-    const dirname = slug(allAnswers.name);
     nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
 
     mkdir('-p', dirname);
@@ -220,8 +218,6 @@ let initiate = (allAnswers: inquirer.Answers) => {
     const customChartTemplateDir = path.join(__dirname, '/../templates/', 'sugarforce/');
     dirs = [ ...new Array(files.length) ].map(_ => customChartTemplateDir);
 
-    //may be wrong directory, test this still 4/1
-    const dirname = slug(allAnswers.name);
     nextStepsMessage += `${stepNumber()} ${chalk.cyan('cd')} into the ${chalk.green(dirname)} directory\n`;
 
     mkdir('-p', dirname);
@@ -230,7 +226,7 @@ let initiate = (allAnswers: inquirer.Answers) => {
 
   // populate and write out the template files
   writeFilesIfNonexistent(files, dirs, allAnswers, function(err: Error, res: any[]) {
-    const dirname = slug(allAnswers.name);
+    const dirname = slug(allAnswers.name, { lower: false });
     if(err) {
       log.fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
     }
