@@ -10,18 +10,19 @@ import path = require('path');
 import { log } from '../util/log';
 import multichoice from '../util/multichoice';
 //import { init, initOptions } from '../models';
-import { Command, CommandOptions } from 'commander';
+import { Command, CommandOptions, option, Option } from 'commander';
 
 module.exports = function(program: Command){
   program
     .command('init')
     .option('-n, --design_name <value>', 'Name of the design')
-    .option('-s, --starter <value>', 'Name of the starter kit')
-    .option('-d, --dataset <value>', 'Connect a dataset (y/n)')
+    .addOption(new Option('-s, --starter <value>', 'Name of the starter kit').choices(['hello world', 'manifest only', 'basic chart', 'map chart', 'sugarforce']))
+    .option('-d, --dataset-prompt', 'Include this flag if you wish to skip the prompting for datasets')
     .option('-i, --dataset-id [value...]', 'Give dataset ids as multiple arguments after the flag instead of using the prompt')
     .option('-a, --dataset-alias [value...]', 'Give dataset aliases as multiple arguments after the flag instead of using the prompt')
     .description('initialize a new Custom App design')
     .action(function(options){
+
       let prompts = [];
       if(!options.design_name){
         prompts.push({
@@ -54,7 +55,7 @@ module.exports = function(program: Command){
 
 // recursively ask user to enter all their datasources
 let askDatasource = (currentAnswers: inquirer.Answers, options: CommandOptions) => {
-  if(!options['dataset']){
+  if(!options['datasetPrompt']){
     inquirer.prompt([{
       type: 'confirm',
       message: currentAnswers.datasources.length > 0 ? 'add another dataset?' : 'would you like to connect to any datasets?',
