@@ -47,6 +47,12 @@ export class Login {
     return { instance, refreshToken, devToken };
   }
 
+  static removeDevToken(instance: string) {
+    const configstore = new Configstore('/ryuu/' + instance);
+    deleteRefreshToken(instance);
+    configstore.set('devToken', false);
+  }
+
   static removeLogin(instance: string) {
     const loginFile = path.resolve(home + '/ryuu/' + instance + '.json');
     fs.ensureFileSync(loginFile);
