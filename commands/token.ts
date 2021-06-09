@@ -34,13 +34,9 @@ module.exports = function(program: Command) {
 
           inquirer.prompt(prompts).then(function(answers: inquirer.Answers){
             answers.instance = options['instance'] || answers.instance;
-              if (answers.instance){
-                Login.getLogin(answers.instance).then(function(selectedLogin) {
-                  //fix this with a function in client
-                selectedLogin.deleteDevToken();
-                Login.persistLogin(selectedLogin.getInstance(), selectedLogin.getRefreshToken(), selectedLogin.getDevToken());
+              if (answers.instance){ 
+                Login.removeDevToken(answers.instance);
                 log.ok(`Token removed for ${answers.instance}`, 'Future CLI commands to this instance will require username/password. \nUse the "domo token add" command to use another token.')
-                });
               }
           })
           break;
@@ -57,16 +53,24 @@ module.exports = function(program: Command) {
                 message: "Domo instance on which to set the token " + chalk.grey("e.g. company.domo.com "),
                 name: 'instance',
                 default: login.getInstance()
-              }),
+              },
               {
                 type: "input",
                 message: "Domo instance " + chalk.grey("e.g. company.domo.com "),
-                name: "instance",
+                name: "newInstance",
+                validate: function(input: string) {
+                  const acceptedDomains = ['domo.com', 'domotech.io', 'domorig.io'];
+                  if (acceptedDomains.some(domain => input.endsWith(domain))) {
+                    return true;
+                  }
+    
+                  return 'Please login using the full Domo instance. ' + chalk.grey('Example: "company.domo.com"');
+                },
                 when: function(answers: inquirer.Answers){
                   // only ask if the instance selector wasn't used or new one was selected
                   return !answers.instance || answers.instance === 'new instance';
                 }
-              };
+              });
           }
 
           if (!options['token']) {
@@ -78,7 +82,7 @@ module.exports = function(program: Command) {
           }
 
           inquirer.prompt(prompts).then(function(answers: inquirer.Answers){
-              answers.instance = options['instance'] || answers.instance;
+              answers.instance = options['instance'] || answers.newInstance || answers.instance;
               answers.devtoken = options['token'] || answers.devtoken;
               var devToken = true; 
               Login.persistLogin(answers.instance, answers.devtoken, devToken);
