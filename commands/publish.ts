@@ -22,9 +22,6 @@ module.exports = function(program: Command) {
 
       Login.getMostRecentLogin().then(function(domo) {
         checkFileNames(manifest);
-        if (!appStructure.hasThumbnail()) {
-          log.warn(constant.THUMBNAIL_CREATE_WARNING, constant.CREATE_THUMBNAIL);
-        }
 
         if (!manifest.id) {
           createDesign(domo, manifest, options);
@@ -33,33 +30,8 @@ module.exports = function(program: Command) {
           domo.getDesign(manifest.id).then(function(result) {
             checkMapping(result, manifest);
             return publishAssets(domo, manifest)
-              .then(function() {
-                goToDomo(options, domo, manifest);
-              })
-              .catch((err) => {
-                if (err.message.substr(0,23) == "Design has been deleted")
-                  recreateDesign(domo, manifest);
-                else if (err.message.substr(0,15) == "No design found") {
-                  inquirer.prompt({
-                    type: "confirm",
-                    message: 'This design does not exist on ' + domo.getInstance() + '. Would you like to create a new design with these assets?',
-                    name: 'askCreate'
-                  })
-                  .then(function (answers) {
-                    if (answers.askCreate) {
-                      manifest.id = null;
-                      createDesign(domo, manifest);
-                    }
-                  })
-                }
-                else if (err.message) {
-                  log.fail(log.handleErrorMessage(err, err.message));
-                }
-                else {
-                  log.clientRequestFailed('Error uploading assets in the getDesign');
-                }
-              });
-          }).catch(log.notAuthenticated)
+              .then(() => linkToDomoWeb(options, domo, manifest))
+          }).catch((e) => publishErrors(e, domo, manifest))
         }
       }).catch(log.notAuthenticated);
     });
@@ -80,7 +52,7 @@ function createDesign(domo: Domo, manifest: manifest, options?: CommandOptions) 
     .catch(function(e: string) {
       log.fail(e || 'Error uploading assets in uploading assets for a new design');
     })
-    .then(() => {goToDomo(options, domo, manifest)});
+    .then(() => {linkToDomoWeb(options, domo, manifest)});
 }
 
 function logUploadSuccess(files: File[]) {
@@ -89,7 +61,7 @@ function logUploadSuccess(files: File[]) {
   });
 }
 
-function goToDomo(options: CommandOptions, domo: Domo, manifest: manifest) {
+function linkToDomoWeb(options: CommandOptions, domo: Domo, manifest: manifest) {
   console.log('Design can be found at https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id);
   if (options && options['go']) {
    open('https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id);
@@ -173,6 +145,21 @@ function publishErrors(e: any, domo: Domo, manifest: manifest) {
       + '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.'
       + '\nAlternatively, you may have inadvertently changed the design id.');
   }
+  else if (e.message.substr(0,23) == "Design has been deleted")
+    recreateDesign(domo, manifest);
+  else if (e.message.substr(0,15) == "No design found") {
+    inquirer.prompt({
+      type: "confirm",
+      message: 'This design does not exist on ' + domo.getInstance() + '. Would you like to create a new design with these assets?',
+      name: 'askCreate'
+    })
+    .then(function (answers) {
+      if (answers.askCreate) {
+        manifest.id = null;
+        createDesign(domo, manifest);
+      }
+    })
+  }
   else if (e.message && e.message.startsWith('DA')) {
     switch (e.message.substr(0, 6)) {
       case 'DA0086':
@@ -194,7 +181,7 @@ function publishErrors(e: any, domo: Domo, manifest: manifest) {
 
         break;
       default:
-        // Pass on error messages that are in the set of documented errors.
+        // Pass on error messages that aren't in the set of documented errors.
         log.fail(e.message);
         break;
     }
