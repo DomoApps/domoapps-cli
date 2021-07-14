@@ -21,8 +21,10 @@ module.exports = function(program: Command) {
       var manifest = Manifest.get(program.opts().manifest);
 
       Login.getMostRecentLogin().then(function(domo) {
+        if (domo.getRefreshToken() === undefined) {
+          log.notAuthenticated()  ;
+        }
         checkFileNames(manifest);
-
         if (!manifest.id) {
           createDesign(domo, manifest, options);
         }
@@ -46,7 +48,8 @@ function createDesign(domo: Domo, manifest: manifest, options?: CommandOptions) 
       return Manifest.persistDesignId(design, manifest);
     })
     .tap(() => {(log.ok('New design created on ' + domo.getInstance()))})
-    .catch((e) => {log.fail('Error when creating new design:', e.message)})
+    .catch((e) => {
+      log.fail('Error when creating new design:', e.message)})
     .then(domo.uploadAllAssets.bind(domo, manifest))
     .then(logUploadSuccess)
     .catch(function(e: string) {
