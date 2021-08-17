@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "4.1.4",
+  "version": "4.1.4-beta-1",
   "description": "Domo App Dev Studio CLI, The main tool used to create, edit, and publish app designs to Domo",
   "keywords": [
     "CLI",
@@ -34,7 +34,7 @@
     "releaseBeta": "npm run build && cd dist && npm publish --tag beta && cd .."
   },
   "dependencies": {
-    "@domoinc/ryuu-proxy": "4.1.0",
+    "@domoinc/ryuu-proxy": "4.1.0-beta-2",
     "async": "^3.2.0",
     "axios": "^0.21.1",
     "bluebird": "^3.7.2",
@@ -55,7 +55,7 @@
     "portfinder": "^1.0.28",
     "qs": "^6.9.6",
     "rimraf": "^3.0.0",
-    "ryuu-client": "4.1.0",
+    "ryuu-client": "4.1.1",
     "ryuu.js": "^4.1.1",
     "semver": "^7.3.4",
     "shelljs": "^0.8.4",
