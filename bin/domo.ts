@@ -19,7 +19,6 @@ const cliVersion = require(path.resolve(__dirname + '/../package.json')).version
 program
   .version(cliVersion, '-v, --version')
   .option('-vb, --verbose', 'log more details including XHR responses, useful for troubleshooting')
-  .option('-m, --manifest [type]', 'use a specific manifest file');
 
 // import all commands
 glob

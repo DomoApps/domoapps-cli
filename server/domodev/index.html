@@ -12,12 +12,6 @@
     </div>
     <div>
       <section class="messages">
-        <% if (!isValidSession) { %>
-        <div class="error note">Your session has expired. Please login again using domo login.</div>
-        <% } %>
-        <% if (!isValidContext) { %>
-        <div class="warn note">Warning: Fetching data from Domo requires the design to be published first.</div>
-        <% } %>
         <% if (!hasThumbnail) { %>
         <div class="warn note">Warning: a thumbnail is required before creating a card with this design. This is used to represent the App in the mobile application and the Appstore experience. Place a 300x300 image named thumbnail.png in the base directory of your design.</div>
         <% } %>
