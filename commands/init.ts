@@ -231,7 +231,7 @@ let initiate = (allAnswers: inquirer.Answers) => {
       log.fail('Cannot initialize new design. Doing so would overwrite existing files:' + err);
     }
     else {
-      nextStepsMessage += `${stepNumber()} Edit the files that were just generated. \n${stepNumber()} Run ${chalk.cyan('domo login')} if you haven't already. \n${stepNumber()} Run ${chalk.cyan('domo publish')} whenever you make changes. \n${stepNumber()} Add a Custom App card to any page in Domo. `;
+      nextStepsMessage += `${stepNumber()} Edit the files that were just generated. \n${stepNumber()} Run ${chalk.cyan('domo login')} if you haven't already. \n${stepNumber()} Run ${chalk.cyan('domo publish')} to finish initializiation and whenever you make changes. \n${stepNumber()} Run ${chalk.cyan('domo dev')} to see what your app will look like and locally develop\n${stepNumber()} Add a Custom App card from the design published to any page in Domo. `;
       log.ok(`New design initialized in the ${chalk.green(dirname || 'current')} directory`, nextStepsMessage);
     }
     if (allAnswers.starter === 'hello world'){
@@ -240,6 +240,3 @@ let initiate = (allAnswers: inquirer.Answers) => {
     process.exit();
   });
 }
-/**
-   * Add an incrementing step to the instructions message
-   */
