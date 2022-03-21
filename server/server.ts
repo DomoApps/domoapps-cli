@@ -2,140 +2,113 @@
  * domo dev server
  */
 
-import path = require('path');
-import _ = require('lodash');
-import fs = require('fs-extra');
-import * as Bluebird from 'bluebird';
-global.Promise = <any>Bluebird;
-let bs = require('browser-sync').create();
-import portfinder = require('portfinder');
+import path = require("path");
+import _ = require("lodash");
+import fs = require("fs-extra");
+let bs = require("browser-sync").create();
+import portfinder = require("portfinder");
 portfinder.basePort = 3000;
 
-import { Session } from '../util/session';
-import appStructure = require('../util/appStructure');
-import { Manifest } from '../util/manifest';
-import { DataPoint, DomoOptions, AppData, AppContext } from '../models/index';
+import { Session } from "../util/session";
+import appStructure = require("../util/appStructure");
+import { Manifest } from "../util/manifest";
+import { DomoOptions, AppData } from "../models/index";
+import { log } from '../util/log';
 
-
-import Domo = require('ryuu-client');
-import express = require('express');
+import Domo = require("ryuu-client");
+import express = require("express");
 const app = express();
-const { Proxy } = require('@domoinc/ryuu-proxy');
-const config = { manifest: Manifest.get() };
-const proxy = new Proxy(config);
-
-let manifest = Manifest.get();
-let context: AppContext = {
-  accountMapping: null,
-  collections: null,
-  designId: null,
-  designVersion: null,
-  id: null,
-  isDisabled: null,
-  mapping: null
-};
-let isValidContext = true;
-let domoApp: Domo;
+const { Proxy } = require("@domoinc/ryuu-proxy");
 let domoOptions: DomoOptions;
+let manifest = Manifest.get();
+let domoApp: Domo;
+let assetsPort: number;
+let dataPort: number;
 
-app.get('/', function (req, res){
-  //This line doesn't make any sense, I gotta figure out how to make domoApp something real/valid
-  const isValidSession = Session.check(domoApp)
-    .then(() => {
-      
-      manifest = fs.readJsonSync(path.resolve(process.cwd() + '/' + (domoOptions.manifest || 'manifest.json')));
-      return domoApp.createContext(manifest.id, manifest.mapping);
-    })
-    .then((appContext) => {
-      context = appContext;
-      if (!context) {
-        isValidContext = false;
-        context = { id: 0,
-                    accountMapping: null,
-                    collections: null,
-                    designId: null,
-                    designVersion: null,
-                    isDisabled: false,
-                    mapping: false
-                  };
-      }
-      manifest.contextId = context.id;
-      return domoApp.getDomoappsData(manifest);
-    })
-    .then((appData) => {
+module.exports = {
+  start: function (domo: Domo, options: DomoOptions) {
+    return new Promise(function (resolve, reject) {
+      portfinder.getPorts(2, {}, function (err, ports) {
+        return new Promise(function (resolve, reject) {
+        assetsPort = ports[0];
+        dataPort = ports[1];
+        domoApp = domo;
+        domoOptions = options;
+        if (manifest["proxyId"] === undefined)
+          return resolve(domoApp.createApp(manifest.id).then((app: any) => { return app.instance.id}));
+        else
+          return resolve("");
+        })
+        .then((test: string) => {
+          if (test !== "")
+            manifest.proxyId = test;
+          const proxy = new Proxy({manifest});
+          app.use(
+            "/domodev",
+            express.static(path.resolve(__dirname + "/../server/domodev"))
+          );
+          app.use(express.static("."));
+          app.use(proxy.express());
+          Session.check(domoApp)
+            .then(function () {
+              var external = Boolean(domoOptions.external);
+              app.listen(dataPort);
+              bs.init({
+                proxy: "localhost:" + dataPort,
+                port: assetsPort,
+                notify: false,
+                ui: false,
+                logLevel: "info",
+                logPrefix: "Domo Dev",
+                online: external,
+                // TODO: add user's ignored files here too?
+                files: ["**/*", "!node_modules/**/*"],
+              });
+              bs.instance.logger.info("Instance: " + domoApp.getInstance());
+            })
+            .catch(function (e) {
+              log.notAuthenticated
+            });
+        })
+      });
+    });
+  },
+};
+
+app.get("/", function (req, res) {
+  domoApp.getDomoappsURL(manifest)
+    .then((appData: AppData) => {
       // sizes consistent with Domo Web
       const sizeMultiplier = {
         width: 235,
-        height: 290
+        height: 290,
       };
-      const width = sizeMultiplier.width * manifest.size.width - 10 + 'px';
-      const height = sizeMultiplier.height * manifest.size.height - 40 + 'px';
-      //@ts-ignore
+      const width = sizeMultiplier.width * manifest.size.width - 10 + "px";
+      const height = sizeMultiplier.height * manifest.size.height - 40 + "px";
       const userId = domoOptions.userId || appData.user.id;
-      //@ts-ignore
       const customerId = 1 || appData.customer;
-      const url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop&context=${context.id}`;
+      const url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop`;
       const hasThumbnail = appStructure.hasThumbnail();
-      const template = _.template(fs.readFileSync(path.resolve(__dirname + '/../server/domodev/index.html'), "utf8"));
+      const template = _.template(
+        fs.readFileSync(
+          path.resolve(__dirname + "/../server/domodev/index.html"),
+          "utf8"
+        )
+      );
       const fullpage = manifest.fullpage;
-
-      res.send(template({
-        manifest,
-        width,
-        height,
-        url,
-        isValidSession,
-        isValidContext,
-        hasThumbnail,
-        fullpage
-      }));
+      res.send(
+        template({
+          manifest,
+          width,
+          height,
+          url,
+          hasThumbnail,
+          fullpage,
+        })
+      );
     });
 });
 
-app.use('/domodev', express.static(path.resolve(__dirname + '/../server/domodev')));
-app.use(express.static('.'));
-app.use(proxy.express());
 
-module.exports = {
-  start: function(domo: Domo, options: DomoOptions){
-    return new Promise(function(resolve, reject){
-      portfinder.getPorts(2, {}, function (err, ports) {
-        let assetsPort = ports[0];
-        let dataPort = ports[1];
-        domoApp = domo;
-        domoOptions = options;
-        Session.check(domoApp)
-          .then(function() {
-            var external = Boolean(domoOptions.external);
-            app.listen(dataPort);
-            bs.init({
-              proxy: "localhost:" + dataPort,
-              port: assetsPort,
-              notify: false,
-              ui: false,
-              logLevel: 'info',
-              logPrefix: 'Domo Dev',
-              online: external,
-              // TODO: add user's ignored files here too?
-              files: ['**/*', '!node_modules/**/*'],
-            });
-            bs.instance.logger.info('Instance: ' + domoApp.getInstance());
-          })
-          .catch(function(e){
-            reject('Session expired. Please login again using domo login.');
-          });
-      });
-    });
-  }
-};
 
-function getCustomer(){
-  var regexp = /([\w]+)[\.|-]/;
-  return (<string>domoApp.getInstance()).match(regexp)[1];
-}
-
-/**
- * Fetch domoapps environment data from maestro.
- * Fallback to inferring it by the instance URL.
- */
 

@@ -8,7 +8,8 @@
       "lib": ["es6", "es2017", "dom"],
       "jsx": "react",
       "allowJs": true,
-      "suppressImplicitAnyIndexErrors": true
+      "suppressImplicitAnyIndexErrors": true,
+      "allowSyntheticDefaultImports": true
     },
     "exclude": [
       "node_modules",
