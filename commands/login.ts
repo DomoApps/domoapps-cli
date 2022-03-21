@@ -167,10 +167,11 @@ module.exports = function(program: Command){
               )
               //@ts-ignore
               .then(versionCheckFn)
+              .catch(() => console.log ("NPM servers are down, skipping checking for latest version."))
               .then(function(){
                 console.log(chalk.grey(logo));
                 log.ok('Login to ' + answers.instance + ' successful.', 'Welcome, ' + login.displayName + '.');
-                return Login.persistLogin(answers.instance, login.refreshToken);
+                return Login.persistLogin(answers.instance, login.refreshToken, domo.getDevToken());
               })
               //@ts-ignore
               .catch((err) => 

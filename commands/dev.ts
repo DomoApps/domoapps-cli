@@ -9,6 +9,7 @@ module.exports = function(program: Command) {
     .description('work locally on a Custom App')
     .option('-u, --userId <value>', 'Use a specific userId')
     .option('-e, --external', 'Allow external connection to access the dev site')
+    .option('-m, --manifest <value>', 'use a specific manifest file')
     .action(function(opts) {
       let options = {
         userId: opts.userId,
