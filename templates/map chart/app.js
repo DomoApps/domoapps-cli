@@ -96,7 +96,7 @@ function getData(datasetAlias, columns){
 
 ////// Helper functions ////////////
 function makeQueryString(datasetAlias, queryObject){
-  var query = '/data/v1/' + datasetAlias + '?';
+  var query = '/data/v2/' + datasetAlias + '?';
   for(var key in queryObject){
     if (queryObject.hasOwnProperty(key)) {
       var value = queryObject[key];

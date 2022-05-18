@@ -135,11 +135,16 @@ function checkFileNames(manifest: manifest) {
   var badFileList = glob
     .sync("**/*", { ignore: ignore })
     .filter(function (file) {
-      return !fs.lstatSync(file).isDirectory() && file.indexOf(" ") !== -1;
+      console.log(file);
+      return (
+        // special characters except "/" in file names are not allowed
+        /[~`!#$%\^&*+=\-\[\]\\';,{}|\\":<>\?]/g.test(file) ||
+        (!fs.lstatSync(file).isDirectory() && file.indexOf(" ") !== -1)
+      );
     });
   if (badFileList.length > 0) {
     log.fail(
-      "Spaces in file names not allowed. Please rename the following file(s): " +
+      "Special characters in file/directory names are not allowed as well as spaces in file names. Please rename the following file/directory(s): " +
         badFileList
     );
   }
