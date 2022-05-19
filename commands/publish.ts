@@ -138,7 +138,7 @@ function checkFileNames(manifest: manifest) {
       console.log(file);
       return (
         // special characters except "/" in file names are not allowed
-        /[~`!#$%\^&*+=\-\[\]\\';,{}|\\":<>\?]/g.test(file) ||
+        /[~`!#$%\^&*+=\[\]\\';,{}|\\":<>\?]/g.test(file) ||
         (!fs.lstatSync(file).isDirectory() && file.indexOf(" ") !== -1)
       );
     });
