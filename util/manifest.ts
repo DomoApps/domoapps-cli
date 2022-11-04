@@ -1,39 +1,39 @@
-import fs = require('fs-extra');
-import path = require('path');
-import semver = require('semver');
-import glob = require('glob');
-import { log } from '../util/log';
-import isValidJSName from '../util/isValidJSName';
-import { manifest } from '../models';
-import { DesignVersion } from 'ryuu-client/models/interfaces/domoappstypes';
+import fs = require("fs-extra");
+import path = require("path");
+import semver = require("semver");
+import glob = require("glob");
+import { log } from "../util/log";
+import isValidJSName from "../util/isValidJSName";
+import { manifest } from "../models";
+import { DesignVersion } from "ryuu-client/models";
 
 export class Manifest {
   /**
-  * Get the local manifest.json file, ensuring it's valid.
-  */
-  static get(manifestName = 'manifest.json', verify = true) {
+   * Get the local manifest.json file, ensuring it's valid.
+   */
+  static get(manifestName = "manifest.json", verify = true) {
     const manifestPath = findManifest(manifestName);
 
     let rawmanifest: Buffer;
     try {
       rawmanifest = fs.readFileSync(path.resolve(manifestPath));
-    }
-    catch (e){
-      if (verify){
-        log.fail(`No ${manifestName} file in this directory`, `Please publish from a directory containing a Custom App design ${manifestName} file`);
-      }
-      else{
+    } catch (e) {
+      if (verify) {
+        log.fail(
+          `No ${manifestName} file in this directory`,
+          `Please publish from a directory containing a Custom App design ${manifestName} file`
+        );
+      } else {
         return;
       }
     }
     let manifest: manifest;
     try {
       manifest = JSON.parse(rawmanifest.toString());
-    }
-    catch (e){
+    } catch (e) {
       log.fail(`Your ${manifestName} file is not valid JSON`, e.message);
     }
-    if (verify){
+    if (verify) {
       validateManifest(manifest);
     }
 
@@ -61,56 +61,67 @@ export class Manifest {
 
   static updateManifest(manifest: manifest) {
     const manifestPath = findManifest(manifest.fileName);
-    fs.writeJsonSync(manifestPath, manifest, {spaces: 2});
+    fs.writeJsonSync(manifestPath, manifest, { spaces: 2 });
   }
 }
 
 /**
-* Validate the manifest file.
-*/
+ * Validate the manifest file.
+ */
 function validateManifest(manifest: manifest) {
-
   // validate manifest file for required fields
-  requireProperty(manifest, 'name');
-  requireProperty(manifest, 'version');
-  requireProperty(manifest, 'mapping');
+  requireProperty(manifest, "name");
+  requireProperty(manifest, "version");
+  requireProperty(manifest, "mapping");
 
   // validate required mapping fields
-  manifest.mapping.forEach(function(dataPoint) {
-    requireProperty(dataPoint, 'dataSetId');
-    requireProperty(dataPoint, 'alias');
-    requireProperty(dataPoint, 'fields');
+  manifest.mapping.forEach(function (dataPoint) {
+    requireProperty(dataPoint, "dataSetId");
+    requireProperty(dataPoint, "alias");
+    requireProperty(dataPoint, "fields");
     ensureValidAlias(dataPoint.alias);
 
     // validate dataPoint mapping fields
-    dataPoint.fields.forEach(function(field) {
-      requireProperty(field, 'alias');
-      requireProperty(field, 'columnName');
+    dataPoint.fields.forEach(function (field) {
+      requireProperty(field, "alias");
+      requireProperty(field, "columnName");
       ensureValidAlias(field.alias);
     });
   });
 
   // validate semver
   if (!semver.valid(manifest.version)) {
-    log.fail('Invalid version', 'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/');
+    log.fail(
+      "Invalid version",
+      "Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/"
+    );
   }
 
   function requireProperty(obj: Object, prop: string) {
-    if (!obj[prop]){
-      log.fail('Missing required property: ' + prop, 'Please add the missing `'+ prop +'` property to your manifest.json file.');
+    if (!obj[prop]) {
+      log.fail(
+        "Missing required property: " + prop,
+        "Please add the missing `" +
+          prop +
+          "` property to your manifest.json file."
+      );
     }
   }
 
   return manifest;
 }
 
-
 /**
  * Alias must be a valid JS property
  */
 function ensureValidAlias(name: string) {
-  if (!isValidJSName(name)){
-    log.fail('Alias names must be valid JavaScript properties', 'Please rename the ' + JSON.stringify(name) + ' alias and update any /data/v1/<alias> calls with the new alias name');
+  if (!isValidJSName(name)) {
+    log.fail(
+      "Alias names must be valid JavaScript properties",
+      "Please rename the " +
+        JSON.stringify(name) +
+        " alias and update any /data/v1/<alias> calls with the new alias name"
+    );
   }
 }
 
@@ -129,12 +140,9 @@ function findManifest(name: string) {
   }
 
   // find any matching files (one layer deep while ignoring dist, templates and build folders)
-  const matches = glob.sync(
-    `*/${name}`,
-    {
-      ignore: ['dist/*', 'build/*', 'templates/*'],
-    },
-  );
+  const matches = glob.sync(`*/${name}`, {
+    ignore: ["dist/*", "build/*", "templates/*"],
+  });
   if (matches.length > 0) {
     return matches[0];
   }

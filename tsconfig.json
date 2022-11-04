@@ -1,21 +1,15 @@
 {
-    "compilerOptions": {
-      "outDir": "dist",
-      "sourceMap": true,
-      "noImplicitAny": true,
-      "module": "commonjs",
-      "target": "es5",
-      "lib": ["es6", "es2017", "dom"],
-      "jsx": "react",
-      "allowJs": true,
-      "suppressImplicitAnyIndexErrors": true,
-      "allowSyntheticDefaultImports": true
-    },
-    "exclude": [
-      "node_modules",
-      "dist",
-      "distcopy",
-      "**/*.spec.ts",
-      "templates"
-    ]
-  }
+  "compilerOptions": {
+    "outDir": "dist",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "commonjs",
+    "target": "es5",
+    "lib": ["es6", "es2017", "dom"],
+    "jsx": "react",
+    "allowJs": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": ["node_modules", "dist", "distcopy", "**/*.spec.ts", "templates"]
+}

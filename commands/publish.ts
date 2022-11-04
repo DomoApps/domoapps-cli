@@ -10,10 +10,7 @@ import appStructure = require("../util/appStructure");
 import { constant, manifest, File } from "../models";
 import Domo = require("ryuu-client");
 import { Command, CommandOptions } from "commander";
-import {
-  DesignAggregate,
-  DesignVersion,
-} from "ryuu-client/models/interfaces/domoappstypes";
+import { DesignAggregate, DesignVersion } from "ryuu-client/models";
 import multichoice from "../util/multichoice";
 
 module.exports = function (program: Command) {
