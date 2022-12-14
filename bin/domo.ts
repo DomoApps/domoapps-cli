@@ -14,16 +14,21 @@ const verifyNodeVersion = require('../util/verifyNodeVersion');
 verifyNodeVersion();
 require('../polyfills/endswith');
 
-const cliVersion = require(path.resolve(__dirname + '/../package.json')).version;
+const cliVersion = require(path.resolve(
+  __dirname + '/../package.json',
+)).version;
 
 program
   .version(cliVersion, '-v, --version')
-  .option('-vb, --verbose', 'log more details including XHR responses, useful for troubleshooting')
+  .option(
+    '-vb, --verbose',
+    'log more details including XHR responses, useful for troubleshooting',
+  );
 
 // import all commands
 glob
-  .sync(path.resolve(__dirname + "/../commands/*.js"))
-  .forEach(function(command){
+  .sync(path.resolve(__dirname + '/../commands/*.js'))
+  .forEach(function (command) {
     require(command)(program);
   });
 

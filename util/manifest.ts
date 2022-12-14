@@ -1,17 +1,17 @@
-import fs = require("fs-extra");
-import path = require("path");
-import semver = require("semver");
-import glob = require("glob");
-import { log } from "../util/log";
-import isValidJSName from "../util/isValidJSName";
-import { manifest } from "../models";
-import { DesignVersion } from "ryuu-client/models";
+import fs = require('fs-extra');
+import path = require('path');
+import semver = require('semver');
+import glob = require('glob');
+import {log} from '../util/log';
+import isValidJSName from '../util/isValidJSName';
+import {manifest} from '../models';
+import {DesignVersion} from 'ryuu-client/lib/models';
 
 export class Manifest {
   /**
    * Get the local manifest.json file, ensuring it's valid.
    */
-  static get(manifestName = "manifest.json", verify = true) {
+  static get(manifestName = 'manifest.json', verify = true) {
     const manifestPath = findManifest(manifestName);
 
     let rawmanifest: Buffer;
@@ -21,7 +21,7 @@ export class Manifest {
       if (verify) {
         log.fail(
           `No ${manifestName} file in this directory`,
-          `Please publish from a directory containing a Custom App design ${manifestName} file`
+          `Please publish from a directory containing a Custom App design ${manifestName} file`,
         );
       } else {
         return;
@@ -61,7 +61,7 @@ export class Manifest {
 
   static updateManifest(manifest: manifest) {
     const manifestPath = findManifest(manifest.fileName);
-    fs.writeJsonSync(manifestPath, manifest, { spaces: 2 });
+    fs.writeJsonSync(manifestPath, manifest, {spaces: 2});
   }
 }
 
@@ -70,21 +70,21 @@ export class Manifest {
  */
 function validateManifest(manifest: manifest) {
   // validate manifest file for required fields
-  requireProperty(manifest, "name");
-  requireProperty(manifest, "version");
-  requireProperty(manifest, "mapping");
+  requireProperty(manifest, 'name');
+  requireProperty(manifest, 'version');
+  requireProperty(manifest, 'mapping');
 
   // validate required mapping fields
   manifest.mapping.forEach(function (dataPoint) {
-    requireProperty(dataPoint, "dataSetId");
-    requireProperty(dataPoint, "alias");
-    requireProperty(dataPoint, "fields");
+    requireProperty(dataPoint, 'dataSetId');
+    requireProperty(dataPoint, 'alias');
+    requireProperty(dataPoint, 'fields');
     ensureValidAlias(dataPoint.alias);
 
     // validate dataPoint mapping fields
     dataPoint.fields.forEach(function (field) {
-      requireProperty(field, "alias");
-      requireProperty(field, "columnName");
+      requireProperty(field, 'alias');
+      requireProperty(field, 'columnName');
       ensureValidAlias(field.alias);
     });
   });
@@ -92,18 +92,18 @@ function validateManifest(manifest: manifest) {
   // validate semver
   if (!semver.valid(manifest.version)) {
     log.fail(
-      "Invalid version",
-      "Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/"
+      'Invalid version',
+      'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/',
     );
   }
 
   function requireProperty(obj: Object, prop: string) {
     if (!obj[prop]) {
       log.fail(
-        "Missing required property: " + prop,
-        "Please add the missing `" +
+        'Missing required property: ' + prop,
+        'Please add the missing `' +
           prop +
-          "` property to your manifest.json file."
+          '` property to your manifest.json file.',
       );
     }
   }
@@ -117,10 +117,10 @@ function validateManifest(manifest: manifest) {
 function ensureValidAlias(name: string) {
   if (!isValidJSName(name)) {
     log.fail(
-      "Alias names must be valid JavaScript properties",
-      "Please rename the " +
+      'Alias names must be valid JavaScript properties',
+      'Please rename the ' +
         JSON.stringify(name) +
-        " alias and update any /data/v1/<alias> calls with the new alias name"
+        ' alias and update any /data/v1/<alias> calls with the new alias name',
     );
   }
 }
@@ -141,7 +141,7 @@ function findManifest(name: string) {
 
   // find any matching files (one layer deep while ignoring dist, templates and build folders)
   const matches = glob.sync(`*/${name}`, {
-    ignore: ["dist/*", "build/*", "templates/*"],
+    ignore: ['dist/*', 'build/*', 'templates/*'],
   });
   if (matches.length > 0) {
     return matches[0];
