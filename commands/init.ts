@@ -173,22 +173,31 @@ let writeFilesIfNonexistent = (
       if (filesThatExist.length > 0) {
         callback(filesThatExist, null);
       } else {
-        _.zip(files, dirs).forEach(file => writeTemplateFile(file));
+        _.zip(files, dirs).forEach(writeTemplateFile.bind(this, allAnswers));
         callback(null, files);
       }
     },
   );
 };
 
-let writeTemplateFile = (filedir: [string, string]) => {
+let writeTemplateFile = (
+  allAnswers: inquirer.Answers,
+  filedir: [string, string],
+) => {
+  const templateFileExt = ['.js', '.css', '.html', '.json'];
   const file = filedir[0];
   const dir = filedir[1] || __dirname + '/../templates/';
   const filePath = path.resolve(dir + file);
-  const data = fs.readFileSync(filePath);
   const destPath = path.parse(path.resolve(process.cwd(), file));
-  if (!fs.existsSync(destPath.dir)) {
-    fs.mkdirSync(destPath.dir, {recursive: true});
+  let data;
+
+  if (templateFileExt.some(ext => file.endsWith(ext))) {
+    data = fs.readFileSync(filePath, 'utf8');
+    data = _.template(data)(allAnswers);
+  } else {
+    data = fs.readFileSync(filePath);
   }
+
   fs.writeFileSync(path.resolve(destPath.dir, destPath.base), data);
 };
 
