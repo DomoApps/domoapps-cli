@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "4.2.5",
+  "version": "4.2.6",
   "description": "Domo App Dev Studio CLI, The main tool used to create, edit, and publish app designs to Domo",
   "keywords": [
     "CLI",
@@ -14,7 +14,7 @@
     "domo": "./bin/runner"
   },
   "scripts": {
-    "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0 --config ./changelog/changelog.js",
+    "changelog": "conventional-changelog -i CHANGELOG.md --config ./changelog/changelog.js",
     "build": "rm -rf ./dist && tsc && npm run build:phoenix -s && npm run copyfiles ",
     "build:phoenix": "ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenix.js\" \"./templates/basic chart/domoPhoenix.js\" && ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenixWithMaps.js\" \"./templates/map chart/domoPhoenixWithMaps.js\" && ncp \"./node_modules/@domoinc/domo-phoenix/build/global/domoPhoenixWithMaps.js\" \"./templates/sugarforce/js/domoPhoenixWithMaps.js\"",
     "push": "git push && git push --tags",
@@ -37,6 +37,7 @@
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
+    "@domoinc/ryuu-proxy": "4.3.2",
     "async": "^3.2.2",
     "axios": "^0.24.0",
     "bluebird": "^3.7.2",
