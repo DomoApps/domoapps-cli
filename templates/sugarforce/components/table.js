@@ -78,7 +78,7 @@ function addRows(dataSet, idColumn, editable, header, {action}) {
 }
 
 function drawModalWithTableData(e, id, editable, {action}) {
-  const data = getTableValues(e.path);
+  const data = getTableValues(e.composedPath());
 
   const modal = new Modal(data, {id, editable, action});
   modal.open();
