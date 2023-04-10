@@ -304,6 +304,11 @@ let initiate = (allAnswers: inquirer.Answers) => {
     )} into the ${chalk.green(dirname)} directory\n`;
 
     mkdir('-p', dirname);
+    mkdir('-p', path.join(dirname, 'styles'));
+    mkdir('-p', path.join(dirname, 'components'));
+    mkdir('-p', path.join(dirname, 'js'));
+    mkdir('-p', path.join(dirname, 'views'));
+
     process.chdir(path.resolve(dirname));
   }
 

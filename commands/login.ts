@@ -236,7 +236,6 @@ module.exports = function (program: Command) {
                     .finally(process.exit);
                 })
                 .catch(test => {
-                  console.log(test);
                   return log.notAuthenticated;
                 });
             })
@@ -247,7 +246,6 @@ module.exports = function (program: Command) {
             );
         })
         .catch(test => {
-          console.log(test);
           return log.notAuthenticated;
         });
     });
