@@ -18,8 +18,9 @@ module.exports = function (program: Command) {
     .command('publish')
     .description('publish a new or existing Custom App design')
     .option('-g, --go', 'navigate to design in Asset Library after publishing')
+    .option('-m, --manifest <value>', 'use a specific manifest file')
     .action(function (options) {
-      var manifest = Manifest.get(program.opts().manifest);
+      var manifest = Manifest.get(options.manifest);
 
       Login.getMostRecentLogin()
         .then(function (domo) {
@@ -53,6 +54,8 @@ function createDesign(
   return (
     domo
       .createDesign(manifest)
+
+      //@ts-ignore
       .then(function (designResult: DesignVersion) {
         var design = designResult[0];
         // add the version returned when design published
