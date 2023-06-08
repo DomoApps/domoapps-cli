@@ -19,6 +19,7 @@ module.exports = function (program: Command) {
           Session.check(domo).then(function () {
             domo
               .getSimpleDesigns()
+              //@ts-ignore
               .then(function (designs: DesignAggregate[]) {
                 //if(options.all){}
                 //else {
