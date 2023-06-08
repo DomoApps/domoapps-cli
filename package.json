@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "4.3.0",
+  "version": "4.3.1",
   "description": "Domo App Dev Studio CLI, The main tool used to create, edit, and publish app designs to Domo",
   "keywords": [
     "CLI",
@@ -37,11 +37,11 @@
     "lint": "eslint . --ext .ts"
   },
   "dependencies": {
-    "@domoinc/ryuu-proxy": "4.3.2",
+    "@domoinc/ryuu-proxy": "4.3.4-beta.0",
     "async": "^3.2.2",
     "axios": "^0.24.0",
     "bluebird": "^3.7.2",
-    "browser-sync": "^2.27.10",
+    "browser-sync": "^2.29.3",
     "chalk": "^4.0.0",
     "cli-table": "^0.3.11",
     "commander": "^7.1.0",
@@ -56,11 +56,12 @@
     "lodash": "^4.17.21",
     "ncp": "^2.0.0",
     "open": "^8.4.0",
+    "opn": "^6.0.0",
     "portfinder": "^1.0.28",
     "qs": "^6.11.0",
     "rimraf": "^3.0.0",
-    "ryuu-client": "^4.3.1",
-    "ryuu.js": "^4.2.0",
+    "ryuu-client": "ryuu-client@4.3.3-beta.0",
+    "ryuu.js": "^4.3.1",
     "semver": "^7.3.5",
     "shelljs": "^0.8.5",
     "slug": "^4.0.3",
@@ -93,6 +94,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "github-url-from-git": "^1.4.0",
     "prettier": "^2.7.1",
+    "standard-version": "^9.5.0",
     "ts-jest": "^29.0.3",
     "typescript": "^4.5.3"
   },
