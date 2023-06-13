@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.3.2-beta.2](https://github.com/DomoApps/domoapps-cli/compare/v4.3.2-beta.1...v4.3.2-beta.2) (2023-06-13)
+
 ### [4.3.2-beta.1](https://github.com/DomoApps/domoapps-cli/compare/v4.3.2-beta.0...v4.3.2-beta.1) (2023-06-13)
 
 ### [4.3.2-beta.0](https://github.com/DomoApps/domoapps-cli/compare/v4.3.0...v4.3.2-beta.0) (2023-06-08)
