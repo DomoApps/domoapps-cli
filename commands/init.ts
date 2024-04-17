@@ -216,8 +216,9 @@ let initiate = (allAnswers: inquirer.Answers) => {
     files = ['manifest.json'];
     dirs = [null];
   } else if (allAnswers.starter === 'hello world') {
-    files = ['manifest.json', 'index.html', 'app.js', 'app.css', 'domo.js'];
-    dirs = [null, null, null, null, null];
+    files = ['manifest.json', 'index.html', 'app.js', 'app.css'];
+    const templateDir = path.join(__dirname, '/../templates/', 'hello world/');
+    dirs = [...new Array(files.length)].map(_ => templateDir);
 
     nextStepsMessage += `${stepNumber()} ${chalk.cyan(
       'cd',
@@ -225,14 +226,7 @@ let initiate = (allAnswers: inquirer.Answers) => {
     mkdir('-p', dirname);
     process.chdir(path.resolve(dirname));
   } else if (allAnswers.starter === 'basic chart') {
-    files = [
-      'manifest.json',
-      'index.html',
-      'app.js',
-      'app.css',
-      'domo.js',
-      'domoPhoenix.js',
-    ];
+    files = ['manifest.json', 'index.html', 'app.js', 'app.css'];
     const customChartTemplateDir = path.join(
       __dirname,
       '/../templates/',
@@ -247,14 +241,7 @@ let initiate = (allAnswers: inquirer.Answers) => {
     mkdir('-p', dirname);
     process.chdir(path.resolve(dirname));
   } else if (allAnswers.starter === 'map chart') {
-    files = [
-      'manifest.json',
-      'index.html',
-      'app.js',
-      'app.css',
-      'domo.js',
-      'domoPhoenixWithMaps.js',
-    ];
+    files = ['manifest.json', 'index.html', 'app.js', 'app.css'];
     const customChartTemplateDir = path.join(
       __dirname,
       '/../templates/',
@@ -285,8 +272,6 @@ let initiate = (allAnswers: inquirer.Answers) => {
       path.join('js', 'leads.js'),
       path.join('js', 'opportunities.js'),
       path.join('js', 'reports.js'),
-      path.join('js', 'domo.js'),
-      path.join('js', 'domoPhoenixWithMaps.js'),
       path.join('views', 'home.html'),
       path.join('views', 'leads.html'),
       path.join('views', 'opportunities.html'),
