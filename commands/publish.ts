@@ -197,9 +197,9 @@ function publishErrors(e: any, domo: Domo, manifest: manifest) {
         '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.' +
         '\nAlternatively, you may have inadvertently changed the design id.',
     );
-  } else if (e.message.substr(0, 23) == 'Design has been deleted')
+  } else if (e.message?.substr(0, 23) == 'Design has been deleted')
     recreateDesign(domo, manifest);
-  else if (e.message.substr(0, 15) == 'No design found') {
+  else if (e.message?.substr(0, 15) == 'No design found') {
     inquirer
       .prompt({
         type: 'confirm',
