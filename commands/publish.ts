@@ -63,14 +63,16 @@ function createDesign(
         return Manifest.persistDesignId(design, manifest);
       })
       //@ts-ignore
+      /*
       .tap(() => {
         log.ok('New design created on ' + domo.getInstance());
-      })
+      })*/
       //@ts-ignore
       .catch(e => {
         log.fail('Error when creating new design:', e.message);
       })
       .then(domo.uploadAllAssets.bind(domo, manifest))
+            //@ts-ignore
       .then(logUploadSuccess)
       .catch(function (e: string) {
         log.fail(
@@ -257,6 +259,7 @@ function publishAssets(domo: Domo, manifest: manifest) {
     domo
       .uploadAllAssets(manifest)
       //@ts-ignore
+      /*
       .tap(() => {
         log.ok(
           'Publishing ' +
@@ -266,7 +269,7 @@ function publishAssets(domo: Domo, manifest: manifest) {
             ' on ' +
             new Date(),
         );
-      })
+      })*/
       .then(logUploadSuccess)
       //@ts-ignore
       .catch(e => {
