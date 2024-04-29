@@ -39,7 +39,7 @@
     "bump": "standard-version"
   },
   "dependencies": {
-    "@domoinc/ryuu-proxy": "^4.3.5-beta.1",
+    "@domoinc/ryuu-proxy": "^4.3.5-beta.2",
     "async": "^3.2.2",
     "axios": "^0.24.0",
     "bluebird": "^3.7.2",
@@ -62,7 +62,7 @@
     "portfinder": "^1.0.28",
     "qs": "^6.11.0",
     "rimraf": "^3.0.0",
-    "ryuu-client": "4.3.4-beta.3",
+    "ryuu-client": "^4.3.4-beta.4",
     "ryuu.js": "4.6.0-beta.0",
     "semver": "^7.3.5",
     "shelljs": "^0.8.5",
