@@ -1,5 +1,5 @@
 import inquirer = require('inquirer');
-import autocompletePrompt = require('inquirer-autocomplete-prompt');
+import autocompletePrompt from 'inquirer-autocomplete-prompt';
 import * as chalk from 'chalk';
 import _ = require('lodash');
 import path = require('path');
@@ -72,6 +72,7 @@ module.exports = function (program: Command) {
         prompts.push(
           multichoice(
             {
+              //@ts-ignore
               type: 'autocomplete',
               source: (prevAnswers: inquirer.Answers, input: string) => {
                 let options = _.map(previousLogins, 'instance');

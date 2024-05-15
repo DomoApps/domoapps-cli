@@ -77,6 +77,7 @@
     "@types/extract-zip": "^1.6.2",
     "@types/fs-extra": "^9.0.13",
     "@types/inquirer": "^7.3.1",
+    "@types/inquirer-autocomplete-prompt": "^3.0.3",
     "@types/jest": "^29.2.2",
     "@types/lodash": "^4.14.178",
     "@types/node": "^14.14.35",

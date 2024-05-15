@@ -1,6 +1,7 @@
 import inquirer = require('inquirer');
 import {login} from '../models';
 import _ = require('lodash');
+import AutocompletePrompt from 'inquirer-autocomplete-prompt';
 
 interface InquirerAutocompleteOptions extends inquirer.ListQuestionOptions {
   source?: (answers: inquirer.Answers, input: string) => Promise<Iterable<any>>;
@@ -17,7 +18,7 @@ interface InquirerAutocompleteOptions extends inquirer.ListQuestionOptions {
 const isWindows = /^win/.test(process.platform);
 
 export default function (
-  questions: any,
+  questions: inquirer.RawListQuestion | inquirer.ListQuestion,
   previousLogins?: Array<login>,
   NEW_INSTANCE?: string,
 ) {
@@ -27,11 +28,8 @@ export default function (
     questions.type = 'rawlist';
     questions.pageSize = 20;
     if (previousLogins) {
-      questions.choices = function () {
-        let options = _.map(previousLogins, 'instance');
-        options.push(NEW_INSTANCE);
-        return options;
-      };
+      questions.choices = () =>
+        previousLogins.map(login => login.instance).concat(NEW_INSTANCE);
     }
     return questions;
   }
