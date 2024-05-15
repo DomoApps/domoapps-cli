@@ -10,7 +10,7 @@ import path = require('path');
 import {log} from '../util/log';
 import multichoice from '../util/multichoice';
 //import { init, initOptions } from '../models';
-import {Command, CommandOptions, option, Option} from 'commander';
+import {Command, CommandOptions, Option} from 'commander';
 
 module.exports = function (program: Command) {
   program

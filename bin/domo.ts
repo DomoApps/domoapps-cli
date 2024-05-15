@@ -7,23 +7,17 @@
  */
 
 import path = require('path');
-import program = require('commander');
-import _ = require('lodash');
+import {program}  from 'commander';
 import glob = require('glob');
-const verifyNodeVersion = require('../util/verifyNodeVersion');
-verifyNodeVersion();
-require('../polyfills/endswith');
-
-const cliVersion = require(path.resolve(
-  __dirname + '/../package.json',
-)).version;
+import {version} from '../package.json';
 
 program
-  .version(cliVersion, '-v, --version')
+  .version(version, '-v, --version')
   .option(
-    '-vb, --verbose',
-    'log more details including XHR responses, useful for troubleshooting',
-  );
+    '-s, --ssl', 'disable SSL'
+  ).hook('preAction', (preliminaryCommand) => {
+    if (preliminaryCommand.opts().ssl)  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+  })
 
 // import all commands
 glob

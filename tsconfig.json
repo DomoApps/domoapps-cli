@@ -10,7 +10,8 @@
     "allowJs": true,
     "types": ["jest"],
     "suppressImplicitAnyIndexErrors": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true
   },
   "exclude": ["node_modules", "dist", "distcopy", "**/*.spec.ts", "templates"]
 }

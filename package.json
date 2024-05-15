@@ -46,7 +46,7 @@
     "browser-sync": "^2.29.3",
     "chalk": "^4.0.0",
     "cli-table": "^0.3.11",
-    "commander": "^7.1.0",
+    "commander": "^11.1.0",
     "configstore": "^5.0.1",
     "express": "^4.18.2",
     "extract-zip": "^2.0.0",
