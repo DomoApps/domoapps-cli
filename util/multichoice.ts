@@ -1,13 +1,9 @@
-import inquirer = require("inquirer");
-import Bluebird = require("bluebird");
-import { login } from "../models";
-import _ = require("lodash");
+import inquirer = require('inquirer');
+import {login} from '../models';
+import _ = require('lodash');
 
 interface InquirerAutocompleteOptions extends inquirer.ListQuestionOptions {
-  source?: (
-    answers: inquirer.Answers,
-    input: string
-  ) => Bluebird<Iterable<any>>;
+  source?: (answers: inquirer.Answers, input: string) => Promise<Iterable<any>>;
 }
 
 /**
@@ -23,16 +19,16 @@ const isWindows = /^win/.test(process.platform);
 export default function (
   questions: any,
   previousLogins?: Array<login>,
-  NEW_INSTANCE?: string
+  NEW_INSTANCE?: string,
 ) {
   if (!isWindows) {
     return questions;
   } else {
-    questions.type = "rawlist";
+    questions.type = 'rawlist';
     questions.pageSize = 20;
     if (previousLogins) {
       questions.choices = function () {
-        let options = _.map(previousLogins, "instance");
+        let options = _.map(previousLogins, 'instance');
         options.push(NEW_INSTANCE);
         return options;
       };

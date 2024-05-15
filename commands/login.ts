@@ -1,4 +1,3 @@
-import Promise = require('bluebird');
 import inquirer = require('inquirer');
 import autocompletePrompt = require('inquirer-autocomplete-prompt');
 import * as chalk from 'chalk';
@@ -190,7 +189,6 @@ module.exports = function (program: Command) {
                     domo.getDevToken(),
                   );
                 })
-                //@ts-ignore
                 .catch(err =>
                   log.fail(`Login unsuccessful: ${JSON.stringify(err)}`),
                 )
@@ -277,7 +275,7 @@ function promptUpgrade(latest: string) {
         });
         if (output.code === 0) {
           log.ok('Upgrade to version ' + latest + ' successful');
-          resolve();
+          Promise.resolve();
         } else {
           log.warn(
             'Upgrade unsuccessful',
@@ -285,7 +283,7 @@ function promptUpgrade(latest: string) {
           );
         }
       } else {
-        resolve();
+        Promise.resolve();
       }
     });
   });
