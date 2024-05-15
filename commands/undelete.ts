@@ -27,7 +27,8 @@ module.exports = function (program: Command) {
 
       function handleUserResponse(answer: inquirer.Answers) {
         if (answer.undelete) {
-          Login.getMostRecentLogin()
+          new Login()
+            .getClient()
             .then(function (domo) {
               domo
                 .unDeleteDesign(designId)

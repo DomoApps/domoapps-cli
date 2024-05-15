@@ -46,8 +46,9 @@ module.exports = function (program: Command) {
       function handleUserResponse(answer: {delete: boolean}) {
         if (answer.delete) {
           var force = false;
-          Login.getMostRecentLogin()
-            .then(function (domo) {
+          new Login()
+            .getClient()
+            .then(domo => {
               if (options['force']) force = true;
               domo
                 .deleteDesign(designId, force)

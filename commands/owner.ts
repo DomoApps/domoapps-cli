@@ -33,8 +33,8 @@ module.exports = function (program: Command) {
           );
         designId = manifest.id;
       }
-
-      Login.getMostRecentLogin()
+      new Login()
+        .getClient()
         .then(function (domo) {
           switch (action) {
             case 'add':

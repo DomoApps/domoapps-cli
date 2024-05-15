@@ -11,7 +11,8 @@ module.exports = function (program: Command) {
     .command('release')
     .description('prepare a design for app store release')
     .action(function () {
-      Login.getMostRecentLogin()
+      new Login()
+        .getClient()
         .then(function (domo) {
           var manifest = Manifest.get(program.opts().manifest);
 

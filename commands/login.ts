@@ -16,41 +16,10 @@ import {Oauth} from '../util/oauth';
 import {Command} from 'commander';
 import {LoginData} from 'ryuu-client/lib/models';
 import {IncomingMessage} from 'http';
+import {logo} from '../models/enums/constant';
 
 let autoUpdate = false;
-const logo = `
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃██████████      ██████████  ███            ██   ██████████  ┃
-┃████████████  ███████████████████        ███████████████████┃
-┃███      ████████        ██████████    ██████████        ███┃
-┃███       ██████          ██████████████████████          ██┃
-┃███      ███████          ██████ ███████  ██████          ██┃
-┃███     █████████       ████████   ███    ███████       ████┃
-┃████████████  ██████████████████          ██████████████████┃
-┃██████████      ██████████  ████          ███   ██████████  ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┃                                                            ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
 const NEW_INSTANCE = 'new instance';
-const isWin = process.platform === 'win32';
 inquirer.registerPrompt('autocomplete', autocompletePrompt);
 
 module.exports = function (program: Command) {
@@ -72,117 +41,107 @@ module.exports = function (program: Command) {
         autoUpdate = true;
       }
       if (args.transfer) {
-        if (
-          fs.existsSync(
-            `${
-              process.env[process.platform == 'win32' ? 'USERPROFILE' : 'HOME']
-            }/.domo/login/`,
-          )
-        ) {
-          fs.copySync(
-            `${
-              process.env[process.platform == 'win32' ? 'USERPROFILE' : 'HOME']
-            }/.domo/login/`,
-            `${Domo.getHomeDir()}/ryuu/`,
-            {overwrite: false},
-          );
+        const isWin = process.platform === 'win32';
+        const homeEnv = process.env[isWin ? 'USERPROFILE' : 'HOME'];
+        const deprecatedLoginDir = `${homeEnv}/.domo/login/`;
+
+        if (fs.existsSync(deprecatedLoginDir)) {
+          try {
+            fs.copySync(deprecatedLoginDir, `${Domo.getHomeDir()}/ryuu/`, {
+              overwrite: false,
+            });
+          } catch (error) {
+            log.fail('Failed to transfer logins:', error);
+          }
         } else {
           log.fail(
-            'You do not have any ryuu 3.x logins to transfer to ryuu 4.x, run this command without the -t command to login',
+            'You do not have any ryuu 3.x logins to transfer to ryuu 4.x. Run this command without the -t flag to log in.',
           );
         }
       }
       const previousLogins = Login.getPreviousLogins();
-      const mayNotBeAuthenticated = true;
       let login: LoginData;
-      Login.getMostRecent()
-        .then(function (mostRecent) {
-          let prompts = [];
-          let versionCheckFn = !args.upgradeCheck
-            ? function (x: IncomingMessage) {
-                return x;
-              }
-            : verifyVersion;
-
-          if (!args.instance) {
-            prompts.push(
-              multichoice(
-                {
-                  type: 'autocomplete',
-                  source: (prevAnswers: inquirer.Answers, input: string) => {
-                    let options = _.map(previousLogins, 'instance');
-                    const filtered = options.filter(c =>
-                      input === undefined ? true : c.indexOf(input) >= 0,
-                    );
-                    filtered.push(NEW_INSTANCE);
-                    return Promise.resolve(filtered);
-                  },
-                  message:
-                    'Domo instance ' + chalk.grey('e.g. company.domo.com '),
-                  name: 'instance',
-
-                  default: function () {
-                    if (mostRecent) return mostRecent;
-                    else return;
-                  },
-                  // only show up if they have previous logins
-                  when: function (answers: inquirer.Answers) {
-                    return previousLogins.length > 0;
-                  },
-                },
-                previousLogins,
-                NEW_INSTANCE,
-              ),
-              {
-                type: 'input',
-                message:
-                  'Domo instance ' + chalk.grey('e.g. company.domo.com '),
-                name: 'newInstance',
-                when: function (answers: inquirer.Answers) {
-                  // only ask if the instance selector wasn't used or new one was selected
-                  return !answers.instance || answers.instance === NEW_INSTANCE;
-                },
-                validate: function (input: string) {
-                  const acceptedDomains = [
-                    'domo.com',
-                    'domotech.io',
-                    'domorig.io',
-                  ];
-                  if (acceptedDomains.some(domain => input.endsWith(domain))) {
-                    return true;
-                  }
-
-                  return (
-                    'Please login using the full Domo instance. ' +
-                    chalk.grey('Example: "company.domo.com"')
-                  );
-                },
-              },
-            );
+      const currentLogin = Login.getCurrentLogin();
+      let prompts = [];
+      let versionCheckFn = !args.upgradeCheck
+        ? function (x: IncomingMessage) {
+            return x;
           }
+        : verifyVersion;
 
-          // prompt user
-          inquirer
-            .prompt(prompts)
-            .then(function (answers: inquirer.Answers) {
-              if (args.instance) {
-                answers.instance = args.instance;
-              } else if (answers.newInstance) {
-                answers.instance = answers.newInstance;
+      if (!args.instance) {
+        prompts.push(
+          multichoice(
+            {
+              type: 'autocomplete',
+              source: (prevAnswers: inquirer.Answers, input: string) => {
+                let options = _.map(previousLogins, 'instance');
+                const filtered = options.filter(c =>
+                  input === undefined ? true : c.indexOf(input) >= 0,
+                );
+                filtered.push(NEW_INSTANCE);
+                return Promise.resolve(filtered);
+              },
+              message: 'Domo instance ' + chalk.grey('e.g. company.domo.com '),
+              name: 'instance',
+
+              default: function () {
+                if (currentLogin) return currentLogin;
+                else return;
+              },
+              // only show up if they have previous logins
+              when: function (answers: inquirer.Answers) {
+                return previousLogins.length > 0;
+              },
+            },
+            previousLogins,
+            NEW_INSTANCE,
+          ),
+          {
+            type: 'input',
+            message: 'Domo instance ' + chalk.grey('e.g. company.domo.com '),
+            name: 'newInstance',
+            when: function (answers: inquirer.Answers) {
+              // only ask if the instance selector wasn't used or new one was selected
+              return !answers.instance || answers.instance === NEW_INSTANCE;
+            },
+            validate: function (input: string) {
+              const acceptedDomains = ['domo.com', 'domotech.io', 'domorig.io'];
+              if (acceptedDomains.some(domain => input.endsWith(domain))) {
+                return true;
               }
-              Login.getLogin(answers.instance)
-                .then(function (domo: Domo) {
-                  domo
-                    .login()
-                    .then(function (l: LoginData) {
-                      login = l;
-                    })
-                    .catch(() =>
-                      log.fail(
-                        'Failure to get user from server',
-                        'Possible instance name issue, authorization issue, or timeout on given instance',
-                      ),
-                    )
+
+              return (
+                'Please login using the full Domo instance. ' +
+                chalk.grey('Example: "company.domo.com"')
+              );
+            },
+          },
+        );
+      }
+
+      // prompt user
+      inquirer
+        .prompt(prompts)
+        .then(function (answers: inquirer.Answers) {
+          if (args.instance) {
+            answers.instance = args.instance;
+          } else if (answers.newInstance) {
+            answers.instance = answers.newInstance;
+          }
+          const login = new Login(answers.instance);
+          login
+            .getClient()
+            .then(function (domo) {
+              domo
+                .login()
+                .catch(() =>
+                  log.fail(
+                    'Failure to get user from server',
+                    'Possible instance name issue, authorization issue, or timeout on given instance',
+                  ),
+                )
+                /*
                     .then(function () {
                       if (args.oauth) {
                         const manifest: string =
@@ -209,7 +168,8 @@ module.exports = function (program: Command) {
                       } else return;
                     })
                     .catch(() => log.fail('Failure to setup oauth'))
-                    /*
+                    */
+                /*
               .then(
                 checkVersion.bind(null, answers.instance)
               )
@@ -217,37 +177,34 @@ module.exports = function (program: Command) {
               .then(versionCheckFn)
               .catch(() => console.log ("NPM servers are down, skipping checking for latest version."))
               */
-                    .then(function () {
-                      console.log(chalk.grey(logo));
-                      log.ok(
-                        'Login to ' + answers.instance + ' successful.',
-                        'Welcome, ' + login.displayName + '.',
-                      );
-                      return Login.persistLogin(
-                        answers.instance,
-                        login.refreshToken,
-                        domo.getDevToken(),
-                      );
-                    })
+                .then(loginData => {
+                  console.log(chalk.grey(logo));
+                  log.ok(
+                    'Login to ' + answers.instance + ' successful.',
                     //@ts-ignore
-                    .catch(err =>
-                      log.fail(`Login unsuccessful: ${JSON.stringify(err)}`),
-                    )
-                    .finally(process.exit);
+                    'Welcome, ' + loginData.displayName + '.',
+                  );
+                  return login.persistLogin(
+                    //@ts-ignore
+                    loginData.refreshToken,
+                    domo.getDevToken(),
+                  );
                 })
-                .catch(test => {
-                  return log.notAuthenticated;
-                });
+                //@ts-ignore
+                .catch(err =>
+                  log.fail(`Login unsuccessful: ${JSON.stringify(err)}`),
+                )
+                .finally(process.exit);
             })
-            .catch(err =>
-              log.fail(
-                `Login failed, likely an issue with data in ~/.config/configstore/ryuu: ${err}`,
-              ),
-            );
+            .catch(test => {
+              return log.notAuthenticated;
+            });
         })
-        .catch(test => {
-          return log.notAuthenticated;
-        });
+        .catch(err =>
+          log.fail(
+            `Login failed, likely an issue with data in ~/.config/configstore/ryuu: ${err}`,
+          ),
+        );
     });
 };
 

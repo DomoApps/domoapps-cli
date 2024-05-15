@@ -14,7 +14,8 @@ module.exports = function (program: Command) {
       'List all custom apps on instance (admin role required)',
     )
     .action(function (options) {
-      Login.getMostRecentLogin()
+      new Login()
+        .getClient()
         .then(function (domo) {
           Session.check(domo).then(function () {
             domo

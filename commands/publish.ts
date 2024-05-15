@@ -22,7 +22,8 @@ module.exports = function (program: Command) {
     .action(function (options) {
       var manifest = Manifest.get(options.manifest);
 
-      Login.getMostRecentLogin()
+      new Login()
+        .getClient()
         .then(function (domo) {
           if (domo.getRefreshToken() === undefined) {
             log.notAuthenticated();
@@ -72,7 +73,7 @@ function createDesign(
         log.fail('Error when creating new design:', e.message);
       })
       .then(domo.uploadAllAssets.bind(domo, manifest))
-            //@ts-ignore
+      //@ts-ignore
       .then(logUploadSuccess)
       .catch(function (e: string) {
         log.fail(
