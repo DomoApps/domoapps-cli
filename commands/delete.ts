@@ -1,4 +1,3 @@
-import Domo = require('ryuu-client');
 import {Login} from '../util/login';
 import design = require('../util/design');
 import {log} from '../util/log';
@@ -19,7 +18,7 @@ module.exports = function (program: Command) {
     )
     .option('-c, --confirm', 'Confirm deleting the app')
     .action(function (arg: string, options: CommandOptions) {
-      var designId = design.getDesignId(
+      const designId = design.getDesignId(
         arg,
         options['design_id'],
         program.opts().manifest,
@@ -52,8 +51,7 @@ module.exports = function (program: Command) {
               if (options['force']) force = true;
               domo
                 .deleteDesign(designId, force)
-                //@ts-ignore
-                .tap(() => log.ok('Deleted design ' + designId))
+                .then(() => log.ok('Deleted design ' + designId))
                 .catch(() =>
                   log.fail(
                     'Unable to delete design ' +
