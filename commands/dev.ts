@@ -1,7 +1,7 @@
 import {Login} from '../util/login';
 import {log} from '../util/log';
 import {Command} from 'commander';
-import Domo = require('ryuu-client');
+import {start} from '../server/server';
 
 module.exports = function (program: Command) {
   program
@@ -13,8 +13,8 @@ module.exports = function (program: Command) {
       'Allow external connection to access the dev site',
     )
     .option('-m, --manifest <value>', 'use a specific manifest file')
-    .action(function (opts) {
-      let options = {
+    .action(opts => {
+      const options = {
         userId: opts.userId,
         external: opts.external,
         manifest: opts.manifest,
@@ -22,10 +22,10 @@ module.exports = function (program: Command) {
 
       new Login()
         .getClient()
-        .then(function (domo: Domo) {
+        .then(function (domo) {
           //session will stop authenticated users
-          const server = require('../server/server');
-          server.start(domo, options).catch(log.fail);
+          //const server = require('../server/server');
+          start(domo, options).catch(log.fail);
         })
         .catch((err: Error) => {
           if (err.message) {

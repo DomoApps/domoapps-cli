@@ -1,7 +1,5 @@
 import inquirer = require('inquirer');
 import {login} from '../models';
-import _ = require('lodash');
-import AutocompletePrompt from 'inquirer-autocomplete-prompt';
 
 interface InquirerAutocompleteOptions extends inquirer.ListQuestionOptions {
   source?: (answers: inquirer.Answers, input: string) => Promise<Iterable<any>>;
