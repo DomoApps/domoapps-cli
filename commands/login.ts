@@ -1,5 +1,5 @@
 import inquirer = require('inquirer');
-import autocompletePrompt from 'inquirer-autocomplete-prompt';
+import autocompletePrompt = require('inquirer-autocomplete-prompt');
 import * as chalk from 'chalk';
 import _ = require('lodash');
 import path = require('path');
@@ -19,6 +19,7 @@ import {logo} from '../models/enums/constant';
 
 let autoUpdate = false;
 const NEW_INSTANCE = 'new instance';
+//@ts-ignore
 inquirer.registerPrompt('autocomplete', autocompletePrompt);
 
 module.exports = function (program: Command) {
@@ -60,8 +61,8 @@ module.exports = function (program: Command) {
       }
       const previousLogins = Login.getPreviousLogins();
       let login: LoginData;
-      const currentLogin = Login.getCurrentLogin();
-      let prompts = [];
+      const currentLogin = Login.getCurrentLogin().instance;
+      const prompts = [];
       let versionCheckFn = !args.upgradeCheck
         ? function (x: IncomingMessage) {
             return x;
@@ -75,24 +76,20 @@ module.exports = function (program: Command) {
               //@ts-ignore
               type: 'autocomplete',
               source: (prevAnswers: inquirer.Answers, input: string) => {
-                let options = _.map(previousLogins, 'instance');
-                const filtered = options.filter(c =>
-                  input === undefined ? true : c.indexOf(input) >= 0,
-                );
+                const filtered = previousLogins
+                  .map(login => login.instance)
+                  .filter(c =>
+                    input === undefined ? true : c.indexOf(input) >= 0,
+                  );
                 filtered.push(NEW_INSTANCE);
                 return Promise.resolve(filtered);
               },
               message: 'Domo instance ' + chalk.grey('e.g. company.domo.com '),
               name: 'instance',
 
-              default: function () {
-                if (currentLogin) return currentLogin;
-                else return;
-              },
+              default: currentLogin,
               // only show up if they have previous logins
-              when: function (answers: inquirer.Answers) {
-                return previousLogins.length > 0;
-              },
+              when: previousLogins.length > 0,
             },
             previousLogins,
             NEW_INSTANCE,
@@ -101,11 +98,11 @@ module.exports = function (program: Command) {
             type: 'input',
             message: 'Domo instance ' + chalk.grey('e.g. company.domo.com '),
             name: 'newInstance',
-            when: function (answers: inquirer.Answers) {
+            when: (answers: inquirer.Answers) => {
               // only ask if the instance selector wasn't used or new one was selected
               return !answers.instance || answers.instance === NEW_INSTANCE;
             },
-            validate: function (input: string) {
+            validate: (input: string) => {
               const acceptedDomains = ['domo.com', 'domotech.io', 'domorig.io'];
               if (acceptedDomains.some(domain => input.endsWith(domain))) {
                 return true;
@@ -123,17 +120,14 @@ module.exports = function (program: Command) {
       // prompt user
       inquirer
         .prompt(prompts)
-        .then(function (answers: inquirer.Answers) {
-          if (args.instance) {
-            answers.instance = args.instance;
-          } else if (answers.newInstance) {
-            answers.instance = answers.newInstance;
-          }
-          const login = new Login(answers.instance);
+        .then((answers: inquirer.Answers) => {
+          const instance =
+            args.instance || answers.newInstance || answers.instance;
+          const login = new Login(instance);
           login
             .getClient()
-            .then(function (domo) {
-              domo
+            .then(client => {
+              client
                 .login()
                 .catch(() =>
                   log.fail(
@@ -151,14 +145,14 @@ module.exports = function (program: Command) {
                         if (Oauth.isOAuthEnabled(manifest)) {
                           if (Oauth.hasAppProxyId(manifest)) {
                             return setupOauth(
-                              answers.instance,
+                              instance,
                               manifest,
                               Oauth.getAppProxyId(manifest),
                             );
                           } else {
                             return promptAppProxyId().then(proxyId => {
                               return setupOauth(
-                                answers.instance,
+                                instance,
                                 manifest,
                                 proxyId,
                               );
@@ -171,7 +165,7 @@ module.exports = function (program: Command) {
                     */
                 /*
               .then(
-                checkVersion.bind(null, answers.instance)
+                checkVersion.bind(null, instance)
               )
               //@ts-ignore
               .then(versionCheckFn)
@@ -180,14 +174,14 @@ module.exports = function (program: Command) {
                 .then(loginData => {
                   console.log(chalk.grey(logo));
                   log.ok(
-                    'Login to ' + answers.instance + ' successful.',
+                    'Login to ' + instance + ' successful.',
                     //@ts-ignore
                     'Welcome, ' + loginData.displayName + '.',
                   );
                   return login.persistLogin(
                     //@ts-ignore
                     loginData.refreshToken,
-                    domo.getDevToken(),
+                    client.getDevToken(),
                   );
                 })
                 .catch(err =>
