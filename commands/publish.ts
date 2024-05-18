@@ -20,27 +20,27 @@ module.exports = function (program: Command) {
     .option('-g, --go', 'navigate to design in Asset Library after publishing')
     .option('-m, --manifest <value>', 'use a specific manifest file')
     .action(function (options) {
-      var manifest = Manifest.get(options.manifest);
+      const manifest = Manifest.get(options.manifest, false);
 
       new Login()
         .getClient()
-        .then(function (domo) {
-          if (domo.getRefreshToken() === undefined) {
+        .then(client => {
+          if (client.getRefreshToken() === undefined) {
             log.notAuthenticated();
           }
           checkFileNames(manifest);
           if (!manifest.id) {
-            createDesign(domo, manifest, options);
+            createDesign(client, manifest, options);
           } else {
-            domo
+            client
               .getDesign(manifest.id)
-              .then(function (result) {
+              .then(result => {
                 checkMapping(result, manifest);
-                return publishAssets(domo, manifest).then(() =>
-                  linkToDomoWeb(options, domo, manifest),
+                return publishAssets(client, manifest).then(() =>
+                  linkToDomoWeb(options, client, manifest),
                 );
               })
-              .catch(e => publishErrors(e, domo, manifest));
+              .catch(e => publishErrors(e, client, manifest));
           }
         })
         .catch(log.notAuthenticated);
@@ -57,11 +57,8 @@ function createDesign(
       .createDesign(manifest)
 
       //@ts-ignore
-      .then(function (designResult: DesignVersion) {
-        var design = designResult[0];
-        // add the version returned when design published
-        design.version = designResult[1].version;
-        return Manifest.persistDesignId(design, manifest);
+      .then((designResult: Design) => {
+        return Manifest.persistDesignId(designResult.id, manifest);
       })
       //@ts-ignore
       /*
@@ -110,13 +107,13 @@ function linkToDomoWeb(
   }
 }
 
-function checkMapping(result: DesignAggregate, manifest: manifest) {
+function checkMapping(result: any, manifest: manifest) {
   var latestVersionNumber = result.latestVersion;
   var latestVersion = result.versions.filter(function (obj: any) {
     return obj.version === latestVersionNumber;
   });
-  var oldMapping = latestVersion[0].mapping[0];
-  var newMapping = manifest.mapping[0];
+  var oldMapping = latestVersion[0].datasetsMapping[0];
+  var newMapping = manifest.datasetsMapping[0];
 
   if (oldMapping) {
     delete oldMapping.dql;
