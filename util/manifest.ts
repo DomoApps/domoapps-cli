@@ -34,6 +34,7 @@ export class Manifest {
       log.fail(`Your ${manifestName} file is not valid JSON`, e.message);
     }
     if (verify) {
+      manifest = updateManifestProperties(manifest);
       validateManifest(manifest);
     }
 
@@ -53,10 +54,10 @@ export class Manifest {
   /**
    * update the manifest (in memory and on disk)
    */
-  static persistDesignId(design: DesignVersion, manifest: manifest) {
-    manifest.id = design.id;
+  static persistDesignId(id: string, manifest: manifest) {
+    manifest.id = id;
     this.updateManifest(manifest);
-    return design;
+    return id;
   }
 
   static updateManifest(manifest: manifest) {
@@ -109,6 +110,22 @@ function validateManifest(manifest: manifest) {
   }
 
   return manifest;
+}
+
+function updateManifestProperties(manifest: manifest) {
+  const updatedManifest = {...manifest};
+
+  if (updatedManifest.hasOwnProperty('mapping')) {
+    updatedManifest.datasetsMapping = updatedManifest.mapping;
+    delete updatedManifest.mapping;
+  }
+
+  if (updatedManifest.hasOwnProperty('collections')) {
+    updatedManifest.collectionsMapping = updatedManifest.collections;
+    delete updatedManifest.collections;
+  }
+
+  return updatedManifest;
 }
 
 /**

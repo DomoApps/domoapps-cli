@@ -1,5 +1,5 @@
 export interface login {
-    instance: string,
-    refreshToken: string,
-    devToken: boolean|undefined
+  instance: string;
+  refreshToken?: string;
+  devToken?: boolean | undefined;
 }
