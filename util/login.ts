@@ -17,12 +17,14 @@ export class Login {
     this.instance = instance ?? Login.getCurrentLogin().instance;
     this.login = new Configstore(`/ryuu/${this.instance}`);
     this.proxy = new Configstore(`/proxy`);
+    if (this.instance === '')
+      log.fail('You have not logged into any Domo instances');
   }
-  static getCurrentLogin = (): Login => {
+  static getCurrentLogin = (): login => {
     const allLogins = glob.sync(home + '/ryuu/*.json');
     // If there are no logins, return an empty object
     if (allLogins.length === 0) {
-      log.fail('You have not logged into any Domo instances');
+      return {instance: ''};
     }
     const currentLogin = allLogins.reduce(function (prev, next) {
       return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
