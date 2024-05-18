@@ -19,9 +19,8 @@ module.exports = function (program: Command) {
         .then(function (domo) {
           Session.check(domo).then(function () {
             domo
-              .getSimpleDesigns()
-              //@ts-ignore
-              .then(function (designs: DesignAggregate[]) {
+              .getDesigns()
+              .then(designs => {
                 //if(options.all){}
                 //else {
                 //domo.getLoginUser().then(function(user) {
@@ -46,25 +45,25 @@ module.exports = function (program: Command) {
 
                   designs.forEach(function (design) {
                     table.push([
-                      design.design.name,
-                      design.design.id,
-                      new Date(design.design.createdDate).toUTCString(),
-                      new Date(design.design.lastModifiedDate).toUTCString(),
+                      design.name,
+                      design.id,
+                      new Date(design.createdDate).toUTCString(),
+                      new Date(design.updatedDate).toUTCString(),
                     ]);
                   });
 
                   console.log(table.toString());
                 } else {
                   designs.forEach(function (design) {
-                    console.log('Design Name: ' + design.design.name);
-                    console.log('Design Id: ' + design.design.id);
+                    console.log('Design Name: ' + design.name);
+                    console.log('Design Id: ' + design.id);
                     console.log(
                       'Date Created: ' +
-                        new Date(design.design.createdDate).toUTCString(),
+                        new Date(design.createdDate).toUTCString(),
                     );
                     console.log(
                       'Last Updated: ' +
-                        new Date(design.design.lastModifiedDate).toUTCString() +
+                        new Date(design.updatedDate).toUTCString() +
                         '\n',
                     );
                   });
