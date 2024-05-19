@@ -6,23 +6,23 @@ import {Command} from 'commander';
 
 module.exports = function (program: Command) {
   program
-    .command('owner <add|rm|ls> [user-emails]')
+    .command('owner <add|rm|ls> [user-emails...]')
     .description('manage design owners')
     .option(
-      '-i, --design_id <id>',
+      '-i, --designId <id>',
       'Specify design ID, otherwise it is retrieved from a manifest file',
     )
-    .action(function (action: string, users: string[], options) {
+    .action((action: string, users: string[], options) => {
       let designId: string;
       if (options.design_id) {
         designId = options.design_id;
-        if (!designId || !validator.isUUID(designId))
+        if (!validator.isUUID(designId))
           return log.fail(
             'The value specified for option -i is not a valid design ID',
             designId,
           );
       } else {
-        var manifest = Manifest.get();
+        const manifest = Manifest.get('manifest.json', false);
         if (!manifest)
           return log.fail(
             'No manifest found. Please supply design id using -i or change to a directory with a valid manifest file',
@@ -33,47 +33,36 @@ module.exports = function (program: Command) {
           );
         designId = manifest.id;
       }
-      new Login()
-        .getClient()
-        .then(function (domo) {
-          switch (action) {
-            case 'add':
-              if (users) {
-                domo
-                  .addOwners(designId, users)
-                  //@ts-ignore
-
-                  .tap(() => log.ok('Owners added ' + users))
-                  .catch(() => log.fail('Error adding owners'))
-                  .finally(process.exit);
-              }
-              break;
-            case 'rm':
-              if (users) {
-                domo
-                  .removeOwners(designId, users)
-                  //@ts-ignore
-                  .tap(() => log.ok('Owners removed ' + users))
-                  .catch(() => log.fail('Error removing owners'))
-                  .finally(process.exit);
-              }
-              break;
-            case 'ls':
-              domo
-                .getOwners(designId)
-                //@ts-ignore
-                .tap(function listUsers(res: string[]) {
-                  res.sort();
-                  log.ok('Owners for design ' + designId);
-                  res.forEach(function (element, index, array) {
-                    console.log('\t' + element);
-                  });
-                })
-                .catch(() => log.fail('Error retrieving owners'))
-                .finally(process.exit);
-              break;
-          }
-        })
-        .catch(log.notAuthenticated);
+      new Login().getClient().then(client => {
+        switch (action) {
+          case 'add':
+            if (users) {
+              client
+                .addOwners(designId, users)
+                .then(res => log.ok('Owners added ' + users))
+                .catch(e => log.fail('Error adding owners'));
+            }
+            break;
+          case 'rm':
+            if (users) {
+              client
+                .removeOwners(designId, users)
+                .then(() => log.ok('Owners removed ' + users))
+                .catch(e => log.fail('Error removing owners'));
+            }
+            break;
+          case 'ls':
+            client
+              .getDesign(designId, {parts: 'owners'})
+              .then(designs => {
+                log.ok(`Owners for design ${designId}:`);
+                designs.owners.forEach(owner => {
+                  console.log('\t' + owner.displayName);
+                });
+              })
+              .catch(() => log.fail('Error retrieving owners'));
+            break;
+        }
+      });
     });
 };

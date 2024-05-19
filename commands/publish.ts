@@ -33,7 +33,7 @@ module.exports = function (program: Command) {
             createDesign(client, manifest, options);
           } else {
             client
-              .getDesign(manifest.id)
+              .getDesign(manifest.id, {parts: 'versions'})
               .then(result => {
                 checkMapping(result, manifest);
                 return publishAssets(client, manifest).then(() =>
