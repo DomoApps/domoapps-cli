@@ -1,26 +1,26 @@
 import inquirer = require('inquirer');
 import _ = require('lodash');
 import open = require('open');
-import {Manifest} from '../util/manifest';
+import {ManifestUtils} from '../util/manifest';
 import {Login} from '../util/login';
 import glob = require('glob');
 import fs = require('fs-extra');
 import {log} from '../util/log';
 import appStructure = require('../util/appStructure');
-import {constant, manifest, File} from '../models';
+import {constant, File} from '../models';
 import Domo = require('ryuu-client');
 import {Command, CommandOptions} from 'commander';
-import {DesignAggregate, DesignVersion} from 'ryuu-client/lib/models';
 import multichoice from '../util/multichoice';
+import {Manifest} from 'ryuu-client/lib/models';
 
-module.exports = function (program: Command) {
+module.exports = (program: Command) => {
   program
     .command('publish')
     .description('publish a new or existing Custom App design')
     .option('-g, --go', 'navigate to design in Asset Library after publishing')
     .option('-m, --manifest <value>', 'use a specific manifest file')
-    .action(function (options) {
-      const manifest = Manifest.get(options.manifest, false);
+    .action(options => {
+      const manifest = ManifestUtils.get(options.manifest, false);
 
       new Login()
         .getClient()
@@ -47,32 +47,25 @@ module.exports = function (program: Command) {
     });
 };
 
-function createDesign(
+const createDesign = (
   domo: Domo,
-  manifest: manifest,
+  manifest: Manifest,
   options?: CommandOptions,
-) {
+) => {
   return (
     domo
       .createDesign(manifest)
-
-      //@ts-ignore
-      .then((designResult: Design) => {
-        return Manifest.persistDesignId(designResult.id, manifest);
-      })
-      //@ts-ignore
-      /*
-      .tap(() => {
+      .then(designResult => {
+        ManifestUtils.persistDesignId(designResult.id, manifest);
         log.ok('New design created on ' + domo.getInstance());
-      })*/
-      //@ts-ignore
+      })
       .catch(e => {
         log.fail('Error when creating new design:', e.message);
       })
-      .then(domo.uploadAllAssets.bind(domo, manifest))
+      .then(() => domo.uploadAllAssets(manifest, manifest.ignore))
       //@ts-ignore
-      .then(logUploadSuccess)
-      .catch(function (e: string) {
+      .then(files => logUploadSuccess(files))
+      .catch((e: string) => {
         log.fail(
           e || 'Error uploading assets in uploading assets for a new design',
         );
@@ -81,19 +74,19 @@ function createDesign(
         linkToDomoWeb(options, domo, manifest);
       })
   );
-}
+};
 
-function logUploadSuccess(files: File[]) {
-  files.forEach(function (file) {
+const logUploadSuccess = (files: File[]) => {
+  files.forEach(file => {
     log.ok('Uploaded: ' + file.path);
   });
-}
+};
 
-function linkToDomoWeb(
+const linkToDomoWeb = (
   options: CommandOptions,
   domo: Domo,
-  manifest: manifest,
-) {
+  manifest: Manifest,
+) => {
   console.log(
     'Design can be found at https://' +
       domo.getInstance() +
@@ -105,11 +98,11 @@ function linkToDomoWeb(
       'https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id,
     );
   }
-}
+};
 
-function checkMapping(result: any, manifest: manifest) {
+const checkMapping = (result: any, manifest: Manifest) => {
   var latestVersionNumber = result.latestVersion;
-  var latestVersion = result.versions.filter(function (obj: any) {
+  var latestVersion = result.versions.filter((obj: any) => {
     return obj.version === latestVersionNumber;
   });
   var oldMapping = latestVersion[0].datasetsMapping[0];
@@ -124,9 +117,9 @@ function checkMapping(result: any, manifest: manifest) {
       'Mapping has changed. Check current cards for potential miss-mappings.',
     );
   }
-}
+};
 
-function checkFileNames(manifest: manifest) {
+const checkFileNames = (manifest: Manifest) => {
   var ignore = ['**/*/node_modules/**/*', 'node_modules/**/*'];
   var userIgnore = manifest.ignore;
   if (userIgnore) {
@@ -136,7 +129,7 @@ function checkFileNames(manifest: manifest) {
       log.fail('The manifest.json "ignore" property must be an Array');
     }
   }
-  var badFileList = glob.sync('**/*', {ignore: ignore}).filter(function (file) {
+  var badFileList = glob.sync('**/*', {ignore: ignore}).filter(file => {
     console.log(file);
     return (
       // special characters except "/" in file names are not allowed
@@ -154,9 +147,9 @@ function checkFileNames(manifest: manifest) {
   if (!appStructure.hasThumbnail()) {
     log.warn(constant.THUMBNAIL_CREATE_WARNING, constant.CREATE_THUMBNAIL);
   }
-}
+};
 
-function recreateDesign(domo: Domo, manifest: manifest) {
+const recreateDesign = (domo: Domo, manifest: Manifest) => {
   inquirer
     .prompt(
       multichoice({
@@ -167,7 +160,7 @@ function recreateDesign(domo: Domo, manifest: manifest) {
         choices: ['Undelete', 'Create New Design'],
       }),
     )
-    .then(function (answers: inquirer.Answers) {
+    .then((answers: inquirer.Answers) => {
       if (answers.askRecreate) {
         if (answers.askRecreate == 'Create New Design') {
           manifest.id = null;
@@ -181,9 +174,9 @@ function recreateDesign(domo: Domo, manifest: manifest) {
         }
       }
     });
-}
+};
 
-function publishErrors(e: any, domo: Domo, manifest: manifest) {
+const publishErrors = (e: any, domo: Domo, manifest: Manifest) => {
   if (e.statusCode === 400 && !e.message.startsWith('DA')) {
     log.fail('Design failed to publish with error:', e.message);
   } else if (e.statusCode === 401) {
@@ -209,7 +202,7 @@ function publishErrors(e: any, domo: Domo, manifest: manifest) {
           '. Would you like to create a new design with these assets?',
         name: 'askCreate',
       })
-      .then(function (answers) {
+      .then(answers => {
         if (answers.askCreate) {
           manifest.id = null;
           createDesign(domo, manifest);
@@ -228,7 +221,7 @@ function publishErrors(e: any, domo: Domo, manifest: manifest) {
               name: 'askRecreate',
             },
           ])
-          .then(function (answers) {
+          .then(answers => {
             if (answers.askRecreate) {
               manifest.id = null;
               createDesign(domo, manifest);
@@ -250,28 +243,24 @@ function publishErrors(e: any, domo: Domo, manifest: manifest) {
       ),
     );
   }
-}
+};
 
-function publishAssets(domo: Domo, manifest: manifest) {
-  return (
-    domo
-      .uploadAllAssets(manifest)
+const publishAssets = (domo: Domo, manifest: Manifest) => {
+  return domo
+    .uploadAllAssets(manifest, manifest.ignore)
+    .then(files => {
+      log.ok(
+        'Publishing ' +
+          manifest.name +
+          ' to ' +
+          domo.getInstance() +
+          ' on ' +
+          new Date(),
+      );
       //@ts-ignore
-      /*
-      .tap(() => {
-        log.ok(
-          'Publishing ' +
-            manifest.name +
-            ' to ' +
-            domo.getInstance() +
-            ' on ' +
-            new Date(),
-        );
-      })*/
-      .then(logUploadSuccess)
-      //@ts-ignore
-      .catch(e => {
-        publishErrors(e, domo, manifest);
-      })
-  );
-}
+      logUploadSuccess(files);
+    })
+    .catch(e => {
+      publishErrors(e, domo, manifest);
+    });
+};

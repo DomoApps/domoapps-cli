@@ -1,4 +1,4 @@
-import {Manifest} from '../util/manifest';
+import {ManifestUtils} from '../util/manifest';
 import {log} from '../util/log';
 import validator from 'validator';
 
@@ -20,7 +20,7 @@ export function getDesignId(id?: string, manifestPath?: string) {
       return;
     }
   } else {
-    const manifest = Manifest.get(manifestPath);
+    const manifest = ManifestUtils.get(manifestPath);
     if (!manifest || !manifest.id) {
       log.fail(
         'No manifest found. Please supply design id using -i or change to a directory with a valid manifest file',

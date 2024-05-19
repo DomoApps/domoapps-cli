@@ -1,5 +1,5 @@
 import inquirer = require('inquirer');
-import {Manifest} from '../util/manifest';
+import {ManifestUtils} from '../util/manifest';
 import {Login} from '../util/login';
 import {log} from '../util/log';
 import appStructure = require('../util/appStructure');
@@ -14,7 +14,7 @@ module.exports = function (program: Command) {
       new Login()
         .getClient()
         .then(function (domo) {
-          var manifest = Manifest.get(program.opts().manifest);
+          var manifest = ManifestUtils.get(program.opts().manifest);
 
           // make sure app has been published first
           if (!manifest.id) {

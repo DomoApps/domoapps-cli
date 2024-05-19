@@ -4,92 +4,72 @@ import semver = require('semver');
 import glob = require('glob');
 import {log} from '../util/log';
 import isValidJSName from '../util/isValidJSName';
-import {manifest} from '../models';
-import {DesignVersion} from 'ryuu-client/lib/models';
+import {Manifest} from 'ryuu-client/lib/models';
 
-export class Manifest {
-  /**
-   * Get the local manifest.json file, ensuring it's valid.
-   */
-  static get(manifestName = 'manifest.json', verify = true) {
-    const manifestPath = findManifest(manifestName);
+/**
+ * Get the local manifest.json file, ensuring it's valid.
+ */
+const get = (manifestName = 'manifest.json', verify = true) => {
+  const manifestPath = findManifest(manifestName);
 
-    let rawmanifest: Buffer;
-    try {
-      rawmanifest = fs.readFileSync(path.resolve(manifestPath));
-    } catch (e) {
-      if (verify) {
-        log.fail(
-          `No ${manifestName} file in this directory`,
-          `Please publish from a directory containing a Custom App design ${manifestName} file`,
-        );
-      } else {
-        return;
-      }
-    }
-    let manifest: manifest;
-    try {
-      manifest = JSON.parse(rawmanifest.toString());
-    } catch (e) {
-      log.fail(`Your ${manifestName} file is not valid JSON`, e.message);
-    }
+  let rawmanifest: Buffer;
+  try {
+    rawmanifest = fs.readFileSync(path.resolve(manifestPath));
+  } catch (e) {
     if (verify) {
-      manifest = updateManifestProperties(manifest);
-      validateManifest(manifest);
+      log.fail(
+        `No ${manifestName} file in this directory`,
+        `Please publish from a directory containing a Custom App design ${manifestName} file`,
+      );
+    } else {
+      return;
     }
+  }
+  let manifest: Manifest;
+  try {
+    manifest = JSON.parse(rawmanifest.toString());
+  } catch (e) {
+    log.fail(`Your ${manifestName} file is not valid JSON`, e.message);
+  }
+  if (verify) {
+    manifest = updateManifestProperties(manifest);
+    validateManifest(manifest);
+  }
 
-    // add the manifest name, so it's attached to the object
-    manifest.fileName = manifestName;
-    /*
+  // add the manifest name, so it's attached to the object
+  manifest.fileName = manifestName;
+  /*
     waiting to deploy below line until I have time to refactor oauth
     log.info(`Getting manifest located in ${ path.resolve(manifestPath) }`)
     */
-    return manifest;
-  }
+  return manifest;
+};
 
-  static hasManifest(manifestName: string) {
-    return fs.existsSync(findManifest(manifestName));
-  }
+const hasManifest = (manifestName: string) => {
+  return fs.existsSync(findManifest(manifestName));
+};
 
-  /**
-   * update the manifest (in memory and on disk)
-   */
-  static persistDesignId(id: string, manifest: manifest) {
-    manifest.id = id;
-    this.updateManifest(manifest);
-    return id;
-  }
+/**
+ * update the manifest (in memory and on disk)
+ */
+const persistDesignId = (id: string, manifest: Manifest) => {
+  const newManifest = {...manifest, id};
+  updateManifest(newManifest);
+  return id;
+};
 
-  static updateManifest(manifest: manifest) {
-    const manifestPath = findManifest(manifest.fileName);
-    fs.writeJsonSync(manifestPath, manifest, {spaces: 2});
-  }
-}
+const updateManifest = (manifest: Manifest) => {
+  const manifestPath = findManifest(manifest.fileName);
+  fs.writeJsonSync(manifestPath, manifest, {spaces: 2});
+};
 
 /**
  * Validate the manifest file.
  */
-function validateManifest(manifest: manifest) {
+const validateManifest = (manifest: Manifest) => {
   // validate manifest file for required fields
   requireProperty(manifest, 'name');
   requireProperty(manifest, 'version');
-  requireProperty(manifest, 'mapping');
-
-  // validate required mapping fields
-  manifest.mapping.forEach(function (dataPoint) {
-    requireProperty(dataPoint, 'dataSetId');
-    requireProperty(dataPoint, 'alias');
-    requireProperty(dataPoint, 'fields');
-    ensureValidAlias(dataPoint.alias);
-
-    // validate dataPoint mapping fields
-    dataPoint.fields.forEach(function (field) {
-      requireProperty(field, 'alias');
-      requireProperty(field, 'columnName');
-      ensureValidAlias(field.alias);
-    });
-  });
-
   // validate semver
   if (!semver.valid(manifest.version)) {
     log.fail(
@@ -97,22 +77,21 @@ function validateManifest(manifest: manifest) {
       'Please make sure the `version` in your manifest.json file is a valid semantic version. See http://semver.org/',
     );
   }
-
-  function requireProperty(obj: Object, prop: string) {
-    if (!obj[prop]) {
-      log.fail(
-        'Missing required property: ' + prop,
-        'Please add the missing `' +
-          prop +
-          '` property to your manifest.json file.',
-      );
-    }
-  }
-
   return manifest;
-}
+};
 
-function updateManifestProperties(manifest: manifest) {
+const requireProperty = (obj: Object, prop: string) => {
+  if (!obj[prop]) {
+    log.fail(
+      'Missing required property: ' + prop,
+      'Please add the missing `' +
+        prop +
+        '` property to your manifest.json file.',
+    );
+  }
+};
+
+const updateManifestProperties = (manifest: Manifest) => {
   const updatedManifest = {...manifest};
 
   if (updatedManifest.hasOwnProperty('mapping')) {
@@ -125,8 +104,16 @@ function updateManifestProperties(manifest: manifest) {
     delete updatedManifest.collections;
   }
 
+  if (updateManifest.hasOwnProperty('appContextId')) {
+    updatedManifest.proxyId = updatedManifest['appContextId'];
+    delete updatedManifest['appContextId'];
+  }
+  if (updateManifest.hasOwnProperty('cardId')) {
+    updatedManifest.proxyId = updatedManifest['cardId'];
+    delete updatedManifest['cardId'];
+  }
   return updatedManifest;
-}
+};
 
 /**
  * Alias must be a valid JS property
@@ -145,7 +132,7 @@ function ensureValidAlias(name: string) {
 /**
  * Finds the manifest file in the current directory, or sub files
  */
-function findManifest(name: string) {
+const findManifest = (name: string) => {
   if (fs.existsSync(name)) {
     return name;
   }
@@ -165,4 +152,13 @@ function findManifest(name: string) {
   }
 
   return name;
-}
+};
+
+export const ManifestUtils = {
+  get,
+  hasManifest,
+  persistDesignId,
+  updateManifest,
+  updateManifestProperties,
+  findManifest,
+};

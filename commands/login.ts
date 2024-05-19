@@ -147,7 +147,6 @@ module.exports = function (program: Command) {
                             return setupOauth(
                               instance,
                               manifest,
-                              Oauth.getAppProxyId(manifest),
                             );
                           } else {
                             return promptAppProxyId().then(proxyId => {

@@ -14,7 +14,7 @@ module.exports = function (program: Command) {
     )
     .option('-m, --manifest <value>', 'use a specific manifest file')
     .action(opts => {
-      const options = {
+      const devOptions = {
         userId: opts.userId,
         external: opts.external,
         manifest: opts.manifest,
@@ -25,7 +25,7 @@ module.exports = function (program: Command) {
         .then(function (domo) {
           //session will stop authenticated users
           //const server = require('../server/server');
-          start(domo, options).catch(log.fail);
+          start(domo, devOptions).catch(log.fail);
         })
         .catch((err: Error) => {
           if (err.message) {

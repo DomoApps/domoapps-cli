@@ -1,5 +1,5 @@
 import validator from 'validator';
-import {Manifest} from '../util/manifest';
+import {ManifestUtils} from '../util/manifest';
 import {Login} from '../util/login';
 import {log} from '../util/log';
 import {Command} from 'commander';
@@ -22,7 +22,7 @@ module.exports = function (program: Command) {
             designId,
           );
       } else {
-        const manifest = Manifest.get('manifest.json', false);
+        const manifest = ManifestUtils.get('manifest.json', false);
         if (!manifest)
           return log.fail(
             'No manifest found. Please supply design id using -i or change to a directory with a valid manifest file',

@@ -11,8 +11,8 @@ portfinder.basePort = 3000;
 
 import {Session} from '../util/session';
 import appStructure = require('../util/appStructure');
-import {Manifest} from '../util/manifest';
-import {DomoOptions, AppData} from '../models/index';
+import {ManifestUtils} from '../util/manifest';
+import {DevOptions} from '../models/index';
 import {log} from '../util/log';
 
 import Domo = require('ryuu-client');
@@ -21,21 +21,21 @@ const app = express();
 
 const {Proxy} = require('@domoinc/ryuu-proxy');
 
-export const start = (client: Domo, options: DomoOptions) => {
+export const start = (client: Domo, options: DevOptions) => {
   return new Promise((resolve, reject) => {
     portfinder.getPorts(2, {}, (err, ports) => {
       const assetsPort = ports[0];
       const dataPort = ports[1];
-      const manifest = Manifest.get();
+      const manifest = ManifestUtils.get();
       // If we don't have an app proxyId, get a temporary one
       if (!manifest.proxyId) {
         client.createApp(manifest.id).then((app: any) => {
           manifest.proxyId = app.instance.id;
         });
       }
-      const proxy = new Proxy({manifest});
+      const proxy = new Proxy({manifest}, manifest.proxyId);
       app.get('/', (req, res) => {
-        client.getDomoappsURL(manifest).then((appData: AppData) => {
+        client.getDomoappsData(manifest).then(appData => {
           // sizes consistent with Domo Web
           const sizeMultiplier = {
             width: 235,

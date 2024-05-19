@@ -1,7 +1,7 @@
 import fs = require('fs-extra');
 import path = require('path');
 import Domo = require('ryuu-client');
-import {Manifest} from './manifest';
+import {ManifestUtils} from './manifest';
 import axios, {AxiosRequestConfig, AxiosResponse, AxiosError} from 'axios';
 import qs = require('qs');
 import open = require('open');
@@ -17,16 +17,16 @@ const home = Domo.getHomeDir();
 
 export class Oauth {
   static isOAuthEnabled(manifestName: string) {
-    if (Manifest.hasManifest(manifestName)) {
-      const manifest = Manifest.get(manifestName);
-      return !!manifest.oAuthEnabled;
+    if (ManifestUtils.hasManifest(manifestName)) {
+      const manifest = ManifestUtils.get(manifestName);
+      return !!manifest['oAuthEnabled'];
     }
 
     return false;
   }
 
   static hasAppProxyId(manifestName: string) {
-    const manifest = Manifest.get(manifestName);
+    const manifest = ManifestUtils.get(manifestName);
     return (
       !!Object.keys(manifest).includes('cardId') ||
       !!Object.keys(manifest).includes('proxyId') ||
@@ -34,22 +34,8 @@ export class Oauth {
     );
   }
 
-  /**
-   * Requires there to be an appProxyId
-   */
-  static getAppProxyId(manifestName: string) {
-    const manifest = Manifest.get(manifestName);
-    if (!!Object.keys(manifest).includes('cardId')) {
-      return manifest.cardId;
-    }
-    if (!!Object.keys(manifest).includes('appContextId')) {
-      return manifest.appContextId;
-    }
-    return manifest.proxyId;
-  }
-
   static getScopes(manifestName: string) {
-    const manifest = Manifest.get(manifestName);
+    const manifest = ManifestUtils.get(manifestName);
     if (!!Object.keys(manifest).includes('scopes')) {
       return ['domoapps', ...manifest.scopes];
     }
