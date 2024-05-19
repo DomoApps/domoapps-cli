@@ -1,7 +1,6 @@
 import {AxiosRequestConfig} from 'axios';
 import {log} from './log';
 import Domo = require('ryuu-client');
-import {ProcessedMessage} from '../models/index';
 
 export class Session {
   static check(domo: Domo) {
@@ -12,10 +11,9 @@ export class Session {
       };
       domo
         .processRequest(options)
-        .then(function (res: ProcessedMessage) {
+        .then(function (res: any) {
           try {
-            var isValid = JSON.parse(res.body.toString()).isValid;
-            if (isValid) {
+            if (res.isValid) {
               resolve(true);
             } else {
               reject(false);

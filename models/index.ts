@@ -5,8 +5,5 @@ export {
   ActiveRegistration,
   FullRegistration,
 } from './interfaces/oauth';
-export {ProcessedMessage} from './interfaces/processedMessage';
 export * from './interfaces/server';
-export {File} from './interfaces/file';
-export {ProxyOptions} from './interfaces/proxy-options';
 //export { init, dataSources, initOptions } from './interfaces/init'

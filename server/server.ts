@@ -26,7 +26,7 @@ export const start = (client: Domo, options: DevOptions) => {
     portfinder.getPorts(2, {}, (err, ports) => {
       const assetsPort = ports[0];
       const dataPort = ports[1];
-      const manifest = ManifestUtils.get();
+      const manifest = ManifestUtils.getManifest(options.manifest);
       // If we don't have an app proxyId, get a temporary one
       if (!manifest.proxyId) {
         client.createApp(manifest.id).then((app: any) => {
@@ -45,7 +45,7 @@ export const start = (client: Domo, options: DevOptions) => {
           const height =
             sizeMultiplier.height * manifest.size.height - 40 + 'px';
           const userId = options.userId || appData.user.id;
-          const customerId = 1 || appData.customer;
+          const customerId = appData.customer || 1;
           const url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop`;
           const hasThumbnail = appStructure.hasThumbnail();
           const template = _.template(

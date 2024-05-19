@@ -1,7 +1,7 @@
 import glob = require('glob');
 import fs = require('fs-extra');
 import path = require('path');
-import {login, constant, ProxyOptions} from '../models';
+import {login, constant} from '../models';
 import Domo = require('ryuu-client');
 import {log} from './log';
 import Configstore = require('configstore');

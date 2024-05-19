@@ -18,7 +18,7 @@ const home = Domo.getHomeDir();
 export class Oauth {
   static isOAuthEnabled(manifestName: string) {
     if (ManifestUtils.hasManifest(manifestName)) {
-      const manifest = ManifestUtils.get(manifestName);
+      const manifest = ManifestUtils.getManifest(manifestName);
       return !!manifest['oAuthEnabled'];
     }
 
@@ -26,7 +26,7 @@ export class Oauth {
   }
 
   static hasAppProxyId(manifestName: string) {
-    const manifest = ManifestUtils.get(manifestName);
+    const manifest = ManifestUtils.getManifest(manifestName);
     return (
       !!Object.keys(manifest).includes('cardId') ||
       !!Object.keys(manifest).includes('proxyId') ||
@@ -35,7 +35,7 @@ export class Oauth {
   }
 
   static getScopes(manifestName: string) {
-    const manifest = ManifestUtils.get(manifestName);
+    const manifest = ManifestUtils.getManifest(manifestName);
     if (!!Object.keys(manifest).includes('scopes')) {
       return ['domoapps', ...manifest.scopes];
     }

@@ -22,7 +22,7 @@ module.exports = function (program: Command) {
             designId,
           );
       } else {
-        const manifest = ManifestUtils.get('manifest.json', false);
+        const manifest = ManifestUtils.getManifest(program.opts().manifest);
         if (!manifest)
           return log.fail(
             'No manifest found. Please supply design id using -i or change to a directory with a valid manifest file',

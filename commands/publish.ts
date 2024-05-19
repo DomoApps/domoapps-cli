@@ -7,20 +7,19 @@ import glob = require('glob');
 import fs = require('fs-extra');
 import {log} from '../util/log';
 import appStructure = require('../util/appStructure');
-import {constant, File} from '../models';
+import {constant} from '../models';
 import Domo = require('ryuu-client');
 import {Command, CommandOptions} from 'commander';
 import multichoice from '../util/multichoice';
-import {Manifest} from 'ryuu-client/lib/models';
+import {Asset, Manifest} from 'ryuu-client/lib/models';
 
 module.exports = (program: Command) => {
   program
     .command('publish')
     .description('publish a new or existing Custom App design')
     .option('-g, --go', 'navigate to design in Asset Library after publishing')
-    .option('-m, --manifest <value>', 'use a specific manifest file')
     .action(options => {
-      const manifest = ManifestUtils.get(options.manifest, false);
+      const manifest = ManifestUtils.getManifest(program.opts().manifest, true);
 
       new Login()
         .getClient()
@@ -52,31 +51,31 @@ const createDesign = (
   manifest: Manifest,
   options?: CommandOptions,
 ) => {
-  return (
-    domo
-      .createDesign(manifest)
-      .then(designResult => {
-        ManifestUtils.persistDesignId(designResult.id, manifest);
-        log.ok('New design created on ' + domo.getInstance());
-      })
-      .catch(e => {
-        log.fail('Error when creating new design:', e.message);
-      })
-      .then(() => domo.uploadAllAssets(manifest, manifest.ignore))
+  return domo
+    .createDesign(manifest)
+    .then(designResult => {
+      ManifestUtils.persistDesignId(designResult.id, manifest);
+      log.ok('New design created on ' + domo.getInstance());
+    })
+    .catch(e => {
+      log.fail('Error when creating new design:', e.message);
+    })
+    .then(() => domo.uploadAllAssets(manifest))
+    .then(files =>
       //@ts-ignore
-      .then(files => logUploadSuccess(files))
-      .catch((e: string) => {
-        log.fail(
-          e || 'Error uploading assets in uploading assets for a new design',
-        );
-      })
-      .then(() => {
-        linkToDomoWeb(options, domo, manifest);
-      })
-  );
+      logUploadSuccess(files),
+    )
+    .catch((e: string) => {
+      log.fail(
+        e || 'Error uploading assets in uploading assets for a new design',
+      );
+    })
+    .then(() => {
+      linkToDomoWeb(options, domo, manifest);
+    });
 };
 
-const logUploadSuccess = (files: File[]) => {
+const logUploadSuccess = (files: Asset[]) => {
   files.forEach(file => {
     log.ok('Uploaded: ' + file.path);
   });
@@ -247,7 +246,7 @@ const publishErrors = (e: any, domo: Domo, manifest: Manifest) => {
 
 const publishAssets = (domo: Domo, manifest: Manifest) => {
   return domo
-    .uploadAllAssets(manifest, manifest.ignore)
+    .uploadAllAssets(manifest)
     .then(files => {
       log.ok(
         'Publishing ' +

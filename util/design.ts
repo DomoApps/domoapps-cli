@@ -20,7 +20,7 @@ export function getDesignId(id?: string, manifestPath?: string) {
       return;
     }
   } else {
-    const manifest = ManifestUtils.get(manifestPath);
+    const manifest = ManifestUtils.getManifest(manifestPath);
     if (!manifest || !manifest.id) {
       log.fail(
         'No manifest found. Please supply design id using -i or change to a directory with a valid manifest file',

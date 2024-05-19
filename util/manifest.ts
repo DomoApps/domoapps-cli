@@ -9,14 +9,14 @@ import {Manifest} from 'ryuu-client/lib/models';
 /**
  * Get the local manifest.json file, ensuring it's valid.
  */
-const get = (manifestName = 'manifest.json', verify = true) => {
+const getManifest = (manifestName = 'manifest.json', verifyValid = false) => {
   const manifestPath = findManifest(manifestName);
 
   let rawmanifest: Buffer;
   try {
     rawmanifest = fs.readFileSync(path.resolve(manifestPath));
   } catch (e) {
-    if (verify) {
+    if (verifyValid) {
       log.fail(
         `No ${manifestName} file in this directory`,
         `Please publish from a directory containing a Custom App design ${manifestName} file`,
@@ -31,7 +31,7 @@ const get = (manifestName = 'manifest.json', verify = true) => {
   } catch (e) {
     log.fail(`Your ${manifestName} file is not valid JSON`, e.message);
   }
-  if (verify) {
+  if (verifyValid) {
     manifest = updateManifestProperties(manifest);
     validateManifest(manifest);
   }
@@ -155,7 +155,7 @@ const findManifest = (name: string) => {
 };
 
 export const ManifestUtils = {
-  get,
+  getManifest,
   hasManifest,
   persistDesignId,
   updateManifest,

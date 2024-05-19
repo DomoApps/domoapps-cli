@@ -12,12 +12,11 @@ module.exports = function (program: Command) {
       '-e, --external',
       'Allow external connection to access the dev site',
     )
-    .option('-m, --manifest <value>', 'use a specific manifest file')
     .action(opts => {
       const devOptions = {
         userId: opts.userId,
         external: opts.external,
-        manifest: opts.manifest,
+        manifest: program.opts().manifest,
       };
 
       new Login()
