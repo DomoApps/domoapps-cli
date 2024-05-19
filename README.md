@@ -48,7 +48,7 @@ In order for easier development with ryuu-proxy or ryuu-client, use linking.
 
 Debugging is most easily done via the the native node extension in VSCode.
 
-1. Run node and point it to the built domo.js (different from the ryuu.js) file in `dist/bin` after building
+1. Run node and point it to the built domo.js file in `dist/bin` after building
    ```bash
    node --inspect-brk ~/ryuu/domoapps-cli/dist/bin/domo.js [command]
    ```
