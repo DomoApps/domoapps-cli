@@ -26,18 +26,18 @@ export class Login {
     if (allLogins.length === 0) {
       return {instance: ''};
     }
-    const currentLogin = allLogins.reduce(function (prev, next) {
+    const currentLogin = allLogins.reduce((prev, next) => {
       return fs.statSync(prev).mtime > fs.statSync(next).mtime ? prev : next;
     });
     return fs.readJsonSync(currentLogin);
   };
 
   static getPreviousLogins(): Array<login> {
-    var logins = (glob.sync(home + '/ryuu/*.json') || []).map(function (
-      file: string,
-    ) {
-      return fs.readJsonSync(file);
-    });
+    var logins = (glob.sync(home + '/ryuu/*.json') || []).map(
+      (file: string) => {
+        return fs.readJsonSync(file);
+      },
+    );
     return logins;
   }
 

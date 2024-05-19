@@ -7,7 +7,7 @@ import {Login} from '../util/login';
 import {log} from '../util/log';
 import {Command} from 'commander';
 
-module.exports = function (program: Command) {
+module.exports = (program: Command) => {
   program
     .command('download')
     .description('download a Custom App design')

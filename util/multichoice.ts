@@ -15,11 +15,11 @@ interface InquirerAutocompleteOptions extends inquirer.ListQuestionOptions {
 
 const isWindows = /^win/.test(process.platform);
 
-export default function (
+export default (
   questions: inquirer.RawListQuestion | inquirer.ListQuestion,
   previousLogins?: Array<login>,
   NEW_INSTANCE?: string,
-) {
+) => {
   if (!isWindows) {
     return questions;
   } else {
@@ -31,4 +31,4 @@ export default function (
     }
     return questions;
   }
-}
+};

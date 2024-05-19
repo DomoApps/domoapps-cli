@@ -4,14 +4,14 @@ import Domo = require('ryuu-client');
 
 export class Session {
   static check(domo: Domo) {
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
       var options: AxiosRequestConfig = {
         url: 'https://' + domo.getInstance() + '/auth/validate',
         method: 'GET',
       };
       domo
         .processRequest(options)
-        .then(function (res: any) {
+        .then((res: any) => {
           try {
             if (res.isValid) {
               resolve(true);
@@ -24,7 +24,7 @@ export class Session {
             resolve(true);
           }
         })
-        .catch(function (err) {
+        .catch(err => {
           log.clientRequestFailed(
             err.statusCode + ' - ' + err.message,
             err.failureMessage,

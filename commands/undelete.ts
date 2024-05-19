@@ -4,7 +4,7 @@ import {log} from '../util/log';
 import inquirer = require('inquirer');
 import {Command} from 'commander';
 
-module.exports = function (program: Command) {
+module.exports = (program: Command) => {
   program
     .command('undelete [id]')
     .description('undelete a soft-deleted design')

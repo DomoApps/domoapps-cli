@@ -4,14 +4,14 @@ import {Login} from '../util/login';
 import {log} from '../util/log';
 import {CommandOptions, Command} from 'commander';
 
-module.exports = function (program: Command) {
+module.exports = (program: Command) => {
   program
     .command('token')
     .description('add or remove a developer token')
     .arguments('<cmd>')
     .option('-i, --instance <value>', 'Domo instance')
     .option('-t, --token <value>', 'dev token value used with token add')
-    .action(function (cmd: string, options: CommandOptions) {
+    .action((cmd: string, options: CommandOptions) => {
       const login = Login.getCurrentLogin().instance;
       var previousLogins = Login.getPreviousLogins();
 
@@ -22,7 +22,7 @@ module.exports = function (program: Command) {
           if (!options['instance']) {
             prompts.push({
               type: 'list',
-              choices: function () {
+              choices: () => {
                 return previousLogins.map(item => item.instance);
               },
               message:
@@ -33,7 +33,7 @@ module.exports = function (program: Command) {
             });
           }
 
-          inquirer.prompt(prompts).then(function (answers: inquirer.Answers) {
+          inquirer.prompt(prompts).then((answers: inquirer.Answers) => {
             answers.instance = options['instance'] || answers.instance;
             if (answers.instance) {
               new Login(answers.instance).removeDevToken();
@@ -50,7 +50,7 @@ module.exports = function (program: Command) {
             prompts.push(
               {
                 type: 'list',
-                choices: function () {
+                choices: () => {
                   var options = previousLogins.map(item => item.instance);
                   options.push('new instance');
                   return options;
@@ -66,7 +66,7 @@ module.exports = function (program: Command) {
                 message:
                   'Domo instance ' + chalk.grey('e.g. company.domo.com '),
                 name: 'newInstance',
-                validate: function (input: string) {
+                validate: (input: string) => {
                   const acceptedDomains = [
                     'domo.com',
                     'domotech.io',
@@ -81,7 +81,7 @@ module.exports = function (program: Command) {
                     chalk.grey('Example: "company.domo.com"')
                   );
                 },
-                when: function (answers: inquirer.Answers) {
+                when: (answers: inquirer.Answers) => {
                   // only ask if the instance selector wasn't used or new one was selected
                   return (
                     !answers.instance || answers.instance === 'new instance'
@@ -100,7 +100,7 @@ module.exports = function (program: Command) {
             });
           }
 
-          inquirer.prompt(prompts).then(function (answers: inquirer.Answers) {
+          inquirer.prompt(prompts).then((answers: inquirer.Answers) => {
             answers.instance =
               options['instance'] || answers.newInstance || answers.instance;
             answers.devtoken = options['token'] || answers.devtoken;

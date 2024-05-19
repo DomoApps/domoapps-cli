@@ -3,7 +3,7 @@ import {Command} from 'commander';
 import {log} from '../util/log';
 import * as chalk from 'chalk';
 
-module.exports = function (program: Command) {
+module.exports = (program: Command) => {
   program
     .command('ls')
     .description('get a list of all your Custom App designs')
@@ -43,7 +43,7 @@ module.exports = function (program: Command) {
                 colWidths: [windowWidth - 105, 38, 31, 31],
               });
 
-              designs.forEach(function (design) {
+              designs.forEach(design => {
                 table.push([
                   design.name,
                   design.id,
@@ -68,7 +68,7 @@ module.exports = function (program: Command) {
               });
             }
           })
-          .catch(function (e) {
+          .catch(e => {
             log.fail(
               'Unable to fetch designs',
               'You may not have any designs published yet.',

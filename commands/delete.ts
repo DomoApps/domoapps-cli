@@ -4,7 +4,7 @@ import {log} from '../util/log';
 import inquirer = require('inquirer');
 import {Command, CommandOptions} from 'commander';
 
-module.exports = function (program: Command) {
+module.exports = (program: Command) => {
   program
     .command('delete [id]')
     .description('delete a published design by its id')

@@ -4,7 +4,7 @@ import {Login} from '../util/login';
 import {log} from '../util/log';
 import {Command} from 'commander';
 
-module.exports = function (program: Command) {
+module.exports = (program: Command) => {
   program
     .command('owner <add|rm|ls> [user-emails...]')
     .description('manage design owners')

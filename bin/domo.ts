@@ -21,10 +21,8 @@ program
   .option('-m, --manifest <id>', 'supply a filepath to a manifest');
 
 // import all commands
-glob
-  .sync(path.resolve(__dirname + '/../commands/*.js'))
-  .forEach(function (command) {
-    require(command)(program);
-  });
+glob.sync(path.resolve(__dirname + '/../commands/*.js')).forEach(command => {
+  require(command)(program);
+});
 
 program.parse(process.argv);

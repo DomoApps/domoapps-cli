@@ -22,7 +22,7 @@ const NEW_INSTANCE = 'new instance';
 //@ts-ignore
 inquirer.registerPrompt('autocomplete', autocompletePrompt);
 
-module.exports = function (program: Command) {
+module.exports = (program: Command) => {
   program
     .command('login')
     .description('login to Domo')
@@ -36,7 +36,7 @@ module.exports = function (program: Command) {
       '--upgrade-download',
       'Automatically download newer version if available. ',
     )
-    .action(function (args) {
+    .action(args => {
       if (args.upgradeDownload) {
         autoUpdate = true;
       }
@@ -64,7 +64,7 @@ module.exports = function (program: Command) {
       const currentLogin = Login.getCurrentLogin().instance;
       const prompts = [];
       let versionCheckFn = !args.upgradeCheck
-        ? function (x: IncomingMessage) {
+        ? (x: IncomingMessage) => {
             return x;
           }
         : verifyVersion;
@@ -136,7 +136,7 @@ module.exports = function (program: Command) {
                   ),
                 )
                 /*
-                    .then(function () {
+                    .then(() => {
                       if (args.oauth) {
                         const manifest: string =
                           args.manifestFile !== undefined
@@ -244,7 +244,7 @@ function verifyVersion(res: AxiosResponse) {
 }
 
 function promptUpgrade(latest: string) {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     let prompts = [];
     if (!autoUpdate) {
       prompts.push({
@@ -254,7 +254,7 @@ function promptUpgrade(latest: string) {
         default: true,
       });
     }
-    inquirer.prompt(prompts).then(function (answers: inquirer.Answers) {
+    inquirer.prompt(prompts).then((answers: inquirer.Answers) => {
       if (autoUpdate === true) {
         answers.upgrade = autoUpdate;
       }
@@ -287,7 +287,7 @@ function promptUpgrade(latest: string) {
  * Oauth Code
  */
 function promptAppProxyId(): Promise<string> {
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     inquirer
       .prompt([
         {

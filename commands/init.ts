@@ -12,7 +12,7 @@ import multichoice from '../util/multichoice';
 //import { init, initOptions } from '../models';
 import {Command, CommandOptions, Option} from 'commander';
 
-module.exports = function (program: Command) {
+module.exports = (program: Command) => {
   program
     .command('init')
     .option('-n, --design_name <value>', 'Name of the design')
@@ -38,7 +38,7 @@ module.exports = function (program: Command) {
       'Give dataset aliases as multiple arguments after the flag instead of using the prompt',
     )
     .description('initialize a new Custom App design')
-    .action(function (options) {
+    .action(options => {
       let prompts = [];
       if (!options.design_name) {
         prompts.push({
@@ -134,7 +134,7 @@ let addDatasource = (currentAnswers: inquirer.Answers) => {
           type: 'input',
           message: 'dataset alias',
           name: 'alias',
-          validate: function (name) {
+          validate: name => {
             if (!isValidJSName(name))
               return 'Alias must be a valid JavaScript property';
             return true;
@@ -159,8 +159,8 @@ let writeFilesIfNonexistent = (
   reduce(
     files,
     [],
-    function (filesThatExist, file, reduceCallback) {
-      fs.open(file, 'r', function (err, fd) {
+    (filesThatExist, file, reduceCallback) => {
+      fs.open(file, 'r', (err, fd) => {
         let fileExists = !err;
         if (fileExists) {
           fs.closeSync(fd);
@@ -169,7 +169,7 @@ let writeFilesIfNonexistent = (
         reduceCallback(null, filesThatExist);
       });
     },
-    function (err, filesThatExist) {
+    (err, filesThatExist) => {
       if (filesThatExist.length > 0) {
         callback(filesThatExist, null);
       } else {
@@ -298,36 +298,31 @@ let initiate = (allAnswers: inquirer.Answers) => {
   }
 
   // populate and write out the template files
-  writeFilesIfNonexistent(
-    files,
-    dirs,
-    allAnswers,
-    function (err: Error, res: any[]) {
-      const dirname = slug(allAnswers.name, {lower: false});
-      if (err) {
-        log.fail(
-          'Cannot initialize new design. Doing so would overwrite existing files:' +
-            err,
-        );
-      } else {
-        nextStepsMessage += `${stepNumber()} Edit the files that were just generated. \n${stepNumber()} Run ${chalk.cyan(
-          'domo login',
-        )} if you haven't already. \n${stepNumber()} Run ${chalk.cyan(
-          'domo publish',
-        )} to finish initializiation and whenever you make changes. \n${stepNumber()} Run ${chalk.cyan(
-          'domo dev',
-        )} to see what your app will look like and locally develop\n${stepNumber()} Add a Custom App card from the design published to any page in Domo. `;
-        log.ok(
-          `New design initialized in the ${chalk.green(
-            dirname || 'current',
-          )} directory`,
-          nextStepsMessage,
-        );
-      }
-      if (allAnswers.starter === 'hello world') {
-        fs.remove('node_modules');
-      }
-      process.exit();
-    },
-  );
+  writeFilesIfNonexistent(files, dirs, allAnswers, (err: Error, res: any[]) => {
+    const dirname = slug(allAnswers.name, {lower: false});
+    if (err) {
+      log.fail(
+        'Cannot initialize new design. Doing so would overwrite existing files:' +
+          err,
+      );
+    } else {
+      nextStepsMessage += `${stepNumber()} Edit the files that were just generated. \n${stepNumber()} Run ${chalk.cyan(
+        'domo login',
+      )} if you haven't already. \n${stepNumber()} Run ${chalk.cyan(
+        'domo publish',
+      )} to finish initializiation and whenever you make changes. \n${stepNumber()} Run ${chalk.cyan(
+        'domo dev',
+      )} to see what your app will look like and locally develop\n${stepNumber()} Add a Custom App card from the design published to any page in Domo. `;
+      log.ok(
+        `New design initialized in the ${chalk.green(
+          dirname || 'current',
+        )} directory`,
+        nextStepsMessage,
+      );
+    }
+    if (allAnswers.starter === 'hello world') {
+      fs.remove('node_modules');
+    }
+    process.exit();
+  });
 };

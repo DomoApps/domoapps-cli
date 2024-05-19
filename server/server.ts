@@ -74,7 +74,7 @@ export const start = (client: Domo, options: DevOptions) => {
       app.use(express.static('.'));
       app.use(proxy.express());
       Session.check(client)
-        .then(function () {
+        .then(() => {
           var external = Boolean(options.external);
           app.listen(dataPort);
           bs.init({
@@ -90,7 +90,7 @@ export const start = (client: Domo, options: DevOptions) => {
           });
           bs.instance.logger.info('Instance: ' + client.getInstance());
         })
-        .catch(function (e) {
+        .catch(e => {
           log.notAuthenticated;
         });
     });

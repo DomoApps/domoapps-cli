@@ -3,7 +3,7 @@ import {log} from '../util/log';
 import {Command} from 'commander';
 import {start} from '../server/server';
 
-module.exports = function (program: Command) {
+module.exports = (program: Command) => {
   program
     .command('dev')
     .description('work locally on a Custom App')
@@ -21,10 +21,10 @@ module.exports = function (program: Command) {
 
       new Login()
         .getClient()
-        .then(function (domo) {
+        .then(client => {
           //session will stop authenticated users
           //const server = require('../server/server');
-          start(domo, devOptions).catch(log.fail);
+          start(client, devOptions).catch(log.fail);
         })
         .catch((err: Error) => {
           if (err.message) {
