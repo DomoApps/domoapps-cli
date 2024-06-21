@@ -215,6 +215,8 @@ let initiate = (allAnswers: inquirer.Answers) => {
   if (allAnswers.starter === 'manifest only') {
     files = ['manifest.json'];
     dirs = [null];
+    mkdir('-p', dirname);
+    process.chdir(path.resolve(dirname));
   } else if (allAnswers.starter === 'hello world') {
     files = ['manifest.json', 'index.html', 'app.js', 'app.css'];
     const templateDir = path.join(__dirname, '/../templates/', 'hello world/');
