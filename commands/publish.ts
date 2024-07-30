@@ -19,7 +19,7 @@ module.exports = (program: Command) => {
     .description('publish a new or existing Custom App design')
     .option('-g, --go', 'navigate to design in Asset Library after publishing')
     .action(options => {
-      const manifest = ManifestUtils.getManifest(program.opts().manifest, true);
+      let manifest = ManifestUtils.getManifest(program.opts().manifest, true);
 
       new Login()
         .getClient()
@@ -54,7 +54,11 @@ const createDesign = (
   return domo
     .createDesign(manifest)
     .then(designResult => {
-      ManifestUtils.persistDesignId(designResult.id, manifest);
+      const newManifestId = ManifestUtils.persistDesignId(
+        designResult.id,
+        manifest,
+      );
+      manifest = {...manifest, id: newManifestId};
       log.ok('New design created on ' + domo.getInstance());
     })
     .catch(e => {

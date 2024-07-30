@@ -97,6 +97,8 @@ const updateManifestProperties = (manifest: Manifest) => {
   if (updatedManifest.hasOwnProperty('mapping')) {
     updatedManifest.datasetsMapping = updatedManifest.mapping;
     delete updatedManifest.mapping;
+  } else if (!updateManifest.hasOwnProperty('datasetsMapping')) {
+    updatedManifest.datasetsMapping = [];
   }
 
   if (updatedManifest.hasOwnProperty('collections')) {
@@ -107,11 +109,12 @@ const updateManifestProperties = (manifest: Manifest) => {
   if (updateManifest.hasOwnProperty('appContextId')) {
     updatedManifest.proxyId = updatedManifest['appContextId'];
     delete updatedManifest['appContextId'];
-  }
-  if (updateManifest.hasOwnProperty('cardId')) {
+  } else if (updateManifest.hasOwnProperty('cardId')) {
     updatedManifest.proxyId = updatedManifest['cardId'];
     delete updatedManifest['cardId'];
   }
+
+  updateManifest(updatedManifest);
   return updatedManifest;
 };
 

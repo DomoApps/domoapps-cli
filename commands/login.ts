@@ -132,7 +132,7 @@ module.exports = (program: Command) => {
                 .catch(() =>
                   log.fail(
                     'Failure to get user from server',
-                    'Possible instance name issue, authorization issue, or timeout on given instance',
+                    'There may be issues with your instance name, authorization, or domo dev token',
                   ),
                 )
                 /*
