@@ -1,37 +1,45 @@
 // support link API
-var height;
-var width;
+let height;
+let width;
 
 window.addEventListener('message', function (e) {
-  var message = JSON.parse(e.data);
+  let message;
+  try {
+    message = e.data;
+    if (typeof e.data === 'string' && e.data.startsWith('{'))
+      message = JSON.parse(e.data);
+  } catch (err) {
+    console.warn('Invalid message data:', e.data);
+    return;
+  }
+
   if (message.event === 'navigate') {
-    var host = getHost(message.url);
+    const host = getHost(message.url);
 
-    if (host.isLocal) {
-      console.info(
-        'this relative link WILL work in Domo, just not in domo dev',
+    if (host.isLocal)
+      return console.info(
+        'This relative link WILL work in Domo, just not in domo dev',
       );
-      return;
-    }
 
-    var isSafe = isHostSafe(host.name);
-    if (!isSafe) {
-      console.warn(
+    if (!isHostSafe(host.name))
+      return console.warn(
         'Custom App tried to navigate to a currently unsupported domain',
       );
-      return;
-    }
 
-    if (message.isNewWindow) {
+    if (message.isNewWindow)
       window.open(message.url, '_blank');
-    } else {
+    else
       window.location.href = message.url;
-    }
   }
 });
 
+/**
+ * Checks if the host is in the whitelist.
+ * @param {string} name
+ * @returns {boolean}
+ */
 function isHostSafe(name) {
-  var whitelist = [
+  const whitelist = [
     'domo.com',
     'github.com',
     'salesforce.com',
@@ -67,40 +75,63 @@ function isHostSafe(name) {
     'huffingtonpost.com',
     'bloomberg.com',
   ];
-  return _.includes(whitelist, name);
+  return whitelist.includes(name);
 }
 
+/**
+ * Extracts the host and checks if it's local.
+ * 
+ * @param {string} url
+ * @returns {{name: string, isLocal: boolean}}
+ */
 function getHost(url) {
-  var tmp = document.createElement('a');
-  tmp.href = url;
-  var segments = tmp.hostname.split('.');
-  var name =
-    segments[segments.length - 2] + '.' + segments[segments.length - 1];
-  var isLocal = segments[segments.length - 1] === 'localhost';
-  return {
-    name: name,
-    isLocal: isLocal,
-  };
+  try {
+    const parsedUrl = new URL(url, window.location.origin);
+    const segments = parsedUrl.hostname.split('.');
+    const name =
+      segments.length > 1
+        ? `${segments[segments.length - 2]}.${segments[segments.length - 1]}`
+        : parsedUrl.hostname;
+    const isLocal = parsedUrl.hostname === 'localhost';
+    return {name, isLocal};
+  } catch (err) {
+    return {name: '', isLocal: false};
+  }
 }
 
+/**
+ * Toggles fullscreen mode and updates dimensions.
+ * 
+ * @param {boolean} chk
+ * @param {string} h
+ * @param {string} w
+ */
 function fullscreen(chk, h, w) {
   if (!height && !width) {
     setDims(h, w);
   }
-  document.querySelector('.app').style.padding = chk ? '0px 50px' : 0;
-  document.querySelector('.app__wrapper').style.height = chk
-    ? 'calc(100% - 60px)'
-    : height;
-  document.querySelector('.app__wrapper').style.width = chk ? '100%' : width;
-  document.querySelector('iframe').style.width = chk ? '100%' : width;
-  document.querySelector('iframe').style.height = chk
-    ? 'calc(100% - 140px)'
-    : height;
-  document.querySelector('.size').innerHTML = chk
-    ? 'FULL-WIDTH x FULL-HEIGHT'
-    : width + ' x ' + height;
+  const app = document.querySelector('.app');
+  const wrapper = document.querySelector('.app__wrapper');
+  const iframe = document.querySelector('iframe');
+  const size = document.querySelector('.size');
+
+  if (!app || !wrapper || !iframe || !size) return;
+
+  app.style.padding = chk ? '0px 50px' : '0';
+  wrapper.style.height = chk ? 'calc(100% - 60px)' : height;
+  wrapper.style.width = chk ? '100%' : width;
+  iframe.style.width = chk ? '100%' : width;
+  iframe.style.height = chk ? 'calc(100% - 140px)' : height;
+  size.innerHTML = chk ? 'FULL-WIDTH x FULL-HEIGHT' : `${width} x ${height}`;
 }
 
+/**
+ * Sets the initial dimensions.
+ * 
+ * @param {string} h
+ * @param {string} w
+ */
 function setDims(h, w) {
-  (height = h), (width = w);
+  height = h;
+  width = w;
 }
