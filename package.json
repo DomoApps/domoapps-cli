@@ -33,7 +33,6 @@
     "releaseBrew": "npm run build && cd dist && pkg .",
     "releaseAlpha": "npm run build && cd dist && npm publish --tag alpha && cd ..",
     "releaseBeta": "npm run build && cd dist && npm publish --tag beta && cd ..",
-    "releaseChocolatey": "npm run build && ./releaseChocolatey.sh",
     "lint": "eslint . --ext .ts",
     "bumpAlpha": "npm run build && npm run bump -- --prerelease alpha",
     "bumpBeta": "npm run build && npm run bump -- --prerelease beta",
