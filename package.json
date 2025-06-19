@@ -11,7 +11,7 @@
   "homepage": "https://developer.domo.com/docs/dev-studio/dev-studio-overview",
   "license": "SEE LICENSE IN LICENSE",
   "bin": {
-    "domo": "bin/runner"
+    "domo": "./dist/bin/runner"
   },
   "scripts": {
     "changelog": "conventional-changelog -i CHANGELOG.md --config ./changelog/changelog.js",
