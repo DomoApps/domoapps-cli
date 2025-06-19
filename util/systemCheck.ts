@@ -3,7 +3,7 @@ import { log } from './log';
 
 export function checkSystemRequirements() {
   // Node.js version check
-  const requiredMajor = 18;
+  const requiredMajor = 14;
   const nodeVersion = process.versions.node;
   const [major] = nodeVersion.split('.').map(Number);
   if (major < requiredMajor) {
