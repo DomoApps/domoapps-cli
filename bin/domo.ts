@@ -10,6 +10,9 @@ import path = require('path');
 import {program} from 'commander';
 import glob = require('glob');
 import {version} from '../package.json';
+import { checkSystemRequirements } from '../util/systemCheck';
+
+checkSystemRequirements();
 
 program
   .version(version, '-v, --version')
