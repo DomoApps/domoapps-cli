@@ -75,8 +75,6 @@ Versions should be released on NPM until confirmed stable, at which point brew a
 - `npm run release`
 - `npm run releaseAlpha`
 - `npm run releaseBeta`
-- `npm run releaseBrew`
-- `npm run releaseChocolatey`
 
 ### Committing the latest Phoenix version
 
