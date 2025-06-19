@@ -21,6 +21,8 @@ function on_unhandled_error(err) {
     console.error('[ERROR] then `brew upgrade domo` (depending on the version you are using) and run');
     console.error('[ERROR] this command again. If this does not fix the issue, please contact your MajorDomo.');
     console.error('[ERROR] error message: %s', err.message);
+
+    process.exit(1);
 }
 
 // enable source maps

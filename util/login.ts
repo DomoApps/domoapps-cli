@@ -85,55 +85,44 @@ export class Login {
     }
   }
 
-  getClient() {
-    const username = this.proxy.get('username');
+  async getClient() {
+    const refreshToken = this.login.get('refreshToken');
 
-    if (username) {
-      return inquirer
-        .prompt([
-          {
-            type: 'password',
-            message: 'Please enter your password:',
-            name: 'pass',
-          },
-        ])
-        .then(answers => {
-          return Promise.resolve(
-            new Domo(
-              this.instance,
-              this.login.get('refreshToken'),
-              constant.CLIENT_ID,
-              {
-                host: this.proxy.get('host'),
-                port: this.proxy.get('port'),
-                //@ts-ignore
-                username: proxy.get('username'),
-                password: answers.pass,
-              },
-              this.login.get('devToken'),
-            ),
-          );
-        });
-    } else {
-      try {
-        return Promise.resolve(
-          new Domo(
-            this.instance,
-            this.login.get('refreshToken'),
-            constant.CLIENT_ID,
-            {host: this.proxy.get('host'), port: this.proxy.get('port')},
-            this.login.get('devToken'),
-          ),
+    try {
+      const username = this.proxy.get('username');
+      const host = this.proxy.get('host');
+      const port = this.proxy.get('port');
+
+      if (!username)
+        return new Domo(
+          this.instance,
+          refreshToken,
+          constant.CLIENT_ID,
+          {host, port},
+          this.login.get('devToken'),
         );
-      } catch (ex) {
-        return Promise.resolve(
-          new Domo(
-            this.instance,
-            this.login.get('refreshToken'),
-            constant.CLIENT_ID,
-          ),
-        );
-      }
+
+      const answers = await inquirer.prompt([
+        {
+          type: 'password',
+          message: 'Please enter your password:',
+          name: 'pass',
+        },
+      ]);
+      return new Domo(
+        this.instance,
+        refreshToken,
+        constant.CLIENT_ID,
+        {
+          host,
+          port,
+          username,
+          password: answers.pass,
+        } as any,
+        this.login.get('devToken'),
+      );
+    } catch (ex) {
+      return new Domo(this.instance, refreshToken, constant.CLIENT_ID);
     }
   }
 }
