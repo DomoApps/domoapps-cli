@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "4.4.9",
+  "version": "4.4.10-alpha.0",
   "description": "Domo App Dev Studio CLI, The main tool used to create, edit, and publish app designs to Domo",
   "keywords": [
     "CLI",
@@ -11,7 +11,7 @@
   "homepage": "https://developer.domo.com/docs/dev-studio/dev-studio-overview",
   "license": "SEE LICENSE IN LICENSE",
   "bin": {
-    "domo": "bin/runner"
+    "domo": "./dist/bin/runner"
   },
   "scripts": {
     "changelog": "conventional-changelog -i CHANGELOG.md --config ./changelog/changelog.js",
@@ -58,7 +58,7 @@
     "open": "^8.4.0",
     "portfinder": "^1.0.32",
     "qs": "^6.12.1",
-    "ryuu-client": "^4.4.1",
+    "ryuu-client": "^4.4.4",
     "semver": "^7.6.2",
     "shelljs": "^0.8.5",
     "slug": "^4.0.3",
