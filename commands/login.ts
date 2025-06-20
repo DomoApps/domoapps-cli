@@ -114,7 +114,6 @@ class LoginCommand extends BaseCommand {
       const login = new Login(instance);
       const client = await login.getClient();
       const loginData = await client.login();
-      console.log(loginData);
       console.log(chalk.grey(logo));
       this.logOk(
         'Login to ' + instance + ' successful.',
