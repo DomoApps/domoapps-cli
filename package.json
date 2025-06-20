@@ -58,7 +58,7 @@
     "open": "^8.4.0",
     "portfinder": "^1.0.32",
     "qs": "^6.12.1",
-    "ryuu-client": "^4.4.1",
+    "ryuu-client": "^4.4.4",
     "semver": "^7.6.2",
     "shelljs": "^0.8.5",
     "slug": "^4.0.3",
