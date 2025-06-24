@@ -97,7 +97,7 @@ const updateManifestProperties = (manifest: Manifest) => {
   if (updatedManifest.hasOwnProperty('mapping')) {
     updatedManifest.datasetsMapping = updatedManifest.mapping;
     delete updatedManifest.mapping;
-  } else if (!updateManifest.hasOwnProperty('datasetsMapping')) {
+  } else if (!updatedManifest.hasOwnProperty('datasetsMapping')) {
     updatedManifest.datasetsMapping = [];
   }
 
