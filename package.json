@@ -15,7 +15,9 @@
   },
   "scripts": {
     "changelog": "conventional-changelog -i CHANGELOG.md --config ./changelog/changelog.js",
+    "prebuild": "npm run set-bin-src",
     "build": "rm -rf ./dist && tsc && npm run copyfiles",
+    "postbuild": "npm run set-bin-dist",
     "push": "git push && git push --tags",
     "preversion": "npm run build",
     "version": "npm run changelog && git add CHANGELOG.md templates/**/domoPhoenix*.js",
@@ -36,7 +38,9 @@
     "lint": "eslint . --ext .ts",
     "bumpAlpha": "npm run build && npm run bump -- --prerelease alpha",
     "bumpBeta": "npm run build && npm run bump -- --prerelease beta",
-    "bump": "standard-version"
+    "bump": "standard-version",
+    "set-bin-dist": "RYUU_BIN_TARGET=./dist/bin/runner node set-bin.js",
+    "set-bin-src": "RYUU_BIN_TARGET=bin/runner node set-bin.js"
   },
   "dependencies": {
     "@domoinc/ryuu-proxy": "^4.4.0",
