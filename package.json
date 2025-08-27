@@ -40,7 +40,11 @@
     "bumpBeta": "npm run build && npm run bump -- --prerelease beta",
     "bump": "standard-version",
     "set-bin-dist": "RYUU_BIN_TARGET=./dist/bin/runner node set-bin.js",
-    "set-bin-src": "RYUU_BIN_TARGET=bin/runner node set-bin.js"
+    "set-bin-src": "RYUU_BIN_TARGET=bin/runner node set-bin.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:ci": "jest --ci --coverage --watchAll=false"
   },
   "dependencies": {
     "@domoinc/ryuu-proxy": "^4.4.0",

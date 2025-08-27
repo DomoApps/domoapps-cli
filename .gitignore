@@ -2,3 +2,13 @@ node_modules
 dist
 .DS_Store
 .idea/
+coverage/
+*.log
+.nyc_output
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+tests/tmp/
+junit.xml

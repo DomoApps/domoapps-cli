@@ -1,0 +1,50 @@
+{
+  "name": "JS API Example",
+  "version": "0.0.1",
+  "size": {
+    "width": 3,
+    "height": 3
+  },
+  "mapping": [
+    {
+      "dataSetId": "44c5d1b9-7a26-4369-bf0d-c575bfb168a6",
+      "alias": "clients",
+      "fields": [
+        {
+          "alias": "clientId",
+          "columnName": "client_id"
+        },
+        {
+          "alias": "clientName",
+          "columnName": "client_name"
+        },
+        {
+          "alias": "clientAge",
+          "columnName": "client_age"
+        },
+        {
+          "alias": "clientEmail",
+          "columnName": "client_email"
+        },
+        {
+          "alias": "clientCountry",
+          "columnName": "client_country"
+        },
+        {
+          "alias": "clientGender",
+          "columnName": "client_gender"
+        },
+        {
+          "alias": "clientType",
+          "columnName": "client_type"
+        },
+        {
+          "alias": "clientCompany",
+          "columnName": "client_company"
+        }
+      ]
+    }
+  ],
+  "id": "33f75d07-c380-4417-aa34-c7d9ba3e3424",
+  "proxyId": "000b1e97-079b-45f2-94d8-3b3ea28b07d4"
+}
