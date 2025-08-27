@@ -31,13 +31,15 @@ const getManifest = (manifestName = 'manifest.json', verifyValid = false) => {
   } catch (e) {
     log.fail(`Your ${manifestName} file is not valid JSON`, e.message);
   }
+
+  // add the manifest name, so it's attached to the object
+  manifest.fileName = manifestName;
+
   if (verifyValid) {
     manifest = updateManifestProperties(manifest);
     validateManifest(manifest);
   }
 
-  // add the manifest name, so it's attached to the object
-  manifest.fileName = manifestName;
   /*
     waiting to deploy below line until I have time to refactor oauth
     log.info(`Getting manifest located in ${ path.resolve(manifestPath) }`)
