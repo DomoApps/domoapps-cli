@@ -1,18 +1,18 @@
-import { Command } from 'commander';
-import { BaseCommand, CommandOptions } from '../../util/BaseCommand';
-import { log } from '../../util/log';
+import {Command} from 'commander';
+import {BaseCommand, CommandOptions} from '../../util/BaseCommand';
+import {log} from '../../util/log';
 
 jest.mock('../../util/log');
 
 class TestCommand extends BaseCommand {
   public testOptions: CommandOptions = {};
-  
+
   protected configure(): void {
     this.program
       .command('test')
       .description('Test command')
       .option('-v, --verbose', 'Verbose output')
-      .action((options) => {
+      .action(options => {
         this.options = options;
         this.testOptions = options;
         this.run();
@@ -42,7 +42,10 @@ describe('BaseCommand', () => {
     });
 
     it('should call configure during construction', () => {
-      const configureSpy = jest.spyOn(TestCommand.prototype, 'configure' as any);
+      const configureSpy = jest.spyOn(
+        TestCommand.prototype,
+        'configure' as any,
+      );
       new TestCommand(program);
       expect(configureSpy).toHaveBeenCalled();
     });

@@ -3,7 +3,6 @@ import path = require('path');
 import semver = require('semver');
 import glob = require('glob');
 import {log} from '../util/log';
-import isValidJSName from '../util/isValidJSName';
 import {Manifest} from 'ryuu-client/lib/models';
 
 /**
@@ -52,17 +51,59 @@ const hasManifest = (manifestName: string) => {
 };
 
 /**
- * update the manifest (in memory and on disk)
+ * Persists a design ID to the manifest both in memory and on disk
+ * Returns the persisted ID for confirmation
  */
-const persistDesignId = (id: string, manifest: Manifest) => {
-  const newManifest = {...manifest, id};
-  updateManifest(newManifest);
-  return id;
+const persistDesignId = (id: string, manifest: Manifest): string => {
+  // Validate inputs
+  if (!id || typeof id !== 'string') {
+    throw new Error('Design ID must be a non-empty string');
+  }
+  if (!manifest) {
+    throw new Error('Manifest object is required');
+  }
+
+  // Create updated manifest with new ID
+  const updatedManifest = {
+    ...manifest,
+    id: id.trim(), // Clean up the ID
+  };
+
+  // Persist to disk
+  updateManifest(updatedManifest);
+
+  // Return the persisted ID for confirmation
+  return id.trim();
 };
 
-const updateManifest = (manifest: Manifest) => {
+/**
+ * Updates a manifest file on disk with the provided manifest object
+ * Preserves JSON formatting with 2-space indentation
+ * @param manifest The manifest object to write to disk
+ * @throws Error if manifest is invalid or file cannot be written
+ */
+const updateManifest = (manifest: Manifest): void => {
+  // Input validation
+  if (!manifest) {
+    throw new Error('Manifest object is required');
+  }
+  
+  if (!manifest.fileName) {
+    throw new Error('Manifest must have a fileName property');
+  }
+
+  // Resolve the manifest file location
   const manifestPath = findManifest(manifest.fileName);
-  fs.writeJsonSync(manifestPath, manifest, {spaces: 2});
+  
+  try {
+    // Write manifest to disk with consistent formatting
+    fs.writeJsonSync(manifestPath, manifest, {
+      spaces: 2,
+      EOL: '\n' // Ensure consistent line endings
+    });
+  } catch (error) {
+    throw new Error(`Failed to write manifest to ${manifestPath}: ${error.message}`);
+  }
 };
 
 /**
@@ -82,8 +123,14 @@ const validateManifest = (manifest: Manifest) => {
   return manifest;
 };
 
-const requireProperty = (obj: Object, prop: string) => {
-  if (!obj[prop]) {
+/**
+ * Validates that a required property exists on an object
+ * @param obj The object to check
+ * @param prop The property name to validate
+ * @throws Error via log.fail if property is missing
+ */
+const requireProperty = (obj: Record<string, any>, prop: string): void => {
+  if (!obj || typeof obj !== 'object' || !obj[prop]) {
     log.fail(
       'Missing required property: ' + prop,
       'Please add the missing `' +
@@ -93,46 +140,45 @@ const requireProperty = (obj: Object, prop: string) => {
   }
 };
 
-const updateManifestProperties = (manifest: Manifest) => {
+/**
+ * Updates manifest properties to current format, handling legacy property names
+ * @param manifest The manifest to update
+ * @returns The updated manifest with transformed properties
+ */
+const updateManifestProperties = (manifest: Manifest): Manifest => {
+  // Use a more flexible type to handle legacy properties
+  const input = manifest as any;
   const updatedManifest = {...manifest};
 
-  if (updatedManifest.hasOwnProperty('mapping')) {
-    updatedManifest.datasetsMapping = updatedManifest.mapping;
-    delete updatedManifest.mapping;
+  // Transform legacy 'mapping' property to 'datasetsMapping'
+  if (input.hasOwnProperty('mapping')) {
+    updatedManifest.datasetsMapping = input.mapping;
+    delete (updatedManifest as any).mapping;
   } else if (!updatedManifest.hasOwnProperty('datasetsMapping')) {
     updatedManifest.datasetsMapping = [];
   }
 
-  if (updatedManifest.hasOwnProperty('collections')) {
-    updatedManifest.collectionsMapping = updatedManifest.collections;
-    delete updatedManifest.collections;
+  // Transform legacy 'collections' property to 'collectionsMapping'
+  if (input.hasOwnProperty('collections')) {
+    updatedManifest.collectionsMapping = input.collections;
+    delete (updatedManifest as any).collections;
   }
 
-  if (updateManifest.hasOwnProperty('appContextId')) {
-    updatedManifest.proxyId = updatedManifest['appContextId'];
-    delete updatedManifest['appContextId'];
-  } else if (updateManifest.hasOwnProperty('cardId')) {
-    updatedManifest.proxyId = updatedManifest['cardId'];
-    delete updatedManifest['cardId'];
+  // Transform legacy 'appContextId' to 'proxyId' (fixing the original bug)
+  if (input.hasOwnProperty('appContextId')) {
+    updatedManifest.proxyId = input.appContextId;
+    delete (updatedManifest as any).appContextId;
+  } else if (input.hasOwnProperty('cardId')) {
+    // Transform legacy 'cardId' to 'proxyId' (fixing the original bug)
+    updatedManifest.proxyId = input.cardId;
+    delete (updatedManifest as any).cardId;
   }
 
+  // Persist the updated manifest to disk
   updateManifest(updatedManifest);
   return updatedManifest;
 };
 
-/**
- * Alias must be a valid JS property
- */
-function ensureValidAlias(name: string) {
-  if (!isValidJSName(name)) {
-    log.fail(
-      'Alias names must be valid JavaScript properties',
-      'Please rename the ' +
-        JSON.stringify(name) +
-        ' alias and update any /data/v1/<alias> calls with the new alias name',
-    );
-  }
-}
 
 /**
  * Finds the manifest file in the current directory, or sub files
