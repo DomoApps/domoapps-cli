@@ -87,22 +87,24 @@ const updateManifest = (manifest: Manifest): void => {
   if (!manifest) {
     throw new Error('Manifest object is required');
   }
-  
+
   if (!manifest.fileName) {
     throw new Error('Manifest must have a fileName property');
   }
 
   // Resolve the manifest file location
   const manifestPath = findManifest(manifest.fileName);
-  
+
   try {
     // Write manifest to disk with consistent formatting
     fs.writeJsonSync(manifestPath, manifest, {
       spaces: 2,
-      EOL: '\n' // Ensure consistent line endings
+      EOL: '\n', // Ensure consistent line endings
     });
   } catch (error) {
-    throw new Error(`Failed to write manifest to ${manifestPath}: ${error.message}`);
+    throw new Error(
+      `Failed to write manifest to ${manifestPath}: ${error.message}`,
+    );
   }
 };
 
@@ -178,7 +180,6 @@ const updateManifestProperties = (manifest: Manifest): Manifest => {
   updateManifest(updatedManifest);
   return updatedManifest;
 };
-
 
 /**
  * Finds the manifest file in the current directory, or sub files
