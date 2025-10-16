@@ -21,7 +21,7 @@ module.exports = (program: Command) => {
             .getClient()
             .then(client => {
               client
-                .deleteDesign(designId, options['force'] ? true : false)
+                .deleteDesign(designId, (options as any)['force'] ? true : false)
                 .then(() => log.ok(`Deleted design ${designId}`))
                 .catch(() =>
                   log.fail(
@@ -36,7 +36,7 @@ module.exports = (program: Command) => {
           log.fail('Delete command aborted');
         }
       };
-      if (options['confirm']) {
+        if ((options as any)['confirm']) {
         handleUserResponse({delete: true});
       } else {
         inquirer

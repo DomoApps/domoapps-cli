@@ -3,6 +3,18 @@ import { log } from './log';
 
 export interface CommandOptions {
   [key: string]: any;
+  force?: boolean;
+  confirm?: boolean;
+  datasetPrompt?: boolean;
+  removeProxy?: boolean;
+  auth?: string;
+  go?: boolean;
+  all?: boolean;
+  instance?: string;
+  token?: string;
+  appContextId?: string;
+  cardId?: string;
+  oAuthEnabled?: boolean;
 }
 
 export abstract class BaseCommand {

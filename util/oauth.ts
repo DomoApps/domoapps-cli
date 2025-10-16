@@ -19,7 +19,7 @@ export class Oauth {
   static isOAuthEnabled(manifestName: string) {
     if (ManifestUtils.hasManifest(manifestName)) {
       const manifest = ManifestUtils.getManifest(manifestName);
-      return !!manifest['oAuthEnabled'];
+      return !!(manifest as any)['oAuthEnabled'];
     }
 
     return false;

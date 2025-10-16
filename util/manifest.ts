@@ -82,7 +82,7 @@ const validateManifest = (manifest: Manifest) => {
   return manifest;
 };
 
-const requireProperty = (obj: Object, prop: string) => {
+const requireProperty = (obj: Record<string, any>, prop: string) => {
   if (!obj[prop]) {
     log.fail(
       'Missing required property: ' + prop,
@@ -109,11 +109,11 @@ const updateManifestProperties = (manifest: Manifest) => {
   }
 
   if (updateManifest.hasOwnProperty('appContextId')) {
-    updatedManifest.proxyId = updatedManifest['appContextId'];
-    delete updatedManifest['appContextId'];
+    updatedManifest.proxyId = (updatedManifest as any)['appContextId'];
+    delete (updatedManifest as any)['appContextId'];
   } else if (updateManifest.hasOwnProperty('cardId')) {
-    updatedManifest.proxyId = updatedManifest['cardId'];
-    delete updatedManifest['cardId'];
+    updatedManifest.proxyId = (updatedManifest as any)['cardId'];
+    delete (updatedManifest as any)['cardId'];
   }
 
   updateManifest(updatedManifest);
