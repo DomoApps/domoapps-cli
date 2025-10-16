@@ -7,6 +7,8 @@ export enum constant {
     'base directory of your design.',
 }
 
+import * as chalk from 'chalk';
+
 export const logo = `
     ____                      
    / __ \\____  ____ ___  ____ 
@@ -14,3 +16,20 @@ export const logo = `
  / /_/ / /_/ / / / / / / /_/ /
 /_____/\\____/_/ /_/ /_/\\____/ 
                               `;
+
+export const getRainbowLogo = () => {
+  const lines = logo.trim().split('\n');
+  const colors = [
+    chalk.red,
+    chalk.yellow,
+    chalk.green,
+    chalk.cyan,
+    chalk.blue,
+    chalk.magenta
+  ];
+  
+  return lines.map((line, index) => {
+    const color = colors[index % colors.length];
+    return color(line);
+  }).join('\n');
+};

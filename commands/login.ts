@@ -8,7 +8,7 @@ import multichoice from '../util/multichoice';
 import { BaseCommand, CommandOptions } from '../util/BaseCommand';
 
 import {Command} from 'commander';
-import {logo} from '../models/enums/constant';
+import {getRainbowLogo} from '../models/enums/constant';
 
 let autoUpdate = false;
 const NEW_INSTANCE = 'new instance';
@@ -114,7 +114,7 @@ class LoginCommand extends BaseCommand {
       const login = new Login(instance);
       const client = await login.getClient();
       const loginData = await client.login();
-      console.log(chalk.grey(logo));
+      console.log(getRainbowLogo());
       this.logOk(
         'Login to ' + instance + ' successful.',
         //@ts-ignore
