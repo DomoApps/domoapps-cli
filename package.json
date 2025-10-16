@@ -40,7 +40,8 @@
     "bumpBeta": "npm run build && npm run bump -- --prerelease beta",
     "bump": "standard-version",
     "set-bin-dist": "RYUU_BIN_TARGET=./dist/bin/runner node set-bin.js",
-    "set-bin-src": "RYUU_BIN_TARGET=bin/runner node set-bin.js"
+    "set-bin-src": "RYUU_BIN_TARGET=bin/runner node set-bin.js",
+    "prepare": "husky"
   },
   "dependencies": {
     "@domoinc/ryuu-proxy": "^4.4.0",
@@ -94,6 +95,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
     "github-url-from-git": "^1.4.0",
+    "husky": "^9.1.7",
     "prettier": "^2.7.1",
     "standard-version": "^9.5.0",
     "ts-jest": "^29.1.2",
