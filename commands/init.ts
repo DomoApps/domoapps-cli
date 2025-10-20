@@ -7,7 +7,6 @@ import {reduce} from 'async';
 import fs = require('fs-extra');
 import path = require('path');
 import {log} from '../util/log';
-import multichoice from '../util/multichoice';
 import {TEMPLATES, TemplateName, getTemplateFiles} from '../models/templates';
 import {createConfirm, createInput, createSelect} from '../util/prompts';
 //import { init, initOptions } from '../models';

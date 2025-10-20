@@ -17,17 +17,6 @@ function formatDate(date: Date): string {
 }
 
 /**
- * Create a clickable terminal hyperlink
- * @param url The URL to link to
- * @param text The text to display
- * @returns Formatted hyperlink string
- */
-function createLink(url: string, text: string): string {
-  // OSC 8 hyperlink format: \u001b]8;;URL\u001b\\TEXT\u001b]8;;\u001b\\
-  return `\u001b]8;;${url}\u001b\\${text}\u001b]8;;\u001b\\`;
-}
-
-/**
  * Generate the asset library URL for a design
  * @param instance The Domo instance (e.g., "domo-jon-tiritilli" or "domo-jon-tiritilli.domo.com")
  * @param designId The design ID
@@ -72,10 +61,6 @@ module.exports = (program: Command) => {
 
             // Calculate column widths based on terminal width
             const minWidth = 80;
-
-            // For wide terminals, use flexible widths
-            // URL needs ~60-80 chars depending on instance name
-            const urlMinWidth = 60;
 
             // Calculate available width after borders/padding
             const availableWidth = windowWidth - 10; // 10 for borders and padding
