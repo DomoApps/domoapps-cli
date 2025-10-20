@@ -17,7 +17,7 @@ jest.mock('inquirer', () => ({
   createPromptModule: jest.fn(() => jest.fn()),
 }));
 
-jest.mock('../../util/isValidJSName', () => jest.fn());
+jest.mock('../../src/util/isValidJSName', () => jest.fn());
 
 jest.mock('slug', () => jest.fn());
 
@@ -41,7 +41,7 @@ jest.mock('path', () => ({
   resolve: jest.fn(),
 }));
 
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -50,7 +50,7 @@ jest.mock('../../util/log', () => ({
   },
 }));
 
-jest.mock('../../util/multichoice', () => jest.fn());
+jest.mock('../../src/util/multichoice', () => jest.fn());
 
 jest.mock('chalk', () => ({
   default: {
@@ -96,7 +96,7 @@ describe('Init Command', () => {
     jest.clearAllMocks();
     mockProgram = new Command();
     mockInquirer = require('inquirer');
-    mockIsValidJSName = require('../../util/isValidJSName');
+    mockIsValidJSName = require('../../src/util/isValidJSName');
     mockSlug = require('slug');
     mockMkdir = require('shelljs').mkdir;
     mockFs = require('fs-extra');
@@ -336,7 +336,7 @@ describe('Init Command', () => {
         datasetPrompt: true,
       });
 
-      const initModule = require('../../commands/init');
+      const initModule = require('../../src/commands/init');
       expect(initModule).toBeDefined();
     });
 
@@ -346,7 +346,7 @@ describe('Init Command', () => {
         datasetPrompt: false,
       });
 
-      const initModule = require('../../commands/init');
+      const initModule = require('../../src/commands/init');
       expect(initModule).toBeDefined();
     });
   });
@@ -401,7 +401,7 @@ describe('Init Command', () => {
       );
       mockFs.writeFileSync.mockImplementation();
 
-      const initModule = require('../../commands/init');
+      const initModule = require('../../src/commands/init');
       expect(initModule).toBeDefined();
     });
   });

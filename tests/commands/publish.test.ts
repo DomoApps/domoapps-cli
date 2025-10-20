@@ -12,7 +12,7 @@ jest.mock('lodash', () => ({
 
 jest.mock('open', () => jest.fn());
 
-jest.mock('../../util/manifest', () => ({
+jest.mock('../../src/util/manifest', () => ({
   ManifestUtils: {
     getManifest: jest.fn(),
     hasManifest: jest.fn(),
@@ -23,7 +23,7 @@ jest.mock('../../util/manifest', () => ({
   },
 }));
 
-jest.mock('../../util/login', () => ({
+jest.mock('../../src/util/login', () => ({
   Login: jest.fn(),
 }));
 
@@ -38,11 +38,11 @@ jest.mock('fs-extra', () => ({
   writeFileSync: jest.fn(),
 }));
 
-jest.mock('../../util/appStructure', () => ({
+jest.mock('../../src/util/appStructure', () => ({
   hasThumbnail: jest.fn(),
 }));
 
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -52,7 +52,7 @@ jest.mock('../../util/log', () => ({
   },
 }));
 
-jest.mock('../../util/multichoice', () => jest.fn());
+jest.mock('../../src/util/multichoice', () => jest.fn());
 
 jest.mock('ryuu-client', () => ({
   default: jest.fn(),
@@ -73,12 +73,12 @@ describe('Publish Command', () => {
     jest.clearAllMocks();
     mockProgram = new Command();
     mockInquirer = require('inquirer');
-    mockManifestUtils = require('../../util/manifest').ManifestUtils;
-    mockLogin = require('../../util/login').Login;
+    mockManifestUtils = require('../../src/util/manifest').ManifestUtils;
+    mockLogin = require('../../src/util/login').Login;
     mockGlob = require('glob');
     mockFs = require('fs-extra');
-    mockAppStructure = require('../../util/appStructure');
-    mockLog = require('../../util/log').log;
+    mockAppStructure = require('../../src/util/appStructure');
+    mockLog = require('../../src/util/log').log;
     mockOpen = require('open');
   });
 

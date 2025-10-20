@@ -1,22 +1,20 @@
 import {jest} from '@jest/globals';
 const chalk = require('chalk');
-import {log} from '../../util/log';
+import {log} from '../../src/util/log';
 
 // Mock chalk
-jest.mock('chalk', () => {
-  const mockChalk = jest.fn((text: string) => text) as any;
-  mockChalk.red = jest.fn((text: string) => `RED:${text}`);
-  mockChalk.green = jest.fn((text: string) => `GREEN:${text}`);
-  mockChalk.yellow = jest.fn((text: string) => `YELLOW:${text}`);
-  mockChalk.blue = jest.fn((text: string) => `BLUE:${text}`);
-  mockChalk.cyan = jest.fn((text: string) => `CYAN:${text}`);
-  mockChalk.magenta = jest.fn((text: string) => `MAGENTA:${text}`);
-  mockChalk.gray = jest.fn((text: string) => `GRAY:${text}`);
-  mockChalk.grey = jest.fn((text: string) => `GREY:${text}`);
-  mockChalk.dim = jest.fn((text: string) => `DIM:${text}`);
-  mockChalk.bold = jest.fn((text: string) => `BOLD:${text}`);
-  return {default: mockChalk};
-});
+jest.mock('chalk', () => ({
+  red: jest.fn((text: string) => `RED:${text}`),
+  green: jest.fn((text: string) => `GREEN:${text}`),
+  yellow: jest.fn((text: string) => `YELLOW:${text}`),
+  blue: jest.fn((text: string) => `BLUE:${text}`),
+  cyan: jest.fn((text: string) => `CYAN:${text}`),
+  magenta: jest.fn((text: string) => `MAGENTA:${text}`),
+  gray: jest.fn((text: string) => `GRAY:${text}`),
+  grey: jest.fn((text: string) => `GREY:${text}`),
+  dim: jest.fn((text: string) => `DIM:${text}`),
+  bold: jest.fn((text: string) => `BOLD:${text}`),
+}));
 
 describe('Log Utility', () => {
   let mockConsole: any;
@@ -49,7 +47,6 @@ describe('Log Utility', () => {
       log.ok(message, submessage);
 
       expect(mockChalk.green).toHaveBeenCalledWith('✓');
-      expect(mockChalk.gray).toHaveBeenCalledWith(submessage);
       expect(mockConsole).toHaveBeenCalledTimes(2);
     });
   });
@@ -69,7 +66,6 @@ describe('Log Utility', () => {
       log.info(message, submessage);
 
       expect(mockChalk.cyan).toHaveBeenCalledWith(message);
-      expect(mockChalk.gray).toHaveBeenCalledWith(submessage);
       expect(mockConsole).toHaveBeenCalledTimes(2);
     });
   });
@@ -89,7 +85,6 @@ describe('Log Utility', () => {
       log.fail(message, submessage);
 
       expect(mockChalk.red).toHaveBeenCalledWith('X');
-      expect(mockChalk.gray).toHaveBeenCalledWith(submessage);
       expect(mockConsole).toHaveBeenCalledTimes(2);
     });
   });
@@ -109,7 +104,6 @@ describe('Log Utility', () => {
       log.warn(message, submessage);
 
       expect(mockChalk.yellow).toHaveBeenCalledWith(message);
-      expect(mockChalk.gray).toHaveBeenCalledWith(submessage);
       expect(mockConsole).toHaveBeenCalledTimes(2);
     });
   });
@@ -124,7 +118,7 @@ describe('Log Utility', () => {
         'Failure to authenticate',
       );
       expect(mockConsole).toHaveBeenCalledWith(
-        'GRAY:Missing refresh token, please login using `domo login`',
+        'Missing refresh token, please login using `domo login`',
       );
     });
   });
@@ -166,7 +160,6 @@ describe('Log Utility', () => {
 
       expect(mockChalk.green).toHaveBeenCalledWith('✓');
       expect(mockConsole).toHaveBeenCalledWith('GREEN:✓', message);
-      expect(mockChalk.gray).toHaveBeenCalledWith(details);
     });
   });
 

@@ -1,6 +1,6 @@
 import {jest} from '@jest/globals';
 import {Command} from 'commander';
-import {BaseCommand, CommandOptions} from '../../util/BaseCommand';
+import {BaseCommand, CommandOptions} from '../../src/util/BaseCommand';
 
 // Mock chalk
 jest.mock('chalk', () => ({

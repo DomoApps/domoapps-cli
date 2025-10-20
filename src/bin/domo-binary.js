@@ -28,4 +28,4 @@ function on_unhandled_error(err) {
 require('source-map-support').install();
 
 // Import the main domo module from the correct path
-require('../dist/bin/domo.js');
+require('./domo.js');

@@ -6,15 +6,15 @@ jest.mock('inquirer', () => ({
   prompt: jest.fn(),
 }));
 
-jest.mock('../../util/login', () => ({
+jest.mock('../../src/util/login', () => ({
   Login: jest.fn(),
 }));
 
-jest.mock('../../util/design', () => ({
+jest.mock('../../src/util/design', () => ({
   getDesignId: jest.fn(),
 }));
 
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -34,8 +34,8 @@ describe('Delete Command', () => {
     jest.clearAllMocks();
     mockProgram = new Command();
     mockInquirer = require('inquirer');
-    mockGetDesignId = require('../../util/design').getDesignId;
-    mockLog = require('../../util/log').log;
+    mockGetDesignId = require('../../src/util/design').getDesignId;
+    mockLog = require('../../src/util/log').log;
   });
 
   afterEach(() => {

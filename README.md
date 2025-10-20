@@ -57,55 +57,166 @@ npm install -g ryuu
 The CLI supports two authentication methods:
 
 #### OAuth Login (Default)
-- `domo login` - Interactive login with username/password
-- `domo login --instance company.domo.com` - Login to specific instance
+```bash
+domo login                                    # Interactive login
+domo login -i company.domo.com               # Login to specific instance
+```
+
+**Options:**
+- `-i, --instance <value>` - Domo instance hostname
+- `-u, --user-email <value>` - User email address
+- `--migrate` - Migrate login files from ryuu 3.x
+- `--no-upgrade-check` - Skip version check
+- `--upgrade-download` - Auto-download newer version
 
 #### Token-Based Login
-- `domo login -t <TOKEN>` or `domo login --token <TOKEN>` - Login with developer token
-- `domo login --token-only` - Interactive token prompt
-- `domo token add` - Add developer token for password-less auth
-- `domo token remove` - Remove stored developer token
-
-**Token Authentication Examples:**
 ```bash
-# Login with developer token (short form)
+# Login with developer token
 domo login -i company.domo.com -t DDCI27236b8d8690ab86cf5328c41a94d068aca1cde4eb6edc34
 
-# Login with developer token (long form)
-domo login --instance company.domo.com --token DDCI27236b8d8690ab86cf5328c41a94d068aca1cde4eb6edc34
-
 # Interactive token prompt
-domo login --instance company.domo.com --token-only
-
-# Traditional OAuth login (default)
-domo login --instance company.domo.com
+domo login -i company.domo.com --token-only
 ```
+
+**Options:**
+- `-t, --token <value>` - Developer token for authentication
+- `--token-only` - Force token-only mode (will prompt)
 
 **Getting Your Developer Token:**
 Developer tokens can be found in the Admin section of your Domo instance. Tokens are alphanumeric strings (letters and numbers only). Token-based authentication is ideal for CI/CD pipelines and automated workflows.
 
+#### Token Management
+```bash
+domo token add                               # Add developer token
+domo token add -i company.domo.com -t TOKEN  # Add token non-interactively
+domo token remove                            # Remove stored token
+domo token remove -i company.domo.com        # Remove token for specific instance
+```
+
+**Options:**
+- `-i, --instance <value>` - Domo instance
+- `-t, --token <value>` - Developer token value
+
 #### Session Management
-- `domo logout` - Sign out from current instance
-- `domo remove` - Remove saved login credentials
+```bash
+domo logout                                  # Sign out from current instance
+domo logout -i company.domo.com             # Sign out from specific instance
+domo remove                                  # Remove saved login (interactive)
+domo remove --instance company.domo.com     # Remove specific instance
+domo remove --all                            # Remove all saved logins
+```
 
 ### Development
 
-- `domo init [name]` - Create a new Custom App
-- `domo dev` - Start development server
-- `domo download [id]` - Download existing app
+#### Initialize New App
+```bash
+domo init                                    # Interactive app creation
+domo init -n "My App" -t "hello world"      # Non-interactive creation
+domo init --no-datasets                      # Skip dataset prompts
+```
+
+**Options:**
+- `-n, --design_name <value>` - Name of the design
+- `-t, --template <value>` - Starter template (choices: `hello world`, `manifest only`, `basic chart`, `map chart`, `sugarforce`)
+- `--no-datasets` - Skip dataset prompting
+- `-i, --dataset-id [value...]` - Dataset IDs (multiple)
+- `-a, --dataset-alias [value...]` - Dataset aliases (multiple)
+
+#### Development Server
+```bash
+domo dev                                     # Start dev server
+domo dev -u USER_ID                          # Use specific user ID
+domo dev -e                                  # Allow external connections
+```
+
+**Options:**
+- `-u, --userId <value>` - Use a specific userId
+- `-e, --external` - Allow external connections to dev server
+
+#### Download Existing App
+```bash
+domo download                                # Interactive download
+domo download -i DESIGN_ID                   # Download specific design
+domo download -i DESIGN_ID -d latest         # Download specific version
+```
+
+**Options:**
+- `-i, --design-id <id>` - Design ID to download
+- `-d, --design-version <version>` - Design version (default: `latest`)
 
 ### Publishing
 
-- `domo publish` - Publish your app to Domo
-- `domo release` - Prepare app for app store
-- `domo delete [id]` - Delete published app
-- `domo undelete [id]` - Restore deleted app
+#### Publish App
+```bash
+domo publish                                 # Publish app
+domo publish -g                              # Publish and open in browser
+```
+
+**Options:**
+- `-g, --go` - Navigate to design in Asset Library after publishing
+
+#### Release to App Store
+```bash
+domo release                                 # Interactive version selection
+domo release -v latest                       # Release latest version (non-interactive)
+domo release -v 1.0.0                        # Release specific version
+```
+
+**Options:**
+- `-v, --version <value>` - Version to release (bypasses interactive prompt, defaults to `latest`)
+
+#### Delete App
+```bash
+domo delete                                  # Delete app in current directory
+domo delete DESIGN_ID                        # Delete specific design
+domo delete -f                               # Force delete (skip confirmation)
+```
+
+**Options:**
+- `-f, --force` - Delete even if referenced by Custom Apps
+- `-c, --confirm` - Auto-confirm deletion (skip prompt)
+
+#### Restore Deleted App
+```bash
+domo undelete                                # Undelete app in current directory
+domo undelete DESIGN_ID                      # Undelete specific design
+```
 
 ### Management
 
-- `domo ls` - List your apps
-- `domo owner [id]` - View app ownership
-- `domo remove` - Remove login instances
+#### List Apps
+```bash
+domo ls                                      # List all your published apps
+```
+
+Displays a table with:
+- Design Name
+- Design ID
+- Version
+- Last Published date
+- URL to Asset Library
+
+#### Manage Owners
+```bash
+domo owner ls                                # List owners
+domo owner add user@company.com              # Add owner
+domo owner rm user@company.com               # Remove owner
+domo owner add user1@co.com user2@co.com    # Add multiple owners
+```
+
+**Options:**
+- `-i, --designId <id>` - Specify design ID (otherwise reads from manifest)
+
+#### Configure Proxy
+```bash
+domo proxy proxy.company.com 8080            # Set proxy
+domo proxy proxy.company.com 8080 -a         # Set proxy with authentication
+domo proxy -r                                # Remove proxy
+```
+
+**Options:**
+- `-r, --remove-proxy` - Remove current proxy settings
+- `-a, --auth` - Enable username authentication for proxy
 
 ## 🎯 Features
 
@@ -125,10 +236,11 @@ Developer tokens can be found in the Admin section of your Domo instance. Tokens
 
 ### App Templates
 
-- **Hello World** - Basic starter template
-- **Basic Chart** - Chart visualization template
-- **Map Chart** - Geographic data visualization
-- **Sugarforce** - Salesforce integration template
+- **Hello World** - Basic starter template with HTML/JS/CSS
+- **Manifest Only** - Minimal template with just manifest.json
+- **Basic Chart** - Chart visualization template with D3.js
+- **Map Chart** - Geographic data visualization with mapping
+- **Sugarforce** - Salesforce integration with pre-built components
 
 ### Development Tools
 
@@ -209,9 +321,10 @@ domo publish
 
 Choose from professionally designed templates:
 
-- **Hello World** - Perfect for learning the basics
-- **Basic Chart** - Ready-to-use chart components
-- **Map Chart** - Geographic data visualization
+- **Hello World** - Perfect for learning the basics (HTML/JS/CSS)
+- **Manifest Only** - Minimal setup with just manifest.json
+- **Basic Chart** - Ready-to-use D3.js chart components
+- **Map Chart** - Geographic data visualization with mapping
 - **Sugarforce** - Salesforce integration with pre-built components
 
 ## 🔍 Troubleshooting

@@ -2,11 +2,11 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('../../util/login', () => ({
+jest.mock('../../src/util/login', () => ({
   Login: jest.fn(),
 }));
 
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -41,7 +41,7 @@ describe('Ls Command', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockLog = require('../../util/log').log;
+    mockLog = require('../../src/util/log').log;
     mockTable = require('cli-table');
     mockChalk = require('chalk');
   });
@@ -271,7 +271,7 @@ describe('Ls Command', () => {
     });
 
     it('should handle authentication failure', () => {
-      const mockLogin = require('../../util/login').Login;
+      const mockLogin = require('../../src/util/login').Login;
       mockLogin.mockImplementation(() => ({
         getClient: jest.fn(),
       }));

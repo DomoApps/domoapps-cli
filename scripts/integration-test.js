@@ -56,10 +56,8 @@ class IntegrationTestRunner {
     this.tempDir = path.join(process.cwd(), 'integration-test-temp');
     this.testApps = [];
     this.cleanupTasks = [];
-    // Get the path to the domo binary (works from both root and dist/scripts)
-    this.domoBinary = fs.existsSync(path.join(__dirname, '../bin/domo-binary.js'))
-      ? path.join(__dirname, '../bin/domo-binary.js')
-      : path.join(__dirname, '../../bin/domo-binary.js');
+    // Use the built domo binary from dist
+    this.domoBinary = path.join(process.cwd(), 'dist/bin/domo-binary.js');
   }
 
   async runTest(name, testFn, timeout = config.timeouts.test) {
@@ -131,12 +129,34 @@ class IntegrationTestRunner {
     try {
       // Clean up test apps
       if (config.cleanup.deleteTestApps) {
+        // Re-authenticate before deleting (in case logout test ran)
+        const {instance, token} = config.instances.primary;
+        try {
+          await this.runCommand(`domo login -i ${instance} -t ${token}`, {
+            timeout: config.timeouts.login,
+            expectFailure: true,
+          });
+        } catch (error) {
+          log.warning(`Failed to re-authenticate for cleanup: ${error.message}`);
+        }
+
         for (const appName of this.testApps) {
           try {
-            await this.runCommand(`domo delete ${appName}`, {
-              timeout: 30000,
-              expectFailure: true,
-            });
+            const appDir = path.join(this.tempDir, appName);
+            const manifestPath = path.join(appDir, 'manifest.json');
+
+            // Only try to delete if manifest exists and has an ID (app was published)
+            if (await fs.pathExists(manifestPath)) {
+              const manifest = await fs.readJson(manifestPath);
+              if (manifest.id) {
+                // Run delete from within app directory so it reads manifest.json
+                await this.runCommand('domo delete --confirm', {
+                  timeout: 30000,
+                  cwd: appDir,
+                  expectFailure: true,
+                });
+              }
+            }
           } catch (error) {
             log.warning(
               `Failed to delete test app ${appName}: ${error.message}`,
@@ -446,8 +466,8 @@ class IntegrationTests {
     const appName = config.testData.appNames[0];
     const appDir = path.join(this.runner.tempDir, appName);
 
-    // Release app
-    await this.runner.runCommand('domo release', {
+    // Release app (using --version latest for non-interactive mode)
+    await this.runner.runCommand('domo release --version latest', {
       timeout: 180000,
       cwd: appDir,
     });

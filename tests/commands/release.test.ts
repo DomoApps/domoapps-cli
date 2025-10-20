@@ -2,11 +2,11 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('../../util/login', () => ({
+jest.mock('../../src/util/login', () => ({
   Login: jest.fn(),
 }));
 
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -17,17 +17,17 @@ jest.mock('../../util/log', () => ({
   },
 }));
 
-jest.mock('../../util/manifest', () => ({
+jest.mock('../../src/util/manifest', () => ({
   ManifestUtils: {
     getManifest: jest.fn(),
   },
 }));
 
-jest.mock('../../util/appStructure', () => ({
+jest.mock('../../src/util/appStructure', () => ({
   hasThumbnail: jest.fn(),
 }));
 
-jest.mock('../../models/index', () => ({
+jest.mock('../../src/models/index', () => ({
   constant: {
     THUMBNAIL_CREATE_WARNING:
       'A thumbnail is required before creating a card with this design.',
@@ -51,10 +51,10 @@ describe('Release Command', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockLog = require('../../util/log').log;
-    mockManifestUtils = require('../../util/manifest').ManifestUtils;
-    mockAppStructure = require('../../util/appStructure');
-    mockConstant = require('../../models/index').constant;
+    mockLog = require('../../src/util/log').log;
+    mockManifestUtils = require('../../src/util/manifest').ManifestUtils;
+    mockAppStructure = require('../../src/util/appStructure');
+    mockConstant = require('../../src/models/index').constant;
     mockInquirer = require('inquirer');
   });
 

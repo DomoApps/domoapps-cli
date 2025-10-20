@@ -2,7 +2,7 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('../../util/login', () => ({
+jest.mock('../../src/util/login', () => ({
   Login: jest.fn(),
 }));
 
@@ -13,7 +13,7 @@ describe('Logout Command', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockLogin = require('../../util/login').Login;
+    mockLogin = require('../../src/util/login').Login;
   });
 
   afterEach(() => {

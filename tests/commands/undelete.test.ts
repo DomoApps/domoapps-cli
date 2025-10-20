@@ -2,15 +2,15 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('../../util/login', () => ({
+jest.mock('../../src/util/login', () => ({
   Login: jest.fn(),
 }));
 
-jest.mock('../../util/design', () => ({
+jest.mock('../../src/util/design', () => ({
   getDesignId: jest.fn(),
 }));
 
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -34,9 +34,9 @@ describe('Undelete Command', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockLogin = require('../../util/login').Login;
-    mockDesign = require('../../util/design');
-    mockLog = require('../../util/log').log;
+    mockLogin = require('../../src/util/login').Login;
+    mockDesign = require('../../src/util/design');
+    mockLog = require('../../src/util/log').log;
     mockInquirer = require('inquirer');
   });
 

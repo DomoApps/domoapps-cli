@@ -9,33 +9,33 @@ module.exports = {
   // Domo instance configurations (credentials from .env)
   instances: {
     primary: {
-      instance: process.env.PRIMARY_INSTANCE || 'your-instance.domo.com',
-      username: process.env.PRIMARY_USERNAME || 'your-email@company.com',
-      password: process.env.PRIMARY_PASSWORD || 'your-password',
-      token: process.env.PRIMARY_TOKEN || 'your-dev-token',
+      instance: process.env.DOMO_INSTANCE_1 || 'your-instance.domo.com',
+      username: process.env.DOMO_USERNAME_1 || 'your-email@company.com',
+      password: process.env.DOMO_PASSWORD_1 || 'your-password',
+      token: process.env.DOMO_TOKEN_1 || 'your-dev-token',
     },
     secondary: {
-      instance: process.env.SECONDARY_INSTANCE || 'company2.domo.com',
-      username: process.env.SECONDARY_USERNAME || 'testuser2@company.com',
-      password: process.env.SECONDARY_PASSWORD || 'your-password-here',
-      token: process.env.SECONDARY_TOKEN || 'your-dev-token-here',
+      instance: process.env.DOMO_INSTANCE_2 || 'company2.domo.com',
+      username: process.env.DOMO_USERNAME_2 || 'testuser2@company.com',
+      password: process.env.DOMO_PASSWORD_2 || 'your-password-here',
+      token: process.env.DOMO_TOKEN_2 || 'your-dev-token-here',
     },
   },
 
   // Test data
   testData: {
     appNames: [
-      'integration-test-app-1',
+      process.env.TEST_APP_NAME_1 || 'integration-test-app-1',
       'integration-test-app-2',
       'integration-test-app-3',
     ],
     datasets: {
       primary: {
-        id: '123456789',
+        id: process.env.TEST_DATASET_ID_1 || '123456789',
         alias: 'testData1',
       },
       secondary: {
-        id: '987654321',
+        id: process.env.TEST_DATASET_ID_2 || '987654321',
         alias: 'testData2',
       },
     },

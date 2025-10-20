@@ -2,11 +2,11 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('../../util/login', () => ({
+jest.mock('../../src/util/login', () => ({
   Login: jest.fn(),
 }));
 
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -16,7 +16,7 @@ jest.mock('../../util/log', () => ({
   },
 }));
 
-jest.mock('../../util/manifest', () => ({
+jest.mock('../../src/util/manifest', () => ({
   ManifestUtils: {
     getManifest: jest.fn(),
   },
@@ -35,8 +35,8 @@ describe('Owner Command', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockLog = require('../../util/log').log;
-    mockManifestUtils = require('../../util/manifest').ManifestUtils;
+    mockLog = require('../../src/util/log').log;
+    mockManifestUtils = require('../../src/util/manifest').ManifestUtils;
     mockValidator = require('validator');
   });
 

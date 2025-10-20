@@ -10,7 +10,11 @@ module.exports = (program: Command) => {
   program
     .command('release')
     .description('prepare a design for app store release')
-    .action(() => {
+    .option(
+      '-v, --version <value>',
+      'Version to release (bypasses interactive prompt, defaults to "latest")',
+    )
+    .action(options => {
       new Login().getClient().then(client => {
         const manifest = ManifestUtils.getManifest(
           program.opts().manifest,
@@ -40,10 +44,28 @@ module.exports = (program: Command) => {
             versions.reverse();
             versions.unshift('latest');
 
-            const version = await createSelect(
-              'select a version to release',
-              versions,
-            );
+            let version: string;
+
+            // Check if version was provided via --version flag
+            if (options.version) {
+              // Validate the provided version
+              if (versions.includes(options.version)) {
+                version = options.version;
+                log.ok(`Using version: ${version}`);
+              } else {
+                log.fail(
+                  `Invalid version: ${options.version}`,
+                  `Available versions: ${versions.join(', ')}`,
+                );
+                return;
+              }
+            } else {
+              // Prompt for version interactively
+              version = await createSelect(
+                'select a version to release',
+                versions,
+              );
+            }
 
             // release the kraken
             try {

@@ -15,7 +15,7 @@ import {
   ReleaseCommandOptions,
   OwnerCommandOptions,
   RemoveCommandOptions,
-} from '../../models';
+} from '../../src/models';
 
 describe('Command Interfaces', () => {
   describe('CliCommandOptions', () => {

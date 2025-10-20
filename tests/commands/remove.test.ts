@@ -2,7 +2,7 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('../../util/login', () => ({
+jest.mock('../../src/util/login', () => ({
   Login: {
     getPreviousLogins: jest.fn(),
     removeAllLogins: jest.fn(),
@@ -10,7 +10,7 @@ jest.mock('../../util/login', () => ({
   },
 }));
 
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -20,7 +20,7 @@ jest.mock('../../util/log', () => ({
   },
 }));
 
-jest.mock('../../util/multichoice', () => jest.fn());
+jest.mock('../../src/util/multichoice', () => jest.fn());
 
 jest.mock('inquirer', () => ({
   prompt: jest.fn(),
@@ -36,9 +36,9 @@ describe('Remove Command', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockLogin = require('../../util/login').Login;
-    mockLog = require('../../util/log').log;
-    mockMultichoice = require('../../util/multichoice');
+    mockLogin = require('../../src/util/login').Login;
+    mockLog = require('../../src/util/log').log;
+    mockMultichoice = require('../../src/util/multichoice');
     mockInquirer = require('inquirer');
   });
 

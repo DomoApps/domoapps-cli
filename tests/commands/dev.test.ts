@@ -2,11 +2,11 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('../../util/login', () => ({
+jest.mock('../../src/util/login', () => ({
   Login: jest.fn(),
 }));
 
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -17,7 +17,7 @@ jest.mock('../../util/log', () => ({
   },
 }));
 
-jest.mock('../../server/server', () => ({
+jest.mock('../../src/server/server', () => ({
   start: jest.fn(),
 }));
 
@@ -29,8 +29,8 @@ describe('Dev Command', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockLog = require('../../util/log').log;
-    mockStart = require('../../server/server').start;
+    mockLog = require('../../src/util/log').log;
+    mockStart = require('../../src/server/server').start;
   });
 
   afterEach(() => {

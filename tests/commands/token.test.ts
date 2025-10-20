@@ -2,7 +2,7 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('../../util/login', () => ({
+jest.mock('../../src/util/login', () => ({
   Login: {
     getCurrentLogin: jest.fn(),
     getPreviousLogins: jest.fn(),
@@ -11,7 +11,7 @@ jest.mock('../../util/login', () => ({
   },
 }));
 
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -44,8 +44,8 @@ describe('Token Command', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockLogin = require('../../util/login').Login;
-    mockLog = require('../../util/log').log;
+    mockLogin = require('../../src/util/login').Login;
+    mockLog = require('../../src/util/log').log;
     mockChalk = require('chalk');
     mockInquirer = require('inquirer');
   });

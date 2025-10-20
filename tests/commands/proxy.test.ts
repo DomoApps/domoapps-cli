@@ -2,7 +2,7 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -33,7 +33,7 @@ describe('Proxy Command', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockLog = require('../../util/log').log;
+    mockLog = require('../../src/util/log').log;
     mockInquirer = require('inquirer');
     mockConfigstore = require('configstore');
   });

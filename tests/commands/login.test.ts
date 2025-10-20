@@ -9,17 +9,17 @@ jest.mock('inquirer', () => ({
 
 jest.mock('inquirer-autocomplete-prompt', () => jest.fn());
 
-jest.mock('../../util/login', () => ({
+jest.mock('../../src/util/login', () => ({
   Login: jest.fn(),
 }));
 
-jest.mock('../../util/multichoice', () => jest.fn());
+jest.mock('../../src/util/multichoice', () => jest.fn());
 
-jest.mock('../../models/enums/constant', () => ({
+jest.mock('../../src/models/enums/constant', () => ({
   getRainbowLogo: jest.fn(),
 }));
 
-jest.mock('../../util/log', () => ({
+jest.mock('../../src/util/log', () => ({
   log: {
     ok: jest.fn(),
     fail: jest.fn(),
@@ -50,8 +50,8 @@ describe('Login Command', () => {
     jest.clearAllMocks();
     mockProgram = new Command();
     mockInquirer = require('inquirer');
-    mockLog = require('../../util/log').log;
-    mockGetRainbowLogo = require('../../models/enums/constant').getRainbowLogo;
+    mockLog = require('../../src/util/log').log;
+    mockGetRainbowLogo = require('../../src/models/enums/constant').getRainbowLogo;
     mockFs = require('fs-extra');
   });
 

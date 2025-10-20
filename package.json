@@ -11,40 +11,23 @@
   "homepage": "https://developer.domo.com/docs/dev-studio/dev-studio-overview",
   "license": "SEE LICENSE IN LICENSE",
   "bin": {
-    "domo": "./bin/domo-binary.js"
+    "domo": "./dist/bin/domo-binary.js"
   },
+  "files": [
+    "dist/"
+  ],
   "scripts": {
-    "changelog": "conventional-changelog -i CHANGELOG.md --config ./changelog/changelog.js",
-    "build": "rm -rf ./dist && tsc && npm run copyfiles",
-    "push": "git push && git push --tags",
-    "preversion": "npm run build",
-    "version": "npm run changelog && git add CHANGELOG.md templates/**/domoPhoenix*.js",
-    "remove": "rimraf \"node_modules/ryuu-client/*\"",
-    "copyfiles": "npm run copyjson && npm run copyreadme && npm run copydomodev && npm run copytemplates && npm run copyexamples && npm run copyrunner",
-    "copytemplates": "cp -r \"server/domodev/\" \"dist/server/domodev\"  && cp -r \"templates/\" \"dist/templates\"",
-    "copyexamples": "cp -r \"examples/\" \"dist/examples\"",
-    "copyrunner": "cp \"bin/runner\" \"dist/bin/\"",
-    "copyreadme": "cp  \"README.md\" \"dist/\"",
-    "copyjson": "cp  \"package.json\" \"dist/\"",
-    "copydomojs": "cp \"./node_modules/ryuu.js/dist/domo.js\" \"./templates/basic chart\"",
-    "copydomodev": "cp -r \"server/domodev/\" \"dist/server/domodev\"",
-    "typescript": "npm run remove && npm run copy && tsc",
-    "release": "npm run build && cd dist && npm publish && cd ..",
-    "releaseBrew": "npm run build && cd dist && pkg .",
-    "releaseAlpha": "npm run build && cd dist && npm publish --tag alpha && cd ..",
-    "releaseBeta": "npm run build && cd dist && npm publish --tag beta && cd ..",
-    "lint": "eslint . --ext .ts",
-    "bumpAlpha": "npm run build && npm run bump -- --prerelease alpha",
-    "bumpBeta": "npm run build && npm run bump -- --prerelease beta",
-    "bump": "standard-version",
+    "build": "rm -rf ./dist && tsc && npm run postbuild",
+    "postbuild": "cp -r \"src/server/domodev/\" \"dist/server/domodev\" && cp \"src/bin/domo-binary.js\" \"dist/bin/\" && cp \"src/bin/runner\" \"dist/bin/\" && cp -r \"templates/\" \"dist/templates\"",
+    "release": "npm run build && npm publish",
+    "releaseAlpha": "npm run build && npm publish --tag alpha",
+    "releaseBeta": "npm run build && npm publish --tag beta",
+    "lint": "eslint src --ext .ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:quick": "node scripts/quick-test.js",
-    "test:qa": "node scripts/qa-automation.js",
     "test:integration": "node scripts/integration-test.js",
     "test:integration:validate": "node scripts/validate-integration-setup.js",
-    "qa:manual": "echo 'See QA_CHECKLIST.md for manual testing procedures'",
     "prepare": "husky"
   },
   "dependencies": {
@@ -91,30 +74,14 @@
     "@types/validator": "^13.15.3",
     "@typescript-eslint/eslint-plugin": "^8.46.1",
     "@typescript-eslint/parser": "^8.46.1",
-    "compare-func": "^2.0.0",
-    "conventional-changelog-cli": "^5.0.0",
     "dotenv": "^17.2.3",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
-    "github-url-from-git": "^1.5.0",
     "husky": "^9.1.7",
     "jest": "^30.2.0",
     "prettier": "^3.6.2",
-    "standard-version": "^9.5.0",
     "ts-jest": "^29.4.5",
     "typescript": "^5.9.3"
-  },
-  "pkg": {
-    "scripts": [
-      "package.json",
-      "commands/*.js"
-    ],
-    "assets": [
-      "templates/**/*",
-      "./node_modules/open/xdg-open",
-      "./node_modules/fsevents/fsevents.node",
-      "server/domodev/**/*"
-    ]
   }
 }

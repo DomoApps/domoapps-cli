@@ -1,7 +1,7 @@
 import {jest} from '@jest/globals';
 
 // Mock the entire manifest module since it has complex dependencies
-jest.mock('../../util/manifest', () => ({
+jest.mock('../../src/util/manifest', () => ({
   ManifestUtils: {
     getManifest: jest.fn(),
     hasManifest: jest.fn(),
@@ -17,7 +17,7 @@ describe('ManifestUtils', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockManifestUtils = require('../../util/manifest').ManifestUtils;
+    mockManifestUtils = require('../../src/util/manifest').ManifestUtils;
   });
 
   afterEach(() => {

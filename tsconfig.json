@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "rootDir": "src",
     "outDir": "dist",
     "sourceMap": true,
     "noImplicitAny": true,
@@ -16,15 +17,13 @@
     "skipLibCheck": true,
     "strict": false
   },
+  "include": ["src/**/*"],
   "exclude": [
     "node_modules",
     "dist",
-    "distcopy",
-    "**/*.spec.ts",
     "**/*.test.ts",
     "tests",
-    "templates",
     "*.js",
-    "bin/domo-binary.js"
+    "src/bin/domo-binary.js"
   ]
 }

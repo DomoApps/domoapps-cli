@@ -1,7 +1,7 @@
 import {jest} from '@jest/globals';
 
 // Mock the entire appStructure module
-jest.mock('../../util/appStructure', () => ({
+jest.mock('../../src/util/appStructure', () => ({
   hasThumbnail: jest.fn(),
 }));
 
@@ -10,7 +10,7 @@ describe('appStructure', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockAppStructure = require('../../util/appStructure');
+    mockAppStructure = require('../../src/util/appStructure');
   });
 
   afterEach(() => {
