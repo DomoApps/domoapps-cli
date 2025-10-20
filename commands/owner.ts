@@ -39,8 +39,8 @@ module.exports = (program: Command) => {
             if (users) {
               client
                 .addOwners(designId, users)
-                .then(res => log.ok('Owners added ' + users))
-                .catch(e => log.fail('Error adding owners'));
+                .then(() => log.ok('Owners added ' + users))
+                .catch(() => log.fail('Error adding owners'));
             }
             break;
           case 'rm':
@@ -48,7 +48,7 @@ module.exports = (program: Command) => {
               client
                 .removeOwners(designId, users)
                 .then(() => log.ok('Owners removed ' + users))
-                .catch(e => log.fail('Error removing owners'));
+                .catch(() => log.fail('Error removing owners'));
             }
             break;
           case 'ls':

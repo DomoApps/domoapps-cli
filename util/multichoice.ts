@@ -1,9 +1,9 @@
-import inquirer = require('inquirer');
+const inquirer = require('inquirer');
 import {login} from '../models';
 
-interface InquirerAutocompleteOptions extends inquirer.ListQuestionOptions {
-  source?: (answers: inquirer.Answers, input: string) => Promise<Iterable<any>>;
-}
+// interface InquirerAutocompleteOptions extends inquirer.ListQuestionOptions {
+//   source?: (answers: inquirer.Answers, input: string) => Promise<Iterable<any>>;
+// }
 
 /**
  * Abstraction around multichoice questions that works in Windows, despite https://github.com/nodejs/node/issues/5384
@@ -16,7 +16,7 @@ interface InquirerAutocompleteOptions extends inquirer.ListQuestionOptions {
 const isWindows = /^win/.test(process.platform);
 
 export default (
-  questions: inquirer.RawListQuestion | inquirer.ListQuestion,
+  questions: any,
   previousLogins?: Array<login>,
   NEW_INSTANCE?: string,
 ) => {

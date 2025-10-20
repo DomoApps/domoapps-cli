@@ -1,5 +1,5 @@
 // Centralized system/environment checks for CLI commands
-import { log } from './log';
+import {log} from './log';
 
 export function checkSystemRequirements() {
   // Node.js version check
@@ -9,7 +9,7 @@ export function checkSystemRequirements() {
   if (major < requiredMajor) {
     log.fail(
       `Node.js v${requiredMajor}+ required`,
-      `Current version: v${nodeVersion}. Please upgrade Node.js.`
+      `Current version: v${nodeVersion}. Please upgrade Node.js.`,
     );
     process.exit(1);
   }

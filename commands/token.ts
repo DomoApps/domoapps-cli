@@ -1,8 +1,9 @@
-import inquirer = require('inquirer');
-import * as chalk from 'chalk';
+const chalk = require('chalk');
 import {Login} from '../util/login';
 import {log} from '../util/log';
-import {CommandOptions, Command} from 'commander';
+import {createInstanceAutocomplete, createInput} from '../util/prompts';
+import {Command} from 'commander';
+import {TokenCommandOptions} from '../models';
 
 module.exports = (program: Command) => {
   program
@@ -11,53 +12,45 @@ module.exports = (program: Command) => {
     .arguments('<cmd>')
     .option('-i, --instance <value>', 'Domo instance')
     .option('-t, --token <value>', 'dev token value used with token add')
-    .action((cmd: string, options: CommandOptions) => {
+    .action(async (cmd: string, options: TokenCommandOptions) => {
       const login = Login.getCurrentLogin().instance;
-      var previousLogins = Login.getPreviousLogins();
+      const previousLogins = Login.getPreviousLogins();
 
-      var prompts = [];
+      const prompts = [];
 
       switch (cmd) {
         case 'remove':
-          if (!options['instance']) {
-            prompts.push({
-              type: 'list',
-              choices: () => {
-                return previousLogins.map(item => item.instance);
-              },
-              message:
-                'Domo instance on which to remove the token ' +
-                chalk.grey('e.g. company.domo.com '),
-              name: 'instance',
-              default: login,
-            });
+          if (!options.instance) {
+            const selectedInstance = await createInstanceAutocomplete(
+              'Domo instance on which to remove the token (e.g. company.domo.com)',
+              false,
+            );
+            options.instance = selectedInstance;
           }
 
-          inquirer.prompt(prompts).then((answers: inquirer.Answers) => {
-            answers.instance = options['instance'] || answers.instance;
-            if (answers.instance) {
-              new Login(answers.instance).removeDevToken();
-              log.ok(
-                `Token removed for ${answers.instance}`,
-                'Future CLI commands to this instance will require username/password. \nUse the "domo token add" command to use another token.',
-              );
-            }
-          });
+          const instance = options.instance;
+          if (instance) {
+            new Login(instance).removeDevToken();
+            log.ok(
+              `Token removed for ${instance}`,
+              'Use the `domo token add` command to use another token.',
+            );
+          }
           break;
 
         case 'add':
-          if (!options['instance']) {
+          if (!options.instance) {
             prompts.push(
               {
                 type: 'list',
                 choices: () => {
-                  var options = previousLogins.map(item => item.instance);
+                  const options = previousLogins.map(item => item.instance);
                   options.push('new instance');
                   return options;
                 },
                 message:
                   'Domo instance on which to set the token ' +
-                  chalk.grey('e.g. company.domo.com '),
+                  '(e.g. company.domo.com)',
                 name: 'instance',
                 default: login,
               },
@@ -78,10 +71,10 @@ module.exports = (program: Command) => {
 
                   return (
                     'Please login using the full Domo instance. ' +
-                    chalk.grey('Example: "company.domo.com"')
+                    'Example: "company.domo.com"'
                   );
                 },
-                when: (answers: inquirer.Answers) => {
+                when: (answers: any) => {
                   // only ask if the instance selector wasn't used or new one was selected
                   return (
                     !answers.instance || answers.instance === 'new instance'
@@ -91,7 +84,7 @@ module.exports = (program: Command) => {
             );
           }
 
-          if (!options['token']) {
+          if (!options.token) {
             prompts.push({
               name: 'devtoken',
               type: 'input',
@@ -100,20 +93,28 @@ module.exports = (program: Command) => {
             });
           }
 
-          inquirer.prompt(prompts).then((answers: inquirer.Answers) => {
-            answers.instance =
-              options['instance'] || answers.newInstance || answers.instance;
-            answers.devtoken = options['token'] || answers.devtoken;
-            var devToken = true;
-            new Login(answers.instance).persistLogin(
-              answers.devtoken,
-              devToken,
+          let instanceName = options.instance;
+          let devtoken = options.token;
+
+          if (!instanceName) {
+            instanceName = await createInstanceAutocomplete(
+              'Domo instance on which to set the token (e.g. company.domo.com)',
+              true,
             );
-            log.ok(
-              `Token set for ${answers.instance}`,
-              'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.',
+          }
+
+          if (!devtoken) {
+            devtoken = await createInput(
+              'Token (can be found in the Admin section of Domo and pasted here)',
             );
-          });
+          }
+
+          const devToken = true;
+          new Login(instanceName).persistLogin(devtoken, devToken);
+          log.ok(
+            `Token set for ${instanceName}`,
+            'Future CLI commands to this instance will not require username/password. \nUse the "domo token remove" command to undo this action.',
+          );
           break;
 
         default:

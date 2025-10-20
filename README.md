@@ -1,86 +1,272 @@
-# Ryuu CLI
-
-A command line interface to the Domo App Framework.
+# Domo Apps CLI
 
 [![npm version](https://img.shields.io/npm/v/ryuu.svg?style=flat-square)](https://www.npmjs.org/package/ryuu)
 [![install size](https://img.shields.io/badge/dynamic/json?url=https://packagephobia.com/v2/api.json?p=ryuu&query=$.install.pretty&label=install%20size&style=flat-square)](https://packagephobia.com/result?p=ryuu)
 [![npm downloads](https://img.shields.io/npm/dm/ryuu.svg?style=flat-square)](https://npm-stat.com/charts.html?package=ryuu)
 [![Known Vulnerabilities](https://snyk.io/test/npm/ryuu/badge.svg)](https://snyk.io/test/npm/ryuu)
 
-## Documentation
+The official command-line interface for developing, publishing, and managing Domo Custom Apps. Build powerful data applications with modern web technologies and deploy them directly to the Domo platform.
 
-- [CLI Documentation](https://developer.domo.com/portal/rmfbkwje8kmqj-domo-apps-cli)
-- [CLI Installation](https://developer.domo.com/portal/6hlzv1hinkq19-setup-and-installation)
-- [App Framework Documentation](https://developer.domo.com/portal/d54m2ohkacza0-welcome)
+## 🚀 Quick Start
 
-## Contributing
-
-### Recommended Workflow:
-
-1. Create new branch (named "DOMO-XXXXXX")
-2. Make Changes
-3. Commit Changes
-4. Test changes (if necessary, version a alpha/beta/tagged version, then release it)
-5. Make pull request
-6. After pull request is merged to master, bump normal version, then release it to npm, brew, and chocolatey
-
-### Building
-
-To build the CLI, run
+### Installation
 
 ```bash
-npm run build
+npm install -g ryuu
 ```
 
-All necessary files will be built/copied into the `dist` folder.
+### First Steps
 
-### Linking
+1. **Login to Domo:**
 
-In order for easier development with ryuu-proxy or ryuu-client, use linking.
-
-1. `cd` into the folder that you cloned ryuu-proxy/ryuu-client to, ex. `cd ~/ryuu/ryuu-proxy`
-2. `npm link`
-3. `cd` into the folder that you cloned domoapps-cli to, ex `cd ~/ryuu/domoapps-cli`
-4. `npm link @domoinc/ryuu-proxy` (this is because the package name for ryuu-proxy is @domoinc/ryuu-proxy)
-   Use `npm unlink` in both locations to unlink the repositories later if needed.
-
-### Debugging
-
-Debugging is most easily done via the the native node extension in VSCode.
-
-1. Run node and point it to the built domo.js file in `dist/bin` after building
    ```bash
-   node --inspect-brk ~/ryuu/domoapps-cli/dist/bin/domo.js [command]
+   # OAuth (interactive)
+   domo login
+
+   # Or token-based (CI/CD friendly)
+   domo login -t YOUR-DEVELOPER-TOKEN
    ```
-2. <kbd>⌘ Command</kbd> + <kbd>⇧ Shift</kbd> + <kbd>P</kbd> to open the VSCode command palette.
-3. Select `Debug: Attach to Node Process` and select the node process you just started in step 1.
-4. The process should move your active window to the beginning of the CLI (generally domo.ts), and you can start debugging.
 
-TIPS:
+2. **Create a new app:**
 
-- Set breakpoints in the `.ts` files for domoapps-cli, and in the `.js` files for all node modules, unless you've utilized `npm link` like for ryuu-client/ryuu-proxy, in which case you can use the `.ts` files as well.
-- If your breakpoint isn't being hit, try to "advance" the code to make sure the breakpoint is being set in the right file.
+   ```bash
+   domo init my-app
+   ```
 
-### Versioning
+3. **Start developing:**
 
-This project utilizes [standard-version](https://github.com/conventional-changelog/standard-version).
+   ```bash
+   domo dev
+   ```
 
-- `npm run bump` - Version bumps determined automatically via commits.
-- `npm run bumpBeta` or `npm run bump -- --prerelease beta` - 4.0.x-beta.0 (if no current beta) or 4.0.0-beta.x (if current beta exists).
+4. **Publish your app:**
+   ```bash
+   domo publish
+   ```
 
-### Releasing
+## 📖 Documentation
 
-Versions should be released on NPM until confirmed stable, at which point brew and chocolatey can be released
+- **[CLI Documentation](https://developer.domo.com/portal/rmfbkwje8kmqj-domo-apps-cli)** - Complete CLI reference
+- **[Installation Guide](https://developer.domo.com/portal/6hlzv1hinkq19-setup-and-installation)** - Detailed setup instructions
+- **[App Framework Guide](https://developer.domo.com/portal/d54m2ohkacza0-welcome)** - Learn the Domo App Framework
 
-- `npm run release`
-- `npm run releaseAlpha`
-- `npm run releaseBeta`
+## 🛠️ Commands
 
-### Committing the latest Phoenix version
+### Authentication
+
+The CLI supports two authentication methods:
+
+#### OAuth Login (Default)
+- `domo login` - Interactive login with username/password
+- `domo login --instance company.domo.com` - Login to specific instance
+
+#### Token-Based Login
+- `domo login -t <TOKEN>` or `domo login --token <TOKEN>` - Login with developer token
+- `domo login --token-only` - Interactive token prompt
+- `domo token add` - Add developer token for password-less auth
+- `domo token remove` - Remove stored developer token
+
+**Token Authentication Examples:**
+```bash
+# Login with developer token (short form)
+domo login -i company.domo.com -t DDCI27236b8d8690ab86cf5328c41a94d068aca1cde4eb6edc34
+
+# Login with developer token (long form)
+domo login --instance company.domo.com --token DDCI27236b8d8690ab86cf5328c41a94d068aca1cde4eb6edc34
+
+# Interactive token prompt
+domo login --instance company.domo.com --token-only
+
+# Traditional OAuth login (default)
+domo login --instance company.domo.com
+```
+
+**Getting Your Developer Token:**
+Developer tokens can be found in the Admin section of your Domo instance. Tokens are alphanumeric strings (letters and numbers only). Token-based authentication is ideal for CI/CD pipelines and automated workflows.
+
+#### Session Management
+- `domo logout` - Sign out from current instance
+- `domo remove` - Remove saved login credentials
+
+### Development
+
+- `domo init [name]` - Create a new Custom App
+- `domo dev` - Start development server
+- `domo download [id]` - Download existing app
+
+### Publishing
+
+- `domo publish` - Publish your app to Domo
+- `domo release` - Prepare app for app store
+- `domo delete [id]` - Delete published app
+- `domo undelete [id]` - Restore deleted app
+
+### Management
+
+- `domo ls` - List your apps
+- `domo owner [id]` - View app ownership
+- `domo remove` - Remove login instances
+
+## 🎯 Features
+
+### Flexible Authentication
+
+- **OAuth Login** - Traditional username/password authentication
+- **Token-Based Login** - Developer token for CI/CD pipelines
+- **Multi-Instance Support** - Manage multiple Domo instances
+- **Secure Credential Storage** - Encrypted token storage
+
+### Modern Development Experience
+
+- **Real-time autocomplete** for instance selection
+- **Single-key confirmations** (y/n without Enter)
+- **Interactive prompts** with modern UX
+- **TypeScript support** with full type safety
+
+### App Templates
+
+- **Hello World** - Basic starter template
+- **Basic Chart** - Chart visualization template
+- **Map Chart** - Geographic data visualization
+- **Sugarforce** - Salesforce integration template
+
+### Development Tools
+
+- **Hot reload** during development
+- **Live preview** with browser sync
+- **Asset optimization** and bundling
+- **Source maps** for debugging
+
+## 🔧 Configuration
+
+### Environment Variables
 
 ```bash
-npm install @domoinc/domo-phoenix@latest
-npm run build:phoenix
-git add templates/**/domoPhoenix*.js
-git commit -m "Update to the latest Phoenix version"
+# Disable SSL verification (development only)
+NODE_TLS_REJECT_UNAUTHORIZED=0
+
+# Force color output
+FORCE_COLOR=1
 ```
+
+### Proxy Support
+
+```bash
+# Configure proxy for corporate networks
+domo proxy [host] [port]
+```
+
+## 📦 Requirements
+
+- **Node.js** 16+
+- **npm** 7+
+- **Domo account** with developer access
+
+## 🚀 Getting Started
+
+### 1. Install the CLI
+
+```bash
+npm install -g ryuu
+```
+
+### 2. Login to Domo
+
+**Option A: OAuth (Interactive)**
+```bash
+domo login
+# Follow the prompts to authenticate with username/password
+```
+
+**Option B: Token-Based (Recommended for CI/CD)**
+```bash
+domo login -i company.domo.com -t YOUR-DEVELOPER-TOKEN
+# Or use --token-only for interactive token prompt
+```
+
+### 3. Create Your First App
+
+```bash
+domo init my-first-app
+cd my-first-app
+```
+
+### 4. Start Development
+
+```bash
+domo dev
+# Opens browser at http://localhost:3000
+```
+
+### 5. Publish to Domo
+
+```bash
+domo publish
+# Your app is now live on Domo!
+```
+
+## 🎨 App Templates
+
+Choose from professionally designed templates:
+
+- **Hello World** - Perfect for learning the basics
+- **Basic Chart** - Ready-to-use chart components
+- **Map Chart** - Geographic data visualization
+- **Sugarforce** - Salesforce integration with pre-built components
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+**Login Problems:**
+
+```bash
+# Clear stored credentials and re-login
+domo logout
+domo login
+
+# For token authentication issues
+domo login -i company.domo.com --token-only
+```
+
+**Token Validation Errors:**
+
+Tokens must be alphanumeric strings (letters and numbers only):
+- Valid example: `DDCI27236b8d8690ab86cf5328c41a94d068aca1cde4eb6edc34`
+- Minimum length: 20 characters
+- No special characters, spaces, or dashes allowed
+
+If you receive an "Invalid token format" error, verify your token from the Admin section of Domo contains only letters and numbers.
+
+**Build Errors:**
+
+```bash
+# Clear node_modules and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+**Proxy Issues:**
+
+```bash
+# Configure corporate proxy
+domo proxy your-proxy.com 8080
+```
+
+### Getting Help
+
+- 📚 [Documentation](https://developer.domo.com/portal/rmfbkwje8kmqj-domo-apps-cli)
+- 💬 [Community Forum](https://developer.domo.com/community)
+- 🐛 [Report Issues](https://github.com/domoinc/domoapps-cli/issues)
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+
+---
+
+**Built with ❤️ by the Domo team**

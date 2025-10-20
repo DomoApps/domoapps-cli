@@ -1,17 +1,17 @@
-import inquirer = require('inquirer');
 import _ = require('lodash');
-import open = require('open');
+const open = require('open');
 import {ManifestUtils} from '../util/manifest';
 import {Login} from '../util/login';
 import glob = require('glob');
 import fs = require('fs-extra');
 import {log} from '../util/log';
 import appStructure = require('../util/appStructure');
-import {constant} from '../models';
+import {constant, PublishCommandOptions} from '../models';
 import Domo = require('ryuu-client');
-import {Command, CommandOptions} from 'commander';
+import {Command} from 'commander';
 import multichoice from '../util/multichoice';
 import {Asset, Manifest} from 'ryuu-client/lib/models';
+import {createConfirm, createSelect} from '../util/prompts';
 
 module.exports = (program: Command) => {
   program
@@ -19,7 +19,7 @@ module.exports = (program: Command) => {
     .description('publish a new or existing Custom App design')
     .option('-g, --go', 'navigate to design in Asset Library after publishing')
     .action(options => {
-      let manifest = ManifestUtils.getManifest(program.opts().manifest, true);
+      const manifest = ManifestUtils.getManifest(program.opts().manifest, true);
 
       new Login()
         .getClient()
@@ -49,7 +49,7 @@ module.exports = (program: Command) => {
 const createDesign = (
   domo: Domo,
   manifest: Manifest,
-  options?: CommandOptions,
+  options?: PublishCommandOptions,
 ) => {
   return domo
     .createDesign(manifest)
@@ -65,10 +65,7 @@ const createDesign = (
       log.fail('Error when creating new design:', e.message);
     })
     .then(() => domo.uploadAllAssets(manifest))
-    .then(files =>
-      //@ts-ignore
-      logUploadSuccess(files),
-    )
+    .then(files => logUploadSuccess(files as any))
     .catch((e: string) => {
       log.fail(
         e || 'Error uploading assets in uploading assets for a new design',
@@ -86,7 +83,7 @@ const logUploadSuccess = (files: Asset[]) => {
 };
 
 const linkToDomoWeb = (
-  options: CommandOptions,
+  options: PublishCommandOptions | undefined,
   domo: Domo,
   manifest: Manifest,
 ) => {
@@ -96,20 +93,20 @@ const linkToDomoWeb = (
       '/assetlibrary?designId=' +
       manifest.id,
   );
-  if (options && options['go']) {
-    open(
+  if (options && options.go) {
+    open.default(
       'https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id,
     );
   }
 };
 
 const checkMapping = (result: any, manifest: Manifest) => {
-  var latestVersionNumber = result.latestVersion;
-  var latestVersion = result.versions.filter((obj: any) => {
+  const latestVersionNumber = result.latestVersion;
+  const latestVersion = result.versions.filter((obj: any) => {
     return obj.version === latestVersionNumber;
   });
-  var oldMapping = latestVersion[0].datasetsMapping[0];
-  var newMapping = manifest.datasetsMapping[0];
+  const oldMapping = latestVersion[0].datasetsMapping[0];
+  const newMapping = manifest.datasetsMapping[0];
 
   if (oldMapping) {
     delete oldMapping.dql;
@@ -123,20 +120,20 @@ const checkMapping = (result: any, manifest: Manifest) => {
 };
 
 const checkFileNames = (manifest: Manifest) => {
-  var ignore = ['**/*/node_modules/**/*', 'node_modules/**/*'];
-  var userIgnore = manifest.ignore;
+  let ignore = ['**/*/node_modules/**/*', 'node_modules/**/*'];
+  const userIgnore = manifest.ignore;
   if (userIgnore) {
     if (userIgnore instanceof Array) {
       ignore = ignore.concat(userIgnore);
     } else {
-      log.fail('The manifest.json "ignore" property must be an Array');
+      log.fail('The manifest.json `ignore` property must be an Array');
     }
   }
-  var badFileList = glob.sync('**/*', {ignore: ignore}).filter(file => {
+  const badFileList = glob.sync('**/*', {ignore: ignore}).filter(file => {
     console.log(file);
     return (
       // special characters except "/" in file names are not allowed
-      /[~`!#$%\^&*+=\[\]\\';,{}|\\":<>\?]/g.test(file) ||
+      /[~`!#$%^&*+=[\]\\';,{}|\\":<>?]/g.test(file) ||
       (!fs.lstatSync(file).isDirectory() && file.indexOf(' ') !== -1)
     );
   });
@@ -152,34 +149,29 @@ const checkFileNames = (manifest: Manifest) => {
   }
 };
 
-const recreateDesign = (domo: Domo, manifest: Manifest) => {
-  inquirer
-    .prompt(
-      multichoice({
-        type: 'list',
-        message:
-          'This design has been deleted. Would you like to undelete this design and publish to it, or create a new design with these assets?',
-        name: 'askRecreate',
-        choices: ['Undelete', 'Create New Design'],
-      }),
-    )
-    .then((answers: inquirer.Answers) => {
-      if (answers.askRecreate) {
-        if (answers.askRecreate == 'Create New Design') {
-          manifest.id = null;
-          createDesign(domo, manifest);
-        } else if (answers.askRecreate == 'Undelete') {
-          domo.unDeleteDesign(manifest.id).then(() => {
-            publishAssets(domo, manifest);
-          });
-        } else {
-          log.ok('Exited without republishing design');
-        }
-      }
-    });
+const recreateDesign = async (domo: Domo, manifest: Manifest) => {
+  const choice = await createSelect(
+    'This design has been deleted. Would you like to undelete this design and publish to it, or create a new design with these assets?',
+    ['Undelete', 'Create New Design'],
+  );
+
+  if (choice === 'Create New Design') {
+    manifest.id = null;
+    createDesign(domo, manifest);
+  } else if (choice === 'Undelete') {
+    try {
+      await domo.unDeleteDesign(manifest.id);
+      publishAssets(domo, manifest);
+    } catch (err) {
+      log.fail('Error undeleting design');
+      console.error(err);
+    }
+  } else {
+    log.ok('Exited without republishing design');
+  }
 };
 
-const publishErrors = (e: any, domo: Domo, manifest: Manifest) => {
+const publishErrors = async (e: any, domo: Domo, manifest: Manifest) => {
   if (e.statusCode === 400 && !e.message.startsWith('DA')) {
     log.fail('Design failed to publish with error:', e.message);
   } else if (e.statusCode === 401) {
@@ -196,40 +188,30 @@ const publishErrors = (e: any, domo: Domo, manifest: Manifest) => {
   } else if (e.message?.substr(0, 23) == 'Design has been deleted')
     recreateDesign(domo, manifest);
   else if (e.message?.substr(0, 15) == 'No design found') {
-    inquirer
-      .prompt({
-        type: 'confirm',
-        message:
-          'This design does not exist on ' +
-          domo.getInstance() +
-          '. Would you like to create a new design with these assets?',
-        name: 'askCreate',
-      })
-      .then(answers => {
-        if (answers.askCreate) {
-          manifest.id = null;
-          createDesign(domo, manifest);
-        }
-      });
+    const shouldCreate = await createConfirm(
+      'This design does not exist on ' +
+        domo.getInstance() +
+        '. Would you like to create a new design with these assets?',
+      true,
+    );
+
+    if (shouldCreate) {
+      manifest.id = null;
+      createDesign(domo, manifest);
+    }
   } else if (e.message && e.message.startsWith('DA')) {
     switch (e.message.substr(0, 6)) {
       case 'DA0086':
         log.warn(e.message);
-        inquirer
-          .prompt([
-            {
-              type: 'confirm',
-              message:
-                'This design has been deleted. Would you like to publish a new design with these assets?',
-              name: 'askRecreate',
-            },
-          ])
-          .then(answers => {
-            if (answers.askRecreate) {
-              manifest.id = null;
-              createDesign(domo, manifest);
-            }
-          });
+        const shouldRecreate = await createConfirm(
+          'This design has been deleted. Would you like to publish a new design with these assets?',
+          true,
+        );
+
+        if (shouldRecreate) {
+          manifest.id = null;
+          createDesign(domo, manifest);
+        }
 
         break;
       default:
@@ -260,8 +242,7 @@ const publishAssets = (domo: Domo, manifest: Manifest) => {
           ' on ' +
           new Date(),
       );
-      //@ts-ignore
-      logUploadSuccess(files);
+      logUploadSuccess(files as any);
     })
     .catch(e => {
       publishErrors(e, domo, manifest);

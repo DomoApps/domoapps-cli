@@ -4,25 +4,28 @@ process.on('unhandledRejection', on_unhandled_error);
 process.on('uncaughtException', on_unhandled_error);
 
 var os = require('os'),
-    path = require('path');
+  path = require('path');
 
 var already_warned = false;
 function on_unhandled_error(err) {
-    if (already_warned) {
-        return;
-    }
+  if (already_warned) {
+    return;
+  }
 
-    already_warned = true;
+  already_warned = true;
 
-    console.log('');
-    console.error('[ERROR] The domo cli tool has experienced an error. As it is');
-    console.error('[ERROR] possible this bug has already been fixed, please try updating');
-    console.error('[ERROR] using `npm install -g ryuu`, `chocolatey install domo` or `brew update`');
-    console.error('[ERROR] then `brew upgrade domo` (depending on the version you are using) and run');
-    console.error('[ERROR] this command again. If this does not fix the issue, please contact your MajorDomo.');
-    console.error('[ERROR] error message: %s', err.message);
+  console.log('');
+  console.error('[ERROR] The domo cli tool has experienced an error.');
+  console.error(
+    '[ERROR] As it is possible this bug has already been fixed, please try updating',
+  );
+  console.error('[ERROR] this tool using `npm install -g ryuu`');
+  console.error(
+    '[ERROR] If this does not fix the issue, please contact your MajorDomo.',
+  );
+  console.error('[ERROR] error message: %s', err.message);
 
-    process.exit(1);
+  process.exit(1);
 }
 
 // enable source maps

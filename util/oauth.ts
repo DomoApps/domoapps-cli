@@ -1,19 +1,19 @@
 import fs = require('fs-extra');
-import path = require('path');
-import Domo = require('ryuu-client');
+// import path = require('path');
+// import Domo = require('ryuu-client');
 import {ManifestUtils} from './manifest';
-import axios, {AxiosRequestConfig, AxiosResponse, AxiosError} from 'axios';
+import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import qs = require('qs');
 import open = require('open');
-import * as chalk from 'chalk';
+const chalk = require('chalk');
 import {
   Registration,
   ActiveRegistration,
   FullRegistration,
 } from '../models/index';
-import Configstore = require('configstore');
-import jwt_decode from 'jwt-decode';
-const home = Domo.getHomeDir();
+const Configstore = require('configstore');
+const jwt_decode = require('jwt-decode');
+// const home = Domo.getHomeDir();
 
 export class Oauth {
   static isOAuthEnabled(manifestName: string) {
@@ -36,7 +36,7 @@ export class Oauth {
 
   static getScopes(manifestName: string) {
     const manifest = ManifestUtils.getManifest(manifestName);
-    if (!!Object.keys(manifest).includes('scopes')) {
+    if (Object.keys(manifest).includes('scopes')) {
       return ['domoapps', ...manifest.scopes];
     }
 
@@ -45,13 +45,14 @@ export class Oauth {
 
   static hasTokens(registration: Registration) {
     const scopes = this.getScopes(registration.manifestName);
-    const configstore = new Configstore('/ryuu/' + registration.instance);
+    const configstore = new Configstore.default(
+      '/ryuu/' + registration.instance,
+    );
     const token = configstore.get(
       `${registration.proxyId}-${scopes.join('-')}-accessToken`,
     );
     if (token) {
-      const decoded = jwt_decode(token);
-      console.log(decoded);
+      const decoded = jwt_decode.jwtDecode(token);
       return true;
     }
     return false;
@@ -83,7 +84,7 @@ export class Oauth {
     registration: FullRegistration,
   ): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
-      open(
+      open.default(
         `${registration.verification_uri}?user_code=${registration.user_code}`,
       );
       // scopes are space separated
@@ -105,11 +106,10 @@ export class Oauth {
         })
           .then(result => {
             clearInterval(checkRegistration);
-            //@ts-ignore
-            resolve(result);
+            resolve(result as any);
           })
-          .catch(error => {
-            console.log(chalk.grey('Waiting for browser oauth registration'));
+          .catch(() => {
+            console.log('Waiting for browser oauth registration');
           });
       }, 1000);
 
@@ -125,7 +125,9 @@ export class Oauth {
   }
 
   static persistTokens(registration: ActiveRegistration) {
-    const configstore = new Configstore('/ryuu/' + registration.instance);
+    const configstore = new Configstore.default(
+      '/ryuu/' + registration.instance,
+    );
     const scopes = this.getScopes(registration.manifestName);
     configstore.set(
       `${registration.proxyId}-${scopes.join('-')}-accessToken`,
@@ -142,7 +144,9 @@ export class Oauth {
   }
 
   static deleteTokens(registration: Registration) {
-    const configstore = new Configstore('/ryuu/' + registration.instance);
+    const configstore = new Configstore.default(
+      '/ryuu/' + registration.instance,
+    );
     const scopes = this.getScopes(registration.manifestName);
     return Promise.all([
       configstore.delete(
@@ -155,7 +159,9 @@ export class Oauth {
   }
 
   static getTokens(registration: Registration) {
-    const configstore = new Configstore('/ryuu/' + registration.instance);
+    const configstore = new Configstore.default(
+      '/ryuu/' + registration.instance,
+    );
     const scopes = this.getScopes(registration.manifestName);
 
     return new Promise<{accessToken: string; refreshToken: string}>(

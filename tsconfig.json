@@ -4,14 +4,27 @@
     "sourceMap": true,
     "noImplicitAny": true,
     "module": "commonjs",
-    "target": "es5",
-    "lib": ["es6", "es2017", "dom"],
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
     "jsx": "react",
     "allowJs": true,
     "types": ["jest"],
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "suppressImplicitAnyIndexErrors": true
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "skipLibCheck": true,
+    "strict": false
   },
-  "exclude": ["node_modules", "dist", "distcopy", "**/*.spec.ts", "templates"]
+  "exclude": [
+    "node_modules",
+    "dist",
+    "distcopy",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "tests",
+    "templates",
+    "*.js",
+    "bin/domo-binary.js"
+  ]
 }

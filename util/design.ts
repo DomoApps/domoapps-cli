@@ -13,11 +13,14 @@ import validator from 'validator';
  * manifest.id, null
  * @return {void} Returns void with an error log.
  */
-export function getDesignId(id?: string, manifestPath?: string) {
+export function getDesignId(
+  id?: string,
+  manifestPath?: string,
+): string | undefined {
   if (id) {
     if (!validator.isUUID(id)) {
       log.fail(`The argument ${id} is not a valid design ID`);
-      return;
+      return undefined;
     }
   } else {
     const manifest = ManifestUtils.getManifest(manifestPath);
@@ -25,7 +28,7 @@ export function getDesignId(id?: string, manifestPath?: string) {
       log.fail(
         'No manifest found. Please supply design id using -i or change to a directory with a valid manifest file',
       );
-      return;
+      return undefined;
     }
     id = manifest.id;
   }

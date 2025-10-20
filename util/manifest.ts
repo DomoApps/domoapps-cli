@@ -9,7 +9,10 @@ import {Manifest} from 'ryuu-client/lib/models';
 /**
  * Get the local manifest.json file, ensuring it's valid.
  */
-const getManifest = (manifestName = 'manifest.json', verifyValid = false) => {
+const getManifest = (
+  manifestName = 'manifest.json',
+  verifyValid = false,
+): Manifest | undefined => {
   const manifestPath = findManifest(manifestName);
 
   let rawmanifest: Buffer;
@@ -22,7 +25,7 @@ const getManifest = (manifestName = 'manifest.json', verifyValid = false) => {
         `Please publish from a directory containing a Custom App design ${manifestName} file`,
       );
     } else {
-      return;
+      return undefined;
     }
   }
   let manifest: Manifest;
@@ -96,22 +99,24 @@ const requireProperty = (obj: Record<string, any>, prop: string) => {
 const updateManifestProperties = (manifest: Manifest) => {
   const updatedManifest = {...manifest};
 
-  if (updatedManifest.hasOwnProperty('mapping')) {
+  if (Object.prototype.hasOwnProperty.call(updatedManifest, 'mapping')) {
     updatedManifest.datasetsMapping = updatedManifest.mapping;
     delete updatedManifest.mapping;
-  } else if (!updatedManifest.hasOwnProperty('datasetsMapping')) {
+  } else if (
+    !Object.prototype.hasOwnProperty.call(updatedManifest, 'datasetsMapping')
+  ) {
     updatedManifest.datasetsMapping = [];
   }
 
-  if (updatedManifest.hasOwnProperty('collections')) {
+  if (Object.prototype.hasOwnProperty.call(updatedManifest, 'collections')) {
     updatedManifest.collectionsMapping = updatedManifest.collections;
     delete updatedManifest.collections;
   }
 
-  if (updateManifest.hasOwnProperty('appContextId')) {
+  if (Object.prototype.hasOwnProperty.call(updatedManifest, 'appContextId')) {
     updatedManifest.proxyId = (updatedManifest as any)['appContextId'];
     delete (updatedManifest as any)['appContextId'];
-  } else if (updateManifest.hasOwnProperty('cardId')) {
+  } else if (Object.prototype.hasOwnProperty.call(updatedManifest, 'cardId')) {
     updatedManifest.proxyId = (updatedManifest as any)['cardId'];
     delete (updatedManifest as any)['cardId'];
   }
@@ -123,6 +128,7 @@ const updateManifestProperties = (manifest: Manifest) => {
 /**
  * Alias must be a valid JS property
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ensureValidAlias(name: string) {
   if (!isValidJSName(name)) {
     log.fail(

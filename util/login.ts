@@ -4,19 +4,20 @@ import path = require('path');
 import {login, constant} from '../models';
 import Domo = require('ryuu-client');
 import {log} from './log';
-import Configstore = require('configstore');
-import inquirer = require('inquirer');
+const Configstore = require('configstore');
+const inquirer = require('inquirer');
+const prompt = inquirer.createPromptModule();
 const home = Domo.getHomeDir();
 
 export class Login {
-  login: Configstore;
-  proxy: Configstore;
+  login: any;
+  proxy: any;
   instance: string;
 
   constructor(instance?: string) {
     this.instance = instance ?? Login.getCurrentLogin().instance;
-    this.login = new Configstore(`/ryuu/${this.instance}`);
-    this.proxy = new Configstore(`/proxy`);
+    this.login = new Configstore.default(`/ryuu/${this.instance}`);
+    this.proxy = new Configstore.default('/proxy');
     if (this.instance === '')
       log.fail('You have not logged into any Domo instances');
   }
@@ -33,7 +34,7 @@ export class Login {
   };
 
   static getPreviousLogins(): Array<login> {
-    var logins = (glob.sync(home + '/ryuu/*.json') || []).map(
+    const logins = (glob.sync(home + '/ryuu/*.json') || []).map(
       (file: string) => {
         return fs.readJsonSync(file);
       },
@@ -77,9 +78,11 @@ export class Login {
     log.info(`Attempting to log out from ${this.instance}`);
     if (this.login.has('refreshToken')) {
       this.deleteRefreshToken();
-      !this.login.has('refreshToken')
-        ? log.ok('Successful logout from ' + this.instance)
-        : log.fail(`Failed logout from ${this.instance}`);
+      if (!this.login.has('refreshToken')) {
+        log.ok('Successful logout from ' + this.instance);
+      } else {
+        log.fail(`Failed logout from ${this.instance}`);
+      }
     } else {
       log.ok(`Not currently logged into ${this.instance}`);
     }
@@ -102,7 +105,7 @@ export class Login {
           this.login.get('devToken'),
         );
 
-      const answers = await inquirer.prompt([
+      const answers = await prompt([
         {
           type: 'password',
           message: 'Please enter your password:',

@@ -1,11 +1,11 @@
-import {AxiosRequestConfig} from 'axios';
+// import {AxiosRequestConfig} from 'axios';
 import {log} from './log';
 import Domo = require('ryuu-client');
 
 export class Session {
   static check(domo: Domo) {
     return new Promise((resolve, reject) => {
-      var options: AxiosRequestConfig = {
+      const options: any = {
         url: 'https://' + domo.getInstance() + '/auth/validate',
         method: 'GET',
       };

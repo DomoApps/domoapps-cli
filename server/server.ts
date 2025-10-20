@@ -5,12 +5,13 @@
 import path = require('path');
 import _ = require('lodash');
 import fs = require('fs-extra');
-const bs = require('browser-sync').create();
+import browserSync = require('browser-sync');
+const bs = browserSync.create();
 import portfinder = require('portfinder');
 portfinder.basePort = 3000;
 
 import {Session} from '../util/session';
-import appStructure = require('../util/appStructure');
+import * as appStructure from '../util/appStructure';
 import {ManifestUtils} from '../util/manifest';
 import {DevOptions} from '../models/index';
 import {log} from '../util/log';
@@ -19,10 +20,10 @@ import Domo = require('ryuu-client');
 import express = require('express');
 const app = express();
 
-const {Proxy} = require('@domoinc/ryuu-proxy');
+import {Proxy} from '@domoinc/ryuu-proxy';
 
 export const start = (client: Domo, options: DevOptions) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((_resolve, _reject) => {
     portfinder.getPorts(2, {}, (err, ports) => {
       const assetsPort = ports[0];
       const dataPort = ports[1];
@@ -33,7 +34,7 @@ export const start = (client: Domo, options: DevOptions) => {
           manifest.proxyId = app.instance.id;
         });
       }
-      const proxy = new Proxy({manifest}, manifest.proxyId);
+      const proxy = new (Proxy as any)({manifest}, manifest.proxyId);
       app.get('/', (req, res) => {
         client.getDomoappsData(manifest).then(appData => {
           // sizes consistent with Domo Web
@@ -75,7 +76,7 @@ export const start = (client: Domo, options: DevOptions) => {
       app.use(proxy.express());
       Session.check(client)
         .then(() => {
-          var external = Boolean(options.external);
+          const external = Boolean(options.external);
           app.listen(dataPort);
           bs.init({
             proxy: 'localhost:' + dataPort,
@@ -88,10 +89,10 @@ export const start = (client: Domo, options: DevOptions) => {
             // TODO: add user's ignored files here too?
             files: ['**/*', '!node_modules/**/*'],
           });
-          bs.instance.logger.info('Instance: ' + client.getInstance());
+          (bs as any).instance.logger.info('Instance: ' + client.getInstance());
         })
-        .catch(e => {
-          log.notAuthenticated;
+        .catch(() => {
+          log.notAuthenticated();
         });
     });
   });

@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+const chalk = require('chalk');
 import {DomoRequestError} from 'ryuu-client/lib/models';
 
 export class log {
@@ -8,7 +8,7 @@ export class log {
   static ok(msg: string, submessage?: string): void {
     console.log(chalk.green('\u2713'), msg);
     if (submessage) {
-      console.log(chalk.gray(submessage));
+      console.log(submessage);
     }
   }
 
@@ -18,7 +18,7 @@ export class log {
   static info(msg: string, submessage?: string) {
     console.log(chalk.cyan(msg));
     if (submessage) {
-      console.log(chalk.gray(submessage));
+      console.log(submessage);
     }
   }
 
@@ -28,7 +28,7 @@ export class log {
   static warn(msg: string, submessage?: string) {
     console.log(chalk.yellow(msg));
     if (submessage) {
-      console.log(chalk.gray(submessage));
+      console.log(submessage);
     }
   }
 
@@ -39,11 +39,11 @@ export class log {
     console.log(chalk.red('X'), msg);
 
     if (submessage) {
-      console.log(chalk.gray(submessage));
+      console.log(submessage);
     }
 
     if (result && result.message) {
-      console.log(chalk.gray(result.message));
+      console.log(result.message);
     }
 
     if (process.argv.indexOf('verbose') !== -1) {
@@ -60,12 +60,12 @@ export class log {
     if (!refreshToken) {
       log.fail(
         'Failure to authenticate',
-        'Mising refresh token, please login using "domo login"',
+        'Missing refresh token, please login using `domo login`',
       );
     } else if (refreshToken) {
       log.fail(
         'Not authenticated',
-        'Your refresh token may have been revoked. Please login again with "domo login".',
+        'Your refresh token may have been revoked. Please login again with `domo login`.',
       );
     } else {
       log.fail('Not authenticated');
@@ -75,7 +75,7 @@ export class log {
   // ERR SHOULD BE AN ERROR?
   static clientRequestFailed(err: string, failureMessage?: string) {
     let message =
-      'You are not authenticated or your refresh token may have been revoked. Please login again with "domo login"';
+      'You are not authenticated or your refresh token may have been revoked. Please login again with `domo login`';
     if (failureMessage) {
       message = failureMessage;
     }

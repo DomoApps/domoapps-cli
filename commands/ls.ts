@@ -1,7 +1,45 @@
 import {Login} from '../util/login';
 import {Command} from 'commander';
 import {log} from '../util/log';
-import * as chalk from 'chalk';
+const chalk = require('chalk');
+import Table = require('cli-table3');
+
+/**
+ * Format a date to a shorter, more readable format
+ * @param date Date to format
+ * @returns Formatted date string (e.g., "Jan 15, 2025")
+ */
+function formatDate(date: Date): string {
+  const month = date.toLocaleString('en-US', {month: 'short'});
+  const day = date.getDate();
+  const year = date.getFullYear();
+  return `${month} ${day}, ${year}`;
+}
+
+/**
+ * Create a clickable terminal hyperlink
+ * @param url The URL to link to
+ * @param text The text to display
+ * @returns Formatted hyperlink string
+ */
+function createLink(url: string, text: string): string {
+  // OSC 8 hyperlink format: \u001b]8;;URL\u001b\\TEXT\u001b]8;;\u001b\\
+  return `\u001b]8;;${url}\u001b\\${text}\u001b]8;;\u001b\\`;
+}
+
+/**
+ * Generate the asset library URL for a design
+ * @param instance The Domo instance (e.g., "domo-jon-tiritilli" or "domo-jon-tiritilli.domo.com")
+ * @param designId The design ID
+ * @returns Full URL to the design in the asset library
+ */
+function getDesignUrl(instance: string, designId: string): string {
+  // Handle cases where instance already includes .domo.com
+  const baseUrl = instance.includes('.domo.com')
+    ? `https://${instance}`
+    : `https://${instance}.domo.com`;
+  return `${baseUrl}/assetlibrary/${designId}/overview`;
+}
 
 module.exports = (program: Command) => {
   program
@@ -17,58 +55,153 @@ module.exports = (program: Command) => {
         deleted: options.deleted ?? false,
         checkAdminAuthority: options.all ?? false,
       };
-      new Login().getClient().then(client => {
+      const login = new Login();
+      const instance = login.instance;
+      login.getClient().then(client => {
         client
           .getDesigns(params)
           .then(designs => {
             if (designs.length === 0) {
               log.fail(
                 'No Designs Published',
-                "`domo ls` will list designs once they're published to Domo",
+                '`domo ls` will list designs once they are published to Domo',
               );
             }
 
-            const windowWidth = process.stdout.columns;
-            if (windowWidth >= 130) {
-              const Table = require('cli-table');
+            const windowWidth = process.stdout.columns || 100;
 
-              // instantiate
+            // Calculate column widths based on terminal width
+            const minWidth = 80;
+
+            // For wide terminals, use flexible widths
+            // URL needs ~60-80 chars depending on instance name
+            const urlMinWidth = 60;
+
+            // Calculate available width after borders/padding
+            const availableWidth = windowWidth - 10; // 10 for borders and padding
+
+            // Distribute widths proportionally
+            let nameWidth, idWidth, dateWidth, linkWidth;
+
+            if (availableWidth >= 180) {
+              // Wide terminal - show all columns comfortably
+              nameWidth = Math.floor(availableWidth * 0.25);
+              idWidth = 38;
+              dateWidth = 15;
+              linkWidth = availableWidth - nameWidth - idWidth - dateWidth * 2;
+            } else if (availableWidth >= 140) {
+              // Medium terminal - compress dates
+              nameWidth = Math.floor(availableWidth * 0.2);
+              idWidth = 38;
+              dateWidth = 13;
+              linkWidth = availableWidth - nameWidth - idWidth - dateWidth * 2;
+            } else {
+              // Narrower terminal - minimal dates
+              nameWidth = Math.floor(availableWidth * 0.2);
+              idWidth = 36;
+              dateWidth = 12;
+              linkWidth = availableWidth - nameWidth - idWidth - dateWidth * 2;
+            }
+
+            // For narrow terminals, use a simpler layout with URL
+            if (windowWidth < minWidth) {
+              const table = new Table({
+                head: [chalk.cyan('Design Name'), chalk.cyan('URL')],
+                style: {
+                  head: [],
+                  border: [],
+                  'padding-left': 1,
+                  'padding-right': 1,
+                },
+                chars: {
+                  top: '─',
+                  'top-mid': '┬',
+                  'top-left': '┌',
+                  'top-right': '┐',
+                  bottom: '─',
+                  'bottom-mid': '┴',
+                  'bottom-left': '└',
+                  'bottom-right': '┘',
+                  left: '│',
+                  'left-mid': '│',
+                  mid: ' ',
+                  'mid-mid': '│',
+                  right: '│',
+                  'right-mid': '│',
+                  middle: '│',
+                },
+                wordWrap: true,
+              });
+
+              designs.forEach(design => {
+                const url = getDesignUrl(instance, design.id);
+                // Show the URL directly for narrow terminals
+                table.push([design.name, chalk.blue(url)]);
+              });
+
+              console.log(table.toString());
+            } else {
+              // Full width table with all columns and clickable link
               const table = new Table({
                 head: [
                   chalk.cyan('Design Name'),
                   chalk.cyan('Design Id'),
                   chalk.cyan('Date Created'),
                   chalk.cyan('Last Updated'),
+                  chalk.cyan('Link'),
                 ],
-                colWidths: [windowWidth - 105, 38, 31, 31],
+                colWidths: [
+                  nameWidth,
+                  idWidth,
+                  dateWidth,
+                  dateWidth,
+                  linkWidth,
+                ],
+                style: {
+                  head: [],
+                  border: [],
+                  'padding-left': 1,
+                  'padding-right': 1,
+                },
+                chars: {
+                  top: '─',
+                  'top-mid': '┬',
+                  'top-left': '┌',
+                  'top-right': '┐',
+                  bottom: '─',
+                  'bottom-mid': '┴',
+                  'bottom-left': '└',
+                  'bottom-right': '┘',
+                  left: '│',
+                  'left-mid': '│',
+                  mid: ' ',
+                  'mid-mid': '│',
+                  right: '│',
+                  'right-mid': '│',
+                  middle: '│',
+                },
+                wordWrap: true,
               });
 
               designs.forEach(design => {
+                const url = getDesignUrl(instance, design.id);
+                // Show URL in blue (removing hyperlink wrapper to avoid terminal state issues)
                 table.push([
                   design.name,
                   design.id,
-                  new Date(design.createdDate).toUTCString(),
-                  new Date(design.updatedDate).toUTCString(),
+                  formatDate(new Date(design.createdDate)),
+                  formatDate(new Date(design.updatedDate)),
+                  chalk.blue(url),
                 ]);
               });
 
               console.log(table.toString());
-            } else {
-              designs.forEach(design => {
-                console.log('Design Name: ' + design.name);
-                console.log('Design Id: ' + design.id);
-                console.log(
-                  'Date Created: ' + new Date(design.createdDate).toUTCString(),
-                );
-                console.log(
-                  'Last Updated: ' +
-                    new Date(design.updatedDate).toUTCString() +
-                    '\n',
-                );
-              });
             }
+
+            // Reset terminal state after table output
+            process.stdout.write('\x1b[0m');
           })
-          .catch(e => {
+          .catch(() => {
             log.fail(
               'Unable to fetch designs',
               'You may not have any designs published yet.',
