@@ -124,7 +124,17 @@ class LoginCommand extends BaseCommand {
        Welcome, ${loginData.displayName}.`,
     );
 
-    login.persistLogin(loginData.refreshToken, client.getDevToken());
+    try {
+      // OAuth login should always set devToken to false
+      login.persistLogin(loginData.refreshToken, false);
+    } catch (persistError: any) {
+      console.error(
+        chalk.red('Failed to save login credentials:'),
+        persistError.message || persistError,
+      );
+      console.error(chalk.yellow('You may need to check file permissions.'));
+      throw persistError;
+    }
   }
 
   /**
@@ -269,7 +279,17 @@ class LoginCommand extends BaseCommand {
         );
       }
 
-      console.error(chalk.red('Error:'), err.message || err);
+      // Log detailed error for debugging
+      if (err.message) {
+        console.error(chalk.red('\nError details:'), err.message);
+      }
+      if (process.env.DEBUG) {
+        console.error(chalk.gray('\nFull error:'), err);
+        if (err.stack) {
+          console.error(chalk.gray('Stack trace:'));
+          console.error(err.stack);
+        }
+      }
       process.exit(1);
     }
   }

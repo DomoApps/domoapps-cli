@@ -1,99 +1,63 @@
 /**
- * domo dev server
+ * domo dev server - Modern Vite-based implementation
  */
 
 import path = require('path');
-import _ = require('lodash');
-import fs = require('fs-extra');
-import browserSync = require('browser-sync');
-const bs = browserSync.create();
-import portfinder = require('portfinder');
-portfinder.basePort = 3000;
-
+import {domoPlugin} from './vite-plugin-domo';
 import {Session} from '../util/session';
-import * as appStructure from '../util/appStructure';
 import {ManifestUtils} from '../util/manifest';
 import {DevOptions} from '../models/index';
 import {log} from '../util/log';
-
 import Domo = require('ryuu-client');
-import express = require('express');
-const app = express();
 
-import {Proxy} from '@domoinc/ryuu-proxy';
+export const start = async (client: Domo, options: DevOptions) => {
+  const manifest = ManifestUtils.getManifest(options.manifest);
 
-export const start = (client: Domo, options: DevOptions) => {
-  return new Promise((_resolve, _reject) => {
-    portfinder.getPorts(2, {}, (err, ports) => {
-      const assetsPort = ports[0];
-      const dataPort = ports[1];
-      const manifest = ManifestUtils.getManifest(options.manifest);
-      // If we don't have an app proxyId, get a temporary one
-      if (!manifest.proxyId) {
-        client.createApp(manifest.id).then((app: any) => {
-          manifest.proxyId = app.instance.id;
-        });
-      }
-      const proxy = new (Proxy as any)({manifest}, manifest.proxyId);
-      app.get('/', (req, res) => {
-        client.getDomoappsData(manifest).then(appData => {
-          // sizes consistent with Domo Web
-          const sizeMultiplier = {
-            width: 235,
-            height: 290,
-          };
-          const width = sizeMultiplier.width * manifest.size.width - 10 + 'px';
-          const height =
-            sizeMultiplier.height * manifest.size.height - 40 + 'px';
-          const userId = options.userId || appData.user.id;
-          const customerId = appData.customer || 1;
-          const url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop`;
-          const hasThumbnail = appStructure.hasThumbnail();
-          const template = _.template(
-            fs.readFileSync(
-              path.resolve(__dirname + '/../server/domodev/index.html'),
-              'utf8',
-            ),
-          );
-          const fullpage = manifest.fullpage;
-          res.send(
-            template({
-              manifest,
-              width,
-              height,
-              url,
-              hasThumbnail,
-              fullpage,
-            }),
-          );
-        });
-      });
-      app.use(
-        '/domodev',
-        express.static(path.resolve(__dirname + '/../server/domodev')),
-      );
-      app.use(express.static('.'));
-      app.use(proxy.express());
-      Session.check(client)
-        .then(() => {
-          const external = Boolean(options.external);
-          app.listen(dataPort);
-          bs.init({
-            proxy: 'localhost:' + dataPort,
-            port: assetsPort,
-            notify: false,
-            ui: false,
-            logLevel: 'info',
-            logPrefix: 'Domo Dev',
-            online: external,
-            // TODO: add user's ignored files here too?
-            files: ['**/*', '!node_modules/**/*'],
-          });
-          (bs as any).instance.logger.info('Instance: ' + client.getInstance());
-        })
-        .catch(() => {
-          log.notAuthenticated();
-        });
+  // Validate session before starting
+  try {
+    await Session.check(client);
+  } catch {
+    log.notAuthenticated();
+    return;
+  }
+
+  try {
+    // Dynamically import Vite (ESM modules) - @ts-expect-error ESM/CommonJS interop
+    const {createServer: createViteServer} = await import('vite');
+    // @ts-expect-error ESM/CommonJS interop
+    const react = await import('@vitejs/plugin-react');
+
+    // Create Vite dev server
+    const server = await createViteServer({
+      configFile: false, // Use inline config
+      root: path.resolve(__dirname, 'ui'),
+      plugins: [
+        react.default(),
+        domoPlugin({
+          client,
+          manifest,
+          userId: options.userId,
+          manifestPath: options.manifest,
+        }),
+      ],
+      server: {
+        port: 3000,
+        strictPort: false,
+        host: options.external ? '0.0.0.0' : 'localhost',
+        open: true,
+      },
+      logLevel: 'info',
     });
-  });
+
+    await server.listen();
+
+    const info = server.config.logger.info;
+    info(`\n  Domo Dev Server running at:`);
+    server.printUrls();
+    info(`\n  Instance: ${client.getInstance()}\n`);
+  } catch (err: any) {
+    console.error('Failed to start dev server:', err);
+    log.fail('Error starting dev server', err.message);
+    process.exit(1);
+  }
 };

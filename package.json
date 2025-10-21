@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "build": "rm -rf ./dist && tsc && npm run postbuild",
-    "postbuild": "cp -r \"src/server/domodev/\" \"dist/server/domodev\" && cp \"src/bin/domo-binary.js\" \"dist/bin/\" && cp \"src/bin/runner\" \"dist/bin/\" && cp -r \"templates/\" \"dist/templates\"",
+    "postbuild": "cp -r \"src/server/domodev/\" \"dist/server/domodev\" && cp -r \"src/server/ui/\" \"dist/server/ui\" && cp \"src/bin/domo-binary.js\" \"dist/bin/\" && cp \"src/bin/runner\" \"dist/bin/\" && cp -r \"templates/\" \"dist/templates\"",
     "release": "npm run build && npm publish",
     "releaseAlpha": "npm run build && npm publish --tag alpha",
     "releaseBeta": "npm run build && npm publish --tag beta",
@@ -34,7 +34,6 @@
     "@domoinc/ryuu-proxy": "^4.4.0",
     "async": "^3.2.6",
     "axios": "^1.12.2",
-    "browser-sync": "^3.0.4",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "commander": "^14.0.1",
@@ -47,8 +46,9 @@
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "open": "^10.2.0",
-    "portfinder": "^1.0.38",
     "qs": "^6.14.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "ryuu-client": "^4.4.4",
     "semver": "^7.7.3",
     "shelljs": "^0.10.0",
@@ -58,7 +58,6 @@
   },
   "devDependencies": {
     "@types/async": "^3.2.25",
-    "@types/browser-sync": "^2.29.0",
     "@types/configstore": "^6.0.2",
     "@types/express": "^5.0.3",
     "@types/extract-zip": "^2.0.3",
@@ -68,12 +67,15 @@
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.20",
     "@types/node": "^24.8.1",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
     "@types/semver": "^7.7.1",
     "@types/shelljs": "^0.8.17",
     "@types/slug": "^5.0.9",
     "@types/validator": "^13.15.3",
     "@typescript-eslint/eslint-plugin": "^8.46.1",
     "@typescript-eslint/parser": "^8.46.1",
+    "@vitejs/plugin-react": "^5.0.4",
     "dotenv": "^17.2.3",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
@@ -82,6 +84,7 @@
     "jest": "^30.2.0",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.5",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vite": "^7.1.11"
   }
 }
