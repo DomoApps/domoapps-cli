@@ -67,6 +67,24 @@ export function AppPreview({
   size,
 }: AppPreviewProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [iframeKey, setIframeKey] = React.useState(0);
+
+  useEffect(() => {
+    // Set up file watcher for hot reload
+    const eventSource = new EventSource('/__file_watcher');
+
+    eventSource.onmessage = (event) => {
+      if (event.data === 'reload') {
+        console.log('[HMR] App files changed, reloading iframe...');
+        // Force iframe reload by changing key
+        setIframeKey(prev => prev + 1);
+      }
+    };
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
 
   useEffect(() => {
     // Handle Link API messages from the iframe
@@ -139,6 +157,7 @@ export function AppPreview({
         </div>
 
         <iframe
+          key={iframeKey}
           ref={iframeRef}
           src={url}
           className="app-iframe"

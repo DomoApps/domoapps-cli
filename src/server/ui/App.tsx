@@ -32,7 +32,7 @@ export function App() {
       setIsFullscreen(data.manifest?.fullpage || false);
 
       // Check if thumbnail exists
-      fetch('/thumbnail.png', {method: 'HEAD'})
+      fetch('/app/thumbnail.png', {method: 'HEAD'})
         .then(res => setHasThumbnail(res.ok))
         .catch(() => setHasThumbnail(false));
     }
@@ -48,8 +48,8 @@ export function App() {
 
   const {manifest, width, height, userId, customerId, instance} = devData;
 
-  // Build the iframe URL with query parameters
-  const url = `index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop`;
+  // Build the iframe URL with query parameters - use /app/ prefix
+  const url = `/app/index.html?userId=${userId}&customer=${customerId}&locale=en-US&platform=desktop`;
 
   const displayWidth = isFullscreen ? '100%' : `${width}px`;
   const displayHeight = isFullscreen ? '100%' : `${height}px`;
@@ -79,7 +79,7 @@ export function App() {
         height={displayHeight}
         isFullscreen={isFullscreen}
         manifest={manifest}
-        thumbnail={hasThumbnail ? '/thumbnail.png' : null}
+        thumbnail={hasThumbnail ? '/app/thumbnail.png' : null}
         size={displaySize}
       />
 

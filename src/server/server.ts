@@ -28,9 +28,14 @@ export const start = async (client: Domo, options: DevOptions) => {
     const react = await import('@vitejs/plugin-react');
 
     // Create Vite dev server
+    // In dev mode, use source files; in production, use built files
+    const uiRoot = __dirname.includes('/dist/')
+      ? path.resolve(__dirname, 'ui')
+      : path.resolve(__dirname, '../../src/server/ui');
+
     const server = await createViteServer({
       configFile: false, // Use inline config
-      root: path.resolve(__dirname, 'ui'),
+      root: uiRoot,
       plugins: [
         react.default(),
         domoPlugin({
@@ -40,6 +45,9 @@ export const start = async (client: Domo, options: DevOptions) => {
           manifestPath: options.manifest,
         }),
       ],
+      resolve: {
+        extensions: ['.tsx', '.ts', '.jsx', '.js', '.json'],
+      },
       server: {
         port: 3000,
         strictPort: false,
@@ -52,7 +60,7 @@ export const start = async (client: Domo, options: DevOptions) => {
     await server.listen();
 
     const info = server.config.logger.info;
-    info(`\n  Domo Dev Server running at:`);
+    info('\n  Domo Dev Server running at:');
     server.printUrls();
     info(`\n  Instance: ${client.getInstance()}\n`);
   } catch (err: any) {
