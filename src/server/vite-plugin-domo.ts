@@ -167,41 +167,39 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
         }
       });
 
-      // Return POST middleware function for Domo proxy
-      return () => {
-        // Add Domo proxy middleware for data API calls
-        viteServer.middlewares.use((req, res, next) => {
-          if (proxy && proxy.express) {
-            // Add Express-compatible methods to Node.js response object
-            // ryuu-proxy expects Express Response, but Vite provides Node.js ServerResponse
-            if (!('status' in res)) {
-              (res as any).status = function (code: number) {
-                this.statusCode = code;
-                return this;
-              };
-            }
-            if (!('send' in res)) {
-              (res as any).send = function (data: any) {
-                if (typeof data === 'string') {
-                  this.setHeader('Content-Type', 'text/html');
-                  this.end(data);
-                } else if (typeof data === 'object') {
-                  this.setHeader('Content-Type', 'application/json');
-                  this.end(JSON.stringify(data));
-                } else {
-                  this.end(data);
-                }
-                return this;
-              };
-            }
-
-            const proxyMiddleware = proxy.express();
-            proxyMiddleware(req as any, res as any, next);
-          } else {
-            next();
+      // Add Domo proxy middleware for data API calls
+      // MUST be registered as PRE middleware to intercept API requests before Vite's HTML handler
+      viteServer.middlewares.use((req, res, next) => {
+        if (proxy && proxy.express) {
+          // Add Express-compatible methods to Node.js response object
+          // ryuu-proxy expects Express Response, but Vite provides Node.js ServerResponse
+          if (!('status' in res)) {
+            (res as any).status = function (code: number) {
+              this.statusCode = code;
+              return this;
+            };
           }
-        });
-      };
+          if (!('send' in res)) {
+            (res as any).send = function (data: any) {
+              if (typeof data === 'string') {
+                this.setHeader('Content-Type', 'text/html');
+                this.end(data);
+              } else if (typeof data === 'object') {
+                this.setHeader('Content-Type', 'application/json');
+                this.end(JSON.stringify(data));
+              } else {
+                this.end(data);
+              }
+              return this;
+            };
+          }
+
+          const proxyMiddleware = proxy.express();
+          proxyMiddleware(req as any, res as any, next);
+        } else {
+          next();
+        }
+      });
     },
 
     async transformIndexHtml(html, ctx) {
