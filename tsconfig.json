@@ -20,12 +20,5 @@
     "strict": false
   },
   "include": ["src/**/*"],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "tests",
-    "*.js",
-    "src/bin/domo-binary.js"
-  ]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "tests", "*.js"]
 }

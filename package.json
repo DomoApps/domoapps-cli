@@ -11,14 +11,14 @@
   "homepage": "https://developer.domo.com/docs/dev-studio/dev-studio-overview",
   "license": "SEE LICENSE IN LICENSE",
   "bin": {
-    "domo": "./dist/bin/domo-binary.js"
+    "domo": "./dist/bin/runner"
   },
   "files": [
     "dist/"
   ],
   "scripts": {
     "build": "rm -rf ./dist && tsc && npm run postbuild",
-    "postbuild": "cp -r \"src/server/domodev/\" \"dist/server/domodev\" && cp -r \"src/server/ui/\" \"dist/server/ui\" && cp \"src/bin/domo-binary.js\" \"dist/bin/\" && cp \"src/bin/runner\" \"dist/bin/\" && cp -r \"templates/\" \"dist/templates\"",
+    "postbuild": "cp -r \"src/server/domodev/\" \"dist/server/domodev\" && cp -r \"src/server/ui/\" \"dist/server/ui\" && cp \"src/bin/runner\" \"dist/bin/\" && cp -r \"templates/\" \"dist/templates\"",
     "release": "npm run build && npm publish",
     "releaseAlpha": "npm run build && npm publish --tag alpha",
     "releaseBeta": "npm run build && npm publish --tag beta",
@@ -66,7 +66,7 @@
     "@types/inquirer-autocomplete-prompt": "^3.0.3",
     "@types/jest": "^30.0.0",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.8.1",
+    "@types/node": "^24.9.1",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@types/semver": "^7.7.1",

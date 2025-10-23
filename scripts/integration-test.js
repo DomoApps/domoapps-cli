@@ -57,7 +57,7 @@ class IntegrationTestRunner {
     this.testApps = [];
     this.cleanupTasks = [];
     // Use the built domo binary from dist
-    this.domoBinary = path.join(process.cwd(), 'dist/bin/domo-binary.js');
+    this.domoBinary = path.join(process.cwd(), 'dist/bin/runner');
   }
 
   async runTest(name, testFn, timeout = config.timeouts.test) {
@@ -137,7 +137,9 @@ class IntegrationTestRunner {
             expectFailure: true,
           });
         } catch (error) {
-          log.warning(`Failed to re-authenticate for cleanup: ${error.message}`);
+          log.warning(
+            `Failed to re-authenticate for cleanup: ${error.message}`,
+          );
         }
 
         for (const appName of this.testApps) {
@@ -531,7 +533,10 @@ class IntegrationTests {
       timeout: 30000,
     });
 
-    if (afterDeleteOutput.output && afterDeleteOutput.output.includes(designId)) {
+    if (
+      afterDeleteOutput.output &&
+      afterDeleteOutput.output.includes(designId)
+    ) {
       throw new Error('App still appears in list after deletion');
     }
 
