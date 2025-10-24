@@ -9,7 +9,6 @@ import appStructure = require('../util/appStructure');
 import {constant, PublishCommandOptions} from '../models';
 import Domo = require('ryuu-client');
 import {Command} from 'commander';
-import multichoice from '../util/multichoice';
 import {Asset, Manifest} from 'ryuu-client/lib/models';
 import {createConfirm, createSelect} from '../util/prompts';
 

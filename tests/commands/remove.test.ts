@@ -20,8 +20,6 @@ jest.mock('../../src/util/log', () => ({
   },
 }));
 
-jest.mock('../../src/util/multichoice', () => jest.fn());
-
 jest.mock('inquirer', () => ({
   prompt: jest.fn(),
 }));
@@ -30,7 +28,6 @@ describe('Remove Command', () => {
   let mockProgram: Command;
   let mockLogin: any;
   let mockLog: any;
-  let mockMultichoice: any;
   let mockInquirer: any;
 
   beforeEach(() => {
@@ -38,7 +35,6 @@ describe('Remove Command', () => {
     mockProgram = new Command();
     mockLogin = require('../../src/util/login').Login;
     mockLog = require('../../src/util/log').log;
-    mockMultichoice = require('../../src/util/multichoice');
     mockInquirer = require('inquirer');
   });
 
@@ -174,17 +170,13 @@ describe('Remove Command', () => {
 
       mockLogin.getPreviousLogins.mockReturnValue(previousLogins);
 
-      const multichoiceResult = {
-        type: 'list',
-        choices: () => previousLogins.map(login => login.instance),
-        message: 'Select the instance you desire to remove ',
-        name: 'instance',
-      };
-
-      mockMultichoice.mockReturnValue(multichoiceResult);
-
       const prompts = [
-        multichoiceResult,
+        {
+          type: 'list',
+          choices: () => previousLogins.map((login: any) => login.instance),
+          message: 'Select the instance you desire to remove ',
+          name: 'instance',
+        },
         {
           type: 'confirm',
           message: 'Are you sure you want to remove this instance?',
@@ -246,38 +238,8 @@ describe('Remove Command', () => {
     });
   });
 
-  describe('Multichoice Integration', () => {
-    it('should handle multichoice for instance selection', () => {
-      const previousLogins = [
-        {instance: 'company1.domo.com'},
-        {instance: 'company2.domo.com'},
-      ];
-
-      const multichoiceResult = {
-        type: 'list',
-        choices: () => previousLogins.map(login => login.instance),
-        message: 'Select the instance you desire to remove ',
-        name: 'instance',
-      };
-
-      mockMultichoice.mockReturnValue(multichoiceResult);
-
-      const result = mockMultichoice({
-        type: 'list',
-        choices: () => previousLogins.map(login => login.instance),
-        message: 'Select the instance you desire to remove ',
-        name: 'instance',
-      });
-
-      expect(mockMultichoice).toHaveBeenCalledWith({
-        type: 'list',
-        choices: expect.any(Function),
-        message: 'Select the instance you desire to remove ',
-        name: 'instance',
-      });
-      expect(result).toEqual(multichoiceResult);
-    });
-  });
+  // Note: Multichoice tests removed as the command now uses createInstanceAutocomplete
+  // and createConfirm from the prompts utility instead of multichoice
 
   describe('Error Handling', () => {
     it('should handle inquirer prompt error', () => {
@@ -443,17 +405,13 @@ describe('Remove Command', () => {
 
       mockLogin.getPreviousLogins.mockReturnValue(previousLogins);
 
-      const multichoiceResult = {
-        type: 'list',
-        choices: () => previousLogins.map(login => login.instance),
-        message: 'Select the instance you desire to remove ',
-        name: 'instance',
-      };
-
-      mockMultichoice.mockReturnValue(multichoiceResult);
-
       const prompts = [
-        multichoiceResult,
+        {
+          type: 'list',
+          choices: () => previousLogins.map((login: any) => login.instance),
+          message: 'Select the instance you desire to remove ',
+          name: 'instance',
+        },
         {
           type: 'confirm',
           message: 'Are you sure you want to remove this instance?',

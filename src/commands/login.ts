@@ -25,7 +25,8 @@ function validateToken(token: string): {valid: boolean; error?: string} {
   if (trimmedToken.length < 20) {
     return {
       valid: false,
-      error: 'Token is too short. Please verify you entered the complete token.',
+      error:
+        'Token is too short. Please verify you entered the complete token.',
     };
   }
 
@@ -59,9 +60,7 @@ class LoginCommand extends BaseCommand {
   protected configure(): void {
     this.program
       .command('login')
-      .description(
-        'Login to Domo using OAuth or token-based authentication',
-      )
+      .description('Login to Domo using OAuth or token-based authentication')
       .option('-i, --instance <value>', 'Domo instance hostname')
       .option('-u, --user-email <value>', 'User email address')
       .option('-f, --manifest-file <file>', 'Use a specific manifest file')
@@ -118,6 +117,14 @@ class LoginCommand extends BaseCommand {
     const login = new Login(instance);
     const client = await login.getClient();
     const loginData = await client.login();
+
+    // Debug: Check if we got a refresh token
+    if (!loginData || !loginData.refreshToken) {
+      console.error(chalk.red('\nDEBUG: Login data:'), loginData);
+      throw new Error(
+        'OAuth login did not return a refresh token. The browser authentication may have timed out.',
+      );
+    }
 
     this.logOk(
       `Login to ${instance} successful.
@@ -232,17 +239,13 @@ class LoginCommand extends BaseCommand {
           );
 
           const {createInput} = await import('../util/prompts');
-          token = await createInput(
-            'Developer token',
-            '',
-            (input: string) => {
-              const validation = validateToken(input);
-              if (!validation.valid) {
-                return validation.error || 'Invalid token format';
-              }
-              return true;
-            },
-          );
+          token = await createInput('Developer token', '', (input: string) => {
+            const validation = validateToken(input);
+            if (!validation.valid) {
+              return validation.error || 'Invalid token format';
+            }
+            return true;
+          });
         }
 
         if (!token) {

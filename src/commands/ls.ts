@@ -46,6 +46,15 @@ module.exports = (program: Command) => {
       };
       const login = new Login();
       const instance = login.instance;
+
+      if (!instance) {
+        log.fail(
+          'Not logged in',
+          'Please run `domo login` to authenticate before listing designs.',
+        );
+        return;
+      }
+
       login.getClient().then(client => {
         client
           .getDesigns(params)
@@ -186,12 +195,31 @@ module.exports = (program: Command) => {
             // Reset terminal state after table output
             process.stdout.write('\x1b[0m');
           })
-          .catch(() => {
-            log.fail(
-              'Unable to fetch designs',
-              'You may not have any designs published yet.',
-            );
+          .catch((error: any) => {
+            // Better error handling for common scenarios
+            if (error.statusCode === 401 || error.statusCode === 403) {
+              log.fail(
+                'Authentication failed',
+                'Please run `domo login` to re-authenticate.',
+              );
+            } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
+              log.fail(
+                'Network error',
+                'Unable to connect to Domo. Please check your internet connection.',
+              );
+            } else {
+              console.error('Error details:', error);
+              log.fail(
+                'Unable to fetch designs',
+                error.message || 'An unexpected error occurred.',
+              );
+            }
           });
+      }).catch((error: any) => {
+        log.fail(
+          'Login error',
+          'Unable to get authenticated client. Please run `domo login`.',
+        );
       });
     });
 };

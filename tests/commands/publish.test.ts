@@ -52,8 +52,6 @@ jest.mock('../../src/util/log', () => ({
   },
 }));
 
-jest.mock('../../src/util/multichoice', () => jest.fn());
-
 jest.mock('ryuu-client', () => ({
   default: jest.fn(),
 }));

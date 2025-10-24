@@ -13,8 +13,6 @@ jest.mock('../../src/util/login', () => ({
   Login: jest.fn(),
 }));
 
-jest.mock('../../src/util/multichoice', () => jest.fn());
-
 jest.mock('../../src/models/enums/constant', () => ({
   getRainbowLogo: jest.fn(),
 }));

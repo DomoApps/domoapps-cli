@@ -50,8 +50,6 @@ jest.mock('../../src/util/log', () => ({
   },
 }));
 
-jest.mock('../../src/util/multichoice', () => jest.fn());
-
 jest.mock('chalk', () => ({
   default: {
     red: jest.fn((text: string) => `RED:${text}`),
