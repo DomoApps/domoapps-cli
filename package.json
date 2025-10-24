@@ -8,7 +8,7 @@
     "Ryuu",
     "App"
   ],
-  "homepage": "https://developer.domo.com/docs/dev-studio/dev-studio-overview",
+  "homepage": "https://developer.domo.com/portal/rmfbkwje8kmqj-domo-apps-cli",
   "license": "SEE LICENSE IN LICENSE",
   "bin": {
     "domo": "./dist/bin/runner"
