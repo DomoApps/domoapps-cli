@@ -55,171 +55,180 @@ module.exports = (program: Command) => {
         return;
       }
 
-      login.getClient().then(client => {
-        client
-          .getDesigns(params)
-          .then(designs => {
-            if (designs.length === 0) {
-              log.fail(
-                'No Designs Published',
-                '`domo ls` will list designs once they are published to Domo',
-              );
-            }
+      login
+        .getClient()
+        .then(client => {
+          client
+            .getDesigns(params)
+            .then(designs => {
+              if (designs.length === 0) {
+                log.fail(
+                  'No Designs Published',
+                  '`domo ls` will list designs once they are published to Domo',
+                );
+              }
 
-            const windowWidth = process.stdout.columns || 100;
+              const windowWidth = process.stdout.columns || 100;
 
-            // Calculate column widths based on terminal width
-            const minWidth = 80;
+              // Calculate column widths based on terminal width
+              const minWidth = 80;
 
-            // Calculate available width after borders/padding
-            const availableWidth = windowWidth - 10; // 10 for borders and padding
+              // Calculate available width after borders/padding
+              const availableWidth = windowWidth - 10; // 10 for borders and padding
 
-            // Distribute widths proportionally
-            let nameWidth, idWidth, dateWidth, linkWidth;
+              // Distribute widths proportionally
+              let nameWidth, idWidth, dateWidth, linkWidth;
 
-            if (availableWidth >= 180) {
-              // Wide terminal - show all columns comfortably
-              nameWidth = Math.floor(availableWidth * 0.25);
-              idWidth = 38;
-              dateWidth = 15;
-              linkWidth = availableWidth - nameWidth - idWidth - dateWidth * 2;
-            } else if (availableWidth >= 140) {
-              // Medium terminal - compress dates
-              nameWidth = Math.floor(availableWidth * 0.2);
-              idWidth = 38;
-              dateWidth = 13;
-              linkWidth = availableWidth - nameWidth - idWidth - dateWidth * 2;
-            } else {
-              // Narrower terminal - minimal dates
-              nameWidth = Math.floor(availableWidth * 0.2);
-              idWidth = 36;
-              dateWidth = 12;
-              linkWidth = availableWidth - nameWidth - idWidth - dateWidth * 2;
-            }
+              if (availableWidth >= 180) {
+                // Wide terminal - show all columns comfortably
+                nameWidth = Math.floor(availableWidth * 0.25);
+                idWidth = 38;
+                dateWidth = 15;
+                linkWidth =
+                  availableWidth - nameWidth - idWidth - dateWidth * 2;
+              } else if (availableWidth >= 140) {
+                // Medium terminal - compress dates
+                nameWidth = Math.floor(availableWidth * 0.2);
+                idWidth = 38;
+                dateWidth = 13;
+                linkWidth =
+                  availableWidth - nameWidth - idWidth - dateWidth * 2;
+              } else {
+                // Narrower terminal - minimal dates
+                nameWidth = Math.floor(availableWidth * 0.2);
+                idWidth = 36;
+                dateWidth = 12;
+                linkWidth =
+                  availableWidth - nameWidth - idWidth - dateWidth * 2;
+              }
 
-            // For narrow terminals, use a simpler layout with URL
-            if (windowWidth < minWidth) {
-              const table = new Table({
-                head: [chalk.cyan('Design Name'), chalk.cyan('URL')],
-                style: {
-                  head: [],
-                  border: [],
-                  'padding-left': 1,
-                  'padding-right': 1,
-                },
-                chars: {
-                  top: '─',
-                  'top-mid': '┬',
-                  'top-left': '┌',
-                  'top-right': '┐',
-                  bottom: '─',
-                  'bottom-mid': '┴',
-                  'bottom-left': '└',
-                  'bottom-right': '┘',
-                  left: '│',
-                  'left-mid': '│',
-                  mid: ' ',
-                  'mid-mid': '│',
-                  right: '│',
-                  'right-mid': '│',
-                  middle: '│',
-                },
-                wordWrap: true,
-              });
+              // For narrow terminals, use a simpler layout with URL
+              if (windowWidth < minWidth) {
+                const table = new Table({
+                  head: [chalk.cyan('Design Name'), chalk.cyan('URL')],
+                  style: {
+                    head: [],
+                    border: [],
+                    'padding-left': 1,
+                    'padding-right': 1,
+                  },
+                  chars: {
+                    top: '─',
+                    'top-mid': '┬',
+                    'top-left': '┌',
+                    'top-right': '┐',
+                    bottom: '─',
+                    'bottom-mid': '┴',
+                    'bottom-left': '└',
+                    'bottom-right': '┘',
+                    left: '│',
+                    'left-mid': '│',
+                    mid: ' ',
+                    'mid-mid': '│',
+                    right: '│',
+                    'right-mid': '│',
+                    middle: '│',
+                  },
+                  wordWrap: true,
+                });
 
-              designs.forEach(design => {
-                const url = getDesignUrl(instance, design.id);
-                // Show the URL directly for narrow terminals
-                table.push([design.name, chalk.blue(url)]);
-              });
+                designs.forEach(design => {
+                  const url = getDesignUrl(instance, design.id);
+                  // Show the URL directly for narrow terminals
+                  table.push([design.name, chalk.blue(url)]);
+                });
 
-              console.log(table.toString());
-            } else {
-              // Full width table with all columns and clickable link
-              const table = new Table({
-                head: [
-                  chalk.cyan('Design Name'),
-                  chalk.cyan('Design Id'),
-                  chalk.cyan('Date Created'),
-                  chalk.cyan('Last Updated'),
-                  chalk.cyan('Link'),
-                ],
-                colWidths: [
-                  nameWidth,
-                  idWidth,
-                  dateWidth,
-                  dateWidth,
-                  linkWidth,
-                ],
-                style: {
-                  head: [],
-                  border: [],
-                  'padding-left': 1,
-                  'padding-right': 1,
-                },
-                chars: {
-                  top: '─',
-                  'top-mid': '┬',
-                  'top-left': '┌',
-                  'top-right': '┐',
-                  bottom: '─',
-                  'bottom-mid': '┴',
-                  'bottom-left': '└',
-                  'bottom-right': '┘',
-                  left: '│',
-                  'left-mid': '│',
-                  mid: ' ',
-                  'mid-mid': '│',
-                  right: '│',
-                  'right-mid': '│',
-                  middle: '│',
-                },
-                wordWrap: true,
-              });
+                console.log(table.toString());
+              } else {
+                // Full width table with all columns and clickable link
+                const table = new Table({
+                  head: [
+                    chalk.cyan('Design Name'),
+                    chalk.cyan('Design Id'),
+                    chalk.cyan('Date Created'),
+                    chalk.cyan('Last Updated'),
+                    chalk.cyan('Link'),
+                  ],
+                  colWidths: [
+                    nameWidth,
+                    idWidth,
+                    dateWidth,
+                    dateWidth,
+                    linkWidth,
+                  ],
+                  style: {
+                    head: [],
+                    border: [],
+                    'padding-left': 1,
+                    'padding-right': 1,
+                  },
+                  chars: {
+                    top: '─',
+                    'top-mid': '┬',
+                    'top-left': '┌',
+                    'top-right': '┐',
+                    bottom: '─',
+                    'bottom-mid': '┴',
+                    'bottom-left': '└',
+                    'bottom-right': '┘',
+                    left: '│',
+                    'left-mid': '│',
+                    mid: ' ',
+                    'mid-mid': '│',
+                    right: '│',
+                    'right-mid': '│',
+                    middle: '│',
+                  },
+                  wordWrap: true,
+                });
 
-              designs.forEach(design => {
-                const url = getDesignUrl(instance, design.id);
-                // Show URL in blue (removing hyperlink wrapper to avoid terminal state issues)
-                table.push([
-                  design.name,
-                  design.id,
-                  formatDate(new Date(design.createdDate)),
-                  formatDate(new Date(design.updatedDate)),
-                  chalk.blue(url),
-                ]);
-              });
+                designs.forEach(design => {
+                  const url = getDesignUrl(instance, design.id);
+                  // Show URL in blue (removing hyperlink wrapper to avoid terminal state issues)
+                  table.push([
+                    design.name,
+                    design.id,
+                    formatDate(new Date(design.createdDate)),
+                    formatDate(new Date(design.updatedDate)),
+                    chalk.blue(url),
+                  ]);
+                });
 
-              console.log(table.toString());
-            }
+                console.log(table.toString());
+              }
 
-            // Reset terminal state after table output
-            process.stdout.write('\x1b[0m');
-          })
-          .catch((error: any) => {
-            // Better error handling for common scenarios
-            if (error.statusCode === 401 || error.statusCode === 403) {
-              log.fail(
-                'Authentication failed',
-                'Please run `domo login` to re-authenticate.',
-              );
-            } else if (error.code === 'ENOTFOUND' || error.code === 'ECONNREFUSED') {
-              log.fail(
-                'Network error',
-                'Unable to connect to Domo. Please check your internet connection.',
-              );
-            } else {
-              console.error('Error details:', error);
-              log.fail(
-                'Unable to fetch designs',
-                error.message || 'An unexpected error occurred.',
-              );
-            }
-          });
-      }).catch((error: any) => {
-        log.fail(
-          'Login error',
-          'Unable to get authenticated client. Please run `domo login`.',
-        );
-      });
+              // Reset terminal state after table output
+              process.stdout.write('\x1b[0m');
+            })
+            .catch((error: any) => {
+              // Better error handling for common scenarios
+              if (error.statusCode === 401 || error.statusCode === 403) {
+                log.fail(
+                  'Authentication failed',
+                  'Please run `domo login` to re-authenticate.',
+                );
+              } else if (
+                error.code === 'ENOTFOUND' ||
+                error.code === 'ECONNREFUSED'
+              ) {
+                log.fail(
+                  'Network error',
+                  'Unable to connect to Domo. Please check your internet connection.',
+                );
+              } else {
+                console.error('Error details:', error);
+                log.fail(
+                  'Unable to fetch designs',
+                  error.message || 'An unexpected error occurred.',
+                );
+              }
+            });
+        })
+        .catch(() => {
+          log.fail(
+            'Login error',
+            'Unable to get authenticated client. Please run `domo login`.',
+          );
+        });
     });
 };

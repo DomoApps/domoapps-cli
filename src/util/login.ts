@@ -124,7 +124,7 @@ export class Login {
         } as any,
         this.login.get('devToken'),
       );
-    } catch (ex) {
+    } catch {
       return new Domo(this.instance, refreshToken, constant.CLIENT_ID);
     }
   }

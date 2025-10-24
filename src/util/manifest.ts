@@ -18,7 +18,7 @@ const getManifest = (
   let rawmanifest: Buffer;
   try {
     rawmanifest = fs.readFileSync(path.resolve(manifestPath));
-  } catch (e) {
+  } catch {
     if (verifyValid) {
       log.fail(
         `No ${manifestName} file in this directory`,

@@ -5,7 +5,6 @@ import {ManifestUtils} from './manifest';
 import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
 import qs = require('qs');
 import open = require('open');
-const chalk = require('chalk');
 import {
   Registration,
   ActiveRegistration,
@@ -52,7 +51,7 @@ export class Oauth {
       `${registration.proxyId}-${scopes.join('-')}-accessToken`,
     );
     if (token) {
-      const decoded = jwt_decode.jwtDecode(token);
+      jwt_decode.jwtDecode(token);
       return true;
     }
     return false;

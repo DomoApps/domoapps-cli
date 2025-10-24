@@ -18,7 +18,7 @@ export class Session {
             } else {
               reject(false);
             }
-          } catch (e) {
+          } catch {
             // couldn't parse as JSON which means the service doesn't exist yet.
             // TODO: remove this once the /domoweb/auth/validate service has shipped to prod
             resolve(true);

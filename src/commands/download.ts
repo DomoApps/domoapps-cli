@@ -55,7 +55,7 @@ module.exports = (program: Command) => {
             'Design not found. Make sure you have the correct design id.',
           );
         }
-      } catch (error) {
+      } catch {
         log.clientRequestFailed('Unable to download design ' + args.designId);
       }
     });

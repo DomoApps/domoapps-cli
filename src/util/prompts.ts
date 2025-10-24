@@ -1,9 +1,16 @@
 import {prompt} from 'enquirer';
+const {AutoComplete} = require('enquirer');
 import {Login} from './login';
 
 /**
  * Modern CLI prompts using Enquirer
  */
+
+// Helper to ensure clean terminal state
+const restoreTerminal = () => {
+  // Reset formatting and clear any stale output
+  process.stdout.write('\x1b[0m');
+};
 
 // Helper for domain validation
 const validateDomain = (input: string) => {
@@ -36,15 +43,18 @@ export const createInstanceAutocomplete = async (
     instances.push('+ Add new instance');
   }
 
-  const result = await prompt({
-    type: 'autocomplete',
+  // Use AutoComplete class directly for better control over rendering
+  const autocomplete = new AutoComplete({
     name: 'instance',
     message,
     choices: instances,
-    initial: 0, // Start with the first item highlighted
+    initial: 0,
+    limit: 10, // Limit visible choices to prevent rendering issues
   });
 
-  return (result as any).instance;
+  const result = await autocomplete.run();
+  restoreTerminal();
+  return result;
 };
 
 /**

@@ -84,9 +84,7 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
       // Initialize proxy if we don't have a proxyId
       if (!manifest.proxyId) {
         if (!manifest.id) {
-          console.warn(
-            '\n⚠️  Warning: No design ID found in manifest.json.',
-          );
+          console.warn('\n⚠️  Warning: No design ID found in manifest.json.');
           console.warn(
             '   Advanced data proxy features (AppDB, Files, Code Engine) will not be available.',
           );

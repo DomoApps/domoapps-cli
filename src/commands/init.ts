@@ -247,36 +247,31 @@ const initiate = (allAnswers: any) => {
   }
 
   // populate and write out the template files
-  writeFilesIfNonexistent(
-    files,
-    dirs,
-    allAnswers,
-    (err: Error, _res: any[]) => {
-      const dirname = slug(allAnswers.name, {lower: false});
-      if (err) {
-        log.fail(
-          'Cannot initialize new design. Doing so would overwrite existing files:' +
-            err,
-        );
-      } else {
-        nextStepsMessage += `${stepNumber()} Edit the files that were just generated. \n${stepNumber()} Run ${chalk.yellow(
-          'domo login',
-        )} if you haven't already. \n${stepNumber()} Run ${chalk.yellow(
-          'domo publish',
-        )} to finish initializiation and whenever you make changes. \n${stepNumber()} Run ${chalk.yellow(
-          'domo dev',
-        )} to see what your app will look like and locally develop\n${stepNumber()} Add a Custom App card from the design published to any page in Domo. `;
-        log.ok(
-          `New design initialized in the ${chalk.green(
-            dirname || 'current',
-          )} directory`,
-          nextStepsMessage,
-        );
-      }
-      if (allAnswers.starter === 'hello world') {
-        fs.remove('node_modules');
-      }
-      process.exit();
-    },
-  );
+  writeFilesIfNonexistent(files, dirs, allAnswers, (err: Error) => {
+    const dirname = slug(allAnswers.name, {lower: false});
+    if (err) {
+      log.fail(
+        'Cannot initialize new design. Doing so would overwrite existing files:' +
+          err,
+      );
+    } else {
+      nextStepsMessage += `${stepNumber()} Edit the files that were just generated. \n${stepNumber()} Run ${chalk.yellow(
+        'domo login',
+      )} if you haven't already. \n${stepNumber()} Run ${chalk.yellow(
+        'domo publish',
+      )} to finish initializiation and whenever you make changes. \n${stepNumber()} Run ${chalk.yellow(
+        'domo dev',
+      )} to see what your app will look like and locally develop\n${stepNumber()} Add a Custom App card from the design published to any page in Domo. `;
+      log.ok(
+        `New design initialized in the ${chalk.green(
+          dirname || 'current',
+        )} directory`,
+        nextStepsMessage,
+      );
+    }
+    if (allAnswers.starter === 'hello world') {
+      fs.remove('node_modules');
+    }
+    process.exit();
+  });
 };

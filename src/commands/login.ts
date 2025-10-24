@@ -7,8 +7,6 @@ import {createInstanceAutocompleteWithValidation} from '../util/prompts';
 import {Command} from 'commander';
 import {LoginCommandOptions} from '../models';
 
-let autoUpdate = false;
-
 /**
  * Validates a developer token.
  * Tokens should be alphanumeric strings (letters and numbers only).
@@ -191,11 +189,6 @@ class LoginCommand extends BaseCommand {
 
   public async run(args: LoginCommandOptions): Promise<void> {
     try {
-      // Handle auto-update flag
-      if (args.upgradeDownload) {
-        autoUpdate = true;
-      }
-
       // Determine authentication mode
       const authMode = this.determineAuthMode(args);
 

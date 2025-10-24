@@ -40,6 +40,7 @@ npm install -g ryuu
    ```
 
 4. **Publish your app:**
+
    ```bash
    domo publish
    ```
@@ -57,12 +58,14 @@ npm install -g ryuu
 The CLI supports two authentication methods:
 
 #### OAuth Login (Default)
+
 ```bash
 domo login                                    # Interactive login
 domo login -i company.domo.com               # Login to specific instance
 ```
 
 **Options:**
+
 - `-i, --instance <value>` - Domo instance hostname
 - `-u, --user-email <value>` - User email address
 - `--migrate` - Migrate login files from ryuu 3.x
@@ -70,6 +73,7 @@ domo login -i company.domo.com               # Login to specific instance
 - `--upgrade-download` - Auto-download newer version
 
 #### Token-Based Login
+
 ```bash
 # Login with developer token
 domo login -i company.domo.com -t DDCI27236b8d8690ab86cf5328c41a94d068aca1cde4eb6edc34
@@ -79,6 +83,7 @@ domo login -i company.domo.com --token-only
 ```
 
 **Options:**
+
 - `-t, --token <value>` - Developer token for authentication
 - `--token-only` - Force token-only mode (will prompt)
 
@@ -86,6 +91,7 @@ domo login -i company.domo.com --token-only
 Developer tokens can be found in the Admin section of your Domo instance. Tokens are alphanumeric strings (letters and numbers only). Token-based authentication is ideal for CI/CD pipelines and automated workflows.
 
 #### Token Management
+
 ```bash
 domo token add                               # Add developer token
 domo token add -i company.domo.com -t TOKEN  # Add token non-interactively
@@ -94,10 +100,12 @@ domo token remove -i company.domo.com        # Remove token for specific instanc
 ```
 
 **Options:**
+
 - `-i, --instance <value>` - Domo instance
 - `-t, --token <value>` - Developer token value
 
 #### Session Management
+
 ```bash
 domo logout                                  # Sign out from current instance
 domo logout -i company.domo.com             # Sign out from specific instance
@@ -109,6 +117,7 @@ domo remove --all                            # Remove all saved logins
 ### Development
 
 #### Initialize New App
+
 ```bash
 domo init                                    # Interactive app creation
 domo init -n "My App" -t "hello world"      # Non-interactive creation
@@ -116,6 +125,7 @@ domo init --no-datasets                      # Skip dataset prompts
 ```
 
 **Options:**
+
 - `-n, --design_name <value>` - Name of the design
 - `-t, --template <value>` - Starter template (choices: `hello world`, `manifest only`, `basic chart`, `map chart`, `sugarforce`)
 - `--no-datasets` - Skip dataset prompting
@@ -123,6 +133,7 @@ domo init --no-datasets                      # Skip dataset prompts
 - `-a, --dataset-alias [value...]` - Dataset aliases (multiple)
 
 #### Development Server
+
 ```bash
 domo dev                                     # Start dev server
 domo dev -u USER_ID                          # Use specific user ID
@@ -130,10 +141,12 @@ domo dev -e                                  # Allow external connections
 ```
 
 **Options:**
+
 - `-u, --userId <value>` - Use a specific userId
 - `-e, --external` - Allow external connections to dev server
 
 #### Download Existing App
+
 ```bash
 domo download                                # Interactive download
 domo download -i DESIGN_ID                   # Download specific design
@@ -141,21 +154,25 @@ domo download -i DESIGN_ID -d latest         # Download specific version
 ```
 
 **Options:**
+
 - `-i, --design-id <id>` - Design ID to download
 - `-d, --design-version <version>` - Design version (default: `latest`)
 
 ### Publishing
 
 #### Publish App
+
 ```bash
 domo publish                                 # Publish app
 domo publish -g                              # Publish and open in browser
 ```
 
 **Options:**
+
 - `-g, --go` - Navigate to design in Asset Library after publishing
 
 #### Release to App Store
+
 ```bash
 domo release                                 # Interactive version selection
 domo release -v latest                       # Release latest version (non-interactive)
@@ -163,9 +180,11 @@ domo release -v 1.0.0                        # Release specific version
 ```
 
 **Options:**
+
 - `-v, --version <value>` - Version to release (bypasses interactive prompt, defaults to `latest`)
 
 #### Delete App
+
 ```bash
 domo delete                                  # Delete app in current directory
 domo delete DESIGN_ID                        # Delete specific design
@@ -173,10 +192,12 @@ domo delete -f                               # Force delete (skip confirmation)
 ```
 
 **Options:**
+
 - `-f, --force` - Delete even if referenced by Custom Apps
 - `-c, --confirm` - Auto-confirm deletion (skip prompt)
 
 #### Restore Deleted App
+
 ```bash
 domo undelete                                # Undelete app in current directory
 domo undelete DESIGN_ID                      # Undelete specific design
@@ -185,11 +206,13 @@ domo undelete DESIGN_ID                      # Undelete specific design
 ### Management
 
 #### List Apps
+
 ```bash
 domo ls                                      # List all your published apps
 ```
 
 Displays a table with:
+
 - Design Name
 - Design ID
 - Version
@@ -197,6 +220,7 @@ Displays a table with:
 - URL to Asset Library
 
 #### Manage Owners
+
 ```bash
 domo owner ls                                # List owners
 domo owner add user@company.com              # Add owner
@@ -205,9 +229,11 @@ domo owner add user1@co.com user2@co.com    # Add multiple owners
 ```
 
 **Options:**
+
 - `-i, --designId <id>` - Specify design ID (otherwise reads from manifest)
 
 #### Configure Proxy
+
 ```bash
 domo proxy proxy.company.com 8080            # Set proxy
 domo proxy proxy.company.com 8080 -a         # Set proxy with authentication
@@ -215,6 +241,7 @@ domo proxy -r                                # Remove proxy
 ```
 
 **Options:**
+
 - `-r, --remove-proxy` - Remove current proxy settings
 - `-a, --auth` - Enable username authentication for proxy
 
@@ -285,12 +312,14 @@ npm install -g ryuu
 ### 2. Login to Domo
 
 **Option A: OAuth (Interactive)**
+
 ```bash
 domo login
 # Follow the prompts to authenticate with username/password
 ```
 
 **Option B: Token-Based (Recommended for CI/CD)**
+
 ```bash
 domo login -i company.domo.com -t YOUR-DEVELOPER-TOKEN
 # Or use --token-only for interactive token prompt
@@ -345,6 +374,7 @@ domo login -i company.domo.com --token-only
 **Token Validation Errors:**
 
 Tokens must be alphanumeric strings (letters and numbers only):
+
 - Valid example: `DDCI27236b8d8690ab86cf5328c41a94d068aca1cde4eb6edc34`
 - Minimum length: 20 characters
 - No special characters, spaces, or dashes allowed
