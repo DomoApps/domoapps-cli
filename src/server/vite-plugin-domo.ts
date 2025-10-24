@@ -61,6 +61,26 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
     name: 'vite-plugin-domo',
 
     configureServer(viteServer: ViteDevServer) {
+      // Serve favicon files from public directory
+      // This must run before other middleware to prevent 404s
+      viteServer.middlewares.use((req, res, next) => {
+        if (req.url === '/favicon.ico' || req.url === '/favicon.svg') {
+          const faviconPath = path.join(
+            viteServer.config.publicDir,
+            req.url === '/favicon.ico' ? 'favicon.ico' : 'favicon.svg',
+          );
+
+          if (fs.existsSync(faviconPath)) {
+            const content = fs.readFileSync(faviconPath);
+            res.setHeader('Content-Type', 'image/svg+xml');
+            res.setHeader('Cache-Control', 'public, max-age=31536000');
+            res.end(content);
+            return;
+          }
+        }
+        next();
+      });
+
       // Initialize proxy if we don't have a proxyId
       if (!manifest.proxyId) {
         client.createApp(manifest.id).then((app: any) => {
@@ -167,39 +187,42 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
         }
       });
 
-      // Add Domo proxy middleware for data API calls
-      // MUST be registered as PRE middleware to intercept API requests before Vite's HTML handler
-      viteServer.middlewares.use((req, res, next) => {
-        if (proxy && proxy.express) {
-          // Add Express-compatible methods to Node.js response object
-          // ryuu-proxy expects Express Response, but Vite provides Node.js ServerResponse
-          if (!('status' in res)) {
-            (res as any).status = function (code: number) {
-              this.statusCode = code;
-              return this;
-            };
-          }
-          if (!('send' in res)) {
-            (res as any).send = function (data: any) {
-              if (typeof data === 'string') {
-                this.setHeader('Content-Type', 'text/html');
-                this.end(data);
-              } else if (typeof data === 'object') {
-                this.setHeader('Content-Type', 'application/json');
-                this.end(JSON.stringify(data));
-              } else {
-                this.end(data);
-              }
-              return this;
-            };
-          }
+      // Return middleware to run AFTER Vite's built-in middleware
+      // This allows Vite to handle static files (like favicon) first
+      return () => {
+        // Add Domo proxy middleware for data API calls
+        viteServer.middlewares.use((req, res, next) => {
+          if (proxy && proxy.express) {
+            // Add Express-compatible methods to Node.js response object
+            // ryuu-proxy expects Express Response, but Vite provides Node.js ServerResponse
+            if (!('status' in res)) {
+              (res as any).status = function (code: number) {
+                this.statusCode = code;
+                return this;
+              };
+            }
+            if (!('send' in res)) {
+              (res as any).send = function (data: any) {
+                if (typeof data === 'string') {
+                  this.setHeader('Content-Type', 'text/html');
+                  this.end(data);
+                } else if (typeof data === 'object') {
+                  this.setHeader('Content-Type', 'application/json');
+                  this.end(JSON.stringify(data));
+                } else {
+                  this.end(data);
+                }
+                return this;
+              };
+            }
 
-          const proxyMiddleware = proxy.express();
-          proxyMiddleware(req as any, res as any, next);
-        } else {
-          next();
-        }
-      });
+            const proxyMiddleware = proxy.express();
+            proxyMiddleware(req as any, res as any, next);
+          } else {
+            next();
+          }
+        });
+      };
     },
 
     async transformIndexHtml(html, ctx) {

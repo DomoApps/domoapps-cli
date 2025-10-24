@@ -36,6 +36,7 @@ export const start = async (client: Domo, options: DevOptions) => {
     const server = await createViteServer({
       configFile: false, // Use inline config
       root: uiRoot,
+      publicDir: path.resolve(uiRoot, 'public'),
       plugins: [
         react.default(),
         domoPlugin({
