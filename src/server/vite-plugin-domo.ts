@@ -83,10 +83,47 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
 
       // Initialize proxy if we don't have a proxyId
       if (!manifest.proxyId) {
-        client.createApp(manifest.id).then((app: any) => {
-          manifest.proxyId = app.instance.id;
-          proxy = new (Proxy as any)({manifest}, manifest.proxyId);
-        });
+        if (!manifest.id) {
+          console.warn(
+            '\n⚠️  Warning: No design ID found in manifest.json.',
+          );
+          console.warn(
+            '   Advanced data proxy features (AppDB, Files, Code Engine) will not be available.',
+          );
+          console.warn(
+            '   To enable them, publish your app with "domo publish" and a proxyId will be added automatically.\n',
+          );
+        } else {
+          client
+            .createApp(manifest.id)
+            .then((app: any) => {
+              manifest.proxyId = app.instance.id;
+              proxy = new (Proxy as any)({manifest}, manifest.proxyId);
+              console.log(
+                `✓ Created temporary app instance with proxyId: ${manifest.proxyId}`,
+              );
+            })
+            .catch((err: any) => {
+              console.error('\n❌ Failed to create app instance for proxy:');
+              if (err.statusCode === 404) {
+                console.error(
+                  `   Design ID "${manifest.id}" not found. Please publish your app first with 'domo publish'.`,
+                );
+              } else if (err.statusCode === 403) {
+                console.error(
+                  `   Permission denied. You may not be an owner of design "${manifest.id}".`,
+                );
+              } else {
+                console.error(`   ${err.message || err}`);
+              }
+              console.error(
+                '\n   Note: Advanced data proxy features (AppDB, Files, Code Engine) will not work.',
+              );
+              console.error(
+                '   To enable them, publish your app and add the proxyId to your manifest.\n',
+              );
+            });
+        }
       } else {
         proxy = new (Proxy as any)({manifest}, manifest.proxyId);
       }
