@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "5.0.0-beta.2",
+  "version": "5.0.0-beta.3",
   "description": "Domo App Dev Studio CLI, The main tool used to create, edit, and publish app designs to Domo",
   "keywords": [
     "CLI",
@@ -17,11 +17,11 @@
     "dist/"
   ],
   "scripts": {
-    "build": "rm -rf ./dist && tsc && npm run postbuild",
+    "build": "rm -rf ./dist && tsc",
     "postbuild": "cp -r \"src/server/domodev/\" \"dist/server/domodev\" && cp -r \"src/server/ui/\" \"dist/server/ui\" && cp \"src/bin/runner\" \"dist/bin/\" && cp -r \"templates/\" \"dist/templates\"",
-    "release": "npm run build && npm publish",
-    "releaseAlpha": "npm run build && npm publish --tag alpha",
-    "releaseBeta": "npm run build && npm publish --tag beta",
+    "release:production": "pnpm run build && pnpm publish",
+    "release:alpha": "pnpm run build && pnpm publish --tag alpha",
+    "release:beta": "pnpm run build && pnpm publish --tag beta",
     "lint": "eslint src --ext .ts",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -31,9 +31,9 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@domoinc/ryuu-proxy": "^4.4.0",
+    "@domoinc/ryuu-proxy": "5.0.0-beta.0",
     "async": "^3.2.6",
-    "axios": "^1.12.2",
+    "axios": "1.7.9",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "commander": "^14.0.1",
@@ -54,7 +54,9 @@
     "shelljs": "^0.10.0",
     "slug": "^11.0.1",
     "source-map-support": "^0.5.21",
-    "validator": "^13.15.15"
+    "validator": "^13.15.15",
+    "vite": "^7.1.11",
+    "@vitejs/plugin-react": "^5.0.4"
   },
   "devDependencies": {
     "@types/async": "^3.2.25",
@@ -75,7 +77,6 @@
     "@types/validator": "^13.15.3",
     "@typescript-eslint/eslint-plugin": "^8.46.1",
     "@typescript-eslint/parser": "^8.46.1",
-    "@vitejs/plugin-react": "^5.0.4",
     "dotenv": "^17.2.3",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
@@ -84,7 +85,6 @@
     "jest": "^30.2.0",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.5",
-    "typescript": "^5.9.3",
-    "vite": "^7.1.11"
+    "typescript": "^5.9.3"
   }
 }

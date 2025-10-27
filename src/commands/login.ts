@@ -113,6 +113,13 @@ class LoginCommand extends BaseCommand {
    */
   private async handleOAuthLogin(instance: string): Promise<void> {
     const login = new Login(instance);
+
+    // Clear any existing devToken flag before OAuth login
+    // This ensures OAuth flow works even if user previously used token auth
+    if (login.login.has('devToken')) {
+      login.login.set('devToken', false);
+    }
+
     const client = await login.getClient();
     const loginData = await client.login();
 
@@ -196,7 +203,6 @@ class LoginCommand extends BaseCommand {
       if (authMode === 'migrate') {
         this.handleMigrate();
         process.exit(0);
-        return;
       }
 
       // Get instance - required for both auth modes
@@ -247,12 +253,10 @@ class LoginCommand extends BaseCommand {
             'Use -t or --token to provide a token, or run without --token-only for traditional login.',
           );
           process.exit(1);
-          return;
         }
 
         await this.handleTokenAuth(instance, token);
         process.exit(0);
-        return;
       }
 
       // Handle traditional OAuth login
