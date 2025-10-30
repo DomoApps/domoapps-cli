@@ -29,9 +29,16 @@ export const start = async (client: Domo, options: DevOptions) => {
 
     // Create Vite dev server
     // In dev mode, use source files; in production, use built files
-    const uiRoot = __dirname.includes('/dist/')
+    // Check for both Unix (/) and Windows (\) path separators
+    const isBuiltVersion =
+      __dirname.includes('/dist/') || __dirname.includes('\\dist\\');
+    const uiRoot = isBuiltVersion
       ? path.resolve(__dirname, 'ui')
       : path.resolve(__dirname, '../../src/server/ui');
+
+    console.log('Current directory:', __dirname);
+    console.log('UI root directory:', uiRoot);
+    console.log('Is built version:', isBuiltVersion);
 
     const server = await createViteServer({
       configFile: false, // Use inline config

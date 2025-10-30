@@ -237,6 +237,7 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
         const urlPath = req.url || '';
         // Remove query string for file path lookup
         const filePathPart = urlPath.split('?')[0];
+        // path.join handles cross-platform path separators automatically
         const filePath = path.join(process.cwd(), filePathPart);
 
         // Check if file exists
