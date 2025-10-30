@@ -1,5 +1,6 @@
 import _ = require('lodash');
 const open = require('open');
+import path = require('path');
 import {ManifestUtils} from '../util/manifest';
 import {Login} from '../util/login';
 import glob = require('glob');
@@ -17,8 +18,34 @@ module.exports = (program: Command) => {
     .command('publish')
     .description('publish a new or existing Custom App design')
     .option('-g, --go', 'navigate to design in Asset Library after publishing')
+    .option(
+      '-d, --build-dir <path>',
+      'path to build directory containing the app files',
+    )
     .action(options => {
       const manifest = ManifestUtils.getManifest(program.opts().manifest, true);
+
+      // Change to build directory if specified
+      if (options.buildDir) {
+        const buildPath = path.resolve(options.buildDir);
+        if (!fs.existsSync(buildPath)) {
+          log.fail(
+            `Build directory not found: ${buildPath}`,
+            'Please provide a valid path to your build directory.',
+          );
+          process.exit(1);
+        }
+        if (!fs.statSync(buildPath).isDirectory()) {
+          log.fail(
+            `Path is not a directory: ${buildPath}`,
+            'Please provide a valid directory path.',
+          );
+          process.exit(1);
+        }
+
+        log.info(`Using build directory: ${buildPath}`);
+        process.chdir(buildPath);
+      }
 
       new Login()
         .getClient()

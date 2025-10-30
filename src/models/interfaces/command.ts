@@ -99,6 +99,14 @@ export interface PublishCommandOptions extends CliCommandOptions {
    * @default false
    */
   go?: boolean;
+
+  /**
+   * Path to build directory containing the app files.
+   * If not specified, uses the current working directory.
+   * @type {string}
+   * @example './dist' or './build'
+   */
+  buildDir?: string;
 }
 
 /**

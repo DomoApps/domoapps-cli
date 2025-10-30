@@ -165,11 +165,14 @@ domo download -i DESIGN_ID -d latest         # Download specific version
 ```bash
 domo publish                                 # Publish app
 domo publish -g                              # Publish and open in browser
+domo publish --build-dir ./dist              # Publish from build directory
+domo publish --build-dir ./build -g          # Publish from build directory and open in browser
 ```
 
 **Options:**
 
 - `-g, --go` - Navigate to design in Asset Library after publishing
+- `-d, --build-dir <path>` - Path to build directory containing the app files (defaults to current directory)
 
 #### Release to App Store
 
@@ -344,6 +347,9 @@ domo dev
 ```bash
 domo publish
 # Your app is now live on Domo!
+
+# Or publish from a build directory
+domo publish --build-dir ./dist
 ```
 
 ## 🎨 App Templates
