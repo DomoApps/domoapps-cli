@@ -16,6 +16,46 @@ import {getRainbowLogo} from '../models/enums/constant';
 // Force colors for chalk
 process.env.FORCE_COLOR = '1';
 
+// Handle unhandled promise rejections gracefully
+process.on('unhandledRejection', (reason: any) => {
+  // Handle common Domo API errors gracefully
+  if (reason && typeof reason === 'object') {
+    if (reason.statusCode === 401 || reason.statusCode === 403) {
+      console.error(
+        '\n❌ Authentication failed. Your session may have expired.',
+      );
+      console.error('   Please run "domo login" to authenticate again.\n');
+      process.exit(1);
+    } else if (
+      reason.statusCode === 404 &&
+      reason.message?.includes('No Design found')
+    ) {
+      console.error('\n❌ Design not found:', reason.message);
+      console.error(
+        '   Please make sure you have logged in with "domo login" and published your app first with "domo publish".',
+      );
+      console.error(
+        '   Or remove the "id" field from your manifest.json to work without a design ID.\n',
+      );
+      process.exit(1);
+    } else if (reason.statusCode) {
+      console.error(
+        `\n❌ API Error (${reason.statusCode}):`,
+        reason.message || reason,
+      );
+      console.error('');
+      process.exit(1);
+    }
+  }
+
+  // For other unhandled rejections, log and exit
+  console.error('\n❌ Unexpected error:', reason);
+  if (reason instanceof Error && reason.stack) {
+    console.error(reason.stack);
+  }
+  process.exit(1);
+});
+
 // Show logo for main command, version, or help
 const args = process.argv.slice(2);
 const shouldShowLogo =

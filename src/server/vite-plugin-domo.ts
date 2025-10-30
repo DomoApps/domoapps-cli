@@ -51,11 +51,20 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
         customerId,
         instance: client.getInstance(),
       };
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching Domo app data:', err);
+      if (err.statusCode === 401 || err.statusCode === 403) {
+        console.error(
+          '\n❌ Authentication failed. Your session may have expired.',
+        );
+        console.error('   Please run "domo login" to authenticate again.\n');
+      }
       cachedManifestData = {};
     }
-  })();
+  })().catch((err: any) => {
+    // Additional top-level catch to prevent unhandled promise rejection
+    console.error('Unexpected error in data fetch promise:', err);
+  });
 
   return {
     name: 'vite-plugin-domo',

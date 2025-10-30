@@ -29,6 +29,7 @@ export class Session {
             err.statusCode + ' - ' + err.message,
             err.failureMessage,
           );
+          reject(false);
         });
     });
   }
