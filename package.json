@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "5.0.0-beta.3",
+  "version": "5.0.0-beta.4",
   "description": "Domo App Dev Studio CLI, The main tool used to create, edit, and publish app designs to Domo",
   "keywords": [
     "CLI",
@@ -11,14 +11,20 @@
   "homepage": "https://developer.domo.com/portal/rmfbkwje8kmqj-domo-apps-cli",
   "license": "SEE LICENSE IN LICENSE",
   "bin": {
-    "domo": "./dist/bin/runner"
+    "domo": "./dist/bin/domo.js"
   },
   "files": [
-    "dist/"
+    "dist/",
+    "dist/bin/",
+    "dist/commands/",
+    "dist/models/",
+    "dist/server/",
+    "dist/templates/",
+    "dist/util/"
   ],
   "scripts": {
     "build": "rm -rf ./dist && tsc",
-    "postbuild": "cp -r \"src/server/domodev/\" \"dist/server/domodev\" && cp -r \"src/server/ui/\" \"dist/server/ui\" && cp \"src/bin/runner\" \"dist/bin/\" && cp -r \"templates/\" \"dist/templates\"",
+    "postbuild": "cp -r \"src/server/domodev/\" \"dist/server/domodev\" && cp -r \"src/server/ui/\" \"dist/server/ui\" && cp \"src/bin/runner\" \"dist/bin/\" && cp \"src/bin/domo.cmd\" \"dist/bin/\" && cp -r \"templates/\" \"dist/templates\"",
     "release:production": "pnpm run build && pnpm publish",
     "release:alpha": "pnpm run build && pnpm publish --tag alpha",
     "release:beta": "pnpm run build && pnpm publish --tag beta",
@@ -31,7 +37,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@domoinc/ryuu-proxy": "5.0.0-beta.0",
+    "@domoinc/ryuu-proxy": "5.0.0-beta.1",
     "async": "^3.2.6",
     "axios": "1.7.9",
     "chalk": "^4.1.2",

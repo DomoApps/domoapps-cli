@@ -186,6 +186,40 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
         },
       );
 
+      // Add Domo proxy middleware for data API calls
+      // MUST be registered here (not in return function) to run before Vite's HTML fallback
+      viteServer.middlewares.use((req, res, next) => {
+        if (proxy && proxy.express) {
+          // Add Express-compatible methods to Node.js response object
+          // ryuu-proxy expects Express Response, but Vite provides Node.js ServerResponse
+          if (!('status' in res)) {
+            (res as any).status = function (code: number) {
+              this.statusCode = code;
+              return this;
+            };
+          }
+          if (!('send' in res)) {
+            (res as any).send = function (data: any) {
+              if (typeof data === 'string') {
+                this.setHeader('Content-Type', 'text/html');
+                this.end(data);
+              } else if (typeof data === 'object') {
+                this.setHeader('Content-Type', 'application/json');
+                this.end(JSON.stringify(data));
+              } else {
+                this.end(data);
+              }
+              return this;
+            };
+          }
+
+          const proxyMiddleware = proxy.express();
+          proxyMiddleware(req as any, res as any, next);
+        } else {
+          next();
+        }
+      });
+
       // Serve app files from the current working directory with /app prefix
       // MUST be registered here (not in return function) to run before Vite's HTML transform
       viteServer.middlewares.use('/app', (req, res, next) => {
@@ -221,43 +255,6 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
           next();
         }
       });
-
-      // Return middleware to run AFTER Vite's built-in middleware
-      // This allows Vite to handle static files (like favicon) first
-      return () => {
-        // Add Domo proxy middleware for data API calls
-        viteServer.middlewares.use((req, res, next) => {
-          if (proxy && proxy.express) {
-            // Add Express-compatible methods to Node.js response object
-            // ryuu-proxy expects Express Response, but Vite provides Node.js ServerResponse
-            if (!('status' in res)) {
-              (res as any).status = function (code: number) {
-                this.statusCode = code;
-                return this;
-              };
-            }
-            if (!('send' in res)) {
-              (res as any).send = function (data: any) {
-                if (typeof data === 'string') {
-                  this.setHeader('Content-Type', 'text/html');
-                  this.end(data);
-                } else if (typeof data === 'object') {
-                  this.setHeader('Content-Type', 'application/json');
-                  this.end(JSON.stringify(data));
-                } else {
-                  this.end(data);
-                }
-                return this;
-              };
-            }
-
-            const proxyMiddleware = proxy.express();
-            proxyMiddleware(req as any, res as any, next);
-          } else {
-            next();
-          }
-        });
-      };
     },
 
     async transformIndexHtml(html, ctx) {

@@ -191,6 +191,19 @@ class LoginCommand extends BaseCommand {
       return 'token';
     }
 
+    // Check if there's already a stored token for the current instance
+    try {
+      const currentLogin = Login.getCurrentLogin();
+      if (currentLogin.instance) {
+        const login = new Login(currentLogin.instance);
+        if (login.login.get('devToken') && login.login.has('refreshToken')) {
+          return 'token';
+        }
+      }
+    } catch (error) {
+      // If there's an error checking for existing tokens, fall back to OAuth
+    }
+
     return 'oauth';
   }
 
@@ -229,8 +242,27 @@ class LoginCommand extends BaseCommand {
       if (authMode === 'token') {
         let token = args.token;
 
-        // If token-only mode but no token provided, prompt for it
+        // If no token provided, check if there's an existing stored token
         if (!token) {
+          try {
+            const currentLogin = Login.getCurrentLogin();
+            if (currentLogin.instance === instance) {
+              const login = new Login(instance);
+              if (login.login.get('devToken') && login.login.has('refreshToken')) {
+                // Use existing token - no need to re-authenticate
+                console.log(
+                  chalk.green(
+                    `\nUsing existing token for ${instance}\n`,
+                  ),
+                );
+                process.exit(0);
+              }
+            }
+          } catch (error) {
+            // If there's an error accessing existing tokens, continue to prompt
+          }
+
+          // If no existing token or error accessing it, prompt for new token
           console.log(
             chalk.cyan(
               '\nToken-based authentication selected. You can find your developer token in the Admin section of Domo.\n',
