@@ -1,17 +1,24 @@
 {
   "compilerOptions": {
+    "rootDir": "src",
     "outDir": "dist",
     "sourceMap": true,
     "noImplicitAny": true,
     "module": "commonjs",
-    "target": "es5",
-    "lib": ["es6", "es2017", "dom"],
-    "jsx": "react",
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
+    "jsx": "react-jsx",
     "allowJs": true,
-    "types": ["jest"],
-    "suppressImplicitAnyIndexErrors": true,
+    "types": ["jest", "node"],
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "skipLibCheck": true,
+    "strict": false
   },
-  "exclude": ["node_modules", "dist", "distcopy", "**/*.spec.ts", "templates"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "tests", "*.js"]
 }
