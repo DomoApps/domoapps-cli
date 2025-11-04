@@ -12,15 +12,6 @@ const restoreTerminal = () => {
   process.stdout.write('\x1b[0m');
 };
 
-// Helper for domain validation
-const validateDomain = (input: string) => {
-  const acceptedDomains = ['domo.com', 'domotech.io', 'domorig.io'];
-  if (acceptedDomains.some(domain => input.endsWith(domain))) {
-    return true;
-  }
-  return 'Please enter a valid Domo instance (e.g., company.domo.com)';
-};
-
 /**
  * Creates a real-time autocomplete prompt for instance selection using Enquirer.
  */
@@ -59,6 +50,7 @@ export const createInstanceAutocomplete = async (
 
 /**
  * Creates an autocomplete prompt for instance selection with validation for new instances.
+ * Note: Validation is lenient - allows any input and validation happens in the calling command.
  */
 export const createInstanceAutocompleteWithValidation = async (
   message: string = 'Select a Domo instance:',
@@ -71,7 +63,8 @@ export const createInstanceAutocompleteWithValidation = async (
       type: 'input',
       name: 'newInstance',
       message: 'Enter new Domo instance (e.g., company.domo.com):',
-      validate: validateDomain,
+      // No validation here - let the calling command handle validation and confirmation
+      // This allows users to enter any instance and then confirm if it's invalid
     });
     return (result as any).newInstance;
   }
