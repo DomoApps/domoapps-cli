@@ -1,4 +1,4 @@
-#!/usr/bin/env node --harmony
+#!/usr/bin/env node
 /**
  * This executable will take care of capturing user input,
  * passing data on to the domo lib and informing user of results.
