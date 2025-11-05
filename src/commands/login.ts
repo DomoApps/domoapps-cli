@@ -3,7 +3,10 @@ import * as fs from 'fs-extra';
 import Domo = require('ryuu-client');
 import {Login} from '../util/login';
 import {BaseCommand} from '../util/BaseCommand';
-import {createInstanceAutocompleteWithValidation} from '../util/prompts';
+import {
+  createConfirm,
+  createInstanceAutocompleteWithValidation,
+} from '../util/prompts';
 import {Command} from 'commander';
 import {LoginCommandOptions} from '../models';
 
@@ -91,8 +94,26 @@ class LoginCommand extends BaseCommand {
 
     // Validate instance
     if (!validateInstance(instance)) {
-      throw new Error(
-        'Invalid Domo instance. Must end with .domo.com, .domotech.io, or .domorig.io',
+      console.log('');
+      console.log(chalk.yellow('⚠️ Warning: Unexpected Domo instance format'));
+      console.log(chalk.yellow(`   Instance entered: ${chalk.bold(instance)}`));
+      console.log(
+        chalk.yellow(
+          '   Expected format: instance should end with .domo.com, .domotech.io, or .domorig.io',
+        ),
+      );
+      console.log('');
+      const shouldContinue = await createConfirm(
+        'Do you want to continue with this instance anyway?',
+        false,
+      );
+      if (!shouldContinue) {
+        throw new Error(
+          'Login cancelled. Please verify your instance name and try again.',
+        );
+      }
+      console.log(
+        chalk.yellow(`\nContinuing with instance: ${chalk.bold(instance)}\n`),
       );
     }
 
@@ -123,9 +144,7 @@ class LoginCommand extends BaseCommand {
     const client = await login.getClient();
     const loginData = await client.login();
 
-    // Debug: Check if we got a refresh token
     if (!loginData || !loginData.refreshToken) {
-      console.error(chalk.red('\nDEBUG: Login data:'), loginData);
       throw new Error(
         'OAuth login did not return a refresh token. The browser authentication may have timed out.',
       );
@@ -230,12 +249,33 @@ class LoginCommand extends BaseCommand {
 
       // Validate instance format
       if (!validateInstance(instance)) {
-        this.logFail(
-          'Invalid Domo instance format',
-          'Instance must end with .domo.com, .domotech.io, or .domorig.io',
+        console.log('');
+        console.log(
+          chalk.yellow('⚠️ Warning: Unexpected Domo instance format'),
         );
-        process.exit(1);
-        return;
+        console.log(
+          chalk.yellow(`   Instance entered: ${chalk.bold(instance)}`),
+        );
+        console.log(
+          chalk.yellow(
+            '   Expected format: instance should end with .domo.com, .domotech.io, or .domorig.io',
+          ),
+        );
+        console.log('');
+        const shouldContinue = await createConfirm(
+          'Do you want to continue with this instance anyway?',
+          false,
+        );
+        if (!shouldContinue) {
+          this.logFail(
+            'Login cancelled',
+            'Please verify your instance name and try again.',
+          );
+          process.exit(1);
+        }
+        console.log(
+          chalk.yellow(`\nContinuing with instance: ${chalk.bold(instance)}\n`),
+        );
       }
 
       // Handle token authentication
@@ -248,12 +288,13 @@ class LoginCommand extends BaseCommand {
             const currentLogin = Login.getCurrentLogin();
             if (currentLogin.instance === instance) {
               const login = new Login(instance);
-              if (login.login.get('devToken') && login.login.has('refreshToken')) {
+              if (
+                login.login.get('devToken') &&
+                login.login.has('refreshToken')
+              ) {
                 // Use existing token - no need to re-authenticate
                 console.log(
-                  chalk.green(
-                    `\nUsing existing token for ${instance}\n`,
-                  ),
+                  chalk.green(`\nUsing existing token for ${instance}\n`),
                 );
                 process.exit(0);
               }
