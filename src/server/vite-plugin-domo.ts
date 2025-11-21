@@ -30,7 +30,7 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
   const {client, manifest} = options;
   dataFetchPromise = (async () => {
     try {
-      const appData = await client.getDomoappsData(manifest);
+      const appData = await client.getDomoappsData(manifest, manifest?.proxyId);
 
       // Calculate sizes consistent with Domo Web
       const sizeMultiplier = {
