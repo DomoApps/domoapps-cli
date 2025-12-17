@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "5.0.0",
+  "version": "5.0.1-beta.0",
   "description": "Domo App Dev Studio CLI, The main tool used to create, edit, and publish app designs to Domo",
   "keywords": [
     "CLI",

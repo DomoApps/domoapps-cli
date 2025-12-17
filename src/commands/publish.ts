@@ -157,9 +157,12 @@ const checkFileNames = (manifest: Manifest) => {
   }
   const badFileList = glob.sync('**/*', {ignore: ignore}).filter(file => {
     console.log(file);
+    // Normalize path separators to forward slashes for cross-platform compatibility
+    // This allows backslashes as path separators on Windows
+    const normalizedFile = file.replace(/\\/g, '/');
     return (
       // special characters except "/" in file names are not allowed
-      /[~`!#$%^&*+=[\]\\';,{}|\\":<>?]/g.test(file) ||
+      /[~`!#$%^&*+=[\]\\';,{}|\\":<>?]/g.test(normalizedFile) ||
       (!fs.lstatSync(file).isDirectory() && file.indexOf(' ') !== -1)
     );
   });

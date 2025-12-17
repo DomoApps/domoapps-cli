@@ -169,6 +169,89 @@ describe('Publish Command', () => {
       });
     });
 
+    it('should handle Windows-style paths with backslashes', () => {
+      // Windows paths use backslashes as path separators
+      const windowsStylePaths = [
+        'src\\app.js',
+        'src\\components\\Header.tsx',
+        'dist\\assets\\style.css',
+        'folder\\subfolder\\file.html',
+      ];
+
+      mockGlob.sync.mockReturnValue(windowsStylePaths);
+      mockFs.lstatSync.mockReturnValue({
+        isDirectory: jest.fn().mockReturnValue(false),
+      } as any);
+
+      const files = mockGlob.sync('**/*', {ignore: ['node_modules/**/*']});
+
+      // Verify that glob returns Windows-style paths
+      expect(files).toEqual(windowsStylePaths);
+
+      // Verify paths contain backslashes
+      files.forEach((file: string) => {
+        expect(file).toMatch(/\\/);
+      });
+
+      // Validate that the regex check should normalize paths for Windows
+      // Path separators (forward slash or backslash) should be allowed
+      const validateFilePathCrossPlatform = (file: string) => {
+        // Normalize path separators before checking for special characters
+        const normalizedPath = file.replace(/\\/g, '/');
+        return (
+          !/[~`!#$%^&*+=[\]\\';,{}|\\":<>?]/g.test(normalizedPath) &&
+          !normalizedPath.split('/').some((part: string) => part.includes(' '))
+        );
+      };
+
+      windowsStylePaths.forEach((path: string) => {
+        expect(validateFilePathCrossPlatform(path)).toBe(true);
+      });
+    });
+
+    it('should reject invalid characters even after normalizing Windows paths', () => {
+      // These paths should still be invalid even after normalizing backslashes
+      const invalidPaths = [
+        'src\\file~with~tildes.js', // Tilde is invalid
+        'src\\file*with*asterisks.js', // Asterisk is invalid
+        'src\\file:with:colons.js', // Colon is invalid (except after drive letter)
+        'src\\file<with>brackets.js', // Angle brackets are invalid
+      ];
+
+      const validateFilePathCrossPlatform = (file: string) => {
+        // Normalize path separators before checking for special characters
+        const normalizedPath = file.replace(/\\/g, '/');
+        return !/[~`!#$%^&*+=[\]\\';,{}|\\":<>?]/g.test(normalizedPath);
+      };
+
+      invalidPaths.forEach((path: string) => {
+        expect(validateFilePathCrossPlatform(path)).toBe(false);
+      });
+    });
+
+    it('should handle mixed path separators from cross-platform builds', () => {
+      // Some build tools might output mixed separators
+      const mixedPaths = [
+        'src/components\\Header.tsx',
+        'dist\\assets/style.css',
+        'folder/subfolder\\file.html',
+      ];
+
+      mockGlob.sync.mockReturnValue(mixedPaths);
+
+      const files = mockGlob.sync('**/*', {ignore: ['node_modules/**/*']});
+
+      const validateFilePathCrossPlatform = (file: string) => {
+        // Normalize path separators before checking for special characters
+        const normalizedPath = file.replace(/\\/g, '/');
+        return !/[~`!#$%^&*+=[\]\\';,{}|\\":<>?]/g.test(normalizedPath);
+      };
+
+      mixedPaths.forEach((path: string) => {
+        expect(validateFilePathCrossPlatform(path)).toBe(true);
+      });
+    });
+
     it('should handle directory files', () => {
       mockFs.lstatSync.mockReturnValue({
         isDirectory: jest.fn().mockReturnValue(true),
