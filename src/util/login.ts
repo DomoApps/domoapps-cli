@@ -5,8 +5,7 @@ import {login, constant} from '../models';
 import Domo = require('ryuu-client');
 import {log} from './log';
 const Configstore = require('configstore');
-const inquirer = require('inquirer');
-const prompt = inquirer.createPromptModule();
+const {prompt} = require('enquirer');
 const home = Domo.getHomeDir();
 
 export class Login {
