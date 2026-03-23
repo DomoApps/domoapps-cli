@@ -120,7 +120,7 @@ const linkToDomoWeb = (
       manifest.id,
   );
   if (options && options.go) {
-    open.default(
+    open(
       'https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id,
     );
   }

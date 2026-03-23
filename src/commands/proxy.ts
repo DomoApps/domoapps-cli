@@ -22,7 +22,7 @@ module.exports = function (program: Command) {
       options: ProxyCommandOptions,
     ) {
       if (options.removeProxy) {
-        const proxy = new Configstore.default('/proxy');
+        const proxy = new Configstore('/proxy');
         proxy.delete('host');
         proxy.delete('port');
         proxy.delete('username');
@@ -54,7 +54,7 @@ module.exports = function (program: Command) {
         proxy: boolean;
       }) {
         if (answer.proxy) {
-          const proxy = new Configstore.default('/proxy');
+          const proxy = new Configstore('/proxy');
           proxy.set('host', host);
           proxy.set('port', port);
           proxy.set('username', answer.username);

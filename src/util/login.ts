@@ -15,8 +15,8 @@ export class Login {
 
   constructor(instance?: string) {
     this.instance = instance ?? Login.getCurrentLogin().instance;
-    this.login = new Configstore.default(`ryuu/${this.instance}`);
-    this.proxy = new Configstore.default('proxy');
+    this.login = new Configstore(`ryuu/${this.instance}`);
+    this.proxy = new Configstore('proxy');
     if (this.instance === '')
       log.fail('You have not logged into any Domo instances');
   }

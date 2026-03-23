@@ -44,7 +44,7 @@ export class Oauth {
 
   static hasTokens(registration: Registration) {
     const scopes = this.getScopes(registration.manifestName);
-    const configstore = new Configstore.default(
+    const configstore = new Configstore(
       '/ryuu/' + registration.instance,
     );
     const token = configstore.get(
@@ -83,7 +83,7 @@ export class Oauth {
     registration: FullRegistration,
   ): Promise<AxiosResponse> {
     return new Promise((resolve, reject) => {
-      open.default(
+      open(
         `${registration.verification_uri}?user_code=${registration.user_code}`,
       );
       // scopes are space separated
@@ -124,7 +124,7 @@ export class Oauth {
   }
 
   static persistTokens(registration: ActiveRegistration) {
-    const configstore = new Configstore.default(
+    const configstore = new Configstore(
       '/ryuu/' + registration.instance,
     );
     const scopes = this.getScopes(registration.manifestName);
@@ -143,7 +143,7 @@ export class Oauth {
   }
 
   static deleteTokens(registration: Registration) {
-    const configstore = new Configstore.default(
+    const configstore = new Configstore(
       '/ryuu/' + registration.instance,
     );
     const scopes = this.getScopes(registration.manifestName);
@@ -158,7 +158,7 @@ export class Oauth {
   }
 
   static getTokens(registration: Registration) {
-    const configstore = new Configstore.default(
+    const configstore = new Configstore(
       '/ryuu/' + registration.instance,
     );
     const scopes = this.getScopes(registration.manifestName);
