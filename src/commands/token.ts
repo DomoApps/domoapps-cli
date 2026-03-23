@@ -1,11 +1,11 @@
-const chalk = require('chalk');
-import {Login} from '../util/login';
-import {log} from '../util/log';
-import {createInstanceAutocomplete, createInput} from '../util/prompts';
+import chalk from 'chalk';
+import {Login} from '../util/login.js';
+import {log} from '../util/log.js';
+import {createInstanceAutocomplete, createInput} from '../util/prompts.js';
 import {Command} from 'commander';
-import {TokenCommandOptions} from '../models';
+import {TokenCommandOptions} from '../models/index.js';
 
-module.exports = (program: Command) => {
+export default (program: Command) => {
   program
     .command('token')
     .description('add or remove a developer token')

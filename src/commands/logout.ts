@@ -1,7 +1,7 @@
-import {Login} from '../util/login';
+import {Login} from '../util/login.js';
 import {Command} from 'commander';
 
-module.exports = (program: Command) => {
+export default (program: Command) => {
   program
     .command('logout')
     .description('logout of Domo')

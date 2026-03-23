@@ -1,12 +1,12 @@
-import {ManifestUtils} from '../util/manifest';
-import {Login} from '../util/login';
-import {log} from '../util/log';
-import appStructure = require('../util/appStructure');
-import {constant} from '../models/index';
+import {ManifestUtils} from '../util/manifest.js';
+import {Login} from '../util/login.js';
+import {log} from '../util/log.js';
+import * as appStructure from '../util/appStructure.js';
+import {constant} from '../models/index.js';
 import {Command} from 'commander';
-import {createSelect} from '../util/prompts';
+import {createSelect} from '../util/prompts.js';
 
-module.exports = (program: Command) => {
+export default (program: Command) => {
   program
     .command('release')
     .description('prepare a design for app store release')

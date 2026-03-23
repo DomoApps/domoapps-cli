@@ -1,10 +1,10 @@
-import {Login} from '../util/login';
-import {getDesignId} from '../util/design';
-import {log} from '../util/log';
+import {Login} from '../util/login.js';
+import {getDesignId} from '../util/design.js';
+import {log} from '../util/log.js';
 import {Command, CommandOptions} from 'commander';
-import {createConfirm} from '../util/prompts';
+import {createConfirm} from '../util/prompts.js';
 
-module.exports = (program: Command) => {
+export default (program: Command) => {
   program
     .command('delete [id]')
     .description('delete a published design by its id')
@@ -28,7 +28,7 @@ module.exports = (program: Command) => {
                 .then(() => log.ok(`Deleted design ${designId}`))
                 .catch(() =>
                   log.fail(
-                    `Unable to delete design 
+                    `Unable to delete design
                       ${designId}. That id does not exist or you are not authorized to delete it.`,
                   ),
                 )

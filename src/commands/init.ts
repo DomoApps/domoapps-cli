@@ -1,18 +1,26 @@
-const _ = require('lodash');
-import isValidJSName from '../util/isValidJSName';
+import _ from 'lodash';
+import isValidJSName from '../util/isValidJSName.js';
 import slug from 'slug';
-const chalk = require('chalk');
-import {mkdir} from 'shelljs';
+import chalk from 'chalk';
+import shell from 'shelljs';
+const {mkdir} = shell;
 import {reduce} from 'async';
-import fs = require('fs-extra');
-import path = require('path');
-import {log} from '../util/log';
-import {TEMPLATES, TemplateName, getTemplateFiles} from '../models/templates';
-import {createConfirm, createInput, createSelect} from '../util/prompts';
-//import { init, initOptions } from '../models';
+import fs from 'fs-extra';
+import path from 'path';
+import {fileURLToPath} from 'url';
+import {log} from '../util/log.js';
+import {
+  TEMPLATES,
+  TemplateName,
+  getTemplateFiles,
+} from '../models/templates.js';
+import {createConfirm, createInput, createSelect} from '../util/prompts.js';
 import {Command, CommandOptions, Option} from 'commander';
 
-module.exports = (program: Command) => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default (program: Command) => {
   program
     .command('init')
     .option('-n, --design_name <value>', 'Name of the design')

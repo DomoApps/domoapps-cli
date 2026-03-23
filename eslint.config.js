@@ -1,9 +1,9 @@
-const tseslint = require('@typescript-eslint/eslint-plugin');
-const tsparser = require('@typescript-eslint/parser');
-const prettierPlugin = require('eslint-plugin-prettier');
-const prettierConfig = require('eslint-config-prettier');
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsparser from '@typescript-eslint/parser';
+import prettierPlugin from 'eslint-plugin-prettier';
+import prettierConfig from 'eslint-config-prettier';
 
-module.exports = [
+export default [
   {
     ignores: [
       'node_modules/**',
@@ -25,15 +25,9 @@ module.exports = [
         sourceType: 'module',
       },
       globals: {
-        // Node.js globals
         console: 'readonly',
         process: 'readonly',
         Buffer: 'readonly',
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        module: 'readonly',
-        require: 'readonly',
-        exports: 'readonly',
         global: 'readonly',
       },
     },
@@ -49,9 +43,9 @@ module.exports = [
       quotes: ['error', 'single'],
       semi: ['error', 'always'],
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-var-requires': 'off',
+      '@typescript-eslint/no-var-requires': 'error',
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-require-imports': 'error',
       '@typescript-eslint/no-unused-vars': 'warn',
     },
   },

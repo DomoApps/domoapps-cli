@@ -1,5 +1,5 @@
-import {ManifestUtils} from '../util/manifest';
-import {log} from '../util/log';
+import {ManifestUtils} from '../util/manifest.js';
+import {log} from '../util/log.js';
 import validator from 'validator';
 
 /**

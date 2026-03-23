@@ -1,5 +1,4 @@
-const chalk = require('chalk');
-import {DomoRequestError} from 'ryuu-client/lib/models';
+import chalk from 'chalk';
 
 export class log {
   /**
@@ -35,7 +34,7 @@ export class log {
   /**
    * log an error and exit node
    */
-  static fail(msg: string, submessage?: string, result?: DomoRequestError) {
+  static fail(msg: string, submessage?: string, result?: any) {
     console.log(chalk.red('X'), msg);
 
     if (submessage) {
@@ -84,8 +83,6 @@ export class log {
 
   static handleErrorMessage(err: Error, label: string): string {
     label = label || 'Error sending request';
-    //const toe = err && err.res && err.res.body;
-
-    return label; //+ toe
+    return label;
   }
 }

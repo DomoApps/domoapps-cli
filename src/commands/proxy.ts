@@ -1,10 +1,10 @@
-import {log} from '../util/log';
+import {log} from '../util/log.js';
 import {Command} from 'commander';
-const Configstore = require('configstore');
-import {createConfirm} from '../util/prompts';
-import {ProxyCommandOptions} from '../models';
+import Configstore from 'configstore';
+import {createConfirm} from '../util/prompts.js';
+import {ProxyCommandOptions} from '../models/index.js';
 
-module.exports = function (program: Command) {
+export default function (program: Command) {
   program
     .command('proxy [host] [port]')
     .description(
@@ -22,7 +22,7 @@ module.exports = function (program: Command) {
       options: ProxyCommandOptions,
     ) {
       if (options.removeProxy) {
-        const proxy = new Configstore.default('/proxy');
+        const proxy = new Configstore('/proxy');
         proxy.delete('host');
         proxy.delete('port');
         proxy.delete('username');
@@ -54,7 +54,7 @@ module.exports = function (program: Command) {
         proxy: boolean;
       }) {
         if (answer.proxy) {
-          const proxy = new Configstore.default('/proxy');
+          const proxy = new Configstore('/proxy');
           proxy.set('host', host);
           proxy.set('port', port);
           proxy.set('username', answer.username);
@@ -64,4 +64,4 @@ module.exports = function (program: Command) {
         }
       }
     });
-};
+}

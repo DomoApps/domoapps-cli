@@ -4,7 +4,7 @@
     "outDir": "dist",
     "sourceMap": true,
     "noImplicitAny": true,
-    "module": "commonjs",
+    "module": "NodeNext",
     "target": "es2020",
     "lib": ["es2020", "dom"],
     "jsx": "react-jsx",
@@ -12,7 +12,7 @@
     "types": ["jest", "node"],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
@@ -20,5 +20,5 @@
     "strict": false
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "tests", "*.js"]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "tests", "*.js", "src/server/ui/**/*"]
 }

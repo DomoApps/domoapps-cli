@@ -1,5 +1,5 @@
 // Centralized system/environment checks for CLI commands
-import {log} from './log';
+import {log} from './log.js';
 
 export function checkSystemRequirements() {
   // Node.js version check

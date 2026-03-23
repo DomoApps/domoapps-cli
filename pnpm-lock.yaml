@@ -12,8 +12,8 @@ importers:
   .:
     dependencies:
       '@domoinc/ryuu-proxy':
-        specifier: ^5.0.1
-        version: 5.0.1(express@5.1.0)(ryuu@4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5))
+        specifier: ^5.0.2
+        version: 5.0.2(express@5.1.0)(ryuu@4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5))
       '@vitejs/plugin-react':
         specifier: ^5.0.4
         version: 5.1.0(vite@7.1.12(@types/node@24.9.1))
@@ -69,8 +69,8 @@ importers:
         specifier: ^19.2.0
         version: 19.2.0(react@19.2.0)
       ryuu-client:
-        specifier: ^4.4.4
-        version: 4.4.4
+        specifier: ^4.4.5
+        version: 4.4.5
       semver:
         specifier: ^7.7.3
         version: 7.7.3
@@ -360,11 +360,11 @@ packages:
     peerDependencies:
       ryuu: ^4.2.5
 
-  '@domoinc/ryuu-proxy@5.0.1':
-    resolution: {integrity: sha512-ijjPibC1UhbhNV7mGqLiYrX4SASB9rQtvIsia8j+BPN9yzOWLpK0iQXKUrq4t41cukzR/o6eGRvQqQIXyyP3Jw==}
+  '@domoinc/ryuu-proxy@5.0.2':
+    resolution: {integrity: sha512-VvDaFQf6LB9X9c49qe0ct4oMVjb5SXecHsIIgWgKBRgi3dq1FSgapUv0oeeu6o+Ynp+dC6YAAEx62PuTy1z9aA==}
     peerDependencies:
       express: ^4.17.0 || ^5.0.0
-      ryuu: ^4.2.5
+      ryuu: ^5.0.2
 
   '@emnapi/core@1.6.0':
     resolution: {integrity: sha512-zq/ay+9fNIJJtJiZxdTnXS20PllcYMX3OE23ESc4HK/bdYu3cOWYVhsOhVnXALfU/uqJIxn5NBPd9z4v+SfoSg==}
@@ -1252,8 +1252,8 @@ packages:
       axios: ^1.13.0
       tough-cookie: '>=2.3.3'
 
-  axios-cookiejar-support@6.0.4:
-    resolution: {integrity: sha512-4Bzj+l63eGwnWDBFdJHeGS6Ij3ytpyqvo//ocsb5kCLN/rKthzk27Afh2iSkZtuudOBkHUWWIcyCb4GKhXqovQ==}
+  axios-cookiejar-support@6.0.5:
+    resolution: {integrity: sha512-ldPOQCJWB0ipugkTNVB8QRl/5L2UgfmVNVQtS9en1JQJ1wW588PqAmymnwmmgc12HLDzDtsJ28xE2ppj4rD4ng==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       axios: ^1.13.0
@@ -1588,12 +1588,12 @@ packages:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
 
-  default-browser-id@5.0.0:
-    resolution: {integrity: sha512-A6p/pu/6fyBcA1TRz/GqWYPViplrftcW2gZC9q79ngNCKAeR/X3gcEdXQHl4KNXV+3wgIJ1CPkJQ3IHM6lcsyA==}
+  default-browser-id@5.0.1:
+    resolution: {integrity: sha512-x1VCxdX4t+8wVfd1so/9w+vQ4vx7lKd2Qp5tDRutErwmR85OgmfX7RlLRMWafRMY7hbEiXIbudNrjOAPa/hL8Q==}
     engines: {node: '>=18'}
 
-  default-browser@5.2.1:
-    resolution: {integrity: sha512-WY/3TUME0x3KPYdRRxEJJvXRHV4PyPoUsxtZa78lwItwRQRHhd2U9xOscaT/YTf8uCXIAjeJOFBVEh/7FtD8Xg==}
+  default-browser@5.5.0:
+    resolution: {integrity: sha512-H9LMLr5zwIbSxrmvikGuI/5KGhZ8E2zH3stkMgM5LpOWDutGM2JZaj460Udnf1a+946zc7YBgrqEWwbk7zHvGw==}
     engines: {node: '>=18'}
 
   defaults@1.0.4:
@@ -2011,6 +2011,11 @@ packages:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
     hasBin: true
 
+  glob@10.5.0:
+    resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+    hasBin: true
+
   glob@11.0.3:
     resolution: {integrity: sha512-2Nim7dha1KVkaiF4q6Dj+ngPPMdfvLJEOpZk/jKiUAkqKebpGAWQXAq9z1xu9HKu5lWfqw/FASuccEjyznjPaA==}
     engines: {node: 20 || >=22}
@@ -2018,7 +2023,7 @@ packages:
 
   glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   glob@8.1.0:
     resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
@@ -2063,11 +2068,11 @@ packages:
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
 
-  http-cookie-agent@7.0.2:
-    resolution: {integrity: sha512-aHaES6SOFtnSlmWu0yEaaQvu+QexUG2gscSAvMhJ7auzW8r/jYOgGrzuAm9G9nHbksuhz7Lw4zOwDHmfQaxZvw==}
+  http-cookie-agent@7.0.3:
+    resolution: {integrity: sha512-EeZo7CGhfqPW6R006rJa4QtZZUpBygDa2HZH3DJqsTzTjyRE6foDBVQIv/pjVsxHC8z2GIdbB1Hvn9SRorP3WQ==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      tough-cookie: ^4.0.0 || ^5.0.0
+      tough-cookie: ^4.0.0 || ^5.0.0 || ^6.0.0
       undici: ^7.0.0
     peerDependenciesMeta:
       undici:
@@ -2253,8 +2258,8 @@ packages:
     resolution: {integrity: sha512-fKzAra0rGJUUBwGBgNkHZuToZcn+TtXHpeCgmkMJMMYx1sQDYaCSyjJBSCa2nH1DGm7s3n1oBnohoVTBaN7Lww==}
     engines: {node: '>=8'}
 
-  is-wsl@3.1.0:
-    resolution: {integrity: sha512-UcVfVfaK4Sc4m7X3dUSoHoozQGBEFeDC+zVo06t98xe8CzHSZZBekNXH+tu0NalHolcJ/QAGqS46Hef7QXBIMw==}
+  is-wsl@3.1.1:
+    resolution: {integrity: sha512-e6rvdUCiQCAuumZslxRJWR/Doq4VpPR82kqclvcS0efgt430SlGIk05vdCN58+VrzgtIcfNODjozVielycD4Sw==}
     engines: {node: '>=16'}
 
   isexe@2.0.0:
@@ -2959,8 +2964,8 @@ packages:
   rxjs@7.8.2:
     resolution: {integrity: sha512-dhKf903U/PQZY6boNNtAGdWbG85WAbjT/1xYoZIC7FAY0yWapOBQVsVrDl58W86//e1VpMNBtRV4MaXfdMySFA==}
 
-  ryuu-client@4.4.4:
-    resolution: {integrity: sha512-VdlKOa8lzgm+Dv3ecymaZ/6alcDT2IwehLF4pTGeKwx2WCJKaYQbwwnF31VUfvsC5ll2lXOFTVvg/DA9p2Dc7Q==}
+  ryuu-client@4.4.5:
+    resolution: {integrity: sha512-vucCP4WkXJPvq8M4hYBAx/0S0VCMwvR8H0AUMGhvBDyPT3/h3Suf4hO5t7yZj/xLpemqBHrppAkJWZNtbnNcBQ==}
 
   ryuu@4.4.14:
     resolution: {integrity: sha512-qKK0d+DnbBc5IbeIej3L2C/AfflVTnHieUCKhuKdicnJcdgeZleLG3rBKg0VWX1o6Kgi4RmHvl71QKBCe582Qw==}
@@ -3709,27 +3714,27 @@ snapshots:
       glob: 8.1.0
       https-proxy-agent: 5.0.1
       ryuu: 4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5)
-      ryuu-client: 4.4.4
+      ryuu-client: 4.4.5
       tough-cookie: 4.1.4
     transitivePeerDependencies:
       - '@types/tough-cookie'
       - debug
       - supports-color
 
-  '@domoinc/ryuu-proxy@5.0.1(express@5.1.0)(ryuu@4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5))':
+  '@domoinc/ryuu-proxy@5.0.2(express@5.1.0)(ryuu@4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5))':
     dependencies:
       axios: 1.13.1
-      axios-cookiejar-support: 6.0.4(axios@1.13.1)(tough-cookie@5.1.2)
+      axios-cookiejar-support: 6.0.5(axios@1.13.1)(tough-cookie@5.1.2)
       busboy: 1.6.0
       configstore: 7.1.0
       dotenv: 16.6.1
       express: 5.1.0
       form-data: 4.0.4
       fs-extra: 11.3.2
-      glob: 10.4.5
+      glob: 10.5.0
       https-proxy-agent: 7.0.6
       ryuu: 4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5)
-      ryuu-client: 4.4.4
+      ryuu-client: 4.4.5
       tough-cookie: 5.1.2
     transitivePeerDependencies:
       - debug
@@ -4638,10 +4643,10 @@ snapshots:
       pify: 5.0.0
       tough-cookie: 4.1.4
 
-  axios-cookiejar-support@6.0.4(axios@1.13.1)(tough-cookie@5.1.2):
+  axios-cookiejar-support@6.0.5(axios@1.13.1)(tough-cookie@5.1.2):
     dependencies:
       axios: 1.13.1
-      http-cookie-agent: 7.0.2(tough-cookie@5.1.2)
+      http-cookie-agent: 7.0.3(tough-cookie@5.1.2)
       tough-cookie: 5.1.2
     transitivePeerDependencies:
       - undici
@@ -5034,12 +5039,12 @@ snapshots:
 
   deepmerge@4.3.1: {}
 
-  default-browser-id@5.0.0: {}
+  default-browser-id@5.0.1: {}
 
-  default-browser@5.2.1:
+  default-browser@5.5.0:
     dependencies:
       bundle-name: 4.1.0
-      default-browser-id: 5.0.0
+      default-browser-id: 5.0.1
 
   defaults@1.0.4:
     dependencies:
@@ -5575,6 +5580,15 @@ snapshots:
       package-json-from-dist: 1.0.1
       path-scurry: 1.11.1
 
+  glob@10.5.0:
+    dependencies:
+      foreground-child: 3.3.1
+      jackspeak: 3.4.3
+      minimatch: 9.0.5
+      minipass: 7.1.2
+      package-json-from-dist: 1.0.1
+      path-scurry: 1.11.1
+
   glob@11.0.3:
     dependencies:
       foreground-child: 3.3.1
@@ -5632,7 +5646,7 @@ snapshots:
 
   html-escaper@2.0.2: {}
 
-  http-cookie-agent@7.0.2(tough-cookie@5.1.2):
+  http-cookie-agent@7.0.3(tough-cookie@5.1.2):
     dependencies:
       agent-base: 7.1.4
       tough-cookie: 5.1.2
@@ -5806,7 +5820,7 @@ snapshots:
     dependencies:
       is-docker: 2.2.1
 
-  is-wsl@3.1.0:
+  is-wsl@3.1.1:
     dependencies:
       is-inside-container: 1.0.0
 
@@ -6368,7 +6382,7 @@ snapshots:
 
   open@10.2.0:
     dependencies:
-      default-browser: 5.2.1
+      default-browser: 5.5.0
       define-lazy-prop: 3.0.0
       is-inside-container: 1.0.0
       wsl-utils: 0.1.0
@@ -6668,7 +6682,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  ryuu-client@4.4.4:
+  ryuu-client@4.4.5:
     dependencies:
       axios: 1.13.1
       form-data: 4.0.4
@@ -6702,7 +6716,7 @@ snapshots:
       open: 8.4.2
       portfinder: 1.0.38
       qs: 6.14.0
-      ryuu-client: 4.4.4
+      ryuu-client: 4.4.5
       semver: 7.7.3
       shelljs: 0.8.5
       slug: 4.1.0
@@ -7231,7 +7245,7 @@ snapshots:
 
   wsl-utils@0.1.0:
     dependencies:
-      is-wsl: 3.1.0
+      is-wsl: 3.1.1
 
   xdg-basedir@4.0.0: {}
 

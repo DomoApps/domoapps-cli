@@ -1,10 +1,11 @@
-import fs = require('fs-extra');
-import path = require('path');
-import semver = require('semver');
-import glob = require('glob');
-import {log} from '../util/log';
-import isValidJSName from '../util/isValidJSName';
-import {Manifest} from 'ryuu-client/lib/models';
+import fs from 'fs-extra';
+import path from 'path';
+import semver from 'semver';
+import {globSync} from 'glob';
+import {log} from '../util/log.js';
+import isValidJSName from '../util/isValidJSName.js';
+
+type Manifest = any;
 
 /**
  * Get the local manifest.json file, ensuring it's valid.
@@ -43,10 +44,6 @@ const getManifest = (
     validateManifest(manifest);
   }
 
-  /*
-    waiting to deploy below line until I have time to refactor oauth
-    log.info(`Getting manifest located in ${ path.resolve(manifestPath) }`)
-    */
   return manifest;
 };
 
@@ -155,7 +152,7 @@ const findManifest = (name: string) => {
   }
 
   // find any matching files (one layer deep while ignoring dist, templates and build folders)
-  const matches = glob.sync(`*/${name}`, {
+  const matches = globSync(`*/${name}`, {
     ignore: ['dist/*', 'build/*', 'templates/*'],
   });
   if (matches.length > 0) {

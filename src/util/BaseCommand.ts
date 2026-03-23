@@ -1,5 +1,5 @@
 import {Command} from 'commander';
-import {log} from './log';
+import {log} from './log.js';
 
 export interface CommandOptions {
   [key: string]: any;

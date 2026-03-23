@@ -1,13 +1,13 @@
-import fs = require('fs-extra');
-import path = require('path');
-import extract = require('extract-zip');
-import shell = require('shelljs');
-import {Login} from '../util/login';
-import {log} from '../util/log';
+import fs from 'fs-extra';
+import path from 'path';
+import extract from 'extract-zip';
+import shell from 'shelljs';
+import {Login} from '../util/login.js';
+import {log} from '../util/log.js';
 import {Command} from 'commander';
-import {createInput} from '../util/prompts';
+import {createInput} from '../util/prompts.js';
 
-module.exports = (program: Command) => {
+export default (program: Command) => {
   program
     .command('download')
     .description('download a Custom App design')
@@ -43,7 +43,7 @@ module.exports = (program: Command) => {
             const target = path.resolve('./' + name);
 
             extract(source, {dir: target}).catch(() => {
-              shell.chmod('-R', 'u+w', target);
+              (shell as any).chmod('-R', 'u+w', target);
               fs.remove(source);
               log.fail(
                 'Extraction of design from its compressed zip file failed, removing downloaded zip.',

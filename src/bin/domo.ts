@@ -6,12 +6,19 @@
  *
  */
 
-import path = require('path');
+import path from 'path';
+import fs from 'fs';
+import {fileURLToPath, pathToFileURL} from 'url';
+import {createRequire} from 'module';
 import {program} from 'commander';
-import glob = require('glob');
-import {version} from '../../package.json';
-import {checkSystemRequirements} from '../util/systemCheck';
-import {getRainbowLogo} from '../models/enums/constant';
+import {checkSystemRequirements} from '../util/systemCheck.js';
+import {getRainbowLogo} from '../models/enums/constant.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const _require = createRequire(import.meta.url);
+const {version} = _require('../../package.json') as {version: string};
 
 // Force colors for chalk
 process.env.FORCE_COLOR = '1';
@@ -87,7 +94,7 @@ let commandsPath = path.resolve(__dirname, '../commands');
 // Helper function to find .js files in a directory
 function findJSFiles(dirPath: string): string[] {
   try {
-    const files = require('fs').readdirSync(dirPath);
+    const files = fs.readdirSync(dirPath);
     return files
       .filter((file: string) => file.endsWith('.js'))
       .map((file: string) => path.join(dirPath, file));
@@ -97,7 +104,6 @@ function findJSFiles(dirPath: string): string[] {
 }
 
 // If commands not found, try alternative paths for global installation
-// Use fs.readdirSync instead of glob.sync for better Windows compatibility
 let commandFiles = findJSFiles(commandsPath);
 
 if (commandFiles.length === 0) {
@@ -138,13 +144,14 @@ if (commandFiles.length === 0) {
   process.exit(1);
 }
 
-commandFiles.sort().forEach(command => {
+for (const command of commandFiles.sort()) {
   try {
-    require(command)(program);
-  } catch (error) {
+    const mod = await import(pathToFileURL(command).href);
+    mod.default(program);
+  } catch (error: any) {
     console.error(`[ERROR] Failed to load command: ${command}`);
     console.error(`[ERROR] ${error.message}`);
   }
-});
+}
 
 program.parse(process.argv);

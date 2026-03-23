@@ -1,9 +1,9 @@
-import {Login} from '../util/login';
-import {log} from '../util/log';
+import {Login} from '../util/login.js';
+import {log} from '../util/log.js';
 import {Command} from 'commander';
-import {start} from '../server/server';
+import {start} from '../server/server.js';
 
-module.exports = (program: Command) => {
+export default (program: Command) => {
   program
     .command('dev')
     .description('work locally on a Custom App')
@@ -22,8 +22,6 @@ module.exports = (program: Command) => {
       new Login()
         .getClient()
         .then(client => {
-          //session will stop authenticated users
-          //const server = require('../server/server');
           start(client, devOptions).catch(log.fail);
         })
         .catch((err: Error) => {
