@@ -1,14 +1,15 @@
-const chalk = require('chalk');
-import * as fs from 'fs-extra';
-import Domo = require('ryuu-client');
-import {Login} from '../util/login';
-import {BaseCommand} from '../util/BaseCommand';
+import chalk from 'chalk';
+import fs from 'fs-extra';
+import Domo from 'ryuu-client';
+import {Login} from '../util/login.js';
+import {BaseCommand} from '../util/BaseCommand.js';
 import {
   createConfirm,
+  createInput,
   createInstanceAutocompleteWithValidation,
-} from '../util/prompts';
+} from '../util/prompts.js';
 import {Command} from 'commander';
-import {LoginCommandOptions} from '../models';
+import {LoginCommandOptions} from '../models/index.js';
 
 /**
  * Validates a developer token.
@@ -310,7 +311,6 @@ class LoginCommand extends BaseCommand {
             ),
           );
 
-          const {createInput} = await import('../util/prompts');
           token = await createInput('Developer token', '', (input: string) => {
             const validation = validateToken(input);
             if (!validation.valid) {
@@ -368,6 +368,6 @@ class LoginCommand extends BaseCommand {
   }
 }
 
-module.exports = (program: Command) => {
+export default (program: Command) => {
   new LoginCommand(program);
 };

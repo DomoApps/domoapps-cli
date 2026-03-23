@@ -1,9 +1,9 @@
-import {log} from '../util/log';
+import {log} from '../util/log.js';
 import {Command, CommandOptions} from 'commander';
-import {Login} from '../util/login';
-import {createConfirm, createInstanceAutocomplete} from '../util/prompts';
+import {Login} from '../util/login.js';
+import {createConfirm, createInstanceAutocomplete} from '../util/prompts.js';
 
-module.exports = (program: Command) => {
+export default (program: Command) => {
   program
     .command('remove')
     .option('--instance <value>', 'Name of instance to remove')

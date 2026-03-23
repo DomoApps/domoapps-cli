@@ -1,6 +1,5 @@
-// import {AxiosRequestConfig} from 'axios';
-import {log} from './log';
-import Domo = require('ryuu-client');
+import {log} from './log.js';
+import Domo from 'ryuu-client';
 
 export class Session {
   static check(domo: Domo) {

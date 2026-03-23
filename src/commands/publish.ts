@@ -1,19 +1,20 @@
-import _ = require('lodash');
-const open = require('open');
-import path = require('path');
-import {ManifestUtils} from '../util/manifest';
-import {Login} from '../util/login';
-import glob = require('glob');
-import fs = require('fs-extra');
-import {log} from '../util/log';
-import appStructure = require('../util/appStructure');
-import {constant, PublishCommandOptions} from '../models';
-import Domo = require('ryuu-client');
+import _ from 'lodash';
+import open from 'open';
+import path from 'path';
+import {ManifestUtils} from '../util/manifest.js';
+import {Login} from '../util/login.js';
+import {globSync} from 'glob';
+import fs from 'fs-extra';
+import {log} from '../util/log.js';
+import * as appStructure from '../util/appStructure.js';
+import {constant, PublishCommandOptions} from '../models/index.js';
 import {Command} from 'commander';
-import {Asset, Manifest} from 'ryuu-client/lib/models';
-import {createConfirm, createSelect} from '../util/prompts';
+import {createConfirm, createSelect} from '../util/prompts.js';
 
-module.exports = (program: Command) => {
+type Manifest = any;
+type Asset = any;
+
+export default (program: Command) => {
   program
     .command('publish')
     .description('publish a new or existing Custom App design')
@@ -73,13 +74,13 @@ module.exports = (program: Command) => {
 };
 
 const createDesign = (
-  domo: Domo,
+  domo: any,
   manifest: Manifest,
   options?: PublishCommandOptions,
 ) => {
   return domo
     .createDesign(manifest)
-    .then(designResult => {
+    .then((designResult: any) => {
       const newManifestId = ManifestUtils.persistDesignId(
         designResult.id,
         manifest,
@@ -87,11 +88,11 @@ const createDesign = (
       manifest = {...manifest, id: newManifestId};
       log.ok('New design created on ' + domo.getInstance());
     })
-    .catch(e => {
+    .catch((e: any) => {
       log.fail('Error when creating new design:', e.message);
     })
     .then(() => domo.uploadAllAssets(manifest))
-    .then(files => logUploadSuccess(files as any))
+    .then((files: any) => logUploadSuccess(files as any))
     .catch((e: string) => {
       log.fail(
         e || 'Error uploading assets in uploading assets for a new design',
@@ -110,7 +111,7 @@ const logUploadSuccess = (files: Asset[]) => {
 
 const linkToDomoWeb = (
   options: PublishCommandOptions | undefined,
-  domo: Domo,
+  domo: any,
   manifest: Manifest,
 ) => {
   console.log(
@@ -155,10 +156,9 @@ const checkFileNames = (manifest: Manifest) => {
       log.fail('The manifest.json `ignore` property must be an Array');
     }
   }
-  const badFileList = glob.sync('**/*', {ignore: ignore}).filter(file => {
+  const badFileList = globSync('**/*', {ignore: ignore}).filter(file => {
     console.log(file);
     // Normalize path separators to forward slashes for cross-platform compatibility
-    // This allows backslashes as path separators on Windows
     const normalizedFile = file.replace(/\\/g, '/');
     return (
       // special characters except "/" in file names are not allowed
@@ -178,7 +178,7 @@ const checkFileNames = (manifest: Manifest) => {
   }
 };
 
-const recreateDesign = async (domo: Domo, manifest: Manifest) => {
+const recreateDesign = async (domo: any, manifest: Manifest) => {
   const choice = await createSelect(
     'This design has been deleted. Would you like to undelete this design and publish to it, or create a new design with these assets?',
     ['Undelete', 'Create New Design'],
@@ -200,7 +200,7 @@ const recreateDesign = async (domo: Domo, manifest: Manifest) => {
   }
 };
 
-const publishErrors = async (e: any, domo: Domo, manifest: Manifest) => {
+const publishErrors = async (e: any, domo: any, manifest: Manifest) => {
   if (e.statusCode === 400 && !e.message.startsWith('DA')) {
     log.fail('Design failed to publish with error:', e.message);
   } else if (e.statusCode === 401) {
@@ -259,10 +259,10 @@ const publishErrors = async (e: any, domo: Domo, manifest: Manifest) => {
   }
 };
 
-const publishAssets = (domo: Domo, manifest: Manifest) => {
+const publishAssets = (domo: any, manifest: Manifest) => {
   return domo
     .uploadAllAssets(manifest)
-    .then(files => {
+    .then((files: any) => {
       log.ok(
         'Publishing ' +
           manifest.name +
@@ -273,7 +273,7 @@ const publishAssets = (domo: Domo, manifest: Manifest) => {
       );
       logUploadSuccess(files as any);
     })
-    .catch(e => {
+    .catch((e: any) => {
       publishErrors(e, domo, manifest);
     });
 };

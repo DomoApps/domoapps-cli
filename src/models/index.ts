@@ -1,11 +1,10 @@
-export {constant} from './enums/constant';
-export {login} from './interfaces/login';
+export {constant} from './enums/constant.js';
+export {login} from './interfaces/login.js';
 export {
   Registration,
   ActiveRegistration,
   FullRegistration,
-} from './interfaces/oauth';
-export * from './interfaces/server';
-export * from './interfaces/command';
-export * from './templates';
-//export { init, dataSources, initOptions } from './interfaces/init'
+} from './interfaces/oauth.js';
+export * from './interfaces/server.js';
+export * from './interfaces/command.js';
+export * from './templates.js';

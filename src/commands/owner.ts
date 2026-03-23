@@ -1,10 +1,10 @@
 import validator from 'validator';
-import {ManifestUtils} from '../util/manifest';
-import {Login} from '../util/login';
-import {log} from '../util/log';
+import {ManifestUtils} from '../util/manifest.js';
+import {Login} from '../util/login.js';
+import {log} from '../util/log.js';
 import {Command} from 'commander';
 
-module.exports = (program: Command) => {
+export default (program: Command) => {
   program
     .command('owner <add|rm|ls> [user-emails...]')
     .description('manage design owners')

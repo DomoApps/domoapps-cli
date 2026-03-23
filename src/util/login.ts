@@ -1,11 +1,12 @@
-import glob = require('glob');
-import fs = require('fs-extra');
-import path = require('path');
-import {login, constant} from '../models';
-import Domo = require('ryuu-client');
-import {log} from './log';
-const Configstore = require('configstore');
-const {prompt} = require('enquirer');
+import {globSync} from 'glob';
+import fs from 'fs-extra';
+import path from 'path';
+import {login, constant} from '../models/index.js';
+import Domo from 'ryuu-client';
+import {log} from './log.js';
+import Configstore from 'configstore';
+import enquirer from 'enquirer';
+const {prompt} = enquirer as any;
 const home = Domo.getHomeDir();
 
 export class Login {
@@ -21,7 +22,7 @@ export class Login {
       log.fail('You have not logged into any Domo instances');
   }
   static getCurrentLogin = (): login => {
-    const allLogins = glob.sync(home + '/ryuu/*.json');
+    const allLogins = globSync(home + '/ryuu/*.json');
     // If there are no logins, return an empty object
     if (allLogins.length === 0) {
       return {instance: ''};
@@ -33,7 +34,7 @@ export class Login {
   };
 
   static getPreviousLogins(): Array<login> {
-    const logins = (glob.sync(home + '/ryuu/*.json') || []).map(
+    const logins = (globSync(home + '/ryuu/*.json') || []).map(
       (file: string) => {
         return fs.readJsonSync(file);
       },
@@ -119,7 +120,7 @@ export class Login {
           host,
           port,
           username,
-          password: answers.pass,
+          password: (answers as any).pass,
         } as any,
         this.login.get('devToken'),
       );
@@ -128,8 +129,6 @@ export class Login {
     }
   }
 }
-
-//const getLogin =
 
 function verifyLoginLocal(login: login): void {
   if (!login.refreshToken)

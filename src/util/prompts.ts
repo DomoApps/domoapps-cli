@@ -1,6 +1,7 @@
-import {prompt} from 'enquirer';
-const {AutoComplete} = require('enquirer');
-import {Login} from './login';
+import enquirer from 'enquirer';
+import {Login} from './login.js';
+
+const {prompt, AutoComplete} = enquirer as any;
 
 /**
  * Modern CLI prompts using Enquirer

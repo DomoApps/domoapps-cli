@@ -1,8 +1,8 @@
-import {Login} from '../util/login';
+import {Login} from '../util/login.js';
 import {Command} from 'commander';
-import {log} from '../util/log';
-const chalk = require('chalk');
-import Table = require('cli-table3');
+import {log} from '../util/log.js';
+import chalk from 'chalk';
+import Table from 'cli-table3';
 
 /**
  * Format a date to a shorter, more readable format
@@ -30,7 +30,7 @@ function getDesignUrl(instance: string, designId: string): string {
   return `${baseUrl}/assetlibrary/${designId}/overview`;
 }
 
-module.exports = (program: Command) => {
+export default (program: Command) => {
   program
     .command('ls')
     .description('get a list of all your Custom App designs')

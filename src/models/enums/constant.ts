@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 export enum constant {
   CLIENT_ID = 'domo:internal:devstudio',
   THUMBNAIL_CREATE_WARNING = 'A thumbnail is required before creating ' +
@@ -7,14 +9,12 @@ export enum constant {
     'base directory of your design.',
 }
 
-const chalk = require('chalk');
-
 export const logo = `
-    ____                      
-   / __ \\____  ____ ___  ____ 
+    ____
+   / __ \\____  ____ ___  ____
   / / / / __ \\/ __ \`__ \\/ __ \\
  / /_/ / /_/ / / / / / / /_/ /
-/_____/\\____/_/ /_/ /_/\\____/ 
+/_____/\\____/_/ /_/ /_/\\____/
                               `;
 
 export const getRainbowLogo = () => {

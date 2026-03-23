@@ -2,13 +2,17 @@
  * domo dev server - Modern Vite-based implementation
  */
 
-import path = require('path');
-import {domoPlugin} from './vite-plugin-domo';
-import {Session} from '../util/session';
-import {ManifestUtils} from '../util/manifest';
-import {DevOptions} from '../models/index';
-import {log} from '../util/log';
-import Domo = require('ryuu-client');
+import path from 'path';
+import {fileURLToPath} from 'url';
+import {domoPlugin} from './vite-plugin-domo.js';
+import {Session} from '../util/session.js';
+import {ManifestUtils} from '../util/manifest.js';
+import {DevOptions} from '../models/index.js';
+import {log} from '../util/log.js';
+import Domo from 'ryuu-client';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const start = async (client: Domo, options: DevOptions) => {
   const manifest = ManifestUtils.getManifest(options.manifest);
@@ -22,9 +26,8 @@ export const start = async (client: Domo, options: DevOptions) => {
   }
 
   try {
-    // Dynamically import Vite (ESM modules) - @ts-expect-error ESM/CommonJS interop
+    // Dynamically import Vite (ESM modules)
     const {createServer: createViteServer} = await import('vite');
-    // @ts-expect-error ESM/CommonJS interop
     const react = await import('@vitejs/plugin-react');
 
     // Create Vite dev server

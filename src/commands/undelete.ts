@@ -1,15 +1,15 @@
-import {Login} from '../util/login';
-import design = require('../util/design');
-import {log} from '../util/log';
+import {Login} from '../util/login.js';
+import {getDesignId} from '../util/design.js';
+import {log} from '../util/log.js';
 import {Command} from 'commander';
-import {createConfirm} from '../util/prompts';
+import {createConfirm} from '../util/prompts.js';
 
-module.exports = (program: Command) => {
+export default (program: Command) => {
   program
     .command('undelete [id]')
     .description('undelete a soft-deleted design')
     .action(async arg => {
-      const designId = design.getDesignId(arg, program.opts().manifest);
+      const designId = getDesignId(arg, program.opts().manifest);
       const shouldUndelete = await createConfirm(
         `Are you sure you want to undelete design with id: ${designId}?`,
         true,

@@ -1,10 +1,10 @@
-import {log} from '../util/log';
+import {log} from '../util/log.js';
 import {Command} from 'commander';
-const Configstore = require('configstore');
-import {createConfirm} from '../util/prompts';
-import {ProxyCommandOptions} from '../models';
+import Configstore from 'configstore';
+import {createConfirm} from '../util/prompts.js';
+import {ProxyCommandOptions} from '../models/index.js';
 
-module.exports = function (program: Command) {
+export default function (program: Command) {
   program
     .command('proxy [host] [port]')
     .description(
@@ -64,4 +64,4 @@ module.exports = function (program: Command) {
         }
       }
     });
-};
+}
