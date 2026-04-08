@@ -9,19 +9,24 @@
  * Usage: node scripts/integration-test.js
  */
 
-const {execSync, spawn} = require('child_process');
-const fs = require('fs-extra');
-const path = require('path');
+import {execSync, spawn} from 'child_process';
+import fs from 'fs-extra';
+import path from 'path';
+import {fileURLToPath} from 'url';
+import dotenv from 'dotenv';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables from integration-test.env FIRST before loading config
-// Look in project root (two levels up from dist/scripts when compiled)
+// Look in project root (one level up from scripts/)
 const envPath = fs.existsSync(path.join(__dirname, '../integration-test.env'))
   ? path.join(__dirname, '../integration-test.env')
   : path.join(__dirname, '../../integration-test.env');
 
-require('dotenv').config({path: envPath});
+dotenv.config({path: envPath});
 
-const config = require('../integration-test.config');
+const {default: config} = await import('../integration-test.config.js');
 
 // Test results tracking
 const results = {
@@ -749,12 +754,10 @@ process.on('unhandledRejection', reason => {
   process.exit(1);
 });
 
-// Run if called directly
-if (require.main === module) {
-  main().catch(error => {
-    log.error(`Main execution failed: ${error.message}`);
-    process.exit(1);
-  });
-}
+// Run
+main().catch(error => {
+  log.error(`Main execution failed: ${error.message}`);
+  process.exit(1);
+});
 
-module.exports = {IntegrationTestRunner, IntegrationTests};
+export {IntegrationTestRunner, IntegrationTests};

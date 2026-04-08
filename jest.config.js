@@ -11,5 +11,6 @@ export default {
   testTimeout: 10000,
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^(\\.{1,2}/.*)\\.js$': '$1',
   },
 };

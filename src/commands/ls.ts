@@ -41,8 +41,8 @@ export default (program: Command) => {
     .option('-d, --deleted', 'Include deleted designs on current instance')
     .action(options => {
       const params = {
-        deleted: options.deleted ?? false,
-        checkAdminAuthority: options.all ?? false,
+        deleted: String(options.deleted ?? false),
+        checkAdminAuthority: String(options.all ?? false),
       };
       const login = new Login();
       const instance = login.instance;
@@ -58,8 +58,8 @@ export default (program: Command) => {
       login
         .getClient()
         .then(client => {
-          client
-            .getDesigns(params)
+          client.designs
+            .list(params)
             .then(designs => {
               if (designs.length === 0) {
                 log.fail(

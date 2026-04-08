@@ -22,8 +22,8 @@ const handleUserResponse = (answer: any, designId: string) => {
     new Login()
       .getClient()
       .then(client => {
-        client
-          .unDeleteDesign(designId)
+        client.designs
+          .undelete(designId)
           .then(() => log.ok('Undeleted design ' + designId))
           .catch(() =>
             log.fail(

@@ -10,11 +10,11 @@ import type {Plugin, ViteDevServer} from 'vite';
 import type {Request, Response} from 'express';
 import path from 'path';
 import fs from 'fs';
-import Domo from 'ryuu-client';
+import type {RyuuClient} from 'ryuu-client';
 import {Proxy} from '@domoinc/ryuu-proxy';
 
 export interface DomoPluginOptions {
-  client: Domo;
+  client: RyuuClient;
   manifest: any;
   userId?: number;
   manifestPath?: string;
@@ -30,7 +30,10 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
   const {client, manifest} = options;
   dataFetchPromise = (async () => {
     try {
-      const appData = await client.getDomoappsData(manifest, manifest?.proxyId);
+      const appData = await client.apps.getEnvironment(
+        manifest,
+        manifest?.proxyId,
+      );
 
       // Calculate sizes consistent with Domo Web
       const sizeMultiplier = {
@@ -49,7 +52,7 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
         height,
         userId,
         customerId,
-        instance: client.getInstance(),
+        instance: client.instance,
       };
     } catch (err: any) {
       console.error('Error fetching Domo app data:', err);
@@ -101,8 +104,8 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
             '   To enable them, publish your app with "domo publish" and a proxyId will be added automatically.\n',
           );
         } else {
-          client
-            .createApp(manifest.id)
+          client.apps
+            .createInstance(manifest.id)
             .then((app: any) => {
               manifest.proxyId = app.instance.id;
               proxy = new (Proxy as any)({manifest}, manifest.proxyId);

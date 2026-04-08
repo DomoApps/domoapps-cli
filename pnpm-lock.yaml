@@ -13,7 +13,7 @@ importers:
     dependencies:
       '@domoinc/ryuu-proxy':
         specifier: ^5.0.2
-        version: 5.0.2(express@5.1.0)(ryuu@4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5))
+        version: 5.0.2(express@5.1.0)(ryuu@4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5))(undici@7.24.7)
       '@vitejs/plugin-react':
         specifier: ^5.0.4
         version: 5.1.0(vite@7.1.12(@types/node@24.9.1))
@@ -69,8 +69,8 @@ importers:
         specifier: ^19.2.0
         version: 19.2.0(react@19.2.0)
       ryuu-client:
-        specifier: ^4.4.5
-        version: 4.4.5
+        specifier: file:ryuu-client-5.0.0.tgz
+        version: file:ryuu-client-5.0.0.tgz
       semver:
         specifier: ^7.7.3
         version: 7.7.3
@@ -2967,6 +2967,11 @@ packages:
   ryuu-client@4.4.5:
     resolution: {integrity: sha512-vucCP4WkXJPvq8M4hYBAx/0S0VCMwvR8H0AUMGhvBDyPT3/h3Suf4hO5t7yZj/xLpemqBHrppAkJWZNtbnNcBQ==}
 
+  ryuu-client@file:ryuu-client-5.0.0.tgz:
+    resolution: {integrity: sha512-NYj7GVJq4kpdF2p/8McgP0OyCA6jP4A8n/L2cRqG830U0Mk+YBNz88+el7a43oHH4L2uyX3hD5wPJa9lz7KxVg==, tarball: file:ryuu-client-5.0.0.tgz}
+    version: 5.0.0
+    engines: {node: '>=22.0.0'}
+
   ryuu@4.4.14:
     resolution: {integrity: sha512-qKK0d+DnbBc5IbeIej3L2C/AfflVTnHieUCKhuKdicnJcdgeZleLG3rBKg0VWX1o6Kgi4RmHvl71QKBCe582Qw==}
     hasBin: true
@@ -3310,6 +3315,10 @@ packages:
 
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
+
+  undici@7.24.7:
+    resolution: {integrity: sha512-H/nlJ/h0ggGC+uRL3ovD+G0i4bqhvsDOpbDv7At5eFLlj2b41L8QliGbnl2H7SnDiYhENphh1tQFJZf+MyfLsQ==}
+    engines: {node: '>=20.18.1'}
 
   unique-string@2.0.0:
     resolution: {integrity: sha512-uNaeirEPvpZWSgzwsPGtU2zVSTrn/8L5q/IexZmH0eH6SA73CmAA5U4GwORTxQAZs95TAXLNqeLoPPNO5gZfWg==}
@@ -3721,10 +3730,10 @@ snapshots:
       - debug
       - supports-color
 
-  '@domoinc/ryuu-proxy@5.0.2(express@5.1.0)(ryuu@4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5))':
+  '@domoinc/ryuu-proxy@5.0.2(express@5.1.0)(ryuu@4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5))(undici@7.24.7)':
     dependencies:
       axios: 1.13.1
-      axios-cookiejar-support: 6.0.5(axios@1.13.1)(tough-cookie@5.1.2)
+      axios-cookiejar-support: 6.0.5(axios@1.13.1)(tough-cookie@5.1.2)(undici@7.24.7)
       busboy: 1.6.0
       configstore: 7.1.0
       dotenv: 16.6.1
@@ -4643,10 +4652,10 @@ snapshots:
       pify: 5.0.0
       tough-cookie: 4.1.4
 
-  axios-cookiejar-support@6.0.5(axios@1.13.1)(tough-cookie@5.1.2):
+  axios-cookiejar-support@6.0.5(axios@1.13.1)(tough-cookie@5.1.2)(undici@7.24.7):
     dependencies:
       axios: 1.13.1
-      http-cookie-agent: 7.0.3(tough-cookie@5.1.2)
+      http-cookie-agent: 7.0.3(tough-cookie@5.1.2)(undici@7.24.7)
       tough-cookie: 5.1.2
     transitivePeerDependencies:
       - undici
@@ -5646,10 +5655,12 @@ snapshots:
 
   html-escaper@2.0.2: {}
 
-  http-cookie-agent@7.0.3(tough-cookie@5.1.2):
+  http-cookie-agent@7.0.3(tough-cookie@5.1.2)(undici@7.24.7):
     dependencies:
       agent-base: 7.1.4
       tough-cookie: 5.1.2
+    optionalDependencies:
+      undici: 7.24.7
 
   http-errors@1.6.3:
     dependencies:
@@ -6695,6 +6706,12 @@ snapshots:
       - debug
       - supports-color
 
+  ryuu-client@file:ryuu-client-5.0.0.tgz:
+    dependencies:
+      open: 10.2.0
+      tinyglobby: 0.2.15
+      undici: 7.24.7
+
   ryuu@4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5):
     dependencies:
       '@domoinc/ryuu-proxy': 4.4.0(@types/tough-cookie@4.0.5)(ryuu@4.4.14(@types/node@24.9.1)(@types/tough-cookie@4.0.5))
@@ -7113,6 +7130,8 @@ snapshots:
     optional: true
 
   undici-types@7.16.0: {}
+
+  undici@7.24.7: {}
 
   unique-string@2.0.0:
     dependencies:

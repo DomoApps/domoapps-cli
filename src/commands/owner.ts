@@ -38,7 +38,17 @@ export default (program: Command) => {
           case 'add':
             if (users) {
               client
-                .addOwners(designId, users)
+                .request(
+                  `/api/apps/v1/designs/${designId}/permissions/ADMIN?format=email`,
+                  {
+                    method: 'POST',
+                    headers: {
+                      Accept: 'application/json',
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(users),
+                  },
+                )
                 .then(() => log.ok('Owners added ' + users))
                 .catch(() => log.fail('Error adding owners'));
             }
@@ -46,14 +56,20 @@ export default (program: Command) => {
           case 'rm':
             if (users) {
               client
-                .removeOwners(designId, users)
+                .request(
+                  `/api/apps/v1/designs/${designId}/permissions/ADMIN?users=${users}&format=email`,
+                  {
+                    method: 'DELETE',
+                    headers: {Accept: 'application/json'},
+                  },
+                )
                 .then(() => log.ok('Owners removed ' + users))
                 .catch(() => log.fail('Error removing owners'));
             }
             break;
           case 'ls':
-            client
-              .getDesign(designId, {parts: 'owners'})
+            client.designs
+              .get(designId, {parts: 'owners'})
               .then(designs => {
                 log.ok(`Owners for design ${designId}:`);
                 designs.owners.forEach(owner => {

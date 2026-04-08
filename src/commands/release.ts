@@ -38,7 +38,7 @@ export default (program: Command) => {
         }
 
         // prompt the user for which design version they want to release, defaulting to latest
-        client
+        client.designs
           .getVersions(manifest.id)
           .then(async versions => {
             versions.reverse();
@@ -69,7 +69,7 @@ export default (program: Command) => {
 
             // release the kraken
             try {
-              await client.release(manifest.id, version);
+              await client.designs.release(manifest.id, version);
               log.ok('Design version (' + version + ') released');
             } catch (err) {
               log.fail('Error releasing design');

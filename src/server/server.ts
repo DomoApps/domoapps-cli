@@ -9,12 +9,12 @@ import {Session} from '../util/session.js';
 import {ManifestUtils} from '../util/manifest.js';
 import {DevOptions} from '../models/index.js';
 import {log} from '../util/log.js';
-import Domo from 'ryuu-client';
+import type {RyuuClient} from 'ryuu-client';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const start = async (client: Domo, options: DevOptions) => {
+export const start = async (client: RyuuClient, options: DevOptions) => {
   const manifest = ManifestUtils.getManifest(options.manifest);
 
   // Validate session before starting
@@ -73,7 +73,7 @@ export const start = async (client: Domo, options: DevOptions) => {
     const info = server.config.logger.info;
     info('\n  Domo Dev Server running at:');
     server.printUrls();
-    info(`\n  Instance: ${client.getInstance()}\n`);
+    info(`\n  Instance: ${client.instance}\n`);
   } catch (err: any) {
     console.error('Failed to start dev server:', err);
     log.fail('Error starting dev server', err.message);

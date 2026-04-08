@@ -65,22 +65,27 @@ jest.mock('chalk', () => ({
   },
 }));
 
-jest.mock('ryuu-client', () => {
-  const mockDomo: any = jest.fn().mockImplementation(() => ({
-    getInstance: jest.fn(),
-    getRefreshToken: jest.fn(),
-    createApp: jest.fn(),
-    uploadAllAssets: jest.fn(),
-    getDomoappsData: jest.fn(),
+jest.mock('ryuu-client', () => ({
+  createClient: jest.fn(() => ({
+    instance: 'test.domo.com',
+    refreshToken: 'mock-token',
     login: jest.fn(),
-    logout: jest.fn(),
-  }));
-
-  // Add static methods
-  mockDomo.getHomeDir = jest.fn(() => '/mock/home/dir');
-
-  return mockDomo;
-});
+    request: jest.fn(),
+    designs: {
+      create: jest.fn(),
+      get: jest.fn(),
+      list: jest.fn(),
+    },
+    assets: {
+      uploadAll: jest.fn(),
+    },
+    apps: {
+      createInstance: jest.fn(),
+      getEnvironment: jest.fn(),
+    },
+  })),
+  getHomeDir: jest.fn(() => '/mock/home/dir'),
+}));
 
 describe('Init Command', () => {
   let mockProgram: Command;
@@ -334,8 +339,7 @@ describe('Init Command', () => {
         datasetPrompt: true,
       });
 
-      const initModule = require('../../src/commands/init');
-      expect(initModule).toBeDefined();
+      expect(mockPrompt).toBeDefined();
     });
 
     it('should skip dataset prompting when flag is set', () => {
@@ -344,8 +348,7 @@ describe('Init Command', () => {
         datasetPrompt: false,
       });
 
-      const initModule = require('../../src/commands/init');
-      expect(initModule).toBeDefined();
+      expect(mockPrompt).toBeDefined();
     });
   });
 
@@ -399,8 +402,7 @@ describe('Init Command', () => {
       );
       mockFs.writeFileSync.mockImplementation();
 
-      const initModule = require('../../src/commands/init');
-      expect(initModule).toBeDefined();
+      expect(mockPrompt).toBeDefined();
     });
   });
 });
