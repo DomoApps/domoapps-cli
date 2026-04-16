@@ -1,7 +1,5 @@
 import fs from 'fs-extra';
 import {ManifestUtils} from './manifest.js';
-import axios, {AxiosRequestConfig, AxiosResponse} from 'axios';
-import qs from 'qs';
 import open from 'open';
 import {
   Registration,
@@ -53,54 +51,52 @@ export class Oauth {
   }
 
   static register(registration: Registration) {
-    const options: AxiosRequestConfig = {
-      url: `https://${registration.instance}/api/oauth2/device_authorization`,
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      data: qs.stringify({
-        client_id: `domo:ryuu:${registration.proxyId}`,
-        scope: this.getScopes(registration.manifestName).join(' '),
-      }),
-    };
+    const scopes = this.getScopes(registration.manifestName);
+    const body = new URLSearchParams({
+      client_id: `domo:ryuu:${registration.proxyId}`,
+      scope: scopes.join(' '),
+    });
 
-    return axios(options)
-      .then(response => {
-        return Promise.resolve(response);
-      })
-      .catch(error => {
-        return Promise.reject(error);
-      });
+    return fetch(
+      `https://${registration.instance}/api/oauth2/device_authorization`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: body.toString(),
+      },
+    ).then(async response => {
+      if (!response.ok) {
+        throw new Error(
+          `Registration failed: ${response.status} ${response.statusText}`,
+        );
+      }
+      return {data: await response.json()};
+    });
   }
 
   static verifyRegistration(
     registration: FullRegistration,
-  ): Promise<AxiosResponse> {
+  ): Promise<{data: any}> {
     return new Promise((resolve, reject) => {
       open(
         `${registration.verification_uri}?user_code=${registration.user_code}`,
       );
-      // scopes are space separated
       const scopes = this.getScopes(registration.manifestName).join(' ');
-      const options: AxiosRequestConfig = {
-        url: `https://${registration.instance}/domoapps/admin/device-registration/${registration.proxyId}?scope=${scopes}&device_code=${registration.device_code}`,
-        method: 'GET',
-      };
+      const url = `https://${registration.instance}/domoapps/admin/device-registration/${registration.proxyId}?scope=${scopes}&device_code=${registration.device_code}`;
 
       const checkRegistration = setInterval(() => {
-        new Promise((resolve, reject) => {
-          axios(options)
-            .then(response => {
-              resolve(response);
-            })
-            .catch(error => {
-              reject(error);
-            });
-        })
+        fetch(url)
+          .then(async response => {
+            if (!response.ok) {
+              throw new Error(`${response.status}`);
+            }
+            return {data: await response.json()};
+          })
           .then(result => {
             clearInterval(checkRegistration);
-            resolve(result as any);
+            resolve(result);
           })
           .catch(() => {
             console.log('Waiting for browser oauth registration');
