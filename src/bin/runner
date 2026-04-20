@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-process.on('unhandledRejection', on_unhandled_error);
-process.on('uncaughtException', on_unhandled_error);
+import {fileURLToPath} from 'url';
+import path from 'path';
+import 'source-map-support/register.js';
 
-var os = require('os'),
-  path = require('path');
+let already_warned = false;
 
-var already_warned = false;
 function on_unhandled_error(err) {
   if (already_warned) {
     return;
@@ -28,7 +27,10 @@ function on_unhandled_error(err) {
   process.exit(1);
 }
 
-// enable source maps
-require('source-map-support').install();
+process.on('unhandledRejection', on_unhandled_error);
+process.on('uncaughtException', on_unhandled_error);
 
-require('./domo');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+await import(path.join(__dirname, 'domo.js'));

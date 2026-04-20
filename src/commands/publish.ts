@@ -51,15 +51,15 @@ export default (program: Command) => {
       new Login()
         .getClient()
         .then(client => {
-          if (client.getRefreshToken() === undefined) {
+          if (client.refreshToken === undefined) {
             log.notAuthenticated();
           }
           checkFileNames(manifest);
           if (!manifest.id) {
             createDesign(client, manifest, options);
           } else {
-            client
-              .getDesign(manifest.id, {parts: 'versions'})
+            client.designs
+              .get(manifest.id, {parts: 'versions'})
               .then(result => {
                 checkMapping(result, manifest);
                 return publishAssets(client, manifest).then(() =>
@@ -78,20 +78,20 @@ const createDesign = (
   manifest: Manifest,
   options?: PublishCommandOptions,
 ) => {
-  return domo
-    .createDesign(manifest)
+  return domo.designs
+    .create(manifest)
     .then((designResult: any) => {
       const newManifestId = ManifestUtils.persistDesignId(
         designResult.id,
         manifest,
       );
       manifest = {...manifest, id: newManifestId};
-      log.ok('New design created on ' + domo.getInstance());
+      log.ok('New design created on ' + domo.instance);
     })
     .catch((e: any) => {
       log.fail('Error when creating new design:', e.message);
     })
-    .then(() => domo.uploadAllAssets(manifest))
+    .then(() => domo.assets.uploadAll(manifest))
     .then((files: any) => logUploadSuccess(files as any))
     .catch((e: string) => {
       log.fail(
@@ -116,14 +116,12 @@ const linkToDomoWeb = (
 ) => {
   console.log(
     'Design can be found at https://' +
-      domo.getInstance() +
+      domo.instance +
       '/assetlibrary?designId=' +
       manifest.id,
   );
   if (options && options.go) {
-    open(
-      'https://' + domo.getInstance() + '/assetlibrary?designId=' + manifest.id,
-    );
+    open('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
   }
 };
 
@@ -189,7 +187,7 @@ const recreateDesign = async (domo: any, manifest: Manifest) => {
     createDesign(domo, manifest);
   } else if (choice === 'Undelete') {
     try {
-      await domo.unDeleteDesign(manifest.id);
+      await domo.designs.undelete(manifest.id);
       publishAssets(domo, manifest);
     } catch (err) {
       log.fail('Error undeleting design');
@@ -204,13 +202,13 @@ const publishErrors = async (e: any, domo: any, manifest: Manifest) => {
   if (e.statusCode === 400 && !e.message.startsWith('DA')) {
     log.fail('Design failed to publish with error:', e.message);
   } else if (e.statusCode === 401) {
-    log.notAuthenticated(domo.getRefreshToken());
+    log.notAuthenticated(domo.refreshToken);
   } else if (e.statusCode === 403) {
     log.fail(
       'You do not have access to the design with id ' +
         manifest.id +
         ' on ' +
-        domo.getInstance() +
+        domo.instance +
         '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.' +
         '\nAlternatively, you may have inadvertently changed the design id.',
     );
@@ -219,7 +217,7 @@ const publishErrors = async (e: any, domo: any, manifest: Manifest) => {
   else if (e.message?.substr(0, 15) == 'No design found') {
     const shouldCreate = await createConfirm(
       'This design does not exist on ' +
-        domo.getInstance() +
+        domo.instance +
         '. Would you like to create a new design with these assets?',
       true,
     );
@@ -260,14 +258,14 @@ const publishErrors = async (e: any, domo: any, manifest: Manifest) => {
 };
 
 const publishAssets = (domo: any, manifest: Manifest) => {
-  return domo
-    .uploadAllAssets(manifest)
+  return domo.assets
+    .uploadAll(manifest)
     .then((files: any) => {
       log.ok(
         'Publishing ' +
           manifest.name +
           ' to ' +
-          domo.getInstance() +
+          domo.instance +
           ' on ' +
           new Date(),
       );

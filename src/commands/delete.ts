@@ -20,11 +20,8 @@ export default (program: Command) => {
           new Login()
             .getClient()
             .then(client => {
-              client
-                .deleteDesign(
-                  designId,
-                  (options as any)['force'] ? true : false,
-                )
+              client.designs
+                .delete(designId, (options as any)['force'] ? true : false)
                 .then(() => log.ok(`Deleted design ${designId}`))
                 .catch(() =>
                   log.fail(

@@ -5,7 +5,7 @@
  * Credentials are loaded from integration-test.env file.
  */
 
-module.exports = {
+export default {
   // Domo instance configurations (credentials from .env)
   instances: {
     primary: {

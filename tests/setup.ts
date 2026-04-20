@@ -50,25 +50,48 @@ jest.mock('fs-extra', () => ({
   ensureDir: jest.fn(),
 }));
 
-// Mock ryuu-client
-jest.mock('ryuu-client', () => {
-  const mockDomo: any = jest.fn().mockImplementation(() => ({
-    getInstance: jest.fn(),
-    getRefreshToken: jest.fn(),
-    createApp: jest.fn(),
-    uploadAllAssets: jest.fn(),
-    getDomoappsData: jest.fn(),
+// Mock ryuu-client v5
+jest.mock('ryuu-client', () => ({
+  createClient: jest.fn(() => ({
+    instance: 'test.domo.com',
+    refreshToken: 'mock-refresh-token',
     login: jest.fn(),
-    logout: jest.fn(),
-  }));
-
-  // Add static methods to the Domo constructor
-  mockDomo.getHomeDir = jest.fn(() => '/mock/home/dir');
-
-  return {
-    default: mockDomo,
-  };
-});
+    request: jest.fn(),
+    designs: {
+      create: jest.fn(),
+      get: jest.fn(),
+      list: jest.fn(),
+      delete: jest.fn(),
+      undelete: jest.fn(),
+      getVersions: jest.fn(),
+      release: jest.fn(),
+    },
+    assets: {
+      upload: jest.fn(),
+      uploadAll: jest.fn(),
+      download: jest.fn(),
+    },
+    apps: {
+      createInstance: jest.fn(),
+      getEnvironment: jest.fn(),
+    },
+    users: {
+      getUserInfo: jest.fn(),
+    },
+  })),
+  getHomeDir: jest.fn(() => '/mock/home/dir'),
+  getMostRecentLogin: jest.fn(() => ({})),
+  RyuuHttpError: class RyuuHttpError extends Error {
+    statusCode: number;
+    url: string;
+    constructor(message: string, statusCode: number, url: string) {
+      super(message);
+      this.name = 'RyuuHttpError';
+      this.statusCode = statusCode;
+      this.url = url;
+    }
+  },
+}));
 
 // Mock inquirer
 jest.mock('inquirer', () => ({

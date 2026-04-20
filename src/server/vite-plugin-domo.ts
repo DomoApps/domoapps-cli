@@ -10,27 +10,70 @@ import type {Plugin, ViteDevServer} from 'vite';
 import type {Request, Response} from 'express';
 import path from 'path';
 import fs from 'fs';
-import Domo from 'ryuu-client';
-import {Proxy} from '@domoinc/ryuu-proxy';
+import type {RyuuClient} from 'ryuu-client';
+import {createProxy, getOauthTokens} from '@domoinc/ryuu-proxy';
+import {ManifestUtils} from '../util/manifest.js';
 
 export interface DomoPluginOptions {
-  client: Domo;
+  client: RyuuClient;
   manifest: any;
   userId?: number;
   manifestPath?: string;
 }
 
 export function domoPlugin(options: DomoPluginOptions): Plugin {
-  let proxy: any;
+  let proxy: ReturnType<typeof createProxy> | null = null;
   const sseClients: Response[] = [];
   let cachedManifestData: any = null;
   let dataFetchPromise: Promise<void>;
 
-  // Start fetching manifest data immediately
+  // Start fetching manifest data and initializing proxy immediately
   const {client, manifest} = options;
   dataFetchPromise = (async () => {
     try {
-      const appData = await client.getDomoappsData(manifest, manifest?.proxyId);
+      // Create a temporary app instance on first dev run so advanced features
+      // (AppDB, Files, Code Engine, OAuth) work without requiring a republish.
+      if (!manifest.proxyId) {
+        if (!manifest.id) {
+          console.warn('\n⚠️  Warning: No design ID found in manifest.json.');
+          console.warn(
+            '   Advanced data proxy features (AppDB, Files, Code Engine) will not be available.',
+          );
+          console.warn(
+            '   To enable them, publish your app with "domo publish" and a proxyId will be added automatically.\n',
+          );
+        } else {
+          try {
+            const result = await client.apps.createInstance(manifest.id);
+            manifest.proxyId = result.instance.id;
+            ManifestUtils.updateManifest(manifest);
+            console.log(
+              `✓ Created temporary app instance with proxyId: ${manifest.proxyId}`,
+            );
+          } catch (err: any) {
+            console.error('\n❌ Failed to create app instance for proxy:');
+            if (err.statusCode === 404) {
+              console.error(
+                `   Design ID "${manifest.id}" not found. Please publish your app first with 'domo publish'.`,
+              );
+            } else if (err.statusCode === 403) {
+              console.error(
+                `   Permission denied. You may not be an owner of design "${manifest.id}".`,
+              );
+            } else {
+              console.error(`   ${err.message || err}`);
+            }
+            console.error(
+              '\n   Note: Advanced data proxy features (AppDB, Files, Code Engine) will not work.\n',
+            );
+          }
+        }
+      }
+
+      const appData = await client.apps.getEnvironment(
+        manifest,
+        manifest?.proxyId,
+      );
 
       // Calculate sizes consistent with Domo Web
       const sizeMultiplier = {
@@ -49,8 +92,21 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
         height,
         userId,
         customerId,
-        instance: client.getInstance(),
+        instance: client.instance,
       };
+
+      // Initialize proxy with the resolved domain URL
+      const oauthTokens =
+        (manifest as any).oAuthEnabled && manifest.proxyId
+          ? getOauthTokens(client.instance, manifest.proxyId, manifest.scopes)
+          : undefined;
+
+      proxy = createProxy({
+        client,
+        manifest,
+        domainUrl: appData.url,
+        oauthTokens,
+      });
     } catch (err: any) {
       console.error('Error fetching Domo app data:', err);
       if (err.statusCode === 401 || err.statusCode === 403) {
@@ -89,51 +145,6 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
         }
         next();
       });
-
-      // Initialize proxy if we don't have a proxyId
-      if (!manifest.proxyId) {
-        if (!manifest.id) {
-          console.warn('\n⚠️  Warning: No design ID found in manifest.json.');
-          console.warn(
-            '   Advanced data proxy features (AppDB, Files, Code Engine) will not be available.',
-          );
-          console.warn(
-            '   To enable them, publish your app with "domo publish" and a proxyId will be added automatically.\n',
-          );
-        } else {
-          client
-            .createApp(manifest.id)
-            .then((app: any) => {
-              manifest.proxyId = app.instance.id;
-              proxy = new (Proxy as any)({manifest}, manifest.proxyId);
-              console.log(
-                `✓ Created temporary app instance with proxyId: ${manifest.proxyId}`,
-              );
-            })
-            .catch((err: any) => {
-              console.error('\n❌ Failed to create app instance for proxy:');
-              if (err.statusCode === 404) {
-                console.error(
-                  `   Design ID "${manifest.id}" not found. Please publish your app first with 'domo publish'.`,
-                );
-              } else if (err.statusCode === 403) {
-                console.error(
-                  `   Permission denied. You may not be an owner of design "${manifest.id}".`,
-                );
-              } else {
-                console.error(`   ${err.message || err}`);
-              }
-              console.error(
-                '\n   Note: Advanced data proxy features (AppDB, Files, Code Engine) will not work.',
-              );
-              console.error(
-                '   To enable them, publish your app and add the proxyId to your manifest.\n',
-              );
-            });
-        }
-      } else {
-        proxy = new (Proxy as any)({manifest}, manifest.proxyId);
-      }
 
       // Watch app files for changes
       const appDir = process.cwd();
@@ -198,9 +209,8 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
       // Add Domo proxy middleware for data API calls
       // MUST be registered here (not in return function) to run before Vite's HTML fallback
       viteServer.middlewares.use((req, res, next) => {
-        if (proxy && proxy.express) {
-          // Add Express-compatible methods to Node.js response object
-          // ryuu-proxy expects Express Response, but Vite provides Node.js ServerResponse
+        if (proxy) {
+          // Add Express-compatible methods for Vite's ServerResponse
           if (!('status' in res)) {
             (res as any).status = function (code: number) {
               this.statusCode = code;
@@ -222,8 +232,7 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
             };
           }
 
-          const proxyMiddleware = proxy.express();
-          proxyMiddleware(req as any, res as any, next);
+          proxy.express()(req as any, res as any, next);
         } else {
           next();
         }

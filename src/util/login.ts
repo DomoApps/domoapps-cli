@@ -2,12 +2,12 @@ import {globSync} from 'glob';
 import fs from 'fs-extra';
 import path from 'path';
 import {login, constant} from '../models/index.js';
-import Domo from 'ryuu-client';
+import {createClient, getHomeDir, type RyuuClient} from 'ryuu-client';
 import {log} from './log.js';
 import Configstore from 'configstore';
 import enquirer from 'enquirer';
 const {prompt} = enquirer as any;
-const home = Domo.getHomeDir();
+const home = getHomeDir();
 
 export class Login {
   login: any;
@@ -88,7 +88,7 @@ export class Login {
     }
   }
 
-  async getClient() {
+  async getClient(): Promise<RyuuClient> {
     const refreshToken = this.login.get('refreshToken');
 
     try {
@@ -97,13 +97,13 @@ export class Login {
       const port = this.proxy.get('port');
 
       if (!username)
-        return new Domo(
-          this.instance,
+        return createClient({
+          instance: this.instance,
           refreshToken,
-          constant.CLIENT_ID,
-          {host, port},
-          this.login.get('devToken'),
-        );
+          clientId: constant.CLIENT_ID,
+          proxy: host && port ? {host, port} : undefined,
+          devToken: this.login.get('devToken'),
+        });
 
       const answers = await prompt([
         {
@@ -112,20 +112,24 @@ export class Login {
           name: 'pass',
         },
       ]);
-      return new Domo(
-        this.instance,
+      return createClient({
+        instance: this.instance,
         refreshToken,
-        constant.CLIENT_ID,
-        {
+        clientId: constant.CLIENT_ID,
+        proxy: {
           host,
           port,
           username,
           password: (answers as any).pass,
-        } as any,
-        this.login.get('devToken'),
-      );
+        },
+        devToken: this.login.get('devToken'),
+      });
     } catch {
-      return new Domo(this.instance, refreshToken, constant.CLIENT_ID);
+      return createClient({
+        instance: this.instance,
+        refreshToken,
+        clientId: constant.CLIENT_ID,
+      });
     }
   }
 }

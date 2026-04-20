@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 
+# Packed tarballs
+*.tgz
+
 # Environment files
 **/*.env
 !*.env.sample

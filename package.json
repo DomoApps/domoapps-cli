@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "5.0.4",
+  "version": "5.1.0-beta.1",
   "type": "module",
   "description": "Domo App Dev Studio CLI, The main tool used to create, edit, and publish app designs to Domo",
   "keywords": [
@@ -38,9 +38,9 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@domoinc/ryuu-proxy": "^5.0.2",
+    "@domoinc/ryuu-proxy": "^5.1.0-beta.1",
+    "@vitejs/plugin-react": "^5.0.4",
     "async": "^3.2.6",
-    "axios": "^1.13.0",
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "commander": "^14.0.1",
@@ -53,22 +53,15 @@
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "open": "^10.2.0",
-    "qs": "^6.14.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "ryuu-client": "^4.4.5",
+    "ryuu-client": "^5.0.0-beta.1",
     "semver": "^7.7.3",
     "shelljs": "^0.10.0",
     "slug": "^11.0.1",
     "source-map-support": "^0.5.21",
     "validator": "^13.15.15",
-    "vite": "^7.1.11",
-    "@vitejs/plugin-react": "^5.0.4"
-  },
-  "pnpm": {
-    "overrides": {
-      "axios": "^1.13.0"
-    }
+    "vite": "^7.1.11"
   },
   "devDependencies": {
     "@types/async": "^3.2.25",

@@ -34,7 +34,8 @@ jest.mock('fs-extra', () => ({
 }));
 
 jest.mock('ryuu-client', () => ({
-  default: jest.fn(),
+  createClient: jest.fn(),
+  getHomeDir: jest.fn(() => '/mock/home/dir'),
 }));
 
 describe('Login Command', () => {

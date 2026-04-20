@@ -38,22 +38,42 @@ export default (program: Command) => {
           case 'add':
             if (users) {
               client
-                .addOwners(designId, users)
+                .request(
+                  `/api/apps/v1/designs/${encodeURIComponent(designId)}/permissions/ADMIN?format=email`,
+                  {
+                    method: 'POST',
+                    headers: {
+                      Accept: 'application/json',
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(users),
+                  },
+                )
                 .then(() => log.ok('Owners added ' + users))
                 .catch(() => log.fail('Error adding owners'));
             }
             break;
           case 'rm':
             if (users) {
+              const params = new URLSearchParams({
+                users: users.join(','),
+                format: 'email',
+              });
               client
-                .removeOwners(designId, users)
+                .request(
+                  `/api/apps/v1/designs/${encodeURIComponent(designId)}/permissions/ADMIN?${params}`,
+                  {
+                    method: 'DELETE',
+                    headers: {Accept: 'application/json'},
+                  },
+                )
                 .then(() => log.ok('Owners removed ' + users))
                 .catch(() => log.fail('Error removing owners'));
             }
             break;
           case 'ls':
-            client
-              .getDesign(designId, {parts: 'owners'})
+            client.designs
+              .get(designId, {parts: 'owners'})
               .then(designs => {
                 log.ok(`Owners for design ${designId}:`);
                 designs.owners.forEach(owner => {

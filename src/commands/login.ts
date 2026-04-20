@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import Domo from 'ryuu-client';
+import {getHomeDir} from 'ryuu-client';
 import {Login} from '../util/login.js';
 import {BaseCommand} from '../util/BaseCommand.js';
 import {
@@ -179,12 +179,12 @@ class LoginCommand extends BaseCommand {
 
     if (fs.existsSync(deprecatedLoginDir)) {
       try {
-        fs.copySync(deprecatedLoginDir, `${Domo.getHomeDir()}/ryuu/`, {
+        fs.copySync(deprecatedLoginDir, `${getHomeDir()}/ryuu/`, {
           overwrite: false,
         });
         this.logOk(
           'Successfully transferred login files from ryuu 3.x',
-          `Login files copied to ${Domo.getHomeDir()}/ryuu/`,
+          `Login files copied to ${getHomeDir()}/ryuu/`,
         );
       } catch (error) {
         this.logFail('Failed to transfer logins:', error);

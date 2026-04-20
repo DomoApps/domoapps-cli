@@ -7,9 +7,10 @@
  * before running the full integration test suite.
  */
 
-const fs = require('fs-extra');
-const path = require('path');
-const {execSync} = require('child_process');
+import fs from 'fs-extra';
+import path from 'path';
+import {execSync} from 'child_process';
+import dotenv from 'dotenv';
 
 // Configuration validation
 class IntegrationSetupValidator {
@@ -42,7 +43,7 @@ class IntegrationSetupValidator {
     }
 
     // Load environment variables from integration-test.env
-    require('dotenv').config({path: envFile});
+    dotenv.config({path: envFile});
 
     // Validate required variables
     this.validateRequiredVariables();
@@ -157,11 +158,11 @@ class IntegrationSetupValidator {
   }
 
   async validateDependencies() {
-    const required = ['fs-extra', 'child_process'];
+    const required = ['fs-extra', 'dotenv'];
 
     for (const dep of required) {
       try {
-        require(dep);
+        await import(dep);
         this.log(`✅ Dependency available: ${dep}`);
       } catch (error) {
         this.errors.push(`Missing dependency: ${dep}`);
@@ -223,9 +224,7 @@ class IntegrationSetupValidator {
 }
 
 // Run validator if called directly
-if (require.main === module) {
-  const validator = new IntegrationSetupValidator();
-  validator.run();
-}
+const validator = new IntegrationSetupValidator();
+validator.run();
 
-module.exports = IntegrationSetupValidator;
+export default IntegrationSetupValidator;

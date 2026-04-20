@@ -26,30 +26,30 @@ export default (program: Command) => {
           version = await createInput('version', 'latest');
         }
 
-        const req = await client.download(designId, version);
+        const res = await client.assets.download(designId, version);
 
-        if (req.status === 200) {
+        if (res.ok) {
           const regexp = /filename="(.*)"/;
-          const name =
-            req.headers['content-disposition'].match(regexp)[1] || 'domoapp';
-          const writeStream = fs.createWriteStream('./' + name + '.zip', {
-            flags: 'w+',
+          const disposition = res.headers.get('content-disposition') ?? '';
+          const name = disposition.match(regexp)?.[1] || 'domoapp';
+          const zipPath = './' + name + '.zip';
+          const arrayBuffer = await res.arrayBuffer();
+          fs.writeFileSync(zipPath, Buffer.from(arrayBuffer), {
             mode: 0o666,
           });
-          (req.data as any).pipe(writeStream);
 
-          writeStream.on('finish', () => {
-            const source = path.resolve('./' + name + '.zip');
-            const target = path.resolve('./' + name);
+          const source = path.resolve(zipPath);
+          const target = path.resolve('./' + name);
 
-            extract(source, {dir: target}).catch(() => {
-              (shell as any).chmod('-R', 'u+w', target);
-              fs.remove(source);
-              log.fail(
-                'Extraction of design from its compressed zip file failed, removing downloaded zip.',
-              );
-            });
-          });
+          try {
+            await extract(source, {dir: target});
+          } catch {
+            (shell as any).chmod('-R', 'u+w', target);
+            fs.remove(source);
+            log.fail(
+              'Extraction of design from its compressed zip file failed, removing downloaded zip.',
+            );
+          }
         } else {
           log.fail(
             'Design not found. Make sure you have the correct design id.',

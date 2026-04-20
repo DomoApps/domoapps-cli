@@ -53,7 +53,8 @@ jest.mock('../../src/util/log', () => ({
 }));
 
 jest.mock('ryuu-client', () => ({
-  default: jest.fn(),
+  createClient: jest.fn(),
+  getHomeDir: jest.fn(() => '/mock/home/dir'),
 }));
 
 describe('Publish Command', () => {
