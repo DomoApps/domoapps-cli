@@ -39,7 +39,7 @@ export default (program: Command) => {
             if (users) {
               client
                 .request(
-                  `/api/apps/v1/designs/${designId}/permissions/ADMIN?format=email`,
+                  `/api/apps/v1/designs/${encodeURIComponent(designId)}/permissions/ADMIN?format=email`,
                   {
                     method: 'POST',
                     headers: {
@@ -55,9 +55,13 @@ export default (program: Command) => {
             break;
           case 'rm':
             if (users) {
+              const params = new URLSearchParams({
+                users: users.join(','),
+                format: 'email',
+              });
               client
                 .request(
-                  `/api/apps/v1/designs/${designId}/permissions/ADMIN?users=${users}&format=email`,
+                  `/api/apps/v1/designs/${encodeURIComponent(designId)}/permissions/ADMIN?${params}`,
                   {
                     method: 'DELETE',
                     headers: {Accept: 'application/json'},

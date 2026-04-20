@@ -12,6 +12,7 @@ import path from 'path';
 import fs from 'fs';
 import type {RyuuClient} from 'ryuu-client';
 import {createProxy, getOauthTokens} from '@domoinc/ryuu-proxy';
+import {ManifestUtils} from '../util/manifest.js';
 
 export interface DomoPluginOptions {
   client: RyuuClient;
@@ -30,6 +31,45 @@ export function domoPlugin(options: DomoPluginOptions): Plugin {
   const {client, manifest} = options;
   dataFetchPromise = (async () => {
     try {
+      // Create a temporary app instance on first dev run so advanced features
+      // (AppDB, Files, Code Engine, OAuth) work without requiring a republish.
+      if (!manifest.proxyId) {
+        if (!manifest.id) {
+          console.warn('\n⚠️  Warning: No design ID found in manifest.json.');
+          console.warn(
+            '   Advanced data proxy features (AppDB, Files, Code Engine) will not be available.',
+          );
+          console.warn(
+            '   To enable them, publish your app with "domo publish" and a proxyId will be added automatically.\n',
+          );
+        } else {
+          try {
+            const result = await client.apps.createInstance(manifest.id);
+            manifest.proxyId = result.instance.id;
+            ManifestUtils.updateManifest(manifest);
+            console.log(
+              `✓ Created temporary app instance with proxyId: ${manifest.proxyId}`,
+            );
+          } catch (err: any) {
+            console.error('\n❌ Failed to create app instance for proxy:');
+            if (err.statusCode === 404) {
+              console.error(
+                `   Design ID "${manifest.id}" not found. Please publish your app first with 'domo publish'.`,
+              );
+            } else if (err.statusCode === 403) {
+              console.error(
+                `   Permission denied. You may not be an owner of design "${manifest.id}".`,
+              );
+            } else {
+              console.error(`   ${err.message || err}`);
+            }
+            console.error(
+              '\n   Note: Advanced data proxy features (AppDB, Files, Code Engine) will not work.\n',
+            );
+          }
+        }
+      }
+
       const appData = await client.apps.getEnvironment(
         manifest,
         manifest?.proxyId,
