@@ -42,7 +42,24 @@ export default (program: Command) => {
           const target = path.resolve('./' + name);
 
           try {
-            await extract(source, {dir: target});
+            await extract(source, {
+              dir: target,
+              // extract-zip@2.0.1 (latest published; no release since 2020)
+              // writes a symlink entry's target as-is with no check that it
+              // stays inside `dir` (GHSA-jmr9-qjv8-65gv, zip-slip via
+              // symlink). Design assets are source files and have no
+              // legitimate reason to contain a symlink, so reject any.
+              onEntry: entry => {
+                const mode = (entry.externalFileAttributes >> 16) & 0xffff;
+                const IFMT = 0xf000;
+                const IFLNK = 0xa000;
+                if ((mode & IFMT) === IFLNK) {
+                  throw new Error(
+                    `refusing to extract symlink entry "${entry.fileName}" (GHSA-jmr9-qjv8-65gv)`,
+                  );
+                }
+              },
+            });
           } catch {
             (shell as any).chmod('-R', 'u+w', target);
             fs.remove(source);
