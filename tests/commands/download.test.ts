@@ -26,7 +26,11 @@ jest.mock('path', () => ({
   resolve: jest.fn(),
 }));
 
-jest.mock('extract-zip', () => jest.fn());
+jest.mock('unzipper', () => ({
+  Open: {
+    file: jest.fn(),
+  },
+}));
 
 jest.mock('inquirer', () => ({
   prompt: jest.fn(),
@@ -41,7 +45,7 @@ describe('Download Command', () => {
   let mockLog: any;
   let mockFs: any;
   let mockPath: any;
-  let mockExtract: any;
+  let mockUnzipper: any;
   let mockInquirer: any;
   let mockShell: any;
 
@@ -51,7 +55,7 @@ describe('Download Command', () => {
     mockLog = require('../../src/util/log').log;
     mockFs = require('fs-extra');
     mockPath = require('path');
-    mockExtract = require('extract-zip');
+    mockUnzipper = require('unzipper');
     mockInquirer = require('inquirer');
     mockShell = require('shelljs');
   });
@@ -273,7 +277,7 @@ describe('Download Command', () => {
 
       mockFs.createWriteStream.mockReturnValue(mockWriteStream);
       mockPath.resolve.mockReturnValue('/path/to/file');
-      mockExtract.mockRejectedValue(new Error('Extraction failed'));
+      mockUnzipper.Open.file.mockRejectedValue(new Error('Extraction failed'));
 
       const name = 'myapp';
       const writeStream = mockFs.createWriteStream('./' + name + '.zip', {
