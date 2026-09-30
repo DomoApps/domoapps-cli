@@ -93,9 +93,14 @@ const createDesign = (
     })
     .then(() => domo.assets.uploadAll(manifest))
     .then((files: any) => logUploadSuccess(files as any))
-    .catch((e: string) => {
+    .catch((e: any) => {
       log.fail(
-        e || 'Error uploading assets in uploading assets for a new design',
+        log.handleErrorMessage(
+          e,
+          'Error uploading assets in uploading assets for a new design',
+        ),
+        undefined,
+        e,
       );
     })
     .then(() => {
@@ -253,6 +258,8 @@ const publishErrors = async (e: any, domo: any, manifest: Manifest) => {
         e,
         'Error uploading assets in the upload all assets',
       ),
+      undefined,
+      e,
     );
   }
 };
