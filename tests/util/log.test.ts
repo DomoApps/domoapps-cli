@@ -1,5 +1,6 @@
 import {jest} from '@jest/globals';
 const chalk = require('chalk');
+const fs = require('fs-extra');
 import {log} from '../../src/util/log';
 
 // Mock chalk
@@ -190,6 +191,77 @@ describe('Log Utility', () => {
       log.info('test');
 
       expect(mockConsole).toHaveBeenCalledTimes(4);
+    });
+  });
+
+  describe('handleErrorMessage', () => {
+    it('returns just the label when there is no error', () => {
+      expect(log.handleErrorMessage(undefined as any, 'Upload failed')).toBe(
+        'Upload failed',
+      );
+    });
+
+    it('includes the status code and message for HTTP errors', () => {
+      const err = {statusCode: 500, message: 'Internal Server Error'};
+      expect(log.handleErrorMessage(err as any, 'Upload failed')).toBe(
+        'Upload failed - HTTP 500: Internal Server Error',
+      );
+    });
+
+    it('includes the message when there is no status code', () => {
+      const err = {message: 'socket hang up'};
+      expect(log.handleErrorMessage(err as any, 'Upload failed')).toBe(
+        'Upload failed - socket hang up',
+      );
+    });
+  });
+
+  describe('fail with a real error', () => {
+    it('prints the statusCode and path when present on the error', () => {
+      const err = {
+        name: 'RyuuHttpError',
+        message: 'Internal Server Error',
+        statusCode: 500,
+        url: 'https://domo-es.domo.com/api/apps/v1/designs/abc/versions/0.1.4/assets',
+      };
+
+      log.fail('Error uploading assets', undefined, err);
+
+      expect(mockConsole).toHaveBeenCalledWith('RED:statusCode:', 500);
+      expect(mockConsole).toHaveBeenCalledWith('RED:path:', err.url);
+    });
+
+    it('does not print method or failureMessage when the error lacks them', () => {
+      const err = {statusCode: 500, message: 'Internal Server Error'};
+
+      log.fail('Error uploading assets', undefined, err);
+
+      expect(mockConsole).not.toHaveBeenCalledWith(
+        'RED:method:',
+        expect.anything(),
+      );
+      expect(mockConsole).not.toHaveBeenCalledWith(
+        'RED:failureMessage:',
+        expect.anything(),
+      );
+    });
+
+    it('persists the full error to the log file', () => {
+      const err = {
+        name: 'RyuuHttpError',
+        message: 'Internal Server Error',
+        statusCode: 500,
+        url: 'https://domo-es.domo.com/...',
+      };
+
+      log.fail('Error uploading assets', undefined, err);
+
+      expect(fs.ensureDirSync).toHaveBeenCalled();
+      expect(fs.appendFileSync).toHaveBeenCalled();
+      const [, contents] = (fs.appendFileSync as jest.Mock).mock.calls[0];
+      const logged = JSON.parse((contents as string).trim());
+      expect(logged.error.statusCode).toBe(500);
+      expect(logged.error.message).toBe('Internal Server Error');
     });
   });
 
