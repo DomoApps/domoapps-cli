@@ -65,3 +65,5 @@ Thumbs.db
 
 # Optional stylelint cache
 .stylelintcache
+# Compiled release pipeline scripts
+.ci-out/

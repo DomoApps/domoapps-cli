@@ -366,6 +366,10 @@ npm run release:alpha        # Publish with alpha tag
 npm run release:beta         # Publish with beta tag
 ```
 
+### Automated Release Pipeline
+
+GitHub Actions (`.github/workflows/`) cut betas from `master`, promote them to `rc` and then `latest` after soak periods, and publish through npm trusted publishing. Decision logic and scripts live in `scripts/ci/` (tested by the `ci` Jest project). Full model, settings, and one-time admin setup are in `RELEASING.md`. The manual `release:*` scripts above still work. Use `npm run release:plan` and `npm run release:rehearse` to see what the pipeline would do without publishing.
+
 ---
 
 ## Testing Infrastructure
