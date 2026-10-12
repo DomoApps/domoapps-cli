@@ -5,7 +5,7 @@
 ## Project Overview
 
 **Name**: Ryuu (published as `domo` CLI command)
-**Version**: 5.0.0-beta.4
+**Version**: 5.1.4-beta.0
 **Type**: TypeScript-based Node.js CLI tool
 **Primary Purpose**: Enable developers to create, develop, and deploy Custom Apps to the Domo platform
 **NPM Package**: `ryuu` (globally installable)
@@ -139,7 +139,7 @@ Commands are loaded dynamically at runtime from `/commands` directory:
 
 #### 1. OAuth (Default)
 - Interactive login via browser
-- Uses `ryuu-client` library (dependency: `ryuu-client@4.4.4`)
+- Uses `ryuu-client` library (dependency: `ryuu-client@^5.0.0`)
 - Supports username/email and password
 - Refresh tokens stored locally via Configstore
 - Flow: `Login.getClient()` → creates Domo client → validates session
@@ -176,7 +176,7 @@ Commands are loaded dynamically at runtime from `/commands` directory:
 ## Domo API Integration
 
 ### Client Library
-- **Dependency**: `ryuu-client@4.4.4`
+- **Dependency**: `ryuu-client@^5.0.0`
 - **Usage**: All API calls go through Domo client instance
 - **Client ID**: `domo:internal:devstudio` (constant)
 
@@ -198,6 +198,18 @@ Main entry point (`bin/domo.ts`) catches unhandled rejections:
 - **401/403**: Authentication failures → prompt to re-login
 - **404 with "No Design found"**: Design ID not found → publish first
 - **Other statusCode errors**: Generic API error messages
+
+### Publish Command Flow (`commands/publish.ts`)
+- The action is `async`; every `createDesign`, `recreateDesign`, and `publishErrors` call is awaited, and `options` (e.g. `--go`) is passed through all recovery paths (undelete, create new, "No design found", `DA0086`).
+- Existing design: `designs.get` → `checkMapping` (warn-only, tolerates missing `datasetsMapping`) → `publishAssets` in one `try`; any error goes to `publishErrors`, and `linkToDomoWeb` runs only after success.
+- New design: `designs.create` → `persistDesignId` → `assets.uploadAll`. A failure to persist the id fails with a message that includes the new design id.
+- `publishErrors` routes by status code/message: 400 (non-`DA`), 401, 403, "Design has been deleted" (prompt: undelete or create new), "No design found" (confirm create), `DA####` codes, otherwise a generic upload error with the full error attached.
+- Prompts (`createSelect`/`createConfirm`) are wrapped so Ctrl-C exits cleanly instead of causing an unhandled rejection.
+- `linkToDomoWeb` is async; a failed browser `open` logs a warning only.
+
+### Manifest Id Persistence & `--build-dir`
+- `persistDesignId` writes to the manifest found relative to the **current directory**. With `--build-dir`, the CLI reads the manifest first and then `chdir`s, so a new design id is written to the build directory's `manifest.json`, not the source manifest.
+- This is intentional to leave as-is: Domo+Vite+React projects (the `da` tooling, e.g. `spool-iq`) keep ids per environment in `src/manifestOverrides.json`, `da apply-manifest` generates `build/manifest.json`, and they publish with `cd build && domo publish`. The generated manifest is overwritten on rebuild, so users copy a new design id into the override entry by hand. Do not redirect the write to the source manifest; it would put one environment's id in the shared base manifest.
 
 ---
 
@@ -442,7 +454,7 @@ Forces build before each commit via Husky
 ### Core Runtime
 - **commander** (14.0.1) - CLI argument parsing
 - **axios** (1.7.9) - HTTP client
-- **ryuu-client** (4.4.4) - Domo API client
+- **ryuu-client** (^5.0.0) - Domo API client
 - **vite** (7.1.11) - Dev server & bundler
 - **react** (19.2.0) - UI library
 - **express** (5.1.0) - Middleware for dev server
@@ -451,7 +463,7 @@ Forces build before each commit via Husky
 - **configstore** (7.1.0) - Credential storage (JSON files)
 - **jwt-decode** (4.0.0) - JWT parsing
 - **enquirer** (2.4.1) - Interactive prompts
-- **@domoinc/ryuu-proxy** (5.0.1) - Proxy for Domo APIs
+- **@domoinc/ryuu-proxy** (^5.1.2) - Proxy for Domo APIs
 
 ### Utilities
 - **lodash** (4.17.21) - Utility functions
@@ -529,6 +541,7 @@ domo --help
 
 - **Verbose output**: Add `--ssl` flag to see detailed errors
 - **Unhandled rejections**: Logged to console with stack traces
+- **Error log**: `log.fail` with an error object appends full details (message, status code, url, stack) to `~/.domo/ryuu/logs/error.log`
 - **Dev server**: Logs to console with `logLevel: 'info'`
 
 ---
@@ -631,7 +644,7 @@ npm run release:production  # Release to npm
 
 ---
 
-**Last Updated**: November 2024
-**Version**: 5.0.0-beta.4
+**Last Updated**: October 2026
+**Version**: 5.1.4-beta.0
 **Node Requirement**: 16+
 **TypeScript Target**: ES2020
