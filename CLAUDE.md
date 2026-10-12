@@ -5,7 +5,7 @@
 ## Project Overview
 
 **Name**: Ryuu (published as `domo` CLI command)
-**Version**: 5.1.4-beta.0
+**Version**: 5.1.4-alpha.0
 **Type**: TypeScript-based Node.js CLI tool
 **Primary Purpose**: Enable developers to create, develop, and deploy Custom Apps to the Domo platform
 **NPM Package**: `ryuu` (globally installable)
@@ -649,6 +649,6 @@ npm run release:production  # Release to npm
 ---
 
 **Last Updated**: October 2026
-**Version**: 5.1.4-beta.0
+**Version**: 5.1.4-alpha.0
 **Node Requirement**: 16+
 **TypeScript Target**: ES2020
