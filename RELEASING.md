@@ -163,14 +163,14 @@ UI: **Settings → Secrets and variables → Actions → Variables**
 | Variable | Value | What it does |
 |---|---|---|
 | `RELEASE_ENABLED` | `true` | Merges, the daily schedule and follow-up runs release automatically. Any other value, or unset, means only runs you start by hand do anything |
-| `JIRA_BASE_URL` | `https://domoinc.atlassian.net` | The Jira site that's searched for bugs |
-| `JIRA_PROJECTS` | `DOMO` | Comma-separated Jira projects that are searched |
+| `JIRA_BASE_URL` | `https://your-company.atlassian.net` | The Jira site that's searched for bugs |
+| `JIRA_PROJECTS` | `PROJ` | Comma-separated Jira projects that are searched |
 
 ```bash
 gh variable set RELEASE_ENABLED --body true  --repo DomoApps/domoapps-cli   # turn automatic releases on
 gh variable set RELEASE_ENABLED --body false --repo DomoApps/domoapps-cli   # pause them
-gh variable set JIRA_BASE_URL --body https://domoinc.atlassian.net --repo DomoApps/domoapps-cli
-gh variable set JIRA_PROJECTS --body DOMO    --repo DomoApps/domoapps-cli
+gh variable set JIRA_BASE_URL --body https://your-company.atlassian.net --repo DomoApps/domoapps-cli
+gh variable set JIRA_PROJECTS --body PROJ    --repo DomoApps/domoapps-cli
 gh variable list --repo DomoApps/domoapps-cli
 ```
 

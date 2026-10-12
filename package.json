@@ -11,6 +11,13 @@
   ],
   "homepage": "https://developer.domo.com/portal/rmfbkwje8kmqj-domo-apps-cli",
   "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DomoApps/domoapps-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DomoApps/domoapps-cli/issues"
+  },
   "bin": {
     "domo": "./dist/bin/domo.js"
   },

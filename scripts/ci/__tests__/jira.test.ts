@@ -19,8 +19,8 @@ function fakeFetch(pages: Array<{ status?: number; body: unknown }>) {
 
 function cfg(fetchFn: typeof fetch): JiraConfig {
   return {
-    baseUrl: 'https://domoinc.atlassian.net/',
-    email: 'ci@domo.com',
+    baseUrl: 'https://your-company.atlassian.net/',
+    email: 'ci@example.com',
     token: 's3cret',
     projects: ['DOMO'],
     fetchFn,
@@ -48,10 +48,10 @@ describe('search', () => {
   it('posts to the Cloud enhanced-search endpoint with basic auth', async () => {
     const { fn, calls } = fakeFetch([{ body: { issues: [], isLast: true } }]);
     await search(cfg(fn), 'issuetype = Bug');
-    expect(calls[0].url).toBe('https://domoinc.atlassian.net/rest/api/3/search/jql');
+    expect(calls[0].url).toBe('https://your-company.atlassian.net/rest/api/3/search/jql');
     expect(calls[0].init.method).toBe('POST');
     const headers = calls[0].init.headers as Record<string, string>;
-    expect(headers.Authorization).toBe(`Basic ${Buffer.from('ci@domo.com:s3cret').toString('base64')}`);
+    expect(headers.Authorization).toBe(`Basic ${Buffer.from('ci@example.com:s3cret').toString('base64')}`);
     expect(JSON.parse(String(calls[0].init.body))).toMatchObject({ jql: 'issuetype = Bug', maxResults: 100 });
   });
 

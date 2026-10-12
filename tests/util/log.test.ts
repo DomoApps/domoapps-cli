@@ -222,7 +222,7 @@ describe('Log Utility', () => {
         name: 'RyuuHttpError',
         message: 'Internal Server Error',
         statusCode: 500,
-        url: 'https://domo-es.domo.com/api/apps/v1/designs/abc/versions/0.1.4/assets',
+        url: 'https://test.domo.com/api/apps/v1/designs/abc/versions/0.1.4/assets',
       };
 
       log.fail('Error uploading assets', undefined, err);
@@ -251,7 +251,7 @@ describe('Log Utility', () => {
         name: 'RyuuHttpError',
         message: 'Internal Server Error',
         statusCode: 500,
-        url: 'https://domo-es.domo.com/...',
+        url: 'https://test.domo.com/...',
       };
 
       log.fail('Error uploading assets', undefined, err);
