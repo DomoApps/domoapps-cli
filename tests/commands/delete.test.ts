@@ -2,7 +2,7 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('inquirer', () => ({
+jest.mock('enquirer', () => ({
   prompt: jest.fn(),
 }));
 
@@ -26,14 +26,14 @@ jest.mock('../../src/util/log', () => ({
 
 describe('Delete Command', () => {
   let mockProgram: Command;
-  let mockInquirer: any;
+  let mockEnquirer: any;
   let mockGetDesignId: any;
   let mockLog: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockInquirer = require('inquirer');
+    mockEnquirer = require('enquirer');
     mockGetDesignId = require('../../src/util/design').getDesignId;
     mockLog = require('../../src/util/log').log;
   });
@@ -109,8 +109,8 @@ describe('Delete Command', () => {
 
   describe('Delete Confirmation', () => {
     it('should prompt user for confirmation', async () => {
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockResolvedValueOnce({
         delete: true,
@@ -137,8 +137,8 @@ describe('Delete Command', () => {
     });
 
     it('should handle user confirmation', async () => {
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockResolvedValueOnce({
         delete: true,
@@ -149,8 +149,8 @@ describe('Delete Command', () => {
     });
 
     it('should handle user cancellation', async () => {
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockResolvedValueOnce({
         delete: false,
@@ -287,9 +287,9 @@ describe('Delete Command', () => {
       );
     });
 
-    it('should handle inquirer prompts', async () => {
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+    it('should handle enquirer prompts', async () => {
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockResolvedValueOnce({
         delete: true,
@@ -314,8 +314,8 @@ describe('Delete Command', () => {
 
       mockGetDesignId.mockReturnValue(designId);
 
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockResolvedValueOnce({
         delete: true,
@@ -356,8 +356,8 @@ describe('Delete Command', () => {
 
       mockGetDesignId.mockReturnValue(designId);
 
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockResolvedValueOnce({
         delete: false,

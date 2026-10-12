@@ -2,12 +2,10 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('inquirer', () => ({
-  registerPrompt: jest.fn(),
+jest.mock('enquirer', () => ({
   prompt: jest.fn(),
 }));
 
-jest.mock('inquirer-autocomplete-prompt', () => jest.fn());
 
 jest.mock('../../src/util/login', () => ({
   Login: jest.fn(),
@@ -40,7 +38,7 @@ jest.mock('ryuu-client', () => ({
 
 describe('Login Command', () => {
   let mockProgram: Command;
-  let mockInquirer: any;
+  let mockEnquirer: any;
   let mockLog: any;
   let mockGetRainbowLogo: any;
   let mockFs: any;
@@ -48,7 +46,7 @@ describe('Login Command', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockInquirer = require('inquirer');
+    mockEnquirer = require('enquirer');
     mockLog = require('../../src/util/log').log;
     mockGetRainbowLogo = require('../../src/models/enums/constant').getRainbowLogo;
     mockFs = require('fs-extra');
@@ -98,8 +96,8 @@ describe('Login Command', () => {
     });
 
     it('should handle instance selection', async () => {
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockResolvedValueOnce({
         instance: 'test.domo.com',
@@ -110,8 +108,8 @@ describe('Login Command', () => {
     });
 
     it('should handle new instance creation', async () => {
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockResolvedValueOnce({
         instance: 'new instance',
@@ -122,8 +120,8 @@ describe('Login Command', () => {
     });
 
     it('should handle authentication errors', async () => {
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockRejectedValueOnce(new Error('Authentication failed'));
 
@@ -168,8 +166,8 @@ describe('Login Command', () => {
 
   describe('Transfer Option', () => {
     it('should handle transfer option', async () => {
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockResolvedValueOnce({
         transfer: true,
@@ -182,8 +180,8 @@ describe('Login Command', () => {
 
   describe('Error Handling', () => {
     it('should handle network errors gracefully', async () => {
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockRejectedValueOnce(new Error('Network error'));
 
@@ -196,8 +194,8 @@ describe('Login Command', () => {
     });
 
     it('should handle invalid instance format', async () => {
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockResolvedValueOnce({
         instance: 'invalid-instance-format',
@@ -349,8 +347,8 @@ describe('Login Command', () => {
 
   describe('Integration Tests', () => {
     it('should complete full login flow', async () => {
-      const mockPrompt = mockInquirer.prompt as jest.MockedFunction<
-        typeof mockInquirer.prompt
+      const mockPrompt = mockEnquirer.prompt as jest.MockedFunction<
+        typeof mockEnquirer.prompt
       >;
       mockPrompt.mockResolvedValueOnce({
         instance: 'test.domo.com',

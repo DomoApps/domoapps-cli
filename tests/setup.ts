@@ -94,27 +94,12 @@ jest.mock('ryuu-client', () => ({
   },
 }));
 
-// Mock inquirer
-jest.mock('inquirer', () => ({
+// Mock enquirer
+jest.mock('enquirer', () => ({
   prompt: jest.fn(),
-  registerPrompt: jest.fn(),
 }));
 
 // Mock chalk - removed to allow individual test mocks
-
-// Mock axios
-jest.mock('axios', () => ({
-  default: {
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-  },
-  get: jest.fn(),
-  post: jest.fn(),
-  put: jest.fn(),
-  delete: jest.fn(),
-}));
 
 // Mock open
 jest.mock('open', () => jest.fn());
@@ -129,24 +114,4 @@ jest.mock('shelljs', () => ({
 // Mock glob
 jest.mock('glob', () => ({
   sync: jest.fn(),
-}));
-
-// Mock portfinder
-jest.mock('portfinder', () => ({
-  getPort: jest.fn(),
-  basePort: 3000,
-}));
-
-// Mock browser-sync
-jest.mock('browser-sync', () => ({
-  create: jest.fn(() => ({
-    init: jest.fn(),
-    reload: jest.fn(),
-    watch: jest.fn(),
-    instance: {
-      logger: {
-        info: jest.fn(),
-      },
-    },
-  })),
 }));

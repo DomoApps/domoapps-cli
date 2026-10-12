@@ -12,7 +12,7 @@ jest.mock('../../src/util/log', () => ({
   },
 }));
 
-jest.mock('inquirer', () => ({
+jest.mock('enquirer', () => ({
   prompt: jest.fn(),
 }));
 
@@ -27,14 +27,14 @@ jest.mock('configstore', () => {
 describe('Proxy Command', () => {
   let mockProgram: Command;
   let mockLog: any;
-  let mockInquirer: any;
+  let mockEnquirer: any;
   let mockConfigstore: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
     mockLog = require('../../src/util/log').log;
-    mockInquirer = require('inquirer');
+    mockEnquirer = require('enquirer');
     mockConfigstore = require('configstore');
   });
 
@@ -114,11 +114,11 @@ describe('Proxy Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         proxy: true,
       });
 
-      mockInquirer.prompt(prompts).then((answer: any) => {
+      mockEnquirer.prompt(prompts).then((answer: any) => {
         if (answer.proxy) {
           const mockProxy = {
             set: jest.fn(),
@@ -133,7 +133,7 @@ describe('Proxy Command', () => {
         }
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle proxy configuration with auth', () => {
@@ -155,12 +155,12 @@ describe('Proxy Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         username: 'testuser',
         proxy: true,
       });
 
-      mockInquirer.prompt(prompts).then((answer: any) => {
+      mockEnquirer.prompt(prompts).then((answer: any) => {
         if (answer.proxy) {
           const mockProxy = {
             set: jest.fn(),
@@ -175,7 +175,7 @@ describe('Proxy Command', () => {
         }
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle proxy configuration cancellation', () => {
@@ -192,11 +192,11 @@ describe('Proxy Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         proxy: false,
       });
 
-      mockInquirer.prompt(prompts).then((answer: any) => {
+      mockEnquirer.prompt(prompts).then((answer: any) => {
         if (answer.proxy) {
           const mockProxy = {
             set: jest.fn(),
@@ -213,12 +213,12 @@ describe('Proxy Command', () => {
         }
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
   });
 
   describe('Error Handling', () => {
-    it('should handle inquirer prompt error', () => {
+    it('should handle enquirer prompt error', () => {
       const host = 'proxy.example.com';
       const port = '8080';
       const options = {auth: false};
@@ -233,13 +233,13 @@ describe('Proxy Command', () => {
       ];
 
       const error = new Error('Prompt failed');
-      mockInquirer.prompt.mockRejectedValue(error);
+      mockEnquirer.prompt.mockRejectedValue(error);
 
-      mockInquirer.prompt(prompts).catch((err: any) => {
+      mockEnquirer.prompt(prompts).catch((err: any) => {
         console.log(`Login unsuccessful: ${JSON.stringify(err)}`);
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle configstore error', () => {
@@ -303,7 +303,7 @@ describe('Proxy Command', () => {
       expect(mockLog.warn).toHaveBeenCalledWith('Warning message');
     });
 
-    it('should handle inquirer integration', () => {
+    it('should handle enquirer integration', () => {
       const prompts = [
         {
           type: 'confirm',
@@ -313,13 +313,13 @@ describe('Proxy Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({test: true});
+      mockEnquirer.prompt.mockResolvedValue({test: true});
 
-      mockInquirer.prompt(prompts).then((answer: any) => {
+      mockEnquirer.prompt(prompts).then((answer: any) => {
         expect(answer.test).toBe(true);
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle configstore integration', () => {
@@ -379,7 +379,7 @@ describe('Proxy Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         proxy: true,
       });
 
@@ -388,7 +388,7 @@ describe('Proxy Command', () => {
       };
       mockConfigstore.mockImplementation(() => mockProxy);
 
-      await mockInquirer.prompt(prompts).then((answer: any) => {
+      await mockEnquirer.prompt(prompts).then((answer: any) => {
         if (answer.proxy) {
           const proxy = new mockConfigstore('/proxy');
           proxy.set('host', host);
@@ -398,7 +398,7 @@ describe('Proxy Command', () => {
         }
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
       expect(mockConfigstore).toHaveBeenCalledWith('/proxy');
       expect(mockProxy.set).toHaveBeenCalledWith('host', host);
       expect(mockProxy.set).toHaveBeenCalledWith('port', port);
@@ -426,7 +426,7 @@ describe('Proxy Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         username: 'testuser',
         proxy: true,
       });
@@ -436,7 +436,7 @@ describe('Proxy Command', () => {
       };
       mockConfigstore.mockImplementation(() => mockProxy);
 
-      await mockInquirer.prompt(prompts).then((answer: any) => {
+      await mockEnquirer.prompt(prompts).then((answer: any) => {
         if (answer.proxy) {
           const proxy = new mockConfigstore('/proxy');
           proxy.set('host', host);
@@ -446,7 +446,7 @@ describe('Proxy Command', () => {
         }
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
       expect(mockConfigstore).toHaveBeenCalledWith('/proxy');
       expect(mockProxy.set).toHaveBeenCalledWith('host', host);
       expect(mockProxy.set).toHaveBeenCalledWith('port', port);
@@ -470,11 +470,11 @@ describe('Proxy Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         proxy: false,
       });
 
-      await mockInquirer.prompt(prompts).then((answer: any) => {
+      await mockEnquirer.prompt(prompts).then((answer: any) => {
         if (answer.proxy) {
           const mockProxy = {
             set: jest.fn(),
@@ -491,7 +491,7 @@ describe('Proxy Command', () => {
         }
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
       expect(mockLog.fail).toHaveBeenCalledWith('Proxy command aborted');
     });
   });

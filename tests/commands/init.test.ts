@@ -13,7 +13,7 @@ jest.mock('configstore', () => {
 });
 
 // Mock all dependencies
-jest.mock('inquirer', () => ({
+jest.mock('enquirer', () => ({
   createPromptModule: jest.fn(() => jest.fn()),
 }));
 
@@ -89,7 +89,7 @@ jest.mock('ryuu-client', () => ({
 
 describe('Init Command', () => {
   let mockProgram: Command;
-  let mockInquirer: any;
+  let mockEnquirer: any;
   let mockIsValidJSName: any;
   let mockSlug: any;
   let mockMkdir: any;
@@ -98,7 +98,7 @@ describe('Init Command', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockInquirer = require('inquirer');
+    mockEnquirer = require('enquirer');
     mockIsValidJSName = require('../../src/util/isValidJSName');
     mockSlug = require('slug');
     mockMkdir = require('shelljs').mkdir;
@@ -106,7 +106,7 @@ describe('Init Command', () => {
 
     // Set up the mock prompt function
     const mockPrompt = jest.fn();
-    mockInquirer.createPromptModule.mockReturnValue(mockPrompt);
+    mockEnquirer.createPromptModule.mockReturnValue(mockPrompt);
   });
 
   afterEach(() => {
@@ -334,7 +334,7 @@ describe('Init Command', () => {
 
   describe('Dataset Prompting', () => {
     it('should handle dataset prompt option', () => {
-      const mockPrompt = mockInquirer.createPromptModule();
+      const mockPrompt = mockEnquirer.createPromptModule();
       mockPrompt.mockResolvedValueOnce({
         datasetPrompt: true,
       });
@@ -343,7 +343,7 @@ describe('Init Command', () => {
     });
 
     it('should skip dataset prompting when flag is set', () => {
-      const mockPrompt = mockInquirer.createPromptModule();
+      const mockPrompt = mockEnquirer.createPromptModule();
       mockPrompt.mockResolvedValueOnce({
         datasetPrompt: false,
       });
@@ -383,7 +383,7 @@ describe('Init Command', () => {
 
   describe('Integration Tests', () => {
     it('should complete full init flow', async () => {
-      const mockPrompt = mockInquirer.createPromptModule();
+      const mockPrompt = mockEnquirer.createPromptModule();
       mockPrompt.mockResolvedValueOnce({
         designName: 'test-design',
         starter: 'hello world',

@@ -32,7 +32,7 @@ jest.mock('unzipper', () => ({
   },
 }));
 
-jest.mock('inquirer', () => ({
+jest.mock('enquirer', () => ({
   prompt: jest.fn(),
 }));
 
@@ -46,7 +46,7 @@ describe('Download Command', () => {
   let mockFs: any;
   let mockPath: any;
   let mockUnzipper: any;
-  let mockInquirer: any;
+  let mockEnquirer: any;
   let mockShell: any;
 
   beforeEach(() => {
@@ -56,7 +56,7 @@ describe('Download Command', () => {
     mockFs = require('fs-extra');
     mockPath = require('path');
     mockUnzipper = require('unzipper');
-    mockInquirer = require('inquirer');
+    mockEnquirer = require('enquirer');
     mockShell = require('shelljs');
   });
 

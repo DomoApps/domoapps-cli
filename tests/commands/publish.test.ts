@@ -2,12 +2,15 @@ import {jest} from '@jest/globals';
 import {Command} from 'commander';
 
 // Mock all dependencies at module level
-jest.mock('inquirer', () => ({
+jest.mock('enquirer', () => ({
   prompt: jest.fn(),
 }));
 
 jest.mock('lodash', () => ({
-  default: jest.fn(),
+  __esModule: true,
+  default: {
+    isEqual: jest.fn(() => true),
+  },
 }));
 
 jest.mock('open', () => jest.fn());
@@ -16,6 +19,7 @@ jest.mock('../../src/util/manifest', () => ({
   ManifestUtils: {
     getManifest: jest.fn(),
     hasManifest: jest.fn(),
+    persistDesignId: jest.fn(),
     updateManifest: jest.fn(),
     writeManifest: jest.fn(),
     getManifestPath: jest.fn(),
@@ -28,6 +32,7 @@ jest.mock('../../src/util/login', () => ({
 }));
 
 jest.mock('glob', () => ({
+  globSync: jest.fn(),
   sync: jest.fn(),
 }));
 
@@ -59,7 +64,7 @@ jest.mock('ryuu-client', () => ({
 
 describe('Publish Command', () => {
   let mockProgram: Command;
-  let mockInquirer: any;
+  let mockEnquirer: any;
   let mockManifestUtils: any;
   let mockLogin: any;
   let mockGlob: any;
@@ -67,11 +72,14 @@ describe('Publish Command', () => {
   let mockAppStructure: any;
   let mockLog: any;
   let mockOpen: any;
+  let publishCommand: (program: Command) => void;
+
+  const flushPromises = () => new Promise(resolve => setImmediate(resolve));
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
-    mockInquirer = require('inquirer');
+    mockEnquirer = require('enquirer');
     mockManifestUtils = require('../../src/util/manifest').ManifestUtils;
     mockLogin = require('../../src/util/login').Login;
     mockGlob = require('glob');
@@ -79,6 +87,7 @@ describe('Publish Command', () => {
     mockAppStructure = require('../../src/util/appStructure');
     mockLog = require('../../src/util/log').log;
     mockOpen = require('open');
+    publishCommand = require('../../src/commands/publish').default;
   });
 
   afterEach(() => {
@@ -354,6 +363,244 @@ describe('Publish Command', () => {
       expect(() => {
         mockFs.lstatSync('nonexistent-file');
       }).toThrow('File not found');
+    });
+
+    it('should log the original upload error and stop before the success link', async () => {
+      const uploadError = Object.assign(new Error('Internal Server Error'), {
+        statusCode: 500,
+        url: 'https://test.domo.com/api/apps/v1/designs/design-id/versions/1.0.0/assets',
+      });
+      const datasetMapping = {alias: 'sales', dataSetId: 'dataset-id'};
+      const manifest = {
+        name: 'test-app',
+        version: '1.0.0',
+        id: 'design-id',
+        datasetsMapping: [datasetMapping],
+      };
+      const existingDesign = {
+        latestVersion: '1.0.0',
+        versions: [{version: '1.0.0', datasetsMapping: [datasetMapping]}],
+      };
+      const client = {
+        instance: 'test.domo.com',
+        refreshToken: 'refresh-token',
+        designs: {
+          get: jest
+            .fn<() => Promise<typeof existingDesign>>()
+            .mockResolvedValue(existingDesign),
+        },
+        assets: {
+          uploadAll: jest
+            .fn<() => Promise<never>>()
+            .mockImplementation(() => Promise.reject(uploadError)),
+        },
+      };
+
+      mockManifestUtils.getManifest.mockReturnValue(manifest);
+      mockGlob.globSync.mockReturnValue([]);
+      mockAppStructure.hasThumbnail.mockReturnValue(true);
+      mockLog.handleErrorMessage = jest.fn(() => 'Error uploading assets');
+      mockLogin.mockImplementation(() => ({
+        getClient: jest
+          .fn<() => Promise<typeof client>>()
+          .mockResolvedValue(client),
+      }));
+
+      publishCommand(mockProgram);
+      await mockProgram.parseAsync(['publish', '--go'], {from: 'user'});
+      await flushPromises();
+
+      expect(mockLog.handleErrorMessage).toHaveBeenCalledWith(
+        uploadError,
+        'Error uploading assets in the upload all assets',
+      );
+      expect(mockLog.fail).toHaveBeenCalledWith(
+        'Error uploading assets',
+        undefined,
+        uploadError,
+      );
+      expect(mockOpen).not.toHaveBeenCalled();
+      expect(console.log).not.toHaveBeenCalledWith(
+        expect.stringContaining('/assetlibrary?designId=design-id'),
+      );
+    });
+
+    it('should log new-design upload errors and not continue to the success link', async () => {
+      const uploadError = Object.assign(new Error('asset upload failed'), {
+        statusCode: 502,
+        url: 'https://test.domo.com/api/apps/v1/designs/new-design-id/versions/1.0.0/assets',
+      });
+      const manifest = {
+        name: 'new-app',
+        version: '1.0.0',
+      };
+      const createdDesign = {id: 'new-design-id'};
+      const client = {
+        instance: 'test.domo.com',
+        refreshToken: 'refresh-token',
+        designs: {
+          create: jest
+            .fn<() => Promise<typeof createdDesign>>()
+            .mockResolvedValue(createdDesign),
+        },
+        assets: {
+          uploadAll: jest
+            .fn<() => Promise<never>>()
+            .mockImplementation(() => Promise.reject(uploadError)),
+        },
+      };
+
+      mockManifestUtils.getManifest.mockReturnValue(manifest);
+      mockManifestUtils.persistDesignId.mockReturnValue('new-design-id');
+      mockGlob.globSync.mockReturnValue([]);
+      mockAppStructure.hasThumbnail.mockReturnValue(true);
+      mockLog.handleErrorMessage = jest.fn(() => 'Error uploading assets');
+      mockLogin.mockImplementation(() => ({
+        getClient: jest
+          .fn<() => Promise<typeof client>>()
+          .mockResolvedValue(client),
+      }));
+
+      publishCommand(mockProgram);
+      await mockProgram.parseAsync(['publish', '--go'], {from: 'user'});
+      await flushPromises();
+
+      expect(mockLog.handleErrorMessage).toHaveBeenCalledWith(
+        uploadError,
+        'Error uploading assets in uploading assets for a new design',
+      );
+      expect(mockLog.fail).toHaveBeenCalledWith(
+        'Error uploading assets',
+        undefined,
+        uploadError,
+      );
+      expect(mockOpen).not.toHaveBeenCalled();
+      expect(console.log).not.toHaveBeenCalledWith(
+        expect.stringContaining('/assetlibrary?designId=new-design-id'),
+      );
+    });
+  });
+
+  describe('Publish Error Recovery', () => {
+    const run = async (client: any, manifest: any, args = ['publish']) => {
+      mockManifestUtils.getManifest.mockReturnValue(manifest);
+      mockGlob.globSync.mockReturnValue([]);
+      mockAppStructure.hasThumbnail.mockReturnValue(true);
+      mockLog.handleErrorMessage = jest.fn(() => 'handled');
+      mockLogin.mockImplementation(() => ({
+        getClient: jest
+          .fn<() => Promise<typeof client>>()
+          .mockResolvedValue(client),
+      }));
+      publishCommand(mockProgram);
+      await mockProgram.parseAsync(args, {from: 'user'});
+      await flushPromises();
+    };
+
+    const existingClient = (overrides: any = {}) => ({
+      instance: 'test.domo.com',
+      refreshToken: 'token',
+      designs: {
+        get: jest
+          .fn<() => Promise<any>>()
+          .mockResolvedValue({latestVersion: '1.0.0', versions: []}),
+        undelete: jest.fn<() => Promise<void>>().mockResolvedValue(),
+        ...overrides.designs,
+      },
+      assets: {
+        uploadAll: jest.fn<() => Promise<any[]>>().mockResolvedValue([]),
+        ...overrides.assets,
+      },
+    });
+
+    it('should not throw when datasetsMapping is missing', async () => {
+      const client = existingClient();
+      await run(client, {name: 'a', version: '1.0.0', id: 'id'});
+
+      expect(client.assets.uploadAll).toHaveBeenCalled();
+      expect(mockLog.fail).not.toHaveBeenCalled();
+    });
+
+    it('should open the browser with --go after Undelete', async () => {
+      const deleted = Object.assign(new Error('Design has been deleted'), {});
+      const client = existingClient({
+        assets: {
+          uploadAll: jest
+            .fn<() => Promise<any[]>>()
+            .mockRejectedValueOnce(deleted)
+            .mockResolvedValue([]),
+        },
+      });
+      mockEnquirer.prompt.mockResolvedValue({choice: 'Undelete'});
+
+      await run(client, {name: 'a', version: '1.0.0', id: 'id'}, [
+        'publish',
+        '--go',
+      ]);
+
+      expect(client.designs.undelete).toHaveBeenCalledWith('id');
+      expect(mockOpen).toHaveBeenCalledWith(
+        'https://test.domo.com/assetlibrary?designId=id',
+      );
+    });
+
+    it('should exit cleanly when the deleted-design prompt is cancelled', async () => {
+      const deleted = new Error('Design has been deleted');
+      const client = existingClient({
+        assets: {
+          uploadAll: jest
+            .fn<() => Promise<any[]>>()
+            .mockRejectedValue(deleted),
+        },
+      });
+      mockEnquirer.prompt.mockRejectedValue('');
+
+      await run(client, {name: 'a', version: '1.0.0', id: 'id'});
+
+      expect(mockLog.ok).toHaveBeenCalledWith(
+        'Exited without republishing design',
+      );
+      expect(mockOpen).not.toHaveBeenCalled();
+    });
+
+    it('should report the new design id when persisting it fails', async () => {
+      const client = {
+        instance: 'test.domo.com',
+        refreshToken: 'token',
+        designs: {
+          create: jest
+            .fn<() => Promise<any>>()
+            .mockResolvedValue({id: 'new-id'}),
+        },
+        assets: {uploadAll: jest.fn<() => Promise<any[]>>()},
+      };
+      mockManifestUtils.persistDesignId.mockImplementation(() => {
+        throw new Error('EACCES');
+      });
+
+      await run(client, {name: 'a', version: '1.0.0'});
+
+      expect(mockLog.fail).toHaveBeenCalledWith(
+        expect.stringContaining('new-id'),
+        expect.stringContaining('"id": "new-id"'),
+      );
+      expect(client.assets.uploadAll).not.toHaveBeenCalled();
+    });
+
+    it('should handle a browser open failure without crashing', async () => {
+      const client = existingClient();
+      mockOpen.mockRejectedValue(new Error('no browser'));
+
+      await run(client, {name: 'a', version: '1.0.0', id: 'id'}, [
+        'publish',
+        '--go',
+      ]);
+
+      expect(mockLog.warn).toHaveBeenCalledWith(
+        expect.stringContaining('Could not open the browser'),
+        expect.any(String),
+      );
+      expect(mockLog.fail).not.toHaveBeenCalled();
     });
   });
 
