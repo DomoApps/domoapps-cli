@@ -1,0 +1,206 @@
+# Decides the next release step from npm, git and Jira state, and takes at most one irreversible action per
+# run. Three jobs keep the credentials away from repository code:
+#   plan     reads npm, git, GitHub and Jira (Jira secrets only), and decides
+#   prepare  builds, tests and tags with no secrets at all
+#   push     holds the deploy key, runs no repository code, re-verifies and pushes
+# Model and runbook: RELEASING.md.
+name: Release
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: '23 15 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Plan, build and test, but push and publish nothing
+        type: boolean
+        default: true
+      force_rc:
+        description: (Admins only) Promote the newest beta to rc now, skipping the beta soak and the Jira check
+        type: boolean
+        default: false
+      force_ga:
+        description: (Admins only) Release the newest rc as latest now, skipping the 7-day rc soak and the Jira check
+        type: boolean
+        default: false
+      simulate_now:
+        description: 'Dry run only: plan as if it were this time (+15d, or an ISO timestamp)'
+        type: string
+        default: ''
+
+permissions: {}
+
+# Up to 100 runs wait in order. Every run recomputes everything, so none is redundant, but none is dropped
+# either: by default a newer run would cancel the one waiting (a dry run could cancel a real hand-back).
+concurrency:
+  group: ryuu-release
+  cancel-in-progress: false
+  queue: max
+
+env:
+  DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+  SIMULATE_NOW: ${{ inputs.simulate_now }}
+  JIRA_BASE_URL: ${{ vars.JIRA_BASE_URL }}
+  JIRA_PROJECTS: ${{ vars.JIRA_PROJECTS }}
+
+jobs:
+  plan:
+    # RELEASE_ENABLED is the kill switch for automatic runs; a person can always dispatch.
+    if: vars.RELEASE_ENABLED == 'true' || (github.event_name == 'workflow_dispatch' && github.triggering_actor != 'github-actions[bot]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Locked to master: a workflow edited on any other branch cannot read the Jira secrets.
+    environment: release
+    permissions:
+      contents: read
+      pull-requests: read # the release:hotfix label and who applied it
+    outputs:
+      action: ${{ steps.plan.outputs.action }}
+      version: ${{ steps.plan.outputs.version }}
+      from: ${{ steps.plan.outputs.from }}
+      compare: ${{ steps.plan.outputs.compare }}
+      hotfix: ${{ steps.plan.outputs.hotfix }}
+    steps:
+      - name: Only admins may force a release
+        if: github.event_name == 'workflow_dispatch' && !inputs.dry_run && (inputs.force_rc || inputs.force_ga)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTOR: ${{ github.triggering_actor }}
+        run: |
+          role=$(gh api "repos/$GITHUB_REPOSITORY/collaborators/$ACTOR/permission" --jq .role_name)
+          if [ "$role" != admin ]; then
+            echo "::error::force_rc and force_ga skip the soaks and the Jira check, so they need the admin role; $ACTOR has $role."
+            exit 1
+          fi
+      - uses: actions/checkout@v7
+        with:
+          ref: master
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      # The package is "type": "module"; the compiled CI scripts are CommonJS, so mark their folder.
+      - run: |
+          pnpm exec tsc -p scripts/ci --outDir "$RUNNER_TEMP/ci"
+          echo '{"type":"commonjs"}' > "$RUNNER_TEMP/ci/package.json"
+      - name: Plan
+        id: plan
+        run: node "$RUNNER_TEMP/ci/release.js" plan
+        env:
+          FORCE_RC: ${{ inputs.force_rc }}
+          FORCE_GA: ${{ inputs.force_ga }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+
+  # A tag was pushed but never reached npm: run Publish for it again.
+  retry-publish:
+    needs: plan
+    if: needs.plan.outputs.action == 'publish' && (github.event_name != 'workflow_dispatch' || !inputs.dry_run)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - run: gh workflow run publish.yml --ref "refs/tags/v$VERSION"
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.plan.outputs.version }}
+
+  # No secrets, a read-only token that is not persisted, and the repository's own code and devDependencies.
+  prepare:
+    needs: plan
+    if: contains(fromJSON('["beta", "rc", "ga"]'), needs.plan.outputs.action)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    outputs:
+      ready: ${{ steps.prepare.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: master
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      # prepare-release.sh checks out other trees, so run the scripts from a copy.
+      - run: mkdir "$RUNNER_TEMP/ci" && cp scripts/ci/*.sh "$RUNNER_TEMP/ci/"
+      - name: Build, test, compare and tag ${{ needs.plan.outputs.version }}
+        id: prepare
+        run: '"$RUNNER_TEMP/ci/prepare-release.sh" "$KIND" "$VERSION" "$FROM" "${COMPARE:--}" "$RUNNER_TEMP/out"'
+        env:
+          KIND: ${{ needs.plan.outputs.action }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          FROM: ${{ needs.plan.outputs.from }}
+          COMPARE: ${{ needs.plan.outputs.compare }}
+          HOTFIX: ${{ needs.plan.outputs.hotfix }}
+      - if: steps.prepare.outputs.ready == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: release-bundle
+          path: ${{ runner.temp }}/out/release.bundle
+          if-no-files-found: error
+
+  # Holds the deploy key. Runs git and bash from a copy of master's scripts and nothing from the build:
+  # no npm install, no tests, no repository code. On a dry run it still checks the key and the bundle,
+  # then stops before pushing.
+  push:
+    needs: [plan, prepare]
+    if: needs.prepare.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # Locked to master. Rulesets let only this deploy key and admins create v* tags and release/v* branches.
+    environment: release
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      # Without this, a missing secret makes checkout quietly use the read-only workflow token instead, a dry run
+      # would pass, and a real run would only fail at the very end with a bare 403.
+      - name: Require the deploy key
+        env:
+          DEPLOY_KEY: ${{ secrets.RELEASE_DEPLOY_KEY }}
+        run: |
+          if [ -z "$DEPLOY_KEY" ]; then
+            echo "::error::RELEASE_DEPLOY_KEY is not set in the release environment, so nothing can be pushed. See RELEASING.md, One-time setup, step 2."
+            exit 1
+          fi
+      - uses: actions/checkout@v7
+        with:
+          ref: master
+          fetch-depth: 0
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
+      - run: mkdir "$RUNNER_TEMP/ci" && cp scripts/ci/*.sh "$RUNNER_TEMP/ci/"
+      - uses: actions/download-artifact@v8
+        with:
+          name: release-bundle
+          path: ${{ runner.temp }}/in
+      - name: Check the deploy key can reach the repository
+        run: |
+          # With a key, checkout uses an SSH remote; an https remote means it fell back to the read-only token.
+          case "$(git remote get-url origin)" in
+            git@* | ssh://*) ;;
+            *) echo "::error::checkout did not use the deploy key (remote is not SSH)"; exit 1 ;;
+          esac
+          git ls-remote --heads origin master
+      - name: Push v${{ needs.plan.outputs.version }}
+        run: '"$RUNNER_TEMP/ci/push-release.sh" "$KIND" "$VERSION" "$RUNNER_TEMP/in/release.bundle"'
+        env:
+          KIND: ${{ needs.plan.outputs.action }}
+          VERSION: ${{ needs.plan.outputs.version }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}

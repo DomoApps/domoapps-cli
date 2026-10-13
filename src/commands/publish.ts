@@ -10,9 +10,44 @@ import * as appStructure from '../util/appStructure.js';
 import {constant, PublishCommandOptions} from '../models/index.js';
 import {Command} from 'commander';
 import {createConfirm, createSelect} from '../util/prompts.js';
+import type {Asset, Design, Manifest, RyuuClient} from 'ryuu-client';
 
-type Manifest = any;
-type Asset = any;
+const isRecord = (value: unknown): value is Record<string, unknown> => {
+  return typeof value === 'object' && value !== null;
+};
+
+const getErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (isRecord(error) && typeof error.message === 'string') {
+    return error.message;
+  }
+
+  try {
+    return JSON.stringify(error) ?? String(error);
+  } catch {
+    return String(error);
+  }
+};
+
+// Enquirer rejects (with an empty value) when the user cancels with Ctrl-C.
+const promptOrCancel = async <T>(
+  ask: () => Promise<T>,
+): Promise<T | undefined> => {
+  try {
+    return await ask();
+  } catch {
+    return undefined;
+  }
+};
+
+const getStatusCode = (error: unknown): number | undefined => {
+  return isRecord(error) && typeof error.statusCode === 'number'
+    ? error.statusCode
+    : undefined;
+};
 
 export default (program: Command) => {
   program
@@ -23,8 +58,11 @@ export default (program: Command) => {
       '-d, --build-dir <path>',
       'path to build directory containing the app files',
     )
-    .action(options => {
-      const manifest = ManifestUtils.getManifest(program.opts().manifest, true);
+    .action(async options => {
+      const manifest: Manifest = ManifestUtils.getManifest(
+        program.opts().manifest,
+        true,
+      );
 
       // Change to build directory if specified
       if (options.buildDir) {
@@ -48,64 +86,85 @@ export default (program: Command) => {
         process.chdir(buildPath);
       }
 
-      new Login()
-        .getClient()
-        .then(client => {
-          if (client.refreshToken === undefined) {
-            log.notAuthenticated();
-          }
-          checkFileNames(manifest);
-          if (!manifest.id) {
-            createDesign(client, manifest, options);
-          } else {
-            client.designs
-              .get(manifest.id, {parts: 'versions'})
-              .then(result => {
-                checkMapping(result, manifest);
-                return publishAssets(client, manifest).then(() =>
-                  linkToDomoWeb(options, client, manifest),
-                );
-              })
-              .catch(e => publishErrors(e, client, manifest));
-          }
-        })
-        .catch(log.notAuthenticated);
+      let client: RyuuClient;
+      try {
+        client = await new Login().getClient();
+      } catch (error) {
+        log.notAuthenticated(getErrorMessage(error) || 'unknown error');
+        return;
+      }
+
+      if (client.refreshToken === undefined) {
+        log.notAuthenticated();
+      }
+      checkFileNames(manifest);
+
+      if (!manifest.id) {
+        await createDesign(client, manifest, options);
+        return;
+      }
+
+      try {
+        const result = await client.designs.get(manifest.id, {
+          parts: 'versions',
+        });
+        checkMapping(result, manifest);
+        await publishAssets(client, manifest);
+      } catch (error) {
+        await publishErrors(error, client, manifest, options);
+        return;
+      }
+      await linkToDomoWeb(options, client, manifest);
     });
 };
 
-const createDesign = (
-  domo: any,
+const createDesign = async (
+  domo: RyuuClient,
   manifest: Manifest,
   options?: PublishCommandOptions,
 ) => {
-  return domo.designs
-    .create(manifest)
-    .then((designResult: any) => {
-      const newManifestId = ManifestUtils.persistDesignId(
-        designResult.id,
-        manifest,
-      );
-      manifest = {...manifest, id: newManifestId};
-      log.ok('New design created on ' + domo.instance);
-    })
-    .catch((e: any) => {
-      log.fail('Error when creating new design:', e.message);
-    })
-    .then(() => domo.assets.uploadAll(manifest))
-    .then((files: any) => logUploadSuccess(files as any))
-    .catch((e: any) => {
-      log.fail(
-        log.handleErrorMessage(
-          e,
-          'Error uploading assets in uploading assets for a new design',
-        ),
-        undefined,
-        e,
-      );
-    })
-    .then(() => {
-      linkToDomoWeb(options, domo, manifest);
-    });
+  let designId: string;
+  try {
+    const designResult = await domo.designs.create(manifest);
+    designId = designResult.id;
+  } catch (error) {
+    log.fail(
+      log.handleErrorMessage(error, 'Error when creating new design'),
+      undefined,
+      error,
+    );
+    return;
+  }
+  log.ok('New design created on ' + domo.instance);
+
+  // The design now exists remotely; keep the original fail-and-stop behavior
+  // but report accurately so the user can add the id by hand.
+  try {
+    ManifestUtils.persistDesignId(designId, manifest);
+  } catch (error) {
+    log.fail(
+      `Design ${designId} was created, but its id could not be saved to manifest.json: ${getErrorMessage(error)}`,
+      `Add "id": "${designId}" to your manifest.json manually, or the next publish will create a duplicate design.`,
+    );
+    return;
+  }
+  const publishedManifest = {...manifest, id: designId};
+
+  try {
+    const files = await domo.assets.uploadAll(publishedManifest);
+    logUploadSuccess(files);
+  } catch (error) {
+    log.fail(
+      log.handleErrorMessage(
+        error,
+        'Error uploading assets in uploading assets for a new design',
+      ),
+      undefined,
+      error,
+    );
+    return;
+  }
+  await linkToDomoWeb(options, domo, publishedManifest);
 };
 
 const logUploadSuccess = (files: Asset[]) => {
@@ -114,9 +173,9 @@ const logUploadSuccess = (files: Asset[]) => {
   });
 };
 
-const linkToDomoWeb = (
+const linkToDomoWeb = async (
   options: PublishCommandOptions | undefined,
-  domo: any,
+  domo: RyuuClient,
   manifest: Manifest,
 ) => {
   console.log(
@@ -126,20 +185,30 @@ const linkToDomoWeb = (
       manifest.id,
   );
   if (options && options.go) {
-    open('https://' + domo.instance + '/assetlibrary?designId=' + manifest.id);
+    try {
+      await open(
+        'https://' + domo.instance + '/assetlibrary?designId=' + manifest.id,
+      );
+    } catch (error) {
+      log.warn(
+        'Could not open the browser: ' + getErrorMessage(error),
+        'Use the link above to view the design.',
+      );
+    }
   }
 };
 
-const checkMapping = (result: any, manifest: Manifest) => {
+const checkMapping = (result: Design, manifest: Manifest) => {
   const latestVersionNumber = result.latestVersion;
-  const latestVersion = result.versions.filter((obj: any) => {
+  const latestVersion = result.versions?.filter(obj => {
     return obj.version === latestVersionNumber;
   });
-  const oldMapping = latestVersion[0].datasetsMapping[0];
-  const newMapping = manifest.datasetsMapping[0];
+  // This check only warns, so a missing mapping must never throw.
+  const oldMapping = latestVersion?.[0]?.datasetsMapping?.[0];
+  const newMapping = manifest.datasetsMapping?.[0];
 
   if (oldMapping) {
-    delete oldMapping.dql;
+    Reflect.deleteProperty(oldMapping, 'dql');
   }
 
   if (!_.isEqual(oldMapping, newMapping)) {
@@ -181,34 +250,55 @@ const checkFileNames = (manifest: Manifest) => {
   }
 };
 
-const recreateDesign = async (domo: any, manifest: Manifest) => {
-  const choice = await createSelect(
-    'This design has been deleted. Would you like to undelete this design and publish to it, or create a new design with these assets?',
-    ['Undelete', 'Create New Design'],
+const recreateDesign = async (
+  domo: RyuuClient,
+  manifest: Manifest,
+  options?: PublishCommandOptions,
+) => {
+  const choice = await promptOrCancel(() =>
+    createSelect(
+      'This design has been deleted. Would you like to undelete this design and publish to it, or create a new design with these assets?',
+      ['Undelete', 'Create New Design'],
+    ),
   );
 
   if (choice === 'Create New Design') {
     manifest.id = null;
-    createDesign(domo, manifest);
+    await createDesign(domo, manifest, options);
   } else if (choice === 'Undelete') {
     try {
       await domo.designs.undelete(manifest.id);
-      publishAssets(domo, manifest);
     } catch (err) {
-      log.fail('Error undeleting design');
-      console.error(err);
+      log.fail('Error undeleting design', undefined, err);
+      return;
     }
+
+    try {
+      await publishAssets(domo, manifest);
+    } catch (error) {
+      await publishErrors(error, domo, manifest, options);
+      return;
+    }
+    await linkToDomoWeb(options, domo, manifest);
   } else {
     log.ok('Exited without republishing design');
   }
 };
 
-const publishErrors = async (e: any, domo: any, manifest: Manifest) => {
-  if (e.statusCode === 400 && !e.message.startsWith('DA')) {
-    log.fail('Design failed to publish with error:', e.message);
-  } else if (e.statusCode === 401) {
+const publishErrors = async (
+  error: unknown,
+  domo: RyuuClient,
+  manifest: Manifest,
+  options?: PublishCommandOptions,
+) => {
+  const message = getErrorMessage(error);
+  const statusCode = getStatusCode(error);
+
+  if (statusCode === 400 && !message.startsWith('DA')) {
+    log.fail('Design failed to publish with error:', message);
+  } else if (statusCode === 401) {
     log.notAuthenticated(domo.refreshToken);
-  } else if (e.statusCode === 403) {
+  } else if (statusCode === 403) {
     log.fail(
       'You do not have access to the design with id ' +
         manifest.id +
@@ -217,68 +307,70 @@ const publishErrors = async (e: any, domo: any, manifest: Manifest) => {
         '.\nIf that seems unlikely, other possibilities are that you are publishing this design to a new environment other than the one in which it was first created.' +
         '\nAlternatively, you may have inadvertently changed the design id.',
     );
-  } else if (e.message?.substr(0, 23) == 'Design has been deleted')
-    recreateDesign(domo, manifest);
-  else if (e.message?.substr(0, 15) == 'No design found') {
-    const shouldCreate = await createConfirm(
-      'This design does not exist on ' +
-        domo.instance +
-        '. Would you like to create a new design with these assets?',
-      true,
+  } else if (message.substr(0, 23) == 'Design has been deleted') {
+    await recreateDesign(domo, manifest, options);
+  } else if (message.substr(0, 15) == 'No design found') {
+    const shouldCreate = await promptOrCancel(() =>
+      createConfirm(
+        'This design does not exist on ' +
+          domo.instance +
+          '. Would you like to create a new design with these assets?',
+        true,
+      ),
     );
 
     if (shouldCreate) {
       manifest.id = null;
-      createDesign(domo, manifest);
+      await createDesign(domo, manifest, options);
     }
-  } else if (e.message && e.message.startsWith('DA')) {
-    switch (e.message.substr(0, 6)) {
-      case 'DA0086':
-        log.warn(e.message);
-        const shouldRecreate = await createConfirm(
-          'This design has been deleted. Would you like to publish a new design with these assets?',
-          true,
+  } else if (message.startsWith('DA')) {
+    switch (message.substr(0, 6)) {
+      case 'DA0086': {
+        log.warn(message);
+        const shouldRecreate = await promptOrCancel(() =>
+          createConfirm(
+            'This design has been deleted. Would you like to publish a new design with these assets?',
+            true,
+          ),
         );
 
         if (shouldRecreate) {
           manifest.id = null;
-          createDesign(domo, manifest);
+          await createDesign(domo, manifest, options);
         }
 
         break;
+      }
       default:
         // Pass on error messages that aren't in the set of documented errors.
-        log.fail(e.message);
+        log.fail(message);
         break;
     }
   } else {
     //Error uploading assets
     log.fail(
       log.handleErrorMessage(
-        e,
+        error,
         'Error uploading assets in the upload all assets',
       ),
       undefined,
-      e,
+      error,
     );
   }
 };
 
-const publishAssets = (domo: any, manifest: Manifest) => {
-  return domo.assets
-    .uploadAll(manifest)
-    .then((files: any) => {
-      log.ok(
-        'Publishing ' +
-          manifest.name +
-          ' to ' +
-          domo.instance +
-          ' on ' +
-          new Date(),
-      );
-      logUploadSuccess(files as any);
-    })
-    .catch((e: any) => {
-      publishErrors(e, domo, manifest);
-    });
+const publishAssets = async (
+  domo: RyuuClient,
+  manifest: Manifest,
+): Promise<void> => {
+  const files = await domo.assets.uploadAll(manifest);
+  log.ok(
+    'Publishing ' +
+      manifest.name +
+      ' to ' +
+      domo.instance +
+      ' on ' +
+      new Date(),
+  );
+  logUploadSuccess(files);
 };

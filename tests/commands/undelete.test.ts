@@ -20,7 +20,7 @@ jest.mock('../../src/util/log', () => ({
   },
 }));
 
-jest.mock('inquirer', () => ({
+jest.mock('enquirer', () => ({
   prompt: jest.fn(),
 }));
 
@@ -29,7 +29,7 @@ describe('Undelete Command', () => {
   let mockLogin: any;
   let mockDesign: any;
   let mockLog: any;
-  let mockInquirer: any;
+  let mockEnquirer: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -37,7 +37,7 @@ describe('Undelete Command', () => {
     mockLogin = require('../../src/util/login').Login;
     mockDesign = require('../../src/util/design');
     mockLog = require('../../src/util/log').log;
-    mockInquirer = require('inquirer');
+    mockEnquirer = require('enquirer');
   });
 
   afterEach(() => {
@@ -104,15 +104,15 @@ describe('Undelete Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         undelete: true,
       });
 
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         expect(answers.undelete).toBe(true);
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle confirmation prompt with default true', () => {
@@ -193,7 +193,7 @@ describe('Undelete Command', () => {
   });
 
   describe('Error Handling', () => {
-    it('should handle inquirer prompt error', () => {
+    it('should handle enquirer prompt error', () => {
       const prompts = [
         {
           type: 'confirm',
@@ -204,13 +204,13 @@ describe('Undelete Command', () => {
       ];
 
       const error = new Error('Prompt failed');
-      mockInquirer.prompt.mockRejectedValue(error);
+      mockEnquirer.prompt.mockRejectedValue(error);
 
-      mockInquirer.prompt(prompts).catch((err: any) => {
+      mockEnquirer.prompt(prompts).catch((err: any) => {
         expect(err).toBe(error);
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle design ID resolution error', () => {
@@ -293,7 +293,7 @@ describe('Undelete Command', () => {
       expect(mockLogin).toHaveBeenCalled();
     });
 
-    it('should handle inquirer integration', () => {
+    it('should handle enquirer integration', () => {
       const prompts = [
         {
           type: 'confirm',
@@ -303,13 +303,13 @@ describe('Undelete Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({undelete: true});
+      mockEnquirer.prompt.mockResolvedValue({undelete: true});
 
-      mockInquirer.prompt(prompts).then((answer: any) => {
+      mockEnquirer.prompt(prompts).then((answer: any) => {
         expect(answer.undelete).toBe(true);
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
   });
 
@@ -335,19 +335,19 @@ describe('Undelete Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         undelete: true,
       });
 
       // Simulate the actual flow
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         if (answers.undelete) {
           mockLog.ok('Undeleted design ' + designId);
         }
       });
 
       expect(mockDesign.getDesignId).toHaveBeenCalledWith(arg, manifest);
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should complete full undelete flow with cancellation', () => {
@@ -371,12 +371,12 @@ describe('Undelete Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         undelete: false,
       });
 
       // Simulate the actual flow
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         if (answers.undelete) {
           // This should not execute
           mockLog.ok('Undeleted design ' + designId);
@@ -389,7 +389,7 @@ describe('Undelete Command', () => {
       mockLog.fail('Undelete command aborted');
 
       expect(mockDesign.getDesignId).toHaveBeenCalledWith(arg, manifest);
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
       expect(mockLog.fail).toHaveBeenCalledWith('Undelete command aborted');
     });
 
@@ -414,12 +414,12 @@ describe('Undelete Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         undelete: true,
       });
 
       // Simulate the actual flow
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         if (answers.undelete) {
           mockLog.fail(
             'Unable to undelete design ' +
@@ -430,7 +430,7 @@ describe('Undelete Command', () => {
       });
 
       expect(mockDesign.getDesignId).toHaveBeenCalledWith(arg, manifest);
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
   });
 });

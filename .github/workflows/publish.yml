@@ -1,0 +1,116 @@
+# Publishes one pipeline tag to npm. Dispatched by release.yml on the tag ref, so
+# provenance points at the exact commit that was built. Safe to re-run: a version
+# already on npm is skipped. Keep this file small: each tag runs its own copy.
+name: Publish
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+# Up to 100 publishes wait in order. By default a newer run would cancel the one waiting, and a GA queued
+# behind a beta would be lost.
+concurrency:
+  group: ryuu-publish
+  cancel-in-progress: false
+  queue: max
+
+jobs:
+  build:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+      dist_tag: ${{ steps.check.outputs.dist_tag }}
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - name: Verify the tag
+        id: check
+        run: |
+          plan=$(scripts/ci/verify-tag.sh "$GITHUB_REF_NAME")
+          echo "$plan" | tee -a "$GITHUB_OUTPUT"
+      - if: steps.check.outputs.skip == 'false'
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - if: steps.check.outputs.skip == 'false'
+        run: pnpm test && pnpm run build
+      - name: Pack
+        if: steps.check.outputs.skip == 'false'
+        run: npm pack --ignore-scripts
+      # An rc must ship exactly the soaked beta, and a GA exactly the soaked rc.
+      - name: Check the package matches the soaked release
+        if: steps.check.outputs.skip == 'false' && steps.check.outputs.dist_tag != 'beta'
+        run: |
+          npm pack "ryuu@$SOAKED" --pack-destination "$RUNNER_TEMP"
+          scripts/ci/same-artifact.sh "$RUNNER_TEMP/ryuu-$SOAKED.tgz" "ryuu-$VERSION.tgz"
+        env:
+          SOAKED: ${{ steps.check.outputs.soaked }}
+          VERSION: ${{ steps.check.outputs.version }}
+      - if: steps.check.outputs.skip == 'false'
+        uses: actions/upload-artifact@v7
+        with:
+          name: tarball
+          path: ryuu-${{ steps.check.outputs.version }}.tgz
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: needs.build.outputs.skip == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: npm-publish
+    permissions:
+      id-token: write
+      actions: write
+    steps:
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      # Trusted publishing (OIDC) needs npm 11.5.1 or later.
+      - run: npm install -g npm@^11.5.1
+      - uses: actions/download-artifact@v8
+        with:
+          name: tarball
+      - name: Publish ryuu@${{ needs.build.outputs.version }} as ${{ needs.build.outputs.dist_tag }}
+        run: |
+          # A version npm already has, or is still validating, must not make a retry fail: wait for it instead.
+          status=0
+          output=$(npm publish "./ryuu-$VERSION.tgz" --tag "$DIST_TAG" 2>&1) || status=$?
+          echo "$output"
+          if [ "$status" -ne 0 ] && grep -qiE 'previously published|cannot publish over' <<<"$output"; then
+            echo "::notice::ryuu@$VERSION is already published or still being validated by npm; waiting for it to be listed."
+          elif [ "$status" -ne 0 ]; then
+            exit "$status"
+          fi
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+          DIST_TAG: ${{ needs.build.outputs.dist_tag }}
+      # npm validates a new version before the registry lists it (about 4 minutes on the first publish), so allow
+      # up to 20 minutes (80 tries, 15 seconds apart). The two settings exist so tests can shorten the wait.
+      - name: Wait until the registry serves it
+        run: |
+          for _ in $(seq "${WAIT_ATTEMPTS:-80}"); do
+            [ -n "$(npm view "ryuu@$VERSION" version --prefer-online 2>/dev/null)" ] && exit 0
+            sleep "${WAIT_SECONDS:-15}"
+          done
+          echo "::error::ryuu@$VERSION was published but is not visible yet"
+          exit 1
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+      # Lets a merge that queued behind this publish get its beta without waiting for cron.
+      - name: Hand back to the release workflow
+        run: gh workflow run release.yml --repo "$GITHUB_REPOSITORY" --ref master -f dry_run=false
+        env:
+          GH_TOKEN: ${{ github.token }}

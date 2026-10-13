@@ -36,7 +36,7 @@ jest.mock('../../src/models/index', () => ({
   },
 }));
 
-jest.mock('inquirer', () => ({
+jest.mock('enquirer', () => ({
   prompt: jest.fn(),
 }));
 
@@ -46,7 +46,7 @@ describe('Release Command', () => {
   let mockManifestUtils: any;
   let mockAppStructure: any;
   let mockConstant: any;
-  let mockInquirer: any;
+  let mockEnquirer: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -55,7 +55,7 @@ describe('Release Command', () => {
     mockManifestUtils = require('../../src/util/manifest').ManifestUtils;
     mockAppStructure = require('../../src/util/appStructure');
     mockConstant = require('../../src/models/index').constant;
-    mockInquirer = require('inquirer');
+    mockEnquirer = require('enquirer');
   });
 
   afterEach(() => {
@@ -155,7 +155,7 @@ describe('Release Command', () => {
       const versions = ['1.0.0', '1.1.0'];
       const choices = ['latest', ...versions.reverse()];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         version: 'latest',
       });
 
@@ -168,18 +168,18 @@ describe('Release Command', () => {
         },
       ];
 
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         expect(answers.version).toBe('latest');
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle version selection with specific version', () => {
       const versions = ['1.0.0', '1.1.0'];
       const choices = ['latest', ...versions.reverse()];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         version: '1.1.0',
       });
 
@@ -192,11 +192,11 @@ describe('Release Command', () => {
         },
       ];
 
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         expect(answers.version).toBe('1.1.0');
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
   });
 
@@ -321,7 +321,7 @@ describe('Release Command', () => {
       expect(hasThumbnail).toBe(true);
     });
 
-    it('should handle inquirer integration', () => {
+    it('should handle enquirer integration', () => {
       const prompts = [
         {
           type: 'list',
@@ -331,13 +331,13 @@ describe('Release Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({version: 'latest'});
+      mockEnquirer.prompt.mockResolvedValue({version: 'latest'});
 
-      mockInquirer.prompt(prompts).then((answer: any) => {
+      mockEnquirer.prompt(prompts).then((answer: any) => {
         expect(answer.version).toBe('latest');
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
   });
 
@@ -419,15 +419,15 @@ describe('Release Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         version: 'latest',
       });
 
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         mockLog.ok('Design version (' + answers.version + ') released');
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle release success flow', () => {

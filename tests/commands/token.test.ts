@@ -30,7 +30,7 @@ jest.mock('chalk', () => ({
   magenta: jest.fn((text: string) => text),
 }));
 
-jest.mock('inquirer', () => ({
+jest.mock('enquirer', () => ({
   prompt: jest.fn(),
 }));
 
@@ -39,7 +39,7 @@ describe('Token Command', () => {
   let mockLogin: any;
   let mockLog: any;
   let mockChalk: any;
-  let mockInquirer: any;
+  let mockEnquirer: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -47,7 +47,7 @@ describe('Token Command', () => {
     mockLogin = require('../../src/util/login').Login;
     mockLog = require('../../src/util/log').log;
     mockChalk = require('chalk');
-    mockInquirer = require('inquirer');
+    mockEnquirer = require('enquirer');
   });
 
   afterEach(() => {
@@ -136,11 +136,11 @@ describe('Token Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         instance: 'company.domo.com',
       });
 
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         if (answers.instance) {
           mockLogin.removeDevToken.mockImplementation();
           mockLog.ok(
@@ -150,7 +150,7 @@ describe('Token Command', () => {
         }
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
   });
 
@@ -240,12 +240,12 @@ describe('Token Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         instance: 'company.domo.com',
         devtoken: 'dev-token-123',
       });
 
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         const devToken = true;
         mockLogin.persistLogin.mockImplementation();
         mockLog.ok(
@@ -254,7 +254,7 @@ describe('Token Command', () => {
         );
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle add token with new instance', () => {
@@ -309,13 +309,13 @@ describe('Token Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         instance: 'new instance',
         newInstance: 'newcompany.domo.com',
         devtoken: 'dev-token-123',
       });
 
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         const devToken = true;
         mockLogin.persistLogin.mockImplementation();
         mockLog.ok(
@@ -324,7 +324,7 @@ describe('Token Command', () => {
         );
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
   });
 
@@ -372,7 +372,7 @@ describe('Token Command', () => {
       );
     });
 
-    it('should handle inquirer prompt error', () => {
+    it('should handle enquirer prompt error', () => {
       const prompts = [
         {
           type: 'list',
@@ -383,13 +383,13 @@ describe('Token Command', () => {
       ];
 
       const error = new Error('Prompt failed');
-      mockInquirer.prompt.mockRejectedValue(error);
+      mockEnquirer.prompt.mockRejectedValue(error);
 
-      mockInquirer.prompt(prompts).catch((err: any) => {
+      mockEnquirer.prompt(prompts).catch((err: any) => {
         expect(err).toBe(error);
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
   });
 
@@ -467,7 +467,7 @@ describe('Token Command', () => {
       expect(result).toBe('grey:e.g. company.domo.com ');
     });
 
-    it('should handle inquirer integration', () => {
+    it('should handle enquirer integration', () => {
       const prompts = [
         {
           type: 'list',
@@ -477,13 +477,13 @@ describe('Token Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({instance: 'company.domo.com'});
+      mockEnquirer.prompt.mockResolvedValue({instance: 'company.domo.com'});
 
-      mockInquirer.prompt(prompts).then((answer: any) => {
+      mockEnquirer.prompt(prompts).then((answer: any) => {
         expect(answer.instance).toBe('company.domo.com');
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
   });
 

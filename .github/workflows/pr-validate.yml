@@ -1,0 +1,35 @@
+name: PR Validate
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-validate-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+      - run: pnpm install --frozen-lockfile --ignore-scripts
+      - run: pnpm test
+      - run: pnpm run build
+      - name: Check packed files
+        run: |
+          files=$(npm pack --dry-run --json --ignore-scripts | jq -r '.[0].files[].path')
+          echo "$files"
+          for f in dist/bin/domo.js dist/bin/runner dist/bin/domo.cmd dist/server/domodev dist/server/ui dist/templates; do
+            grep -q "^$f" <<<"$files" || { echo "::error::$f is missing from the package"; exit 1; }
+          done

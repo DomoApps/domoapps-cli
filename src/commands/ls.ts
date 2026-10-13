@@ -18,7 +18,7 @@ function formatDate(date: Date): string {
 
 /**
  * Generate the asset library URL for a design
- * @param instance The Domo instance (e.g., "domo-jon-tiritilli" or "domo-jon-tiritilli.domo.com")
+ * @param instance The Domo instance (e.g., "my-instance" or "my-instance.domo.com")
  * @param designId The design ID
  * @returns Full URL to the design in the asset library
  */

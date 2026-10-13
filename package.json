@@ -1,6 +1,6 @@
 {
   "name": "ryuu",
-  "version": "5.1.3",
+  "version": "5.1.4-alpha.0",
   "type": "module",
   "description": "Domo App Dev Studio CLI, The main tool used to create, edit, and publish app designs to Domo",
   "keywords": [
@@ -11,6 +11,13 @@
   ],
   "homepage": "https://developer.domo.com/portal/rmfbkwje8kmqj-domo-apps-cli",
   "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DomoApps/domoapps-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DomoApps/domoapps-cli/issues"
+  },
   "bin": {
     "domo": "./dist/bin/domo.js"
   },
@@ -29,6 +36,9 @@
     "release:production": "pnpm run build && pnpm publish",
     "release:alpha": "pnpm run build && pnpm publish --tag alpha",
     "release:beta": "pnpm run build && pnpm publish --tag beta",
+    "ci:build": "rm -rf .ci-out && tsc -p scripts/ci && echo '{\"type\":\"commonjs\"}' > .ci-out/package.json",
+    "release:plan": "npm run ci:build --silent && DRY_RUN=true node .ci-out/release.js plan",
+    "release:rehearse": "bash scripts/ci/rehearse.sh",
     "lint": "eslint src --ext .ts",
     "test": "jest",
     "test:watch": "jest --watch",

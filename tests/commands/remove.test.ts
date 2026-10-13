@@ -20,7 +20,7 @@ jest.mock('../../src/util/log', () => ({
   },
 }));
 
-jest.mock('inquirer', () => ({
+jest.mock('enquirer', () => ({
   prompt: jest.fn(),
 }));
 
@@ -28,14 +28,14 @@ describe('Remove Command', () => {
   let mockProgram: Command;
   let mockLogin: any;
   let mockLog: any;
-  let mockInquirer: any;
+  let mockEnquirer: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     mockProgram = new Command();
     mockLogin = require('../../src/util/login').Login;
     mockLog = require('../../src/util/log').log;
-    mockInquirer = require('inquirer');
+    mockEnquirer = require('enquirer');
   });
 
   afterEach(() => {
@@ -119,18 +119,18 @@ describe('Remove Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         removeAll: true,
       });
 
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         if (answers.removeAll) {
           mockLogin.removeAllLogins();
           mockLog.ok('All instances have been removed');
         }
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle remove all instances confirmation', async () => {
@@ -142,11 +142,11 @@ describe('Remove Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         removeAll: true,
       });
 
-      await mockInquirer.prompt(prompts).then((answers: any) => {
+      await mockEnquirer.prompt(prompts).then((answers: any) => {
         if (answers.removeAll) {
           mockLogin.removeAllLogins();
           mockLog.ok('All instances have been removed');
@@ -187,19 +187,19 @@ describe('Remove Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         instance: 'company1.domo.com',
         removeInstance: true,
       });
 
-      mockInquirer.prompt(prompts).then((answers: any) => {
+      mockEnquirer.prompt(prompts).then((answers: any) => {
         if (answers.removeInstance) {
           mockLogin.removeLogin(answers.instance);
           mockLog.ok(`Instance ${answers.instance} removed successfully.`);
         }
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle remove single instance confirmation', () => {
@@ -242,7 +242,7 @@ describe('Remove Command', () => {
   // and createConfirm from the prompts utility instead of multichoice
 
   describe('Error Handling', () => {
-    it('should handle inquirer prompt error', () => {
+    it('should handle enquirer prompt error', () => {
       const prompts = [
         {
           type: 'confirm',
@@ -252,13 +252,13 @@ describe('Remove Command', () => {
       ];
 
       const error = new Error('Prompt failed');
-      mockInquirer.prompt.mockRejectedValue(error);
+      mockEnquirer.prompt.mockRejectedValue(error);
 
-      mockInquirer.prompt(prompts).catch((err: any) => {
+      mockEnquirer.prompt(prompts).catch((err: any) => {
         expect(err).toBe(error);
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
 
     it('should handle login removal error', () => {
@@ -338,7 +338,7 @@ describe('Remove Command', () => {
       expect(result).toEqual(previousLogins);
     });
 
-    it('should handle inquirer integration', () => {
+    it('should handle enquirer integration', () => {
       const prompts = [
         {
           type: 'confirm',
@@ -347,13 +347,13 @@ describe('Remove Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({removeAll: true});
+      mockEnquirer.prompt.mockResolvedValue({removeAll: true});
 
-      mockInquirer.prompt(prompts).then((answer: any) => {
+      mockEnquirer.prompt(prompts).then((answer: any) => {
         expect(answer.removeAll).toBe(true);
       });
 
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
     });
   });
 
@@ -375,13 +375,13 @@ describe('Remove Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         removeAll: true,
       });
 
       // Simulate the actual flow
       const result = mockLogin.getPreviousLogins();
-      await mockInquirer.prompt(prompts).then((answers: any) => {
+      await mockEnquirer.prompt(prompts).then((answers: any) => {
         if (answers.removeAll) {
           mockLogin.removeAllLogins();
           mockLog.ok('All instances have been removed');
@@ -389,7 +389,7 @@ describe('Remove Command', () => {
       });
 
       expect(mockLogin.getPreviousLogins).toHaveBeenCalled();
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
       expect(mockLogin.removeAllLogins).toHaveBeenCalled();
       expect(mockLog.ok).toHaveBeenCalledWith(
         'All instances have been removed',
@@ -422,14 +422,14 @@ describe('Remove Command', () => {
         },
       ];
 
-      mockInquirer.prompt.mockResolvedValue({
+      mockEnquirer.prompt.mockResolvedValue({
         instance: 'company1.domo.com',
         removeInstance: true,
       });
 
       // Simulate the actual flow
       const result = mockLogin.getPreviousLogins();
-      await mockInquirer.prompt(prompts).then((answers: any) => {
+      await mockEnquirer.prompt(prompts).then((answers: any) => {
         if (answers.removeInstance) {
           mockLogin.removeLogin(answers.instance);
           mockLog.ok(`Instance ${answers.instance} removed successfully.`);
@@ -437,7 +437,7 @@ describe('Remove Command', () => {
       });
 
       expect(mockLogin.getPreviousLogins).toHaveBeenCalled();
-      expect(mockInquirer.prompt).toHaveBeenCalledWith(prompts);
+      expect(mockEnquirer.prompt).toHaveBeenCalledWith(prompts);
       expect(mockLogin.removeLogin).toHaveBeenCalledWith('company1.domo.com');
       expect(mockLog.ok).toHaveBeenCalledWith(
         'Instance company1.domo.com removed successfully.',

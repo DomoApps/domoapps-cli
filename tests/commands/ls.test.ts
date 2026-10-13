@@ -16,7 +16,7 @@ jest.mock('../../src/util/log', () => ({
   },
 }));
 
-jest.mock('cli-table', () => {
+jest.mock('cli-table3', () => {
   return jest.fn().mockImplementation(() => ({
     push: jest.fn(),
     toString: jest.fn().mockReturnValue('table output'),
@@ -42,7 +42,7 @@ describe('Ls Command', () => {
     jest.clearAllMocks();
     mockProgram = new Command();
     mockLog = require('../../src/util/log').log;
-    mockTable = require('cli-table');
+    mockTable = require('cli-table3');
     mockChalk = require('chalk');
   });
 
